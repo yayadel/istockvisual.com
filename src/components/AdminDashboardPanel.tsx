@@ -35,7 +35,7 @@ export default function AdminDashboardPanel() {
 		{ label: 'Used', value: stats.keywordsUsed, href: '/admin/keywords?status=used' },
 		{ label: 'Generated assets', value: stats.generatedAssets, href: '/admin/content' },
 		{ label: 'Active links', value: stats.activeLinks, href: '/admin/keywords' },
-		{ label: 'Used without content', value: stats.usedWithoutContent, href: '/admin/keywords?status=no_content' },
+		{ label: 'Reserved (no content)', value: stats.usedWithoutContent, href: '/admin/keywords?status=no_content' },
 	];
 
 	return (
