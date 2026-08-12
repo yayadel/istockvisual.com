@@ -34,11 +34,24 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	if (!ALLOWED.has(file.type)) {
-		return json({ error: 'Only JPEG, PNG, WebP, or GIF images are allowed' }, 400);
+		// Also accept common video extensions when browser omits MIME
+		const name = file.name.toLowerCase();
+		const okByName =
+			name.endsWith('.jpg') ||
+			name.endsWith('.jpeg') ||
+			name.endsWith('.png') ||
+			name.endsWith('.webp') ||
+			name.endsWith('.gif') ||
+			name.endsWith('.mp4') ||
+			name.endsWith('.mov') ||
+			name.endsWith('.webm');
+		if (!okByName) {
+			return json({ error: 'Accepted formats: JPG, PNG, MP4, MOV, WebM' }, 400);
+		}
 	}
 
-	if (file.size <= 0 || file.size > MAX_BYTES) {
-		return json({ error: 'Image must be between 1 byte and 8 MB' }, 400);
+	if (file.size <= 0 || file.size > 50 * 1024 * 1024) {
+		return json({ error: 'File must be between 1 byte and 50 MB' }, 400);
 	}
 
 	const id = crypto.randomUUID();

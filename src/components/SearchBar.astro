@@ -67,7 +67,7 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 		autocomplete="off"
 	/>
 
-	<button class="search-bar__visual" type="button" title="Upload an image to search" data-upload-trigger>
+	<button class="search-bar__visual" type="button" title="Upload an image to search" data-upload-open>
 		<span class="search-bar__visual-icon" aria-hidden="true">
 			<svg viewBox="0 0 24 24" fill="none" width="18" height="18">
 				<path
@@ -77,16 +77,8 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				<path d="M12 9v5M9.5 11.5 12 9l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
 			</svg>
 		</span>
-		<span class="search-bar__visual-text" data-upload-label>Find by upload</span>
+		<span class="search-bar__visual-text">Find by upload</span>
 	</button>
-
-	<input
-		class="search-bar__file"
-		type="file"
-		accept="image/jpeg,image/png,image/webp,image/gif"
-		hidden
-		data-upload-input
-	/>
 
 	<button class="search-bar__submit" type="submit" aria-label="Search">
 		<svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden="true">
@@ -96,18 +88,167 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 	</button>
 </form>
 
+{
+	variant === 'hero' && (
+		<div class="upload-modal" hidden data-upload-modal>
+			<div class="upload-modal__backdrop" data-upload-close></div>
+			<div
+				class="upload-modal__dialog"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="upload-modal-title"
+			>
+				<button class="upload-modal__close" type="button" aria-label="Close" data-upload-close>
+					×
+				</button>
+				<h2 id="upload-modal-title" class="upload-modal__title">
+					Search by image or video
+				</h2>
+
+				<div class="upload-modal__drop" data-upload-drop>
+					<div class="upload-modal__icon" aria-hidden="true">
+						<svg viewBox="0 0 72 56" width="72" height="56" fill="none">
+							<rect x="8" y="10" width="34" height="28" rx="3" fill="#d7dde3"></rect>
+							<rect
+								x="28"
+								y="18"
+								width="34"
+								height="28"
+								rx="3"
+								stroke="#7b8791"
+								stroke-width="2"
+								stroke-dasharray="4 3"
+								fill="none"></rect>
+							<path
+								d="M46 8c8 2 14 9 14 18"
+								stroke="#7b8791"
+								stroke-width="2"
+								stroke-linecap="round"></path>
+							<path
+								d="M55 8h5v5"
+								stroke="#7b8791"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+					</div>
+					<p class="upload-modal__hint">Drag and drop your file anywhere here</p>
+					<p class="upload-modal__or">or</p>
+					<button class="upload-modal__choose" type="button" data-upload-choose>
+						Choose a file
+					</button>
+					<p class="upload-modal__status" data-upload-status hidden></p>
+				</div>
+
+				<p class="upload-modal__formats">Accepted file formats: JPG, PNG, MP4, MOV, WebM</p>
+
+				<input
+					class="upload-modal__file"
+					type="file"
+					accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
+					hidden
+					data-upload-input
+				/>
+			</div>
+		</div>
+	)
+}
+
 <script is:inline>
 	(function () {
-		if (window.__istockCategoryDropdownBound) return;
-		window.__istockCategoryDropdownBound = true;
+		if (window.__istockSearchUiBound) return;
+		window.__istockSearchUiBound = true;
 
-		function closeAll() {
+		function closeAllMenus() {
 			document.querySelectorAll('[data-category-dropdown]').forEach(function (root) {
 				var menu = root.querySelector('[data-category-menu]');
 				var trigger = root.querySelector('[data-category-trigger]');
 				if (menu) menu.hidden = true;
 				if (trigger) trigger.setAttribute('aria-expanded', 'false');
 			});
+		}
+
+		function getModal() {
+			return document.querySelector('[data-upload-modal]');
+		}
+
+		function openModal() {
+			var modal = getModal();
+			if (!modal) return;
+			modal.hidden = false;
+			document.body.classList.add('upload-modal-open');
+			var status = modal.querySelector('[data-upload-status]');
+			if (status) {
+				status.hidden = true;
+				status.textContent = '';
+			}
+		}
+
+		function closeModal() {
+			var modal = getModal();
+			if (!modal) return;
+			modal.hidden = true;
+			document.body.classList.remove('upload-modal-open');
+			var drop = modal.querySelector('[data-upload-drop]');
+			if (drop) drop.classList.remove('is-dragover');
+		}
+
+		async function uploadFile(file) {
+			var modal = getModal();
+			var status = modal && modal.querySelector('[data-upload-status]');
+			var choose = modal && modal.querySelector('[data-upload-choose]');
+			var drop = modal && modal.querySelector('[data-upload-drop]');
+
+			var allowed =
+				/^(image\/(jpeg|png|webp|gif)|video\/(mp4|quicktime|webm))$/.test(file.type) ||
+				/\.(jpe?g|png|webp|gif|mp4|mov|webm)$/i.test(file.name);
+
+			if (!allowed) {
+				alert('Accepted formats: JPG, PNG, MP4, MOV, WebM');
+				return;
+			}
+
+			if (file.size > 50 * 1024 * 1024) {
+				alert('File must be 50 MB or smaller.');
+				return;
+			}
+
+			if (status) {
+				status.hidden = false;
+				status.textContent = 'Uploading “' + file.name + '”…';
+			}
+			if (choose) choose.disabled = true;
+			if (drop) drop.classList.add('is-uploading');
+
+			try {
+				var body = new FormData();
+				body.append('file', file);
+				var res = await fetch('/api/upload/visual-search', {
+					method: 'POST',
+					body: body,
+				});
+				var data = await res.json();
+				if (!res.ok || !data.ok) {
+					throw new Error((data && data.error) || 'Upload failed');
+				}
+
+				var params = new URLSearchParams({
+					mode: 'visual',
+					key: data.key || '',
+					name: data.filename || file.name,
+					stored: data.stored ? '1' : '0',
+				});
+				window.location.href = '/search?' + params.toString();
+			} catch (err) {
+				if (status) {
+					status.hidden = false;
+					status.textContent = err instanceof Error ? err.message : 'Upload failed';
+				} else {
+					alert(err instanceof Error ? err.message : 'Upload failed');
+				}
+				if (choose) choose.disabled = false;
+				if (drop) drop.classList.remove('is-uploading');
+			}
 		}
 
 		document.addEventListener('click', function (event) {
@@ -150,7 +291,7 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				var dropdownMenu = dropdown && dropdown.querySelector('[data-category-menu]');
 				if (!dropdown || !dropdownMenu) return;
 				var willOpen = dropdownMenu.hidden;
-				closeAll();
+				closeAllMenus();
 				if (willOpen) {
 					dropdownMenu.hidden = false;
 					triggerBtn.setAttribute('aria-expanded', 'true');
@@ -158,77 +299,68 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				return;
 			}
 
-			var uploadTrigger = target.closest('[data-upload-trigger]');
-			if (uploadTrigger) {
+			if (target.closest('[data-upload-open]')) {
 				event.preventDefault();
 				event.stopPropagation();
-				closeAll();
-				var bar = uploadTrigger.closest('.search-bar');
-				var fileInput = bar && bar.querySelector('[data-upload-input]');
-				if (fileInput) fileInput.click();
+				closeAllMenus();
+				openModal();
 				return;
 			}
 
-			closeAll();
+			if (target.closest('[data-upload-close]')) {
+				event.preventDefault();
+				closeModal();
+				return;
+			}
+
+			if (target.closest('[data-upload-choose]')) {
+				event.preventDefault();
+				var input = document.querySelector('[data-upload-input]');
+				if (input) input.click();
+				return;
+			}
+
+			closeAllMenus();
 		});
 
-		document.addEventListener('change', async function (event) {
+		document.addEventListener('change', function (event) {
 			var target = event.target;
 			if (!(target instanceof HTMLInputElement) || !target.matches('[data-upload-input]')) return;
-
 			var file = target.files && target.files[0];
-			var bar = target.closest('.search-bar');
-			var uploadBtn = bar && bar.querySelector('[data-upload-trigger]');
-			var uploadLabel = bar && bar.querySelector('[data-upload-label]');
-			if (!file || !uploadBtn) return;
+			if (!file) return;
+			uploadFile(file);
+			target.value = '';
+		});
 
-			if (!file.type.startsWith('image/')) {
-				alert('Please choose an image file (JPEG, PNG, WebP, or GIF).');
-				target.value = '';
-				return;
-			}
+		document.addEventListener('dragover', function (event) {
+			var drop = event.target instanceof Element && event.target.closest('[data-upload-drop]');
+			var modal = getModal();
+			if (!modal || modal.hidden || !drop) return;
+			event.preventDefault();
+			drop.classList.add('is-dragover');
+		});
 
-			if (file.size > 8 * 1024 * 1024) {
-				alert('Image must be 8 MB or smaller.');
-				target.value = '';
-				return;
-			}
+		document.addEventListener('dragleave', function (event) {
+			var drop = event.target instanceof Element && event.target.closest('[data-upload-drop]');
+			if (!drop) return;
+			drop.classList.remove('is-dragover');
+		});
 
-			uploadBtn.disabled = true;
-			uploadBtn.classList.add('is-uploading');
-			if (uploadLabel) uploadLabel.textContent = 'Uploading…';
-
-			try {
-				var body = new FormData();
-				body.append('file', file);
-
-				var res = await fetch('/api/upload/visual-search', {
-					method: 'POST',
-					body: body,
-				});
-				var data = await res.json();
-				if (!res.ok || !data.ok) {
-					throw new Error((data && data.error) || 'Upload failed');
-				}
-
-				var params = new URLSearchParams({
-					mode: 'visual',
-					key: data.key || '',
-					name: data.filename || file.name,
-					stored: data.stored ? '1' : '0',
-				});
-				window.location.href = '/search?' + params.toString();
-			} catch (err) {
-				alert(err instanceof Error ? err.message : 'Upload failed');
-				uploadBtn.disabled = false;
-				uploadBtn.classList.remove('is-uploading');
-				if (uploadLabel) uploadLabel.textContent = 'Find by upload';
-				target.value = '';
-			}
+		document.addEventListener('drop', function (event) {
+			var drop = event.target instanceof Element && event.target.closest('[data-upload-drop]');
+			var modal = getModal();
+			if (!modal || modal.hidden || !drop) return;
+			event.preventDefault();
+			drop.classList.remove('is-dragover');
+			var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+			if (file) uploadFile(file);
 		});
 
 		document.addEventListener('keydown', function (event) {
-			if (event.key === 'Escape') closeAll();
+			if (event.key === 'Escape') {
+				closeAllMenus();
+				closeModal();
+			}
 		});
 	})();
 </script>
