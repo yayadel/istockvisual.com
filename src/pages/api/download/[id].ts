@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { createAuth, type AppUser } from '../../../lib/auth';
-import { getAssetById } from '../../../lib/sanity';
+import { resolveAssetById } from '../../../lib/generate-asset';
 import { contentDisposition } from '../../../lib/r2';
 
 export const GET: APIRoute = async (context) => {
@@ -33,7 +33,7 @@ export const GET: APIRoute = async (context) => {
 		});
 	}
 
-	const asset = await getAssetById(id);
+	const asset = await resolveAssetById(env.DB, context.url.origin, id);
 	if (!asset) {
 		return new Response(JSON.stringify({ error: 'Asset not found' }), {
 			status: 404,

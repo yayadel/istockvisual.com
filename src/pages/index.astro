@@ -3,9 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import AssetGrid from '../components/AssetGrid.astro';
 import SearchBar from '../components/SearchBar.astro';
 import { CATEGORIES } from '../config/categories';
-import { listFeaturedAssets, isSanityConfigured } from '../lib/sanity';
+import { listFeaturedAssets } from '../lib/generate-asset';
+import { isSanityConfigured } from '../lib/sanity';
+import { env } from 'cloudflare:workers';
 
-const featured = await listFeaturedAssets(8);
+const featured = await listFeaturedAssets(env.DB, Astro.url.origin, 8);
 const usingDemo = !isSanityConfigured();
 ---
 

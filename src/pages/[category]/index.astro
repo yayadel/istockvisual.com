@@ -2,7 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AssetGrid from '../../components/AssetGrid.astro';
 import { CATEGORIES, getCategory, isCategorySlug } from '../../config/categories';
-import { listAssetsByCategory } from '../../lib/sanity';
+import { listCategoryAssets } from '../../lib/generate-asset';
+import { env } from 'cloudflare:workers';
 
 const { category: categorySlug } = Astro.params;
 
@@ -11,7 +12,7 @@ if (!categorySlug || !isCategorySlug(categorySlug)) {
 }
 
 const category = getCategory(categorySlug)!;
-const assets = await listAssetsByCategory(category.slug);
+const assets = await listCategoryAssets(env.DB, Astro.url.origin, category.slug);
 ---
 
 <BaseLayout title={category.label} description={`Browse ${category.label} on iStockVisual.`}>
