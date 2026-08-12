@@ -237,10 +237,6 @@ export default function ImageEditor({ imageUrl, title }: Props) {
 		}, 'image/png');
 	}, [crop, fineRotation, flipX, flipY, imageUrl, rotation, title, zoom]);
 
-	const imageStyle = {
-		transform: `scale(${zoom / 100}) rotate(${rotation + fineRotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`,
-	};
-
 	return (
 		<div className="image-editor">
 			<div className="image-editor__toolbar">
@@ -284,7 +280,6 @@ export default function ImageEditor({ imageUrl, title }: Props) {
 						src={imageUrl}
 						alt={title}
 						className="image-editor__image"
-						style={imageStyle}
 						onLoad={() => setLoaded(true)}
 					/>
 					{loaded && (
