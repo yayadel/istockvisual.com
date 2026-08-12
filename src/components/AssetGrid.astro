@@ -1,9 +1,9 @@
 ---
-import type { AssetDoc } from '../lib/sanity';
+import type { AssetDetail } from '../lib/asset-types';
 import AssetCard from './AssetCard.astro';
 
 interface Props {
-	assets: AssetDoc[];
+	assets: AssetDetail[];
 	emptyMessage?: string;
 }
 

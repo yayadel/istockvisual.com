@@ -34,6 +34,10 @@ interface ImportMetaEnv {
 	readonly SANITY_API_TOKEN?: string;
 	readonly BETTER_AUTH_SECRET?: string;
 	readonly BETTER_AUTH_URL?: string;
+	readonly GENERATE_API_SECRET?: string;
+	readonly OPENAI_API_KEY?: string;
+	readonly OPENAI_BASE_URL?: string;
+	readonly OPENAI_MODEL?: string;
 }
 
 interface ImportMeta {
