@@ -2,7 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AssetPreviewPanel from '../../components/AssetPreviewPanel';
 import { getCategory, isCategorySlug } from '../../config/categories';
-import { getAssetBySlug } from '../../lib/sanity';
+import { resolveAssetBySlug } from '../../lib/generate-asset';
+import { env } from 'cloudflare:workers';
 
 const { category: categorySlug, slug } = Astro.params;
 
@@ -11,7 +12,7 @@ if (!categorySlug || !slug || !isCategorySlug(categorySlug)) {
 }
 
 const category = getCategory(categorySlug)!;
-const asset = await getAssetBySlug(category.slug, slug);
+const asset = await resolveAssetBySlug(env.DB, Astro.url.origin, category.slug, slug);
 
 if (!asset) {
 	return new Response(null, { status: 404, statusText: 'Not Found' });
@@ -21,9 +22,13 @@ const user = Astro.locals.user;
 const needsLogin = !user;
 const needsPro = Boolean(user && asset.isPremium && user.plan !== 'pro');
 const canDownload = Boolean(user) && !needsPro;
+const isGenerated = asset.source === 'generated';
 ---
 
-<BaseLayout title={asset.title} description={asset.description || `${asset.title} on iStockVisual`}>
+<BaseLayout
+	title={asset.title}
+	description={asset.shortDescription || asset.description || `${asset.title} on iStockVisual`}
+>
 	<article class="detail">
 		<div class="detail__preview">
 			{
@@ -38,9 +43,10 @@ const canDownload = Boolean(user) && !needsPro;
 			<p class="asset-card__meta">
 				<a href={`/${category.slug}`}>{category.label}</a>
 				{asset.isPremium && <span class="badge badge--premium">Pro</span>}
+				{isGenerated && <span class="badge">Generated</span>}
 			</p>
 			<h1>{asset.title}</h1>
-			<p>{asset.description || 'No description provided.'}</p>
+			<p>{asset.shortDescription || asset.description || 'No description provided.'}</p>
 
 			<ul class="meta-list">
 				<li><span>License</span><span>{asset.license || 'Standard'}</span></li>
@@ -51,8 +57,83 @@ const canDownload = Boolean(user) && !needsPro;
 						{asset.width && asset.height ? `${asset.width} × ${asset.height}` : '—'}
 					</span>
 				</li>
+				{asset.medium && (
+					<li><span>Medium</span><span>{asset.medium}</span></li>
+				)}
+				{asset.keyword && (
+					<li><span>Keyword</span><span>{asset.keyword}</span></li>
+				)}
 				<li><span>Tags</span><span>{asset.tags?.join(', ') || '—'}</span></li>
 			</ul>
+
+			{
+				isGenerated && (
+					<section class="asset-extra">
+						{asset.creationDescription && (
+							<div class="asset-extra__block">
+								<h2>Creation description</h2>
+								<p>{asset.creationDescription}</p>
+							</div>
+						)}
+						{asset.usageTips && (
+							<div class="asset-extra__block">
+								<h2>Usage tips</h2>
+								<p>{asset.usageTips}</p>
+							</div>
+						)}
+						{
+							asset.colorPalette && asset.colorPalette.length > 0 && (
+								<div class="asset-extra__block">
+									<h2>Color palette</h2>
+									<ul class="palette-list">
+										{asset.colorPalette.map((swatch) => (
+											<li>
+												<span
+													class="palette-swatch"
+													style={`background:${swatch.hex}`}
+													title={swatch.hex}
+												/>
+												<span>{swatch.name}</span>
+												<code>{swatch.hex}</code>
+											</li>
+										))}
+									</ul>
+								</div>
+							)
+						}
+						{
+							asset.depictedElements && asset.depictedElements.length > 0 && (
+								<div class="asset-extra__block">
+									<h2>Depicted elements</h2>
+									<p>{asset.depictedElements.join(', ')}</p>
+								</div>
+							)
+						}
+						{
+							asset.relatedQueries && asset.relatedQueries.length > 0 && (
+								<div class="asset-extra__block">
+									<h2>Related searches</h2>
+									<ul class="tag-list">
+										{asset.relatedQueries.map((query) => (
+											<li>
+												<a href={`/search?q=${encodeURIComponent(query)}`}>{query}</a>
+											</li>
+										))}
+									</ul>
+								</div>
+							)
+						}
+						{
+							asset.imagePrompt && (
+								<details class="asset-extra__block">
+									<summary>Image generation prompt</summary>
+									<p>{asset.imagePrompt}</p>
+								</details>
+							)
+						}
+					</section>
+				)
+			}
 
 			<div class="cta-row">
 				{

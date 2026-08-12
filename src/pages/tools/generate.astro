@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GenerateAssetPanel from '../../components/GenerateAssetPanel';
+---
+
+<BaseLayout
+	title="Generate Asset"
+	description="Generate stock assets from keyword database and host prompt."
+>
+	<GenerateAssetPanel client:load />
+</BaseLayout>
