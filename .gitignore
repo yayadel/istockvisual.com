@@ -20,6 +20,7 @@ pnpm-debug.log*
 .wrangler/
 github_token
 keyword_store/
+.tmp/
 .git/auto-backup.lock
 
 # macOS-specific files

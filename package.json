@@ -14,6 +14,8 @@
 		"generate-types": "wrangler types",
 		"db:migrate:local": "wrangler d1 migrations apply istockvisual-db --local",
 		"db:migrate:remote": "wrangler d1 migrations apply istockvisual-db --remote",
+		"keywords:import": "node scripts/import-keywords.mjs",
+		"keywords:import:remote": "node scripts/import-keywords.mjs --remote",
 		"sanity:dev": "npm run dev --prefix sanity",
 		"deploy": "npm run build && wrangler deploy",
 		"backup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/backup-to-github.ps1",
