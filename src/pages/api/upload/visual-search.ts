@@ -1,16 +1,8 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
-const MAX_BYTES = 50 * 1024 * 1024;
-const ALLOWED = new Set([
-	'image/jpeg',
-	'image/png',
-	'image/webp',
-	'image/gif',
-	'video/mp4',
-	'video/quicktime',
-	'video/webm',
-]);
+const MAX_BYTES = 8 * 1024 * 1024;
+const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 function json(data: unknown, status = 200) {
 	return new Response(JSON.stringify(data), {
@@ -24,9 +16,6 @@ function safeExt(type: string, name: string) {
 	if (type === 'image/png') return 'png';
 	if (type === 'image/webp') return 'webp';
 	if (type === 'image/gif') return 'gif';
-	if (type === 'video/mp4') return 'mp4';
-	if (type === 'video/quicktime') return 'mov';
-	if (type === 'video/webm') return 'webm';
 	const fromName = name.split('.').pop()?.toLowerCase();
 	return fromName && fromName.length <= 5 ? fromName : 'bin';
 }
@@ -44,25 +33,20 @@ export const POST: APIRoute = async ({ request }) => {
 		return json({ error: 'Missing file field' }, 400);
 	}
 
-	if (!ALLOWED.has(file.type)) {
-		// Also accept common video extensions when browser omits MIME
-		const name = file.name.toLowerCase();
-		const okByName =
-			name.endsWith('.jpg') ||
-			name.endsWith('.jpeg') ||
-			name.endsWith('.png') ||
-			name.endsWith('.webp') ||
-			name.endsWith('.gif') ||
-			name.endsWith('.mp4') ||
-			name.endsWith('.mov') ||
-			name.endsWith('.webm');
-		if (!okByName) {
-			return json({ error: 'Accepted formats: JPG, PNG, MP4, MOV, WebM' }, 400);
-		}
+	const name = file.name.toLowerCase();
+	const okByName =
+		name.endsWith('.jpg') ||
+		name.endsWith('.jpeg') ||
+		name.endsWith('.png') ||
+		name.endsWith('.webp') ||
+		name.endsWith('.gif');
+
+	if (!ALLOWED.has(file.type) && !okByName) {
+		return json({ error: 'Accepted formats: JPG, PNG, WebP, GIF' }, 400);
 	}
 
-	if (file.size <= 0 || file.size > 50 * 1024 * 1024) {
-		return json({ error: 'File must be between 1 byte and 50 MB' }, 400);
+	if (file.size <= 0 || file.size > MAX_BYTES) {
+		return json({ error: 'Image must be between 1 byte and 8 MB' }, 400);
 	}
 
 	const id = crypto.randomUUID();
@@ -86,7 +70,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 	await bucket.put(key, bytes, {
 		httpMetadata: {
-			contentType: file.type,
+			contentType: file.type || `image/${ext === 'jpg' ? 'jpeg' : ext}`,
 		},
 		customMetadata: {
 			originalName: file.name.slice(0, 180),

@@ -134,11 +134,11 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 			var drop = modal && modal.querySelector('[data-upload-drop]');
 
 			var allowed =
-				/^(image\/(jpeg|png|webp|gif)|video\/(mp4|quicktime|webm))$/.test(file.type) ||
-				/\.(jpe?g|png|webp|gif|mp4|mov|webm)$/i.test(file.name);
+				/^image\/(jpeg|png|webp|gif)$/.test(file.type) ||
+				/\.(jpe?g|png|webp|gif)$/i.test(file.name);
 
 			if (!allowed) {
-				alert('Accepted formats: JPG, PNG, MP4, MOV, WebM');
+				alert('Accepted formats: JPG, PNG, WebP, GIF');
 				return;
 			}
 
