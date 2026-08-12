@@ -88,54 +88,74 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 	</button>
 </form>
 
-<script>
-	function setupCategoryDropdown(root: Element) {
-		const trigger = root.querySelector<HTMLButtonElement>('[data-category-trigger]');
-		const menu = root.querySelector<HTMLElement>('[data-category-menu]');
-		const label = root.querySelector<HTMLElement>('[data-category-label]');
-		const form = root.closest('form');
-		const hidden = form?.querySelector<HTMLInputElement>('[data-category-input]');
-		if (!trigger || !menu || !label || !hidden) return;
+<script is:inline>
+	(function () {
+		if (window.__istockCategoryDropdownBound) return;
+		window.__istockCategoryDropdownBound = true;
 
-		const close = () => {
-			menu.hidden = true;
-			trigger.setAttribute('aria-expanded', 'false');
-		};
-
-		const open = () => {
-			menu.hidden = false;
-			trigger.setAttribute('aria-expanded', 'true');
-		};
-
-		trigger.addEventListener('click', (event) => {
-			event.preventDefault();
-			event.stopPropagation();
-			if (menu.hidden) open();
-			else close();
-		});
-
-		menu.querySelectorAll<HTMLButtonElement>('[data-category-option]').forEach((optionBtn) => {
-			optionBtn.addEventListener('click', (event) => {
-				event.preventDefault();
-				const value = optionBtn.dataset.categoryOption || 'all';
-				hidden.value = value;
-				label.textContent = optionBtn.textContent?.trim() || 'All media';
-				menu.querySelectorAll('[role="option"]').forEach((item) => {
-					const btn = item.querySelector<HTMLButtonElement>('[data-category-option]');
-					item.setAttribute('aria-selected', btn?.dataset.categoryOption === value ? 'true' : 'false');
-				});
-				close();
+		function closeAll(except) {
+			document.querySelectorAll('[data-category-dropdown]').forEach(function (root) {
+				if (except && root === except) return;
+				var menu = root.querySelector('[data-category-menu]');
+				var trigger = root.querySelector('[data-category-trigger]');
+				if (menu) menu.hidden = true;
+				if (trigger) trigger.setAttribute('aria-expanded', 'false');
 			});
+		}
+
+		document.addEventListener('click', function (event) {
+			var target = event.target;
+			if (!(target instanceof Element)) return;
+
+			var optionBtn = target.closest('[data-category-option]');
+			if (optionBtn) {
+				event.preventDefault();
+				event.stopPropagation();
+				var root = optionBtn.closest('[data-category-dropdown]');
+				var form = optionBtn.closest('form');
+				if (!root || !form) return;
+				var hidden = form.querySelector('[data-category-input]');
+				var label = root.querySelector('[data-category-label]');
+				var menu = root.querySelector('[data-category-menu]');
+				var trigger = root.querySelector('[data-category-trigger]');
+				var value = optionBtn.getAttribute('data-category-option') || 'all';
+				if (hidden) hidden.value = value;
+				if (label) label.textContent = (optionBtn.textContent || 'All media').trim();
+				if (menu) {
+					menu.querySelectorAll('[role="option"]').forEach(function (item) {
+						var btn = item.querySelector('[data-category-option]');
+						item.setAttribute(
+							'aria-selected',
+							btn && btn.getAttribute('data-category-option') === value ? 'true' : 'false',
+						);
+					});
+					menu.hidden = true;
+				}
+				if (trigger) trigger.setAttribute('aria-expanded', 'false');
+				return;
+			}
+
+			var triggerBtn = target.closest('[data-category-trigger]');
+			if (triggerBtn) {
+				event.preventDefault();
+				event.stopPropagation();
+				var dropdown = triggerBtn.closest('[data-category-dropdown]');
+				var dropdownMenu = dropdown && dropdown.querySelector('[data-category-menu]');
+				if (!dropdown || !dropdownMenu) return;
+				var willOpen = dropdownMenu.hidden;
+				closeAll();
+				if (willOpen) {
+					dropdownMenu.hidden = false;
+					triggerBtn.setAttribute('aria-expanded', 'true');
+				}
+				return;
+			}
+
+			closeAll();
 		});
 
-		document.addEventListener('click', (event) => {
-			if (!root.contains(event.target as Node)) close();
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') closeAll();
 		});
-
-		document.addEventListener('keydown', (event) => {
-			if (event.key === 'Escape') close();
-		});
-	}
-
-	document.querySelectorAll('[data-category-dropdown]').forEach(setupCategoryDropdown);
+	})();
 </script>

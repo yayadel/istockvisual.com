@@ -255,9 +255,11 @@ textarea {
 	background: #ffffff;
 	border: 1px solid rgba(20, 24, 20, 0.12);
 	border-radius: 2px;
-	overflow: hidden;
+	overflow: visible;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 	color: #1a1a1a;
+	position: relative;
+	z-index: 5;
 }
 
 .search-bar--bar {
@@ -280,6 +282,7 @@ textarea {
 	position: relative;
 	border-right: 1px solid rgba(20, 24, 20, 0.12);
 	min-height: 3.35rem;
+	z-index: 6;
 }
 
 .search-bar__filter-trigger {
@@ -305,7 +308,7 @@ textarea {
 	position: absolute;
 	top: calc(100% + 0.35rem);
 	left: 0;
-	z-index: 30;
+	z-index: 50;
 	min-width: 12.5rem;
 	margin: 0;
 	padding: 0.35rem;
