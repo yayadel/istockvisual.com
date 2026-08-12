@@ -2281,6 +2281,11 @@ body.download-auth-modal-open {
 	color: var(--text-muted);
 }
 
+.admin-badge--reserved {
+	background: rgba(180, 120, 20, 0.14);
+	color: #8a5a00;
+}
+
 .admin-pagination {
 	display: flex;
 	align-items: center;

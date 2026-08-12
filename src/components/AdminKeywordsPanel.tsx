@@ -28,7 +28,7 @@ const STATUS_OPTIONS = [
 	{ value: 'all', label: 'All' },
 	{ value: 'unused', label: 'Unused' },
 	{ value: 'used', label: 'Used' },
-	{ value: 'no_content', label: 'Used but no content' },
+	{ value: 'no_content', label: 'Reserved (no content)' },
 ] as const;
 
 export default function AdminKeywordsPanel() {
