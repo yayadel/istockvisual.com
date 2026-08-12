@@ -23,7 +23,7 @@ const assets = q
 
 const categoryLabel = isCategorySlug(categoryParam)
 	? CATEGORIES.find((c) => c.slug === categoryParam)?.label
-	: 'All content';
+	: 'All media';
 ---
 
 <BaseLayout title={q ? `Search: ${q}` : 'Search'} description="Search photos, illustrations, vectors, and 3D assets.">
