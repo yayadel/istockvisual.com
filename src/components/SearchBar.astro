@@ -121,10 +121,8 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				hidden.value = value;
 				label.textContent = optionBtn.textContent?.trim() || 'All media';
 				menu.querySelectorAll('[role="option"]').forEach((item) => {
-					item.setAttribute(
-						'aria-selected',
-						item.contains(optionBtn) && value === optionBtn.dataset.categoryOption ? 'true' : 'false',
-					);
+					const btn = item.querySelector<HTMLButtonElement>('[data-category-option]');
+					item.setAttribute('aria-selected', btn?.dataset.categoryOption === value ? 'true' : 'false');
 				});
 				close();
 			});

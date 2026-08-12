@@ -266,22 +266,65 @@ textarea {
 
 .search-bar__filter {
 	position: relative;
-	padding: 0 0.85rem 0 0.95rem;
 	border-right: 1px solid rgba(20, 24, 20, 0.12);
 	min-height: 3.35rem;
-	cursor: pointer;
 }
 
-.search-bar__filter select {
-	appearance: none;
+.search-bar__filter-trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	height: 100%;
+	min-height: 3.35rem;
+	padding: 0 1.7rem 0 0.95rem;
 	border: 0;
 	background: transparent;
 	font: inherit;
 	font-size: 0.92rem;
-	padding-right: 1rem;
-	cursor: pointer;
 	color: #1a1a1a;
-	outline: none;
+	cursor: pointer;
+}
+
+.search-bar__filter-trigger:hover {
+	background: #f6f7f6;
+}
+
+.search-bar__menu {
+	position: absolute;
+	top: calc(100% + 0.35rem);
+	left: 0;
+	z-index: 30;
+	min-width: 12.5rem;
+	margin: 0;
+	padding: 0.35rem;
+	list-style: none;
+	background: #ffffff;
+	border: 1px solid rgba(20, 24, 20, 0.12);
+	border-radius: 2px;
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+}
+
+.search-bar__menu button {
+	display: block;
+	width: 100%;
+	padding: 0.65rem 0.75rem;
+	border: 0;
+	border-radius: 2px;
+	background: transparent;
+	text-align: left;
+	font: inherit;
+	font-size: 0.92rem;
+	color: #1a1a1a;
+	cursor: pointer;
+}
+
+.search-bar__menu button:hover {
+	background: #f2f4f2;
+}
+
+.search-bar__menu [aria-selected='true'] button {
+	background: #5a8500;
+	color: #ffffff;
 }
 
 .search-bar__filter-icon,
@@ -298,6 +341,10 @@ textarea {
 	font-size: 0.7rem;
 	color: #666;
 	pointer-events: none;
+}
+
+.search-bar__filter:has(.search-bar__filter-trigger[aria-expanded='true']) .search-bar__chevron {
+	transform: translateY(-50%) rotate(180deg);
 }
 
 .search-bar__input {
