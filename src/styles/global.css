@@ -933,6 +933,13 @@ body.upload-modal-open {
 	border-color: var(--accent);
 }
 
+.image-editor__tool.is-active {
+	background: var(--accent);
+	border-color: transparent;
+	color: var(--accent-ink);
+	font-weight: 600;
+}
+
 .image-editor__ratios {
 	display: flex;
 	flex-wrap: wrap;
@@ -974,15 +981,30 @@ body.upload-modal-open {
 	touch-action: none;
 }
 
+.image-editor__image-layer {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform-origin: center center;
+	transition: transform 0.12s ease-out;
+	will-change: transform;
+}
+
 .image-editor__image {
-	width: 100%;
-	height: 100%;
+	display: block;
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
 	object-fit: contain;
 	pointer-events: none;
 }
 
 .image-editor__crop {
 	position: absolute;
+	z-index: 2;
 	border: 2px solid #ffffff;
 	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
 	cursor: move;

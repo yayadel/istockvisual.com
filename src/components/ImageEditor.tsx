@@ -13,6 +13,14 @@ type CropRect = {
 	h: number;
 };
 
+type EditState = {
+	rotation: number;
+	fineRotation: number;
+	flipX: boolean;
+	flipY: boolean;
+	zoom: number;
+};
+
 type Props = {
 	imageUrl: string;
 	title: string;
@@ -62,8 +70,41 @@ function fitCropToAspect(crop: CropRect, ratio: number | null): CropRect {
 	return next;
 }
 
+function containSize(imgW: number, imgH: number, boxW: number, boxH: number) {
+	const imgRatio = imgW / imgH;
+	const boxRatio = boxW / boxH;
+	if (imgRatio > boxRatio) {
+		return { w: boxW, h: boxW / imgRatio };
+	}
+	return { w: boxH * imgRatio, h: boxH };
+}
+
+function drawEditedFrame(
+	ctx: CanvasRenderingContext2D,
+	img: HTMLImageElement,
+	width: number,
+	height: number,
+	state: EditState,
+) {
+	ctx.clearRect(0, 0, width, height);
+	ctx.fillStyle = '#dfe3e7';
+	ctx.fillRect(0, 0, width, height);
+
+	const fit = containSize(img.naturalWidth, img.naturalHeight, width, height);
+	const zoom = state.zoom / 100;
+	const radians = ((state.rotation + state.fineRotation) * Math.PI) / 180;
+
+	ctx.save();
+	ctx.translate(width / 2, height / 2);
+	ctx.rotate(radians);
+	ctx.scale(state.flipX ? -zoom : zoom, state.flipY ? -zoom : zoom);
+	ctx.drawImage(img, -fit.w / 2, -fit.h / 2, fit.w, fit.h);
+	ctx.restore();
+}
+
 export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 	const stageRef = useRef<HTMLDivElement>(null);
+	const imageRef = useRef<HTMLImageElement>(null);
 	const [loaded, setLoaded] = useState(false);
 	const [rotation, setRotation] = useState(0);
 	const [fineRotation, setFineRotation] = useState(0);
@@ -77,6 +118,21 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 		| { kind: 'move'; startX: number; startY: number; origin: CropRect }
 		| { kind: 'resize'; handle: string; startX: number; startY: number; origin: CropRect }
 	>(null);
+
+	const editState: EditState = useMemo(
+		() => ({ rotation, fineRotation, flipX, flipY, zoom }),
+		[rotation, fineRotation, flipX, flipY, zoom],
+	);
+
+	const previewTransform = useMemo(() => {
+		const parts = [
+			`rotate(${rotation + fineRotation}deg)`,
+			`scale(${zoom / 100})`,
+			flipX ? 'scaleX(-1)' : '',
+			flipY ? 'scaleY(-1)' : '',
+		].filter(Boolean);
+		return parts.join(' ');
+	}, [rotation, fineRotation, flipX, flipY, zoom]);
 
 	const aspectRatio = useMemo(
 		() => ASPECT_PRESETS.find((item) => item.id === aspectId)?.ratio ?? null,
@@ -190,49 +246,43 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 	}, [aspectRatio, dragging, pointerToNorm]);
 
 	const exportEditedImage = useCallback(async () => {
-		const img = new Image();
-		img.crossOrigin = 'anonymous';
-		img.src = imageUrl;
-		await img.decode();
+		const img = imageRef.current ?? new Image();
+		if (!imageRef.current) {
+			img.crossOrigin = 'anonymous';
+			img.src = imageUrl;
+			await img.decode();
+		}
 
-		const totalRotation = ((rotation + fineRotation) % 360 + 360) % 360;
-		const radians = (totalRotation * Math.PI) / 180;
-		const zoomFactor = zoom / 100;
+		const stage = stageRef.current;
+		const stageWidth = stage?.clientWidth || 960;
+		const stageHeight = stage?.clientHeight || 720;
+		const fit = containSize(img.naturalWidth, img.naturalHeight, stageWidth, stageHeight);
+		const scale = Math.max(img.naturalWidth / fit.w, img.naturalHeight / fit.h);
+		const frameWidth = Math.max(1, Math.round(stageWidth * scale));
+		const frameHeight = Math.max(1, Math.round(stageHeight * scale));
 
-		const sx = Math.round(crop.x * img.width);
-		const sy = Math.round(crop.y * img.height);
-		const sw = Math.max(1, Math.round(crop.w * img.width));
-		const sh = Math.max(1, Math.round(crop.h * img.height));
+		const frameCanvas = document.createElement('canvas');
+		frameCanvas.width = frameWidth;
+		frameCanvas.height = frameHeight;
+		const frameCtx = frameCanvas.getContext('2d');
+		if (!frameCtx) return;
 
-		const sourceCanvas = document.createElement('canvas');
-		sourceCanvas.width = sw;
-		sourceCanvas.height = sh;
-		const sourceCtx = sourceCanvas.getContext('2d');
-		if (!sourceCtx) return;
+		drawEditedFrame(frameCtx, img, frameWidth, frameHeight, editState);
 
-		sourceCtx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+		const sx = Math.round(crop.x * frameWidth);
+		const sy = Math.round(crop.y * frameHeight);
+		const sw = Math.max(1, Math.round(crop.w * frameWidth));
+		const sh = Math.max(1, Math.round(crop.h * frameHeight));
 
-		const rotated = totalRotation % 180 !== 0;
-		const outW = rotated ? sh : sw;
-		const outH = rotated ? sw : sh;
-		const canvas = document.createElement('canvas');
-		canvas.width = Math.round(outW * zoomFactor);
-		canvas.height = Math.round(outH * zoomFactor);
-		const ctx = canvas.getContext('2d');
-		if (!ctx) return;
+		const output = document.createElement('canvas');
+		output.width = sw;
+		output.height = sh;
+		const outputCtx = output.getContext('2d');
+		if (!outputCtx) return;
 
-		ctx.translate(canvas.width / 2, canvas.height / 2);
-		ctx.rotate(radians);
-		ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
-		ctx.drawImage(
-			sourceCanvas,
-			(-sw * zoomFactor) / 2,
-			(-sh * zoomFactor) / 2,
-			sw * zoomFactor,
-			sh * zoomFactor,
-		);
+		outputCtx.drawImage(frameCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-		canvas.toBlob((blob) => {
+		output.toBlob((blob) => {
 			if (!blob) return;
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
@@ -241,7 +291,7 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 			link.click();
 			URL.revokeObjectURL(url);
 		}, 'image/png');
-	}, [crop, fineRotation, flipX, flipY, imageUrl, rotation, title, zoom]);
+	}, [crop, editState, imageUrl, title]);
 
 	return (
 		<div className="image-editor">
@@ -250,10 +300,20 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 					<button className="image-editor__tool" type="button" onClick={rotate90} title="Rotate 90°">
 						↺ Rotate
 					</button>
-					<button className="image-editor__tool" type="button" onClick={toggleFlipX} title="Flip horizontal">
+					<button
+						className={`image-editor__tool${flipX ? ' is-active' : ''}`}
+						type="button"
+						onClick={toggleFlipX}
+						title="Flip horizontal"
+					>
 						⇋ Flip
 					</button>
-					<button className="image-editor__tool" type="button" onClick={toggleFlipY} title="Flip vertical">
+					<button
+						className={`image-editor__tool${flipY ? ' is-active' : ''}`}
+						type="button"
+						onClick={toggleFlipY}
+						title="Flip vertical"
+					>
 						⇅ Flip V
 					</button>
 				</div>
@@ -282,12 +342,19 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 
 			<div className="image-editor__stage-wrap">
 				<div className="image-editor__stage" ref={stageRef}>
-					<img
-						src={imageUrl}
-						alt={title}
-						className="image-editor__image"
-						onLoad={() => setLoaded(true)}
-					/>
+					<div
+						className="image-editor__image-layer"
+						style={{ transform: previewTransform }}
+					>
+						<img
+							ref={imageRef}
+							src={imageUrl}
+							alt={title}
+							className="image-editor__image"
+							crossOrigin="anonymous"
+							onLoad={() => setLoaded(true)}
+						/>
+					</div>
 					{loaded && (
 						<div
 							className="image-editor__crop"
@@ -318,8 +385,9 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 						type="range"
 						min={-45}
 						max={45}
+						step={1}
 						value={fineRotation}
-						onChange={(event) => setFineRotation(Number(event.target.value))}
+						onInput={(event) => setFineRotation(Number(event.currentTarget.value))}
 					/>
 					<span>{fineRotation}°</span>
 				</label>
@@ -329,8 +397,9 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 						type="range"
 						min={100}
 						max={200}
+						step={1}
 						value={zoom}
-						onChange={(event) => setZoom(Number(event.target.value))}
+						onInput={(event) => setZoom(Number(event.currentTarget.value))}
 					/>
 					<span>{zoom}%</span>
 				</label>
