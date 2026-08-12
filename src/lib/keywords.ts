@@ -5,8 +5,29 @@ export type KeywordRow = {
 	createdAt: string;
 };
 
-function escapeSql(value: string) {
-	return value.replace(/'/g, "''");
+export async function claimNextKeyword(db: D1Database): Promise<KeywordRow | null> {
+	const row = await db
+		.prepare(
+			`UPDATE keyword
+			 SET used = 1
+			 WHERE id = (
+				SELECT id FROM keyword WHERE used = 0 ORDER BY id ASC LIMIT 1
+			 )
+			 RETURNING id, keyword, used, createdAt`,
+		)
+		.first<KeywordRow>();
+	return row ?? null;
+}
+
+export async function releaseKeyword(db: D1Database, keyword: string): Promise<void> {
+	await db
+		.prepare(
+			`UPDATE keyword
+			 SET used = 0
+			 WHERE keyword = ? COLLATE NOCASE`,
+		)
+		.bind(keyword.trim())
+		.run();
 }
 
 export async function getNextUnusedKeyword(db: D1Database): Promise<KeywordRow | null> {
@@ -46,5 +67,3 @@ export async function getKeywordStats(db: D1Database) {
 		.first<{ total: number; unused: number; usedCount: number }>();
 	return row ?? { total: 0, unused: 0, usedCount: 0 };
 }
-
-export { escapeSql };
