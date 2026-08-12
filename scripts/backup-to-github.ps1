@@ -44,25 +44,32 @@ git remote set-url origin $authUrl | Out-Null
 
 try {
 	$status = git status --porcelain
-	if (-not $status) {
-		Write-Host "[backup] No changes to commit."
-		return
+	if ($status) {
+		git add -A
+
+		if (-not $Message) {
+			$Message = "auto backup: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+		}
+
+		git commit -m $Message | Out-Null
+		Write-Host "[backup] Committed: $Message"
+	} else {
+		Write-Host "[backup] No local changes to commit."
 	}
 
-	git add -A
-
-	if (-not $Message) {
-		$Message = "auto backup: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+	$ahead = git rev-list --count '@{u}..HEAD' 2>$null
+	if ($LASTEXITCODE -ne 0 -or -not $ahead) {
+		$ahead = git rev-list --count 'origin/main..HEAD' 2>$null
 	}
-
-	git commit -m $Message | Out-Null
-	Write-Host "[backup] Committed: $Message"
-
-	git push -u origin HEAD
-	if ($LASTEXITCODE -ne 0) {
-		Write-Error "git push failed with exit code $LASTEXITCODE"
+	if ($ahead -and [int]$ahead -gt 0) {
+		git push -u origin HEAD
+		if ($LASTEXITCODE -ne 0) {
+			Write-Error "git push failed with exit code $LASTEXITCODE"
+		}
+		Write-Host "[backup] Pushed to origin."
+	} else {
+		Write-Host "[backup] Already up to date on origin."
 	}
-	Write-Host "[backup] Pushed to origin."
 }
 finally {
 	git remote set-url origin "https://github.com/yayadel/istockvisual.com.git" | Out-Null
