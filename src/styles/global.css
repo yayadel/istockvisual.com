@@ -116,12 +116,24 @@ textarea {
 	padding-block: 1.5rem 4rem;
 }
 
+.site-main:has(.hero) {
+	padding-top: 0;
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+}
+
+.site-main:has(.hero) > :not(.hero) {
+	width: min(100% - 2rem, var(--max));
+	margin-inline: auto;
+}
+
 .site-header {
 	position: sticky;
 	top: 0;
 	z-index: 40;
 	background: #0b0b0b;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	border-bottom: 0;
 	color: #ffffff;
 }
 
