@@ -1,8 +1,16 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
-const MAX_BYTES = 8 * 1024 * 1024;
-const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_BYTES = 50 * 1024 * 1024;
+const ALLOWED = new Set([
+	'image/jpeg',
+	'image/png',
+	'image/webp',
+	'image/gif',
+	'video/mp4',
+	'video/quicktime',
+	'video/webm',
+]);
 
 function json(data: unknown, status = 200) {
 	return new Response(JSON.stringify(data), {
@@ -16,6 +24,9 @@ function safeExt(type: string, name: string) {
 	if (type === 'image/png') return 'png';
 	if (type === 'image/webp') return 'webp';
 	if (type === 'image/gif') return 'gif';
+	if (type === 'video/mp4') return 'mp4';
+	if (type === 'video/quicktime') return 'mov';
+	if (type === 'video/webm') return 'webm';
 	const fromName = name.split('.').pop()?.toLowerCase();
 	return fromName && fromName.length <= 5 ? fromName : 'bin';
 }

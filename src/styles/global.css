@@ -412,6 +412,138 @@ textarea {
 	background: #f4f4f4;
 }
 
+body.upload-modal-open {
+	overflow: hidden;
+}
+
+.upload-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 80;
+	display: grid;
+	place-items: center;
+	padding: 1rem;
+}
+
+.upload-modal[hidden] {
+	display: none !important;
+}
+
+.upload-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(10, 12, 14, 0.55);
+	backdrop-filter: blur(2px);
+}
+
+.upload-modal__dialog {
+	position: relative;
+	z-index: 1;
+	width: min(100%, 560px);
+	padding: 1.75rem 1.5rem 1.25rem;
+	background: #ffffff;
+	border-radius: 4px;
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+	color: #1a1a1a;
+	text-align: center;
+}
+
+.upload-modal__close {
+	position: absolute;
+	top: 0.55rem;
+	right: 0.7rem;
+	width: 2rem;
+	height: 2rem;
+	border: 0;
+	background: transparent;
+	font-size: 1.5rem;
+	line-height: 1;
+	color: #666;
+	cursor: pointer;
+}
+
+.upload-modal__close:hover {
+	color: #111;
+}
+
+.upload-modal__title {
+	margin: 0 0 1.15rem;
+	font-family: var(--font-body);
+	font-size: 1.2rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.upload-modal__drop {
+	display: grid;
+	place-items: center;
+	gap: 0.55rem;
+	min-height: 260px;
+	padding: 1.5rem 1rem;
+	border: 1.5px dashed #b8c0c7;
+	border-radius: 4px;
+	background: #f3f5f7;
+	transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.upload-modal__drop.is-dragover {
+	border-color: #5a8500;
+	background: #eef5e2;
+}
+
+.upload-modal__drop.is-uploading {
+	opacity: 0.75;
+}
+
+.upload-modal__hint {
+	margin: 0;
+	color: #3d4a54;
+	font-size: 0.98rem;
+}
+
+.upload-modal__or {
+	margin: 0.15rem 0;
+	color: #7a8690;
+	font-size: 0.9rem;
+}
+
+.upload-modal__choose {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 8.5rem;
+	padding: 0.55rem 1rem;
+	border: 1px solid #c5 recd3;
+	border-radius: 2px;
+	background: #ffffff;
+	color: #1a1a1a;
+	font: inherit;
+	font-size: 0.92rem;
+	cursor: pointer;
+}
+
+.upload-modal__choose:hover {
+	border-color: #9aa5ae;
+	background: #fafbfc;
+}
+
+.upload-modal__choose:disabled {
+	opacity: 0.6;
+	cursor: wait;
+}
+
+.upload-modal__status {
+	margin: 0.35rem 0 0;
+	color: #5a8500;
+	font-size: 0.88rem;
+}
+
+.upload-modal__formats {
+	margin: 0.9rem 0 0;
+	color: #7a8690;
+	font-size: 0.86rem;
+}
+
 .upload-result {
 	display: grid;
 	gap: 1rem;
