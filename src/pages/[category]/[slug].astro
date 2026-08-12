@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ImageEditor from '../../components/ImageEditor';
+import AssetPreviewPanel from '../../components/AssetPreviewPanel';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { getAssetBySlug } from '../../lib/sanity';
 
@@ -25,10 +25,10 @@ const canDownload = Boolean(user) && !needsPro;
 
 <BaseLayout title={asset.title} description={asset.description || `${asset.title} on iStockVisual`}>
 	<article class="detail">
-		<div class="detail__preview detail__preview--editor">
+		<div class="detail__preview">
 			{
 				asset.previewUrl ? (
-					<ImageEditor client:load imageUrl={asset.previewUrl} title={asset.title} />
+					<AssetPreviewPanel client:load imageUrl={asset.previewUrl} title={asset.title} />
 				) : (
 					<div class="empty">No preview available</div>
 				)
@@ -69,13 +69,9 @@ const canDownload = Boolean(user) && !needsPro;
 				<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
 			</div>
 
-			<p class="hint" style="margin-top:1rem">
-				Use crop, rotate, and flip tools on the preview, then download your edited version.
-			</p>
-
 			{
 				!needsLogin && canDownload && !asset.r2ObjectKey && (
-					<p class="hint">
+					<p class="hint" style="margin-top:1rem">
 						Download API is ready, but this asset has no R2 object key yet.
 					</p>
 				)

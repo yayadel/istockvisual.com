@@ -856,15 +856,41 @@ body.upload-modal-open {
 	background: var(--surface);
 }
 
-.detail__preview--editor {
-	overflow: visible;
-	background: #f3f5f7;
-	padding: 0.75rem;
-}
-
 .detail__preview img {
 	width: 100%;
 	height: auto;
+}
+
+.asset-preview {
+	display: grid;
+	gap: 0;
+}
+
+.asset-preview__image-wrap {
+	background: var(--surface);
+}
+
+.asset-preview__image {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.asset-preview__footer {
+	display: flex;
+	justify-content: center;
+	padding: 0.85rem 1rem;
+	border-top: 1px solid var(--line);
+	background: var(--panel-bg);
+}
+
+.asset-preview__edit {
+	min-width: 8.5rem;
+}
+
+.asset-preview--editing {
+	padding: 0.75rem;
+	background: #f3f5f7;
 }
 
 .image-editor {

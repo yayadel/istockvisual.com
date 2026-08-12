@@ -83,6 +83,16 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 		[aspectId],
 	);
 
+	const resetEdits = useCallback(() => {
+		setRotation(0);
+		setFineRotation(0);
+		setFlipX(false);
+		setFlipY(false);
+		setZoom(100);
+		setAspectId('free');
+		setCrop(DEFAULT_CROP);
+	}, []);
+
 	const handleCancel = useCallback(() => {
 		resetEdits();
 		onCancel?.();
@@ -248,7 +258,7 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 					</button>
 				</div>
 				<div className="image-editor__actions">
-					<button className="btn btn--ghost" type="button" onClick={resetEdits}>
+					<button className="btn btn--ghost" type="button" onClick={handleCancel}>
 						Cancel
 					</button>
 					<button className="btn btn--primary" type="button" onClick={exportEditedImage}>
