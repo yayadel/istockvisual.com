@@ -16,6 +16,7 @@ type CropRect = {
 type Props = {
 	imageUrl: string;
 	title: string;
+	onCancel?: () => void;
 };
 
 const ASPECT_PRESETS: AspectPreset[] = [
@@ -61,7 +62,7 @@ function fitCropToAspect(crop: CropRect, ratio: number | null): CropRect {
 	return next;
 }
 
-export default function ImageEditor({ imageUrl, title }: Props) {
+export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 	const stageRef = useRef<HTMLDivElement>(null);
 	const [loaded, setLoaded] = useState(false);
 	const [rotation, setRotation] = useState(0);
@@ -82,15 +83,10 @@ export default function ImageEditor({ imageUrl, title }: Props) {
 		[aspectId],
 	);
 
-	const resetEdits = useCallback(() => {
-		setRotation(0);
-		setFineRotation(0);
-		setFlipX(false);
-		setFlipY(false);
-		setZoom(100);
-		setAspectId('free');
-		setCrop(DEFAULT_CROP);
-	}, []);
+	const handleCancel = useCallback(() => {
+		resetEdits();
+		onCancel?.();
+	}, [onCancel, resetEdits]);
 
 	const applyAspect = useCallback((id: string) => {
 		const preset = ASPECT_PRESETS.find((item) => item.id === id);
