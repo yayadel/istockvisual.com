@@ -88,72 +88,6 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 	</button>
 </form>
 
-{
-	variant === 'hero' && (
-		<div class="upload-modal" hidden data-upload-modal>
-			<div class="upload-modal__backdrop" data-upload-close></div>
-			<div
-				class="upload-modal__dialog"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="upload-modal-title"
-			>
-				<button class="upload-modal__close" type="button" aria-label="Close" data-upload-close>
-					×
-				</button>
-				<h2 id="upload-modal-title" class="upload-modal__title">
-					Search by image or video
-				</h2>
-
-				<div class="upload-modal__drop" data-upload-drop>
-					<div class="upload-modal__icon" aria-hidden="true">
-						<svg viewBox="0 0 72 56" width="72" height="56" fill="none">
-							<rect x="8" y="10" width="34" height="28" rx="3" fill="#d7dde3"></rect>
-							<rect
-								x="28"
-								y="18"
-								width="34"
-								height="28"
-								rx="3"
-								stroke="#7b8791"
-								stroke-width="2"
-								stroke-dasharray="4 3"
-								fill="none"></rect>
-							<path
-								d="M46 8c8 2 14 9 14 18"
-								stroke="#7b8791"
-								stroke-width="2"
-								stroke-linecap="round"></path>
-							<path
-								d="M55 8h5v5"
-								stroke="#7b8791"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"></path>
-						</svg>
-					</div>
-					<p class="upload-modal__hint">Drag and drop your file anywhere here</p>
-					<p class="upload-modal__or">or</p>
-					<button class="upload-modal__choose" type="button" data-upload-choose>
-						Choose a file
-					</button>
-					<p class="upload-modal__status" data-upload-status hidden></p>
-				</div>
-
-				<p class="upload-modal__formats">Accepted file formats: JPG, PNG, MP4, MOV, WebM</p>
-
-				<input
-					class="upload-modal__file"
-					type="file"
-					accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
-					hidden
-					data-upload-input
-				/>
-			</div>
-		</div>
-	)
-}
-
 <script is:inline>
 	(function () {
 		if (window.__istockSearchUiBound) return;
@@ -190,7 +124,7 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 			modal.hidden = true;
 			document.body.classList.remove('upload-modal-open');
 			var drop = modal.querySelector('[data-upload-drop]');
-			if (drop) drop.classList.remove('is-dragover');
+			if (drop) drop.classList.remove('is-dragover', 'is-uploading');
 		}
 
 		async function uploadFile(file) {
