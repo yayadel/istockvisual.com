@@ -57,21 +57,11 @@ try {
 		Write-Host "[backup] No local changes to commit."
 	}
 
-	$ahead = 0
-	$count = git rev-list --count 'origin/main..HEAD' 2>$null
-	if ($LASTEXITCODE -eq 0 -and $count) {
-		$ahead = [int]$count
+	git push -u origin HEAD 2>&1 | Out-Host
+	if ($LASTEXITCODE -ne 0) {
+		Write-Error "git push failed with exit code $LASTEXITCODE"
 	}
-
-	if ($ahead -gt 0) {
-		git push -u origin HEAD
-		if ($LASTEXITCODE -ne 0) {
-			Write-Error "git push failed with exit code $LASTEXITCODE"
-		}
-		Write-Host "[backup] Pushed to origin."
-	} else {
-		Write-Host "[backup] Already up to date on origin."
-	}
+	Write-Host "[backup] Pushed to origin."
 }
 finally {
 	git remote set-url origin "https://github.com/yayadel/istockvisual.com.git" | Out-Null
