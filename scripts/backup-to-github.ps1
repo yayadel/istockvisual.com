@@ -57,11 +57,13 @@ try {
 		Write-Host "[backup] No local changes to commit."
 	}
 
-	$ahead = git rev-list --count '@{u}..HEAD' 2>$null
-	if ($LASTEXITCODE -ne 0 -or -not $ahead) {
-		$ahead = git rev-list --count 'origin/main..HEAD' 2>$null
+	$ahead = 0
+	$count = git rev-list --count 'origin/main..HEAD' 2>$null
+	if ($LASTEXITCODE -eq 0 -and $count) {
+		$ahead = [int]$count
 	}
-	if ($ahead -and [int]$ahead -gt 0) {
+
+	if ($ahead -gt 0) {
 		git push -u origin HEAD
 		if ($LASTEXITCODE -ne 0) {
 			Write-Error "git push failed with exit code $LASTEXITCODE"
