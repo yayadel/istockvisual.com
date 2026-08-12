@@ -436,8 +436,8 @@ textarea {
 	display: grid;
 	align-items: center;
 	overflow: hidden;
-	margin: 0 calc(50% - 50vw);
-	width: 100vw;
+	margin: 0;
+	width: 100%;
 	padding: 0;
 }
 
