@@ -1,0 +1,35 @@
+Generate an image generation prompt based on the provided topic keyword, which I will use to create the image.
+
+Along with the prompt, output the following structured details:
+
+Image Creation Description
+
+Asset Functionality & Usage Tips
+
+Color Palette (including HEX color codes)
+
+Tags
+
+Related Search Queries
+
+Depicted Objects/Elements (e.g., cup, male, cat, etc.)
+
+Image Page Title
+
+Page Short Description
+
+Requirements:
+
+No Copyrighted Content: The image prompt must avoid any copyrighted terms, including names of famous people, brand names, or titles of published works.
+
+Keyword Integration: The Image Page Title, Image Creation Description, and Page Short Description MUST explicitly contain the original topic keyword.
+
+Avoid "AI Look": Ensure the aesthetic avoids looking synthetic, over-processed, or typical "AI-generated."
+
+Style Selection: Choose the most suitable medium (Photograph, Illustration, or 3D Graphic) based on the topic. The asset is intended for my stock asset website for users to download and remix/recreate, so it must be practical and high quality.
+
+Anatomy & Physics: Avoid unnatural proportions, distorted limbs/hands, or physical errors common in AI generation.
+
+Language: All output must be strictly in English.
+
+Topic Keyword: [Insert topic keyword here]
