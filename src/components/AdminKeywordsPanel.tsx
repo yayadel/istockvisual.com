@@ -72,6 +72,24 @@ export default function AdminKeywordsPanel() {
 		setSearch(q.trim());
 	}
 
+	async function onRelease(keywordId: number) {
+		setPending(true);
+		setError(null);
+		try {
+			const res = await fetch('/api/admin/keywords', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ action: 'release', keywordId }),
+			});
+			const json = (await res.json()) as { error?: string };
+			if (!res.ok) throw new Error(json.error || 'Release failed');
+			await load();
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'Release failed');
+			setPending(false);
+		}
+	}
+
 	return (
 		<div className="admin-panel">
 			<form className="admin-toolbar" onSubmit={onSearch}>
@@ -117,6 +135,7 @@ export default function AdminKeywordsPanel() {
 									<th>Used at</th>
 									<th>Content</th>
 									<th>Primary asset</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -151,6 +170,18 @@ export default function AdminKeywordsPanel() {
 											) : (
 												'—'
 											)}
+										</td>
+										<td>
+											{row.used && row.contentCount === 0 ? (
+												<button
+													className="btn btn--ghost"
+													type="button"
+													disabled={pending}
+													onClick={() => void onRelease(row.id)}
+												>
+													Release
+												</button>
+											) : null}
 										</td>
 									</tr>
 								))}
