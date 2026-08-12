@@ -125,13 +125,10 @@ export default function ImageEditor({ imageUrl, title, onCancel }: Props) {
 	);
 
 	const previewTransform = useMemo(() => {
-		const parts = [
-			`rotate(${rotation + fineRotation}deg)`,
-			`scale(${zoom / 100})`,
-			flipX ? 'scaleX(-1)' : '',
-			flipY ? 'scaleY(-1)' : '',
-		].filter(Boolean);
-		return parts.join(' ');
+		const z = zoom / 100;
+		const sx = flipX ? -z : z;
+		const sy = flipY ? -z : z;
+		return `rotate(${rotation + fineRotation}deg) scale(${sx}, ${sy})`;
 	}, [rotation, fineRotation, flipX, flipY, zoom]);
 
 	const aspectRatio = useMemo(
