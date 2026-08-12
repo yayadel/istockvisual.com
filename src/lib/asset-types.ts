@@ -20,6 +20,7 @@ export type GeneratedAssetMeta = {
 
 export type GeneratedAssetRecord = GeneratedAssetMeta & {
 	id: string;
+	keywordId: number | null;
 	keyword: string;
 	slug: string;
 	category: CategorySlug;
@@ -53,6 +54,7 @@ export type AssetDetail = {
 	isPremium?: boolean;
 	publishedAt?: string;
 	source: 'sanity' | 'generated' | 'demo';
+	keywordId?: number;
 	keyword?: string;
 	imagePrompt?: string;
 	creationDescription?: string;
@@ -82,6 +84,104 @@ export function slugifyTitle(title: string): string {
 		.slice(0, 80);
 }
 
+export function randomSlugCode(length = 6): string {
+	const max = 10 ** length;
+	const value = crypto.getRandomValues(new Uint32Array(1))[0] % max;
+	return String(value).padStart(length, '0');
+}
+
+/** Short words kept lowercase in title case (unless first/last). */
+const TITLE_SMALL_WORDS = new Set([
+	'a',
+	'an',
+	'the',
+	'and',
+	'but',
+	'or',
+	'for',
+	'nor',
+	'on',
+	'at',
+	'to',
+	'from',
+	'by',
+	'of',
+	'in',
+	'with',
+	'as',
+	'vs',
+	'via',
+]);
+
+/** Abbreviations/acronyms that must render uppercase in titles and body copy. */
+const TITLE_ACRONYMS = new Set([
+	'pdf',
+	'uae',
+	'ky',
+	'diy',
+	'usa',
+	'uk',
+	'ai',
+	'ui',
+	'ux',
+	'api',
+	'faq',
+	'seo',
+	'gps',
+	'led',
+	'lcd',
+	'hdmi',
+	'usb',
+	'html',
+	'css',
+	'js',
+	'tv',
+	'hd',
+	'4k',
+	'8k',
+	'2d',
+	'3d',
+	'vr',
+	'ar',
+	'iot',
+	'ev',
+	'suv',
+]);
+
+function formatTitleToken(token: string, forceCapitalize: boolean): string {
+	if (!token) return token;
+	const lower = token.toLowerCase();
+	if (TITLE_ACRONYMS.has(lower)) return lower.toUpperCase();
+	if (!forceCapitalize && TITLE_SMALL_WORDS.has(lower)) return lower;
+	// Single-letter designators (e.g. Z in Z Flashing), not articles like "a"
+	if (/^[a-z]$/i.test(token) && !TITLE_SMALL_WORDS.has(lower)) return token.toUpperCase();
+	return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+/** Standard English title case with acronym awareness (PDF, UAE, KY, …). */
+export function formatAssetTitle(title: string): string {
+	const words = title.trim().split(/\s+/).filter(Boolean);
+	if (words.length === 0) return '';
+
+	return words
+		.map((word, index) => {
+			const force = index === 0 || index === words.length - 1;
+			return word
+				.split('-')
+				.map((part) => formatTitleToken(part, force))
+				.join('-');
+		})
+		.join(' ');
+}
+
+/** Uppercase known acronyms inside sentence-case copy without changing other casing. */
+export function formatAcronymsInText(text: string): string {
+	return text.replace(/\b([A-Za-z0-9]+)\b/g, (word) => {
+		const lower = word.toLowerCase();
+		return TITLE_ACRONYMS.has(lower) ? lower.toUpperCase() : word;
+	});
+}
+
 export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAssetMeta {
 	const jsonText = extractJson(raw);
 	let parsed: Record<string, unknown>;
@@ -96,17 +196,21 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 		throw new Error('Missing imagePrompt in LLM response');
 	}
 
-	const imagePageTitle = readString(parsed, ['imagePageTitle', 'Image Page Title']) || keyword;
-	const pageShortDescription =
+	const imagePageTitle = formatAssetTitle(
+		readString(parsed, ['imagePageTitle', 'Image Page Title']) || keyword,
+	);
+	const pageShortDescription = formatAcronymsInText(
 		readString(parsed, ['pageShortDescription', 'Page Short Description']) ||
-		readString(parsed, ['imageCreationDescription']) ||
-		`${keyword} stock asset`;
+			readString(parsed, ['imageCreationDescription']) ||
+			`${keyword} stock asset`,
+	);
 
 	return {
 		imagePrompt,
-		imageCreationDescription:
+		imageCreationDescription: formatAcronymsInText(
 			readString(parsed, ['imageCreationDescription', 'Image Creation Description']) ||
-			imagePrompt,
+				imagePrompt,
+		),
 		assetUsageTips:
 			readString(parsed, ['assetUsageTips', 'Asset Functionality & Usage Tips']) || '',
 		colorPalette: normalizePalette(parsed.colorPalette),

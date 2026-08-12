@@ -14,7 +14,8 @@ function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[]
 function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 	return {
 		id: String(row.id),
-		keyword: String(row.keyword),
+		keywordId: row.keywordId == null ? null : Number(row.keywordId),
+		keyword: String(row.keyword ?? ''),
 		slug: String(row.slug),
 		category: row.category as CategorySlug,
 		title: String(row.title),
@@ -57,6 +58,7 @@ export function generatedToDetail(record: GeneratedAssetRecord, origin: string):
 		isPremium: record.isPremium,
 		publishedAt: record.publishedAt,
 		source: 'generated',
+		keywordId: record.keywordId ?? undefined,
 		keyword: record.keyword,
 		imagePrompt: record.imagePrompt,
 		creationDescription: record.imageCreationDescription,
@@ -72,6 +74,7 @@ export async function insertGeneratedAsset(
 	db: D1Database,
 	input: {
 		id: string;
+		keywordId: number;
 		keyword: string;
 		slug: string;
 		category: CategorySlug;
@@ -97,14 +100,15 @@ export async function insertGeneratedAsset(
 	await db
 		.prepare(
 			`INSERT INTO generated_asset (
-				id, keyword, slug, category, title, shortDescription, description,
+				id, keywordId, keyword, slug, category, title, shortDescription, description,
 				imagePrompt, creationDescription, usageTips, colorPalette, tags,
 				relatedQueries, depictedElements, medium, r2ObjectKey, fileType,
 				width, height, license, isPremium, publishedAt
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		)
 		.bind(
 			input.id,
+			input.keywordId,
 			input.keyword,
 			input.slug,
 			input.category,
@@ -138,6 +142,27 @@ export async function insertGeneratedAsset(
 		throw new Error('Failed to read inserted generated asset');
 	}
 	return rowToRecord(row);
+}
+
+export async function listGeneratedAssetsByKeywordId(
+	db: D1Database,
+	keywordId: number,
+): Promise<GeneratedAssetRecord[]> {
+	const result = await db
+		.prepare(
+			`SELECT ga.*
+			 FROM generated_asset ga
+			 INNER JOIN keyword_content kc
+				ON kc.contentId = ga.id
+				AND kc.contentType = 'generated_asset'
+				AND kc.status = 'active'
+			 WHERE kc.keywordId = ?
+			 ORDER BY ga.publishedAt DESC`,
+		)
+		.bind(keywordId)
+		.all<Record<string, unknown>>();
+
+	return (result.results ?? []).map(rowToRecord);
 }
 
 export async function getGeneratedAssetBySlug(

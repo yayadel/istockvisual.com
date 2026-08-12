@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminLayout from '../../components/AdminLayout.astro';
+import AdminKeywordsPanel from '../../components/AdminKeywordsPanel';
+import { isAdminUser } from '../../lib/admin';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login?next=/admin/keywords');
+if (!isAdminUser(user, env)) return Astro.redirect('/account');
+---
+
+<BaseLayout title="Admin · Keywords" description="Manage imported keywords and linked content">
+	<AdminLayout
+		title="Keywords"
+		description="Browse all imported topics, usage status, and linked generated assets."
+		active="keywords"
+	>
+		<AdminKeywordsPanel client:load />
+	</AdminLayout>
+</BaseLayout>

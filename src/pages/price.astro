@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Pricing" description="iStockVisual membership and single-download pricing.">
+	<section class="price-page">
+		<div class="section-head">
+			<div>
+				<p class="asset-card__meta">Pricing</p>
+				<h1>Plans &amp; downloads</h1>
+				<p>Buy a single image or unlock unlimited full-size downloads with Pro.</p>
+			</div>
+		</div>
+
+		<div class="price-grid">
+			<article class="price-card">
+				<h2>Single download</h2>
+				<p class="price-card__amount">$0.99</p>
+				<p>One full-size file (1K–8K) for this asset. No membership required after purchase.</p>
+				<a class="btn btn--ghost" href="/signup">Continue</a>
+			</article>
+
+			<article class="price-card price-card--pro">
+				<p class="price-card__badge">Recommended</p>
+				<h2>Pro membership</h2>
+				<p class="price-card__amount">Coming soon</p>
+				<p>Unlimited full-size downloads across the library, plus Pro assets.</p>
+				<a class="btn btn--primary" href="/signup">Get Pro</a>
+			</article>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.price-page {
+		width: min(100% - 2rem, 920px);
+		margin-inline: auto;
+	}
+
+	.price-grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+		margin-top: 0.5rem;
+	}
+
+	.price-card {
+		padding: 1.35rem 1.25rem;
+		border: 1px solid var(--line);
+		background: var(--panel-bg, #fff);
+	}
+
+	.price-card--pro {
+		border-color: #d4a017;
+	}
+
+	.price-card__badge {
+		margin: 0 0 0.55rem;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #d4a017;
+	}
+
+	.price-card h2 {
+		margin: 0;
+		font-family: var(--font-body);
+		font-size: 1.05rem;
+	}
+
+	.price-card__amount {
+		margin: 0.55rem 0 0.7rem;
+		font-size: 1.85rem;
+		font-weight: 700;
+		letter-spacing: -0.03em;
+	}
+
+	.price-card p {
+		margin: 0 0 1.1rem;
+		color: var(--text-muted);
+		line-height: 1.55;
+		font-size: 0.92rem;
+	}
+
+	.price-card .btn {
+		width: 100%;
+	}
+</style>

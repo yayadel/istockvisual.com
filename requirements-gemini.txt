@@ -1,0 +1,4 @@
+google-genai>=1.60.0
+pydantic>=2.0
+cffi>=1.16
+cryptography>=42.0

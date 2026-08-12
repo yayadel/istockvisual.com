@@ -23,8 +23,16 @@ export default function AssetPreviewPanel({ imageUrl, title }: Props) {
 
 	return (
 		<div className="asset-preview">
-			<div className="asset-preview__image-wrap">
-				<img src={imageUrl} alt={title} className="asset-preview__image" />
+			<div
+				className="asset-preview__image-wrap wm-protected wm-protected--lock"
+				onContextMenu={(event) => event.preventDefault()}
+			>
+				<img
+					src={imageUrl}
+					alt={title}
+					className="asset-preview__image"
+					draggable={false}
+				/>
 			</div>
 			<div className="asset-preview__footer">
 				<button className="btn btn--ghost asset-preview__edit" type="button" onClick={() => setEditing(true)}>

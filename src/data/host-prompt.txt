@@ -22,7 +22,11 @@ Requirements:
 
 No Copyrighted Content: The image prompt must avoid any copyrighted terms, including names of famous people, brand names, or titles of published works.
 
-Keyword Integration: The Image Page Title, Image Creation Description, and Page Short Description MUST explicitly contain the original topic keyword.
+Keyword Integration: The Image Page Title, Image Creation Description, and Page Short Description MUST explicitly contain the original topic keyword (all keyword words must appear; capitalization may follow the rules below).
+
+Title Capitalization: Image Page Title MUST use standard English title case (capitalize major words; keep short prepositions/articles lowercase unless first or last — e.g. a, an, the, and, or, for, of, in, on, at, to, by, with). Distinguish abbreviations and acronyms with correct uppercase (PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K, etc.). Single-letter designators are uppercase (Z in Z Flashing). Example: "Orbital Quenching PDF Process in a Metallurgy Lab" — never "Orbital quenching pdf process…".
+
+Sentence Capitalization: Image Creation Description and Page Short Description use normal sentence case, but still capitalize proper nouns and acronyms correctly (PDF, UAE, Colorado, Kentucky, etc.).
 
 Avoid "AI Look": Ensure the aesthetic avoids looking synthetic, over-processed, or typical "AI-generated."
 

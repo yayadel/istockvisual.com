@@ -5,9 +5,10 @@ type Mode = 'login' | 'signup';
 
 type Props = {
 	mode: Mode;
+	redirectTo?: string;
 };
 
-export default function AuthForm({ mode }: Props) {
+export default function AuthForm({ mode, redirectTo = '/account' }: Props) {
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -41,7 +42,7 @@ export default function AuthForm({ mode }: Props) {
 				}
 			}
 
-			window.location.href = '/account';
+			window.location.href = redirectTo.startsWith('/') ? redirectTo : '/account';
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Unexpected error');
 		} finally {

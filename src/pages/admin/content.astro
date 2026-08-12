@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminLayout from '../../components/AdminLayout.astro';
+import AdminContentPanel from '../../components/AdminContentPanel';
+import { isAdminUser } from '../../lib/admin';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login?next=/admin/content');
+if (!isAdminUser(user, env)) return Astro.redirect('/account');
+---
+
+<BaseLayout title="Admin · Content" description="Manage generated assets">
+	<AdminLayout
+		title="Generated content"
+		description="All assets created from the keyword pipeline."
+		active="content"
+	>
+		<AdminContentPanel client:load />
+	</AdminLayout>
+</BaseLayout>

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AssetGrid from '../../components/AssetGrid.astro';
+import { CATEGORIES, isCategorySlug } from '../../config/categories';
+import { env } from 'cloudflare:workers';
+import {
+	filterAssetsBySearch,
+	listAllAssets,
+} from '../../lib/generate-asset';
+import { fromPathSlug } from '../../lib/paths';
+
+const raw = Astro.params.q || '';
+const q = fromPathSlug(decodeURIComponent(raw));
+const categoryParam = Astro.url.searchParams.get('category') || 'all';
+
+const pools = await listAllAssets(env.DB, Astro.url.origin, 400);
+const assets = filterAssetsBySearch(
+	pools,
+	q,
+	isCategorySlug(categoryParam) ? categoryParam : 'all',
+);
+
+const categoryLabel = isCategorySlug(categoryParam)
+	? CATEGORIES.find((c) => c.slug === categoryParam)?.label
+	: 'All media';
+---
+
+<BaseLayout title={q ? `Search: ${q}` : 'Search'} description="Search photos, illustrations, vectors, and 3D assets.">
+	<div class="section-head">
+		<div>
+			<p class="asset-card__meta">Search</p>
+			<h1>{q ? q : 'Search'}</h1>
+			<p>
+				{
+					q
+						? `${assets.length} result${assets.length === 1 ? '' : 's'} for “${q}” in ${categoryLabel}.`
+						: `Browse ${categoryLabel?.toLowerCase()} or enter a keyword above.`
+				}
+			</p>
+		</div>
+	</div>
+
+	<AssetGrid assets={assets} emptyMessage="No assets matched your search." />
+</BaseLayout>

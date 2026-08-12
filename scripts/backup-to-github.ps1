@@ -46,12 +46,26 @@ try {
 	$status = git status --porcelain
 	if ($status) {
 		git add -A
+		# Drop empty accidental notepad files if present
+		Get-ChildItem -File -Filter "*.txt" | Where-Object { $_.Length -eq 0 -and $_.Name -match 'Text Document|新建' } | ForEach-Object {
+			git reset HEAD -- $_.Name 2>$null | Out-Null
+			Remove-Item -Force $_.FullName -ErrorAction SilentlyContinue
+		}
 
 		if (-not $Message) {
 			$Message = "auto backup: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 		}
 
-		git commit -m $Message | Out-Null
+		# Avoid requiring git config user.name/email (do not write git config)
+		$env:GIT_AUTHOR_NAME = if ($env:GIT_AUTHOR_NAME) { $env:GIT_AUTHOR_NAME } else { "yayadel" }
+		$env:GIT_AUTHOR_EMAIL = if ($env:GIT_AUTHOR_EMAIL) { $env:GIT_AUTHOR_EMAIL } else { "yayadel@users.noreply.github.com" }
+		$env:GIT_COMMITTER_NAME = $env:GIT_AUTHOR_NAME
+		$env:GIT_COMMITTER_EMAIL = $env:GIT_AUTHOR_EMAIL
+
+		git commit -m $Message
+		if ($LASTEXITCODE -ne 0) {
+			Write-Error "git commit failed with exit code $LASTEXITCODE"
+		}
 		Write-Host "[backup] Committed: $Message"
 	} else {
 		Write-Host "[backup] No local changes to commit."

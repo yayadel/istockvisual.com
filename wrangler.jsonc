@@ -24,8 +24,5 @@
 			"binding": "MEDIA",
 			"bucket_name": "istockvisual-media"
 		}
-	],
-	"ai": {
-		"binding": "AI"
-	}
+	]
 }

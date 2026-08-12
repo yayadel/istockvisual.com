@@ -1,5 +1,6 @@
 ---
 import { CATEGORIES } from '../config/categories';
+import { fromPathSlug } from '../lib/paths';
 
 interface Props {
 	variant?: 'hero' | 'bar';
@@ -11,7 +12,12 @@ const {
 	placeholder = 'Try “coastal light”, “geometry”, or a color mood…',
 } = Astro.props;
 
-const q = Astro.url.searchParams.get('q') ?? '';
+const path = Astro.url.pathname;
+const pathQuery =
+	path.startsWith('/s/') && path.length > 3
+		? fromPathSlug(decodeURIComponent(path.slice(3).split('/')[0] || ''))
+		: '';
+const q = pathQuery || Astro.url.searchParams.get('q') || '';
 const selected = Astro.url.searchParams.get('category') ?? 'all';
 
 const options = [
@@ -22,7 +28,7 @@ const options = [
 const selectedLabel = options.find((option) => option.value === selected)?.label ?? 'All media';
 ---
 
-<form class:list={['search-bar', `search-bar--${variant}`]} action="/search" method="get" role="search">
+<form class:list={['search-bar', `search-bar--${variant}`]} action="/s/" method="get" role="search">
 	<input type="hidden" name="category" value={selected} data-category-input />
 
 	<div class="search-bar__filter" data-category-dropdown>
@@ -172,7 +178,7 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 					name: data.filename || file.name,
 					stored: data.stored ? '1' : '0',
 				});
-				window.location.href = '/search?' + params.toString();
+				window.location.href = '/s/?' + params.toString();
 			} catch (err) {
 				if (status) {
 					status.hidden = false;
@@ -184,6 +190,23 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				if (drop) drop.classList.remove('is-uploading');
 			}
 		}
+
+		document.addEventListener('submit', function (event) {
+			var form = event.target;
+			if (!(form instanceof HTMLFormElement) || !form.classList.contains('search-bar')) return;
+			event.preventDefault();
+			var input = form.querySelector('.search-bar__input');
+			var hidden = form.querySelector('[data-category-input]');
+			var raw = ((input && input.value) || '').trim().toLowerCase();
+			var slug = raw
+				.replace(/[^\p{L}\p{N}]+/gu, '-')
+				.replace(/^-+|-+$/g, '')
+				.slice(0, 96);
+			var cat = (hidden && hidden.value) || 'all';
+			var url = slug ? '/s/' + encodeURIComponent(slug) : '/s/';
+			if (cat && cat !== 'all') url += '?category=' + encodeURIComponent(cat);
+			window.location.href = url;
+		});
 
 		document.addEventListener('click', function (event) {
 			var target = event.target;

@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminLayout from '../../components/AdminLayout.astro';
+import AdminDashboardPanel from '../../components/AdminDashboardPanel';
+import { isAdminUser } from '../../lib/admin';
+import { env } from 'cloudflare:workers';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login?next=/admin');
+if (!isAdminUser(user, env)) {
+	return Astro.redirect('/account');
+}
+
+const initialStatus = Astro.url.searchParams.get('status') ?? '';
+---
+
+<BaseLayout title="Admin" description="Content management dashboard">
+	<AdminLayout
+		title="Dashboard"
+		description="Overview of imported keywords and generated assets."
+		active="dashboard"
+	>
+		<AdminDashboardPanel client:load />
+		<div class="admin-quick-links">
+			<a class="btn btn--primary" href="/admin/keywords">Browse keywords</a>
+			<a class="btn btn--ghost" href="/admin/content">Browse generated content</a>
+			<a class="btn btn--ghost" href="/tools/generate">Generate asset</a>
+		</div>
+	</AdminLayout>
+</BaseLayout>

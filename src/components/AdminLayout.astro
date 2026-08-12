@@ -1,0 +1,28 @@
+---
+interface Props {
+	title: string;
+	description?: string;
+	active?: 'dashboard' | 'keywords' | 'content';
+}
+
+const { title, description, active = 'dashboard' } = Astro.props;
+---
+
+<div class="admin-shell">
+	<aside class="admin-nav">
+		<p class="admin-nav__label">Admin</p>
+		<a href="/admin" aria-current={active === 'dashboard' ? 'page' : undefined}>Dashboard</a>
+		<a href="/admin/keywords" aria-current={active === 'keywords' ? 'page' : undefined}>Keywords</a>
+		<a href="/admin/content" aria-current={active === 'content' ? 'page' : undefined}>Generated content</a>
+		<a class="admin-nav__back" href="/">← Back to site</a>
+	</aside>
+	<div class="admin-main">
+		<div class="section-head">
+			<div>
+				<h1>{title}</h1>
+				{description && <p>{description}</p>}
+			</div>
+		</div>
+		<slot />
+	</div>
+</div>

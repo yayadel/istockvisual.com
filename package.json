@@ -17,6 +17,12 @@
 		"keywords:import": "node scripts/import-keywords.mjs",
 		"keywords:import:remote": "node scripts/import-keywords.mjs --remote",
 		"generate:asset": "node scripts/generate-asset.mjs",
+		"agent:prepare": "node scripts/agent-prepare.mjs",
+		"agent:meta": "node scripts/agent-meta.mjs",
+		"agent:meta:py": "python scripts/gemini_meta.py",
+		"agent:import": "node scripts/agent-import.mjs",
+		"images:variants": "node scripts/backfill-size-variants.mjs",
+		"sync:host-prompt": "node scripts/sync-host-prompt.mjs",
 		"sanity:dev": "npm run dev --prefix sanity",
 		"deploy": "npm run build && wrangler deploy",
 		"backup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/backup-to-github.ps1",
@@ -30,9 +36,12 @@
 		"@types/react-dom": "^19.2.4",
 		"astro": "^7.2.1",
 		"better-auth": "^1.6.27",
+		"fast-png": "^8.0.0",
 		"groq": "^6.9.2",
+		"jpeg-js": "^0.4.4",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
+		"sharp": "^0.35.3",
 		"wrangler": "^4.121.0"
 	}
 }

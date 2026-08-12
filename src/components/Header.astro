@@ -2,10 +2,13 @@
 import { CATEGORIES } from '../config/categories';
 import ThemeToggle from './ThemeToggle.astro';
 import SearchBar from './SearchBar.astro';
+import { isAdminUser } from '../lib/admin';
+import { env } from 'cloudflare:workers';
 
 const user = Astro.locals.user;
 const path = Astro.url.pathname;
 const isHome = path === '/';
+const isAdmin = isAdminUser(user, env);
 ---
 
 <header class="site-header">
@@ -33,6 +36,13 @@ const isHome = path === '/';
 			<a href="/tools/generate" aria-current={path === '/tools/generate' ? 'page' : undefined}>
 				Generate
 			</a>
+			{
+				isAdmin && (
+					<a href="/admin" aria-current={path.startsWith('/admin') ? 'page' : undefined}>
+						Admin
+					</a>
+				)
+			}
 			<div class="nav__spacer" aria-hidden="true"></div>
 			<ThemeToggle />
 			{

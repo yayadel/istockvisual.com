@@ -51,6 +51,65 @@ npm run keywords:import:remote   # 线上 D1（需先创建远程库）
 
 可选参数：`node scripts/import-keywords.mjs --dry-run`（只生成 SQL 不执行）、`--limit=1000`（限制条数）。
 
+### 5. 关键词 → 生成素材
+
+根提示词在 [`host_prompt.txt`](host_prompt.txt)（运行时读取 [`src/data/host-prompt.txt`](src/data/host-prompt.txt)）。流程：
+
+1. 从 D1 取下一个未使用关键词（`POST /api/generate/prepare`）  
+2. **Cursor Agent 内置文字模型** 根据 `host_prompt.txt` + 关键词生成 JSON 元数据  
+3. **Cursor Agent 内置图片模型** 根据 `imagePrompt` 生成图片  
+4. Agent 调用 `POST /api/generate/import` 写入 R2 + `generated_asset` + `keyword_content`  
+5. 详情页展示标题、描述、配色、标签、相关搜索、用法提示等  
+
+```bash
+npm run dev
+npm run agent:prepare          # 预留关键词，输出 prompt
+# 在 Cursor 对话中说：用内置模型生成一条素材并导入
+# 或手动：npm run agent:import -- meta.json image.jpg <keywordId>
+```
+
+浏览器打开 `/tools/generate` 可点击 **Prepare keyword**，然后在 Cursor 里让 Agent 完成生成与导入。
+
+**数据库关联（可扩展）**
+
+| 表 | 说明 |
+|---|---|
+| `keyword` | 关键词词库，`used` / `usedAt` 标记是否已消费 |
+| `generated_asset` | 生成素材，含 `keywordId` 外键 |
+| `keyword_content` | 通用关联表，未来可挂 `sanity_asset` 等类型 |
+
+代码接口：`src/lib/keyword-content.ts`  
+HTTP：`GET /api/keywords/stats`、`GET /api/keywords/:id/content`、`GET /api/content/:type/:id/keyword`
+
+```bash
+npm run dev                    # 先启动开发服务器
+npm run generate:asset         # CLI 触发生成一条
+# 或浏览器打开 /tools/generate 点击按钮
+```
+
+### 本地 AI 配置（`.dev.vars`）
+
+默认使用 **Ollama**，不依赖 Cloudflare AI：
+
+```env
+LOCAL_AI_TEXT_URL=http://127.0.0.1:11434/v1
+LOCAL_AI_TEXT_MODEL=qwen2.5:7b
+LOCAL_AI_IMAGE_URL=http://127.0.0.1:11434
+LOCAL_AI_IMAGE_MODEL=flux
+LOCAL_AI_IMAGE_PROVIDER=ollama
+```
+
+启动 Ollama 并拉取模型：
+
+```bash
+ollama pull qwen2.5:7b
+ollama pull flux
+```
+
+若用 **Automatic1111**，改 `LOCAL_AI_IMAGE_PROVIDER=sdwebui` 和 `LOCAL_AI_IMAGE_URL=http://127.0.0.1:7860`。
+
+环境变量见 [`.dev.vars.example`](.dev.vars.example)：`GENERATE_API_SECRET`、`ADMIN_EMAILS`。
+
 > `wrangler.jsonc` 里的 `database_id` 先是占位符。本地 `migrations apply --local` 可用；上线前请用 `wrangler d1 create istockvisual-db` 创建真实库并替换 ID。
 
 ### 4. 启动站点

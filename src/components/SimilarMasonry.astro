@@ -1,0 +1,34 @@
+---
+import type { AssetDetail } from '../lib/asset-types';
+
+interface Props {
+	assets: AssetDetail[];
+	viewAllHref: string;
+	viewAllLabel: string;
+}
+
+const { assets, viewAllHref, viewAllLabel } = Astro.props;
+---
+
+{
+	assets.length > 0 && (
+		<section class="similar">
+			<div class="similar__inner">
+				<div class="similar__head">
+					<h2>Similar images</h2>
+					<a href={viewAllHref}>
+						{viewAllLabel} <span aria-hidden="true">›</span>
+					</a>
+				</div>
+				<div class="similar-masonry">
+					{assets.map((asset) => (
+						<a class="similar-card" href={`/${asset.category}/${asset.slug}`}>
+							<img src={asset.previewUrl} alt={asset.title} loading="lazy" />
+							<span class="similar-card__caption">{asset.title}</span>
+						</a>
+					))}
+				</div>
+			</div>
+		</section>
+	)
+}

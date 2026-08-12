@@ -14,6 +14,13 @@ export default defineConfig({
 		platformProxy: {
 			enabled: true,
 		},
+		// D1/R2 bindings run locally without CLOUDFLARE_API_TOKEN
+		remoteBindings: false,
 	}),
 	integrations: [react()],
+	vite: {
+		ssr: {
+			noExternal: ['jpeg-js', 'fast-png'],
+		},
+	},
 });

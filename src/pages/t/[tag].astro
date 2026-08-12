@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AssetGrid from '../../components/AssetGrid.astro';
+import { env } from 'cloudflare:workers';
+import {
+	filterAssetsByTag,
+	listAllAssets,
+} from '../../lib/generate-asset';
+import { fromPathSlug } from '../../lib/paths';
+
+const raw = Astro.params.tag;
+if (!raw) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const tagSlug = decodeURIComponent(raw);
+const label = fromPathSlug(tagSlug);
+const assets = filterAssetsByTag(
+	await listAllAssets(env.DB, Astro.url.origin, 400),
+	tagSlug,
+);
+
+const displayTag =
+	assets
+		.flatMap((asset) => [...(asset.tags || []), ...(asset.depictedElements || [])])
+		.find((tag) => tag.toLowerCase() === label.toLowerCase() || tag.toLowerCase().replace(/\s+/g, '-') === tagSlug) ||
+	label;
+---
+
+<BaseLayout title={`Tag: ${displayTag}`} description={`Assets tagged “${displayTag}”.`}>
+	<div class="section-head">
+		<div>
+			<p class="asset-card__meta">Keywords</p>
+			<h1>{displayTag}</h1>
+			<p>
+				{assets.length} asset{assets.length === 1 ? '' : 's'} with this keyword.
+			</p>
+		</div>
+	</div>
+
+	<AssetGrid assets={assets} emptyMessage={`No assets tagged “${displayTag}” yet.`} />
+</BaseLayout>

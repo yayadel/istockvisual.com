@@ -1,8 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AssetPreviewPanel from '../../components/AssetPreviewPanel';
+import ColorPalette from '../../components/ColorPalette';
+import DownloadPanel from '../../components/DownloadPanel';
+import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
-import { resolveAssetBySlug } from '../../lib/generate-asset';
+import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
+import { remainingFullSizeDownloads } from '../../lib/download-quota';
+import { searchPath, tagPath } from '../../lib/paths';
 import { env } from 'cloudflare:workers';
 
 const { category: categorySlug, slug } = Astro.params;
@@ -19,10 +24,15 @@ if (!asset) {
 }
 
 const user = Astro.locals.user;
-const needsLogin = !user;
-const needsPro = Boolean(user && asset.isPremium && user.plan !== 'pro');
-const canDownload = Boolean(user) && !needsPro;
+const remainingFullDownloads =
+	user && env.DB ? await remainingFullSizeDownloads(env.DB, user.id, user.plan) : 0;
 const isGenerated = asset.source === 'generated';
+const tags = asset.tags ?? [];
+const similar = findSimilarAssets(
+	await listAllAssets(env.DB, Astro.url.origin, 400),
+	asset,
+	18,
+);
 ---
 
 <BaseLayout
@@ -30,133 +40,175 @@ const isGenerated = asset.source === 'generated';
 	description={asset.shortDescription || asset.description || `${asset.title} on iStockVisual`}
 >
 	<article class="detail">
-		<div class="detail__preview">
-			{
-				asset.previewUrl ? (
-					<AssetPreviewPanel client:load imageUrl={asset.previewUrl} title={asset.title} />
-				) : (
-					<div class="empty">No preview available</div>
-				)
-			}
-		</div>
-		<div class="detail__panel">
-			<p class="asset-card__meta">
-				<a href={`/${category.slug}`}>{category.label}</a>
-				{asset.isPremium && <span class="badge badge--premium">Pro</span>}
-				{isGenerated && <span class="badge">Generated</span>}
-			</p>
-			<h1>{asset.title}</h1>
-			<p>{asset.shortDescription || asset.description || 'No description provided.'}</p>
+		<div class="detail__shell">
+			<header class="detail__title">
+				<p class="asset-card__meta">
+					<a href={`/${category.slug}`}>{category.label}</a>
+					{asset.isPremium && <span class="badge badge--premium">Pro</span>}
+					{isGenerated && <span class="badge">Generated</span>}
+				</p>
+				<h1>{asset.title}</h1>
+				{asset.shortDescription && (
+					<p class="detail__lead">{asset.shortDescription}</p>
+				)}
+			</header>
 
-			<ul class="meta-list">
-				<li><span>License</span><span>{asset.license || 'Standard'}</span></li>
-				<li><span>Type</span><span>{asset.fileType || '—'}</span></li>
-				<li>
-					<span>Dimensions</span>
-					<span>
-						{asset.width && asset.height ? `${asset.width} × ${asset.height}` : '—'}
-					</span>
-				</li>
-				{asset.medium && (
-					<li><span>Medium</span><span>{asset.medium}</span></li>
-				)}
-				{asset.keyword && (
-					<li><span>Keyword</span><span>{asset.keyword}</span></li>
-				)}
-				<li><span>Tags</span><span>{asset.tags?.join(', ') || '—'}</span></li>
-			</ul>
+			<div class="detail__stage">
+				<div class="detail__preview">
+					{
+						asset.previewUrl ? (
+							<AssetPreviewPanel client:load imageUrl={asset.previewUrl} title={asset.title} />
+						) : (
+							<div class="empty">No preview available</div>
+						)
+					}
+				</div>
+
+				<aside class="detail__info">
+					<DownloadPanel
+						client:only="react"
+						assetId={asset._id}
+						title={asset.title}
+						slug={asset.slug}
+						previewUrl={asset.previewUrl}
+						sourceWidth={asset.width || 1536}
+						sourceHeight={asset.height || 1024}
+						loggedIn={Boolean(user)}
+						isPro={user?.plan === 'pro'}
+						remainingFullDownloads={user ? remainingFullDownloads : 0}
+						loginHref={`/login?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
+						signupHref={`/signup?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
+					>
+						<div class="download-panel">
+							<p class="download-panel__label">Download</p>
+							<p class="download-panel__hint">Loading sizes…</p>
+						</div>
+					</DownloadPanel>
+					<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
+				</aside>
+			</div>
+
+			<section class="detail__basics">
+				<h2>Basic information</h2>
+				<ul class="meta-list">
+					<li><span>License</span><span>{asset.license || 'Standard'}</span></li>
+					<li><span>Type</span><span>{asset.fileType || '—'}</span></li>
+					<li>
+						<span>Dimensions</span>
+						<span>
+							{asset.width && asset.height ? `${asset.width} × ${asset.height}` : '—'}
+						</span>
+					</li>
+					{asset.medium && (
+						<li><span>Medium</span><span>{asset.medium}</span></li>
+					)}
+					{asset.keyword && (
+						<li><span>Keyword</span><span>{asset.keyword}</span></li>
+					)}
+				</ul>
+				<ul class="download-rules">
+					<li>Not signed in: 500px-wide preview only, keeping the original aspect ratio.</li>
+					<li>
+						Signed in: 5 free full-size downloads (1K–8K).
+						{user && remainingFullDownloads != null && (
+							<> {remainingFullDownloads} left.</>
+						)}
+					</li>
+					<li>Pro: unlimited full-size downloads.</li>
+				</ul>
+			</section>
 
 			{
 				isGenerated && (
-					<section class="asset-extra">
-						{asset.creationDescription && (
-							<div class="asset-extra__block">
-								<h2>Creation description</h2>
-								<p>{asset.creationDescription}</p>
-							</div>
-						)}
-						{asset.usageTips && (
-							<div class="asset-extra__block">
-								<h2>Usage tips</h2>
-								<p>{asset.usageTips}</p>
-							</div>
-						)}
+					<section class="detail__story">
+						<div class="info-grid">
+							{asset.creationDescription && (
+								<article class="info-card">
+									<h2>Creation description</h2>
+									<p>{asset.creationDescription}</p>
+								</article>
+							)}
+							{asset.usageTips && (
+								<article class="info-card">
+									<h2>Usage tips</h2>
+									<p>{asset.usageTips}</p>
+								</article>
+							)}
+							{
+								asset.colorPalette && asset.colorPalette.length > 0 && (
+									<article class="info-card info-card--wide">
+										<h2>Color palette</h2>
+										<ColorPalette client:load swatches={asset.colorPalette} />
+									</article>
+								)
+							}
+							{
+								asset.depictedElements && asset.depictedElements.length > 0 && (
+									<article class="info-card info-card--wide">
+										<h2>Depicted elements</h2>
+										<ul class="element-pills">
+											{asset.depictedElements.map((item) => (
+												<li>
+													<a href={tagPath(item)}>{item}</a>
+												</li>
+											))}
+										</ul>
+									</article>
+								)
+							}
+							{
+								asset.imagePrompt && (
+									<article class="info-card info-card--wide">
+										<h2>Image generation prompt</h2>
+										<p>{asset.imagePrompt}</p>
+									</article>
+								)
+							}
+						</div>
+					</section>
+				)
+			}
+
+			{
+				(tags.length > 0 || (asset.relatedQueries && asset.relatedQueries.length > 0)) && (
+					<section class="detail__discover">
 						{
-							asset.colorPalette && asset.colorPalette.length > 0 && (
-								<div class="asset-extra__block">
-									<h2>Color palette</h2>
-									<ul class="palette-list">
-										{asset.colorPalette.map((swatch) => (
+							tags.length > 0 && (
+								<div class="chip-block">
+									<h2>Keywords</h2>
+									<ul class="chip-cloud">
+										{tags.map((tag) => (
 											<li>
-												<span
-													class="palette-swatch"
-													style={`background:${swatch.hex}`}
-													title={swatch.hex}
-												/>
-												<span>{swatch.name}</span>
-												<code>{swatch.hex}</code>
+												<a href={tagPath(tag)}>{tag}</a>
 											</li>
 										))}
 									</ul>
-								</div>
-							)
-						}
-						{
-							asset.depictedElements && asset.depictedElements.length > 0 && (
-								<div class="asset-extra__block">
-									<h2>Depicted elements</h2>
-									<p>{asset.depictedElements.join(', ')}</p>
 								</div>
 							)
 						}
 						{
 							asset.relatedQueries && asset.relatedQueries.length > 0 && (
-								<div class="asset-extra__block">
-									<h2>Related searches</h2>
-									<ul class="tag-list">
+								<div class="chip-block">
+									<h2>Categories</h2>
+									<ul class="chip-cloud">
 										{asset.relatedQueries.map((query) => (
 											<li>
-												<a href={`/search?q=${encodeURIComponent(query)}`}>{query}</a>
+												<a href={searchPath(query)}>{query}</a>
 											</li>
 										))}
 									</ul>
 								</div>
 							)
 						}
-						{
-							asset.imagePrompt && (
-								<details class="asset-extra__block">
-									<summary>Image generation prompt</summary>
-									<p>{asset.imagePrompt}</p>
-								</details>
-							)
-						}
 					</section>
 				)
 			}
-
-			<div class="cta-row">
-				{
-					needsLogin ? (
-						<a class="btn btn--primary" href="/login">Log in to download</a>
-					) : needsPro ? (
-						<a class="btn btn--primary" href="/account">Upgrade to Pro (soon)</a>
-					) : (
-						<a class="btn btn--primary" href={`/api/download/${asset._id}`}>
-							Download original
-						</a>
-					)
-				}
-				<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
-			</div>
-
-			{
-				!needsLogin && canDownload && !asset.r2ObjectKey && (
-					<p class="hint" style="margin-top:1rem">
-						Download API is ready, but this asset has no R2 object key yet.
-					</p>
-				)
-			}
 		</div>
+
+		<SimilarMasonry
+			assets={similar}
+			viewAllHref={`/${category.slug}`}
+			viewAllLabel={`View all ${category.label.toLowerCase()}`}
+		/>
 	</article>
 </BaseLayout>

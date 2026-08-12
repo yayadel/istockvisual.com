@@ -1,47 +1,34 @@
 import { useState } from 'react';
 
-type GenerateResponse = {
+type PrepareResponse = {
 	ok: boolean;
+	keywordId?: number;
 	keyword?: string;
-	asset?: {
-		id: string;
-		title: string;
-		slug: string;
-		category: string;
-		previewUrl?: string;
-		pageUrl: string;
-	};
-	meta?: {
-		imagePrompt?: string;
-		imagePageTitle?: string;
-	};
+	geminiConfigured?: boolean;
+	instructions?: string[];
 	error?: string;
 };
 
 export default function GenerateAssetPanel() {
 	const [pending, setPending] = useState(false);
-	const [result, setResult] = useState<GenerateResponse | null>(null);
+	const [prepared, setPrepared] = useState<PrepareResponse | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
-	async function onGenerate() {
+	async function onPrepare() {
 		setPending(true);
 		setError(null);
-		setResult(null);
+		setPrepared(null);
 
 		try {
-			const res = await fetch('/api/generate/asset', {
+			const res = await fetch('/api/generate/prepare', {
 				method: 'POST',
-				headers: {
-					'x-generate-secret': 'dev-generate-secret',
-				},
+				headers: { 'x-generate-secret': 'dev-generate-secret' },
 			});
-			const data = (await res.json()) as GenerateResponse;
-			if (!res.ok) {
-				throw new Error(data.error || 'Generation failed');
-			}
-			setResult(data);
+			const data = (await res.json()) as PrepareResponse;
+			if (!res.ok) throw new Error(data.error || 'Prepare failed');
+			setPrepared(data);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Generation failed');
+			setError(err instanceof Error ? err.message : 'Prepare failed');
 		} finally {
 			setPending(false);
 		}
@@ -52,19 +39,27 @@ export default function GenerateAssetPanel() {
 			<div className="tool-panel" style={{ margin: 0, width: '100%' }}>
 				<h1>Generate stock asset</h1>
 				<p className="hint">
-					Picks the next unused keyword from D1, combines it with{' '}
-					<code>host_prompt.txt</code>, asks the LLM for metadata + image prompt, then
-					generates the image with Workers AI Flux and publishes a detail page.
+					Step 1 metadata uses <strong>Google Gemini</strong> via{' '}
+					<code>npm run agent:meta</code> (reads <code>GEMINI_API_KEY</code> from{' '}
+					<code>.dev.vars</code>). Images use Cursor — one asset at a time.
 				</p>
+
+				<ol className="hint" style={{ paddingLeft: '1.2rem', lineHeight: 1.7 }}>
+					<li>
+						Run <code>npm run agent:meta</code> (reserves keyword + Gemini JSON meta).
+					</li>
+					<li>Generate ONE image from <code>imagePrompt</code> in Cursor.</li>
+					<li>Import with <code>node scripts/agent-import.mjs …</code>.</li>
+				</ol>
 
 				<div className="tool-actions" style={{ marginTop: '1rem' }}>
 					<button
 						className="btn btn--primary"
 						type="button"
-						onClick={onGenerate}
+						onClick={onPrepare}
 						disabled={pending}
 					>
-						{pending ? 'Generating…' : 'Generate one asset'}
+						{pending ? 'Reserving…' : 'Reserve keyword only'}
 					</button>
 				</div>
 
@@ -74,36 +69,19 @@ export default function GenerateAssetPanel() {
 					</p>
 				)}
 
-				{result?.asset && (
+				{prepared?.keyword && (
 					<div className="generate-result" style={{ marginTop: '1.5rem' }}>
 						<p>
-							<strong>Keyword:</strong> {result.keyword}
+							<strong>Keyword ID:</strong> {prepared.keywordId}
 						</p>
 						<p>
-							<strong>Title:</strong> {result.asset.title}
+							<strong>Keyword:</strong> {prepared.keyword}
 						</p>
-						{result.meta?.imagePrompt && (
-							<p>
-								<strong>Image prompt:</strong> {result.meta.imagePrompt}
-							</p>
-						)}
-						<div className="cta-row" style={{ marginTop: '1rem' }}>
-							<a className="btn btn--primary" href={result.asset.pageUrl}>
-								Open asset page
-							</a>
-							{result.asset.previewUrl && (
-								<a className="btn btn--ghost" href={result.asset.previewUrl} target="_blank">
-									Preview image
-								</a>
-							)}
-						</div>
-						{result.asset.previewUrl && (
-							<img
-								src={result.asset.previewUrl}
-								alt={result.asset.title}
-								style={{ marginTop: '1rem', maxWidth: '100%', borderRadius: 12 }}
-							/>
-						)}
+						<p className="hint" style={{ marginTop: '0.75rem' }}>
+							{prepared.geminiConfigured
+								? `Next: npm run agent:meta -- ${prepared.keywordId} "${prepared.keyword}"`
+								: 'Add GEMINI_API_KEY to .dev.vars, then run npm run agent:meta.'}
+						</p>
 					</div>
 				)}
 			</div>

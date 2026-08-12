@@ -1,17 +1,16 @@
 const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
 const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
 
-const res = await fetch(`${baseUrl}/api/generate/asset`, {
+console.log('Use Cursor Agent mode instead:');
+console.log('  npm run agent:prepare');
+console.log('Then in Cursor chat: 用内置模型生成一条素材并导入');
+console.log('');
+console.log('Legacy endpoint /api/generate/asset is disabled.');
+
+const res = await fetch(`${baseUrl}/api/generate/prepare`, {
 	method: 'POST',
-	headers: {
-		'x-generate-secret': secret,
-	},
+	headers: { 'x-generate-secret': secret },
 });
 
 const data = await res.json();
-if (!res.ok) {
-	console.error(data.error || 'Generation failed');
-	process.exit(1);
-}
-
 console.log(JSON.stringify(data, null, 2));
