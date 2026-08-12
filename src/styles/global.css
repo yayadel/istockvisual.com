@@ -9,7 +9,11 @@
 	--accent-ink: #ffffff;
 	--line: rgba(20, 24, 20, 0.1);
 	--danger: #d64545;
-	--header-bg: rgba(255, 255, 255, 0.88);
+	--header-bg: #0b0b0b;
+	--header-text: #ffffff;
+	--header-muted: rgba(255, 255, 255, 0.72);
+	--signin-bg: #1f7a72;
+	--signin-hover: #19665f;
 	--panel-bg: rgba(255, 255, 255, 0.96);
 	--input-bg: #ffffff;
 	--ghost-bg: rgba(20, 24, 20, 0.04);
