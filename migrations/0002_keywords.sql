@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS keyword (
+	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"keyword" TEXT NOT NULL UNIQUE COLLATE NOCASE,
+	"used" INTEGER NOT NULL DEFAULT 0,
+	"createdAt" TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS keyword_used_idx ON keyword ("used");
