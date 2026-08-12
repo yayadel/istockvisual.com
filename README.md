@@ -40,6 +40,17 @@ copy .dev.vars.example .dev.vars
 npm run db:migrate:local
 ```
 
+### 4. 导入关键词（本地 CSV → D1）
+
+`keyword_store/kwdata_172-ok.csv` 仅导入 **KEYWORD** 列（第 3 列），并跳过 **VALUE = 0** 的行。数据库表 `keyword` 含 `used` 字段（0=未使用，1=已使用）。
+
+```bash
+npm run keywords:import          # 本地 D1
+npm run keywords:import:remote   # 线上 D1（需先创建远程库）
+```
+
+可选参数：`node scripts/import-keywords.mjs --dry-run`（只生成 SQL 不执行）、`--limit=1000`（限制条数）。
+
 > `wrangler.jsonc` 里的 `database_id` 先是占位符。本地 `migrations apply --local` 可用；上线前请用 `wrangler d1 create istockvisual-db` 创建真实库并替换 ID。
 
 ### 4. 启动站点
