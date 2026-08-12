@@ -142,8 +142,8 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				return;
 			}
 
-			if (file.size > 50 * 1024 * 1024) {
-				alert('File must be 50 MB or smaller.');
+			if (file.size > 8 * 1024 * 1024) {
+				alert('Image must be 8 MB or smaller.');
 				return;
 			}
 
