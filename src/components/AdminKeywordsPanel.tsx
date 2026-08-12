@@ -126,9 +126,19 @@ export default function AdminKeywordsPanel() {
 										<td>{row.keyword}</td>
 										<td>
 											<span
-												className={`admin-badge admin-badge--${row.used ? 'used' : 'unused'}`}
+												className={`admin-badge admin-badge--${
+													row.used
+														? row.contentCount > 0
+															? 'used'
+															: 'reserved'
+														: 'unused'
+												}`}
 											>
-												{row.used ? 'Used' : 'Unused'}
+												{row.used
+													? row.contentCount > 0
+														? 'Used'
+														: 'Reserved'
+													: 'Unused'}
 											</span>
 										</td>
 										<td>{row.usedAt ? new Date(row.usedAt).toLocaleString() : '—'}</td>
