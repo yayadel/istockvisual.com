@@ -57,7 +57,7 @@ try {
 		Write-Host "[backup] No local changes to commit."
 	}
 
-	git push -u origin HEAD 2>&1 | Out-Host
+	git push -u origin HEAD
 	if ($LASTEXITCODE -ne 0) {
 		Write-Error "git push failed with exit code $LASTEXITCODE"
 	}
