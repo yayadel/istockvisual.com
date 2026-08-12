@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthForm from '../components/AuthForm';
+
+if (Astro.locals.user) {
+	return Astro.redirect('/account');
+}
+---
+
+<BaseLayout title="Log in">
+	<div class="auth-panel">
+		<h1>Log in</h1>
+		<p class="hint">Access downloads and your membership plan.</p>
+		<AuthForm client:load mode="login" />
+	</div>
+</BaseLayout>

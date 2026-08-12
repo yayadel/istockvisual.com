@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AssetGrid from '../../components/AssetGrid.astro';
+import { CATEGORIES, getCategory, isCategorySlug } from '../../config/categories';
+import { listAssetsByCategory } from '../../lib/sanity';
+
+const { category: categorySlug } = Astro.params;
+
+if (!categorySlug || !isCategorySlug(categorySlug)) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const category = getCategory(categorySlug)!;
+const assets = await listAssetsByCategory(category.slug);
+---
+
+<BaseLayout title={category.label} description={`Browse ${category.label} on iStockVisual.`}>
+	<div class="section-head">
+		<div>
+			<h1>{category.label}</h1>
+			<p>Curated {category.label.toLowerCase()} ready for download.</p>
+		</div>
+	</div>
+
+	<div class="category-pills">
+		{
+			CATEGORIES.map((item) => (
+				<a href={`/${item.slug}`} aria-current={item.slug === category.slug ? 'page' : undefined}>
+					{item.label}
+				</a>
+			))
+		}
+	</div>
+
+	<AssetGrid assets={assets} emptyMessage={`No ${category.label.toLowerCase()} published yet.`} />
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthForm from '../components/AuthForm';
+
+if (Astro.locals.user) {
+	return Astro.redirect('/account');
+}
+---
+
+<BaseLayout title="Join free">
+	<div class="auth-panel">
+		<h1>Join free</h1>
+		<p class="hint">Create an account to download assets. Paid plans come later.</p>
+		<AuthForm client:load mode="signup" />
+	</div>
+</BaseLayout>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AssetGrid from '../components/AssetGrid.astro';
+import { CATEGORIES } from '../config/categories';
+import { listFeaturedAssets, isSanityConfigured } from '../lib/sanity';
+
+const featured = await listFeaturedAssets(8);
+const usingDemo = !isSanityConfigured();
+---
+
+<BaseLayout title="iStockVisual" description="Stock photos, illustrations, vectors, and 3D — with AI editing tools.">
+	<section class="hero" aria-label="Hero">
+		<div class="hero__media" aria-hidden="true"></div>
+		<div class="hero__content">
+			<h1 class="hero__brand">iStock<span>Visual</span></h1>
+			<p class="hero__lead">
+				Download curated Photos, Illustrations, Vectors, and 3D assets. Edit with AI tools built for makers.
+			</p>
+			<div class="cta-row">
+				<a class="btn btn--primary" href="/photos">Browse Photos</a>
+				<a class="btn btn--ghost" href="/tools/ai-edit">Try AI Edit</a>
+			</div>
+		</div>
+	</section>
+
+	<section>
+		<div class="section-head">
+			<div>
+				<h2>Explore categories</h2>
+				<p>Frontend-configured catalog — content lives in Sanity, files in R2.</p>
+			</div>
+		</div>
+		<div class="category-pills">
+			{
+				CATEGORIES.map((category) => (
+					<a href={`/${category.slug}`}>{category.label}</a>
+				))
+			}
+		</div>
+	</section>
+
+	<section>
+		<div class="section-head">
+			<div>
+				<h2>Featured assets</h2>
+				<p>
+					{
+						usingDemo
+							? 'Showing local demo assets until Sanity project IDs are configured.'
+							: 'Latest published assets from Sanity.'
+					}
+				</p>
+			</div>
+			<a class="btn btn--ghost" href="/photos">View all</a>
+		</div>
+		<AssetGrid assets={featured} />
+	</section>
+</BaseLayout>

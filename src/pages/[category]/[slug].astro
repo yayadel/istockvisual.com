@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCategory, isCategorySlug } from '../../config/categories';
+import { getAssetBySlug } from '../../lib/sanity';
+
+const { category: categorySlug, slug } = Astro.params;
+
+if (!categorySlug || !slug || !isCategorySlug(categorySlug)) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const category = getCategory(categorySlug)!;
+const asset = await getAssetBySlug(category.slug, slug);
+
+if (!asset) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const user = Astro.locals.user;
+const needsLogin = !user;
+const needsPro = Boolean(user && asset.isPremium && user.plan !== 'pro');
+const canDownload = Boolean(user) && !needsPro;
+---
+
+<BaseLayout title={asset.title} description={asset.description || `${asset.title} on iStockVisual`}>
+	<article class="detail">
+		<div class="detail__preview">
+			{
+				asset.previewUrl ? (
+					<img src={asset.previewUrl} alt={asset.title} />
+				) : (
+					<div class="empty">No preview available</div>
+				)
+			}
+		</div>
+		<div class="detail__panel">
+			<p class="asset-card__meta">
+				<a href={`/${category.slug}`}>{category.label}</a>
+				{asset.isPremium && <span class="badge badge--premium">Pro</span>}
+			</p>
+			<h1>{asset.title}</h1>
+			<p>{asset.description || 'No description provided.'}</p>
+
+			<ul class="meta-list">
+				<li><span>License</span><span>{asset.license || 'Standard'}</span></li>
+				<li><span>Type</span><span>{asset.fileType || '—'}</span></li>
+				<li>
+					<span>Dimensions</span>
+					<span>
+						{asset.width && asset.height ? `${asset.width} × ${asset.height}` : '—'}
+					</span>
+				</li>
+				<li><span>Tags</span><span>{asset.tags?.join(', ') || '—'}</span></li>
+			</ul>
+
+			<div class="cta-row">
+				{
+					needsLogin ? (
+						<a class="btn btn--primary" href="/login">Log in to download</a>
+					) : needsPro ? (
+						<a class="btn btn--primary" href="/account">Upgrade to Pro (soon)</a>
+					) : (
+						<a class="btn btn--primary" href={`/api/download/${asset._id}`}>
+							Download
+						</a>
+					)
+				}
+				<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
+			</div>
+
+			{
+				!needsLogin && canDownload && !asset.r2ObjectKey && (
+					<p class="hint" style="margin-top:1rem">
+						Download API is ready, but this asset has no R2 object key yet.
+					</p>
+				)
+			}
+		</div>
+	</article>
+</BaseLayout>

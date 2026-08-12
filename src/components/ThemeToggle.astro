@@ -1,0 +1,50 @@
+<button
+	type="button"
+	class="theme-toggle"
+	id="theme-toggle"
+	aria-label="Switch to dark mode"
+	title="Switch to dark mode"
+>
+	<svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+		<circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.75"></circle>
+		<path
+			d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+			stroke="currentColor"
+			stroke-width="1.75"
+			stroke-linecap="round"></path>
+	</svg>
+	<svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+		<path
+			d="M21 14.5A8.5 8.5 0 1 1 9.5 3a6.5 6.5 0 1 0 11.5 11.5Z"
+			stroke="currentColor"
+			stroke-width="1.75"
+			stroke-linejoin="round"></path>
+	</svg>
+</button>
+
+<script>
+	const STORAGE_KEY = 'istockvisual-theme';
+
+	function applyTheme(theme: 'light' | 'dark') {
+		document.documentElement.setAttribute('data-theme', theme);
+		const toggle = document.getElementById('theme-toggle');
+		if (toggle) {
+			const isDark = theme === 'dark';
+			toggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+			toggle.setAttribute('title', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+		}
+	}
+
+	function getStoredTheme(): 'light' | 'dark' {
+		const stored = localStorage.getItem(STORAGE_KEY);
+		return stored === 'dark' ? 'dark' : 'light';
+	}
+
+	applyTheme(getStoredTheme());
+
+	document.getElementById('theme-toggle')?.addEventListener('click', () => {
+		const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+		localStorage.setItem(STORAGE_KEY, next);
+		applyTheme(next);
+	});
+</script>

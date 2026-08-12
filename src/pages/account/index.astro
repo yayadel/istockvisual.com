@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SignOutButton from '../../components/SignOutButton';
+
+const user = Astro.locals.user;
+
+if (!user) {
+	return Astro.redirect('/login');
+}
+
+const plan = user.plan || 'free';
+---
+
+<BaseLayout title="Account">
+	<div class="account-panel">
+		<h1>Account</h1>
+		<p class="hint">Signed in as {user.email}</p>
+
+		<ul class="meta-list">
+			<li><span>Name</span><span>{user.name}</span></li>
+			<li><span>Plan</span><span>{plan}</span></li>
+			<li>
+				<span>Plan expires</span>
+				<span>{user.planExpiresAt || '—'}</span>
+			</li>
+		</ul>
+
+		<div class="cta-row">
+			<a class="btn btn--primary" href="/account" aria-disabled="true" onclick="return false;">
+				Upgrade to Pro — coming soon
+			</a>
+			<SignOutButton client:load />
+		</div>
+	</div>
+</BaseLayout>

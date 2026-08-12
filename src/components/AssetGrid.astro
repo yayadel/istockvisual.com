@@ -1,0 +1,23 @@
+---
+import type { AssetDoc } from '../lib/sanity';
+import AssetCard from './AssetCard.astro';
+
+interface Props {
+	assets: AssetDoc[];
+	emptyMessage?: string;
+}
+
+const { assets, emptyMessage = 'No assets in this category yet.' } = Astro.props;
+---
+
+{
+	assets.length === 0 ? (
+		<div class="empty">{emptyMessage}</div>
+	) : (
+		<div class="asset-grid">
+			{assets.map((asset) => (
+				<AssetCard asset={asset} />
+			))}
+		</div>
+	)
+}

@@ -1,0 +1,35 @@
+{
+	"name": "istockvisual",
+	"type": "module",
+	"version": "0.1.0",
+	"private": true,
+	"engines": {
+		"node": ">=22.12.0"
+	},
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"generate-types": "wrangler types",
+		"db:migrate:local": "wrangler d1 migrations apply istockvisual-db --local",
+		"db:migrate:remote": "wrangler d1 migrations apply istockvisual-db --remote",
+		"sanity:dev": "npm run dev --prefix sanity",
+		"deploy": "npm run build && wrangler deploy",
+		"backup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/backup-to-github.ps1",
+		"backup:watch": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/watch-and-backup.ps1"
+	},
+	"dependencies": {
+		"@astrojs/cloudflare": "^14.2.1",
+		"@astrojs/react": "^6.0.2",
+		"@sanity/client": "^7.26.2",
+		"@types/react": "^19.2.18",
+		"@types/react-dom": "^19.2.4",
+		"astro": "^7.2.1",
+		"better-auth": "^1.6.27",
+		"groq": "^6.9.2",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"wrangler": "^4.121.0"
+	}
+}

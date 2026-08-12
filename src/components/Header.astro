@@ -1,0 +1,43 @@
+---
+import { CATEGORIES } from '../config/categories';
+import ThemeToggle from './ThemeToggle.astro';
+
+const user = Astro.locals.user;
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+	<div class="site-header__inner">
+		<a class="brand" href="/">iStock<span>Visual</span></a>
+		<nav class="nav" aria-label="Primary">
+			{
+				CATEGORIES.map((category) => (
+					<a
+						href={`/${category.slug}`}
+						aria-current={path.startsWith(`/${category.slug}`) ? 'page' : undefined}
+					>
+						{category.label}
+					</a>
+				))
+			}
+			<a href="/tools/ai-edit" aria-current={path.startsWith('/tools') ? 'page' : undefined}>
+				AI Edit
+			</a>
+			<ThemeToggle />
+			{
+				user ? (
+					<a class="nav__cta" href="/account">
+						{user.name || 'Account'}
+					</a>
+				) : (
+					<>
+						<a href="/login">Log in</a>
+						<a class="nav__cta nav__cta--accent" href="/signup">
+							Join free
+						</a>
+					</>
+				)
+			}
+		</nav>
+	</div>
+</header>

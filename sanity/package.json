@@ -1,0 +1,21 @@
+{
+	"name": "istockvisual-sanity",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "sanity dev",
+		"build": "sanity build",
+		"deploy": "sanity deploy"
+	},
+	"dependencies": {
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"sanity": "^4.0.0",
+		"styled-components": "^6.1.18"
+	},
+	"devDependencies": {
+		"@types/react": "^19.2.18",
+		"typescript": "^5.9.2"
+	}
+}

@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AiEditPanel from '../../components/AiEditPanel';
+---
+
+<BaseLayout
+	title="AI Edit"
+	description="AI photo editing tools for iStockVisual — Workers AI integration coming soon."
+>
+	<div class="section-head">
+		<div>
+			<h1>AI Edit</h1>
+			<p>Local preview scaffold. Wire Workers AI or a third-party model when ready.</p>
+		</div>
+	</div>
+	<AiEditPanel client:load />
+</BaseLayout>
