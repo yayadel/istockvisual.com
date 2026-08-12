@@ -6,38 +6,72 @@ import { listAssetsByCategory, listFeaturedAssets } from '../lib/sanity';
 
 const q = (Astro.url.searchParams.get('q') || '').trim().toLowerCase();
 const categoryParam = Astro.url.searchParams.get('category') || 'all';
+const mode = Astro.url.searchParams.get('mode') || '';
+const uploadKey = Astro.url.searchParams.get('key') || '';
+const uploadName = Astro.url.searchParams.get('name') || 'uploaded image';
+const uploadStored = Astro.url.searchParams.get('stored') === '1';
+const isVisual = mode === 'visual' && Boolean(uploadKey);
 
 const pools = isCategorySlug(categoryParam)
 	? await listAssetsByCategory(categoryParam)
 	: await listFeaturedAssets(50);
 
-const assets = q
-	? pools.filter((asset) => {
-			const haystack = [asset.title, asset.description, ...(asset.tags || []), asset.category]
-				.filter(Boolean)
-				.join(' ')
-				.toLowerCase();
-			return haystack.includes(q);
-		})
-	: pools;
+const assets = isVisual
+	? []
+	: q
+		? pools.filter((asset) => {
+				const haystack = [asset.title, asset.description, ...(asset.tags || []), asset.category]
+					.filter(Boolean)
+					.join(' ')
+					.toLowerCase();
+				return haystack.includes(q);
+			})
+		: pools;
 
 const categoryLabel = isCategorySlug(categoryParam)
 	? CATEGORIES.find((c) => c.slug === categoryParam)?.label
 	: 'All media';
+
+const title = isVisual ? 'Visual upload' : q ? `Search: ${q}` : 'Search';
 ---
 
-<BaseLayout title={q ? `Search: ${q}` : 'Search'} description="Search photos, illustrations, vectors, and 3D assets.">
+<BaseLayout title={title} description="Search photos, illustrations, vectors, and 3D assets.">
 	<div class="section-head">
 		<div>
-			<h1>Search</h1>
+			<h1>{isVisual ? 'Visual search' : 'Search'}</h1>
 			<p>
 				{
-					q
-						? `${assets.length} result${assets.length === 1 ? '' : 's'} for “${q}” in ${categoryLabel}.`
-						: `Browse ${categoryLabel.toLowerCase()} or enter a keyword above.`
+					isVisual
+						? 'Image uploaded. Matching / similarity search will be connected later.'
+						: q
+							? `${assets.length} result${assets.length === 1 ? '' : 's'} for “${q}” in ${categoryLabel}.`
+							: `Browse ${categoryLabel.toLowerCase()} or enter a keyword above.`
 				}
 			</p>
 		</div>
 	</div>
-	<AssetGrid assets={assets} emptyMessage="No assets matched your search." />
+
+	{
+		isVisual && (
+			<div class="upload-result">
+				<div class="upload-result__meta">
+					<p>
+						<strong>File:</strong> {uploadName}
+					</p>
+					<p>
+						<strong>Storage key:</strong> <code>{uploadKey}</code>
+					</p>
+					<p>
+						<strong>Status:</strong>{' '}
+						{uploadStored ? 'Saved to R2 MEDIA bucket' : 'Accepted (R2 not bound locally — key reserved for later)'}
+					</p>
+				</div>
+				<div class="empty">
+					Similarity search is not wired yet. Your upload endpoint is ready for the next iteration.
+				</div>
+			</div>
+		)
+	}
+
+	{!isVisual && <AssetGrid assets={assets} emptyMessage="No assets matched your search." />}
 </BaseLayout>
