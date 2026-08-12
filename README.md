@@ -127,6 +127,22 @@ migrations/0001_init.sql
 wrangler.jsonc
 ```
 
+## GitHub 自动备份
+
+仓库地址：**https://github.com/yayadel/istockvisual.com**
+
+- 使用项目根目录的 `github_token`（已在 `.gitignore`，不会上传）
+- 手动备份：`npm run backup`
+- **持续自动备份**（文件改动后约 10 秒提交并推送）：
+
+```bash
+npm run backup:watch
+```
+
+Cursor 里 Agent 改完文件也会触发备份（`.cursor/hooks.json`）。
+
+> `keyword_store/` 体积过大已排除在 Git 之外，仅保留在本地。
+
 ## 本期不做
 
 - Stripe / 订阅支付闭环
