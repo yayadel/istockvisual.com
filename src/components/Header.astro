@@ -1,9 +1,11 @@
 ---
 import { CATEGORIES } from '../config/categories';
 import ThemeToggle from './ThemeToggle.astro';
+import SearchBar from './SearchBar.astro';
 
 const user = Astro.locals.user;
 const path = Astro.url.pathname;
+const isHome = path === '/';
 ---
 
 <header class="site-header">
@@ -20,9 +22,15 @@ const path = Astro.url.pathname;
 					</a>
 				))
 			}
-			<a href="/tools/ai-edit" aria-current={path.startsWith('/tools') ? 'page' : undefined}>
-				AI Edit
+			<a
+				class="nav__ai"
+				href="/tools/ai-edit"
+				aria-current={path.startsWith('/tools') ? 'page' : undefined}
+			>
+				<span class="nav__ai-icon" aria-hidden="true">✦</span>
+				AI Tools
 			</a>
+			<div class="nav__spacer" aria-hidden="true"></div>
 			<ThemeToggle />
 			{
 				user ? (
@@ -30,14 +38,21 @@ const path = Astro.url.pathname;
 						{user.name || 'Account'}
 					</a>
 				) : (
-					<>
-						<a href="/login">Log in</a>
-						<a class="nav__cta nav__cta--accent" href="/signup">
-							Join free
-						</a>
-					</>
+					<a class="nav__signin" href="/login">
+						Sign in
+					</a>
 				)
 			}
 		</nav>
 	</div>
 </header>
+
+{
+	!isHome && (
+		<div class="search-strip">
+			<div class="search-strip__inner">
+				<SearchBar variant="bar" />
+			</div>
+		</div>
+	)
+}

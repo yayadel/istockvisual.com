@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AssetGrid from '../components/AssetGrid.astro';
+import { CATEGORIES, isCategorySlug } from '../config/categories';
+import { listAssetsByCategory, listFeaturedAssets } from '../lib/sanity';
+
+const q = (Astro.url.searchParams.get('q') || '').trim().toLowerCase();
+const categoryParam = Astro.url.searchParams.get('category') || 'all';
+
+const pools = isCategorySlug(categoryParam)
+	? await listAssetsByCategory(categoryParam)
+	: await listFeaturedAssets(50);
+
+const assets = q
+	? pools.filter((asset) => {
+			const haystack = [asset.title, asset.description, ...(asset.tags || []), asset.category]
+				.filter(Boolean)
+				.join(' ')
+				.toLowerCase();
+			return haystack.includes(q);
+		})
+	: pools;
+
+const categoryLabel = isCategorySlug(categoryParam)
+	? CATEGORIES.find((c) => c.slug === categoryParam)?.label
+	: 'All content';
+---
+
+<BaseLayout title={q ? `Search: ${q}` : 'Search'} description="Search photos, illustrations, vectors, and 3D assets.">
+	<div class="section-head">
+		<div>
+			<h1>Search</h1>
+			<p>
+				{
+					q
+						? `${assets.length} result${assets.length === 1 ? '' : 's'} for “${q}” in ${categoryLabel}.`
+						: `Browse ${categoryLabel.toLowerCase()} or enter a keyword above.`
+				}
+			</p>
+		</div>
+	</div>
+	<AssetGrid assets={assets} emptyMessage="No assets matched your search." />
+</BaseLayout>

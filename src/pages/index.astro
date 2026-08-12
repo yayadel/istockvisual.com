@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AssetGrid from '../components/AssetGrid.astro';
+import SearchBar from '../components/SearchBar.astro';
 import { CATEGORIES } from '../config/categories';
 import { listFeaturedAssets, isSanityConfigured } from '../lib/sanity';
 
@@ -12,14 +13,11 @@ const usingDemo = !isSanityConfigured();
 	<section class="hero" aria-label="Hero">
 		<div class="hero__media" aria-hidden="true"></div>
 		<div class="hero__content">
-			<h1 class="hero__brand">iStock<span>Visual</span></h1>
+			<h1 class="hero__brand">Discover new visuals with every visit</h1>
 			<p class="hero__lead">
-				Download curated Photos, Illustrations, Vectors, and 3D assets. Edit with AI tools built for makers.
+				Browse curated Photos, Illustrations, Vectors, and 3D assets — then edit with AI tools built for makers.
 			</p>
-			<div class="cta-row">
-				<a class="btn btn--primary" href="/photos">Browse Photos</a>
-				<a class="btn btn--ghost" href="/tools/ai-edit">Try AI Edit</a>
-			</div>
+			<SearchBar variant="hero" />
 		</div>
 	</section>
 
