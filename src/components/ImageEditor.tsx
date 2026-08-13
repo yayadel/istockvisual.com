@@ -408,9 +408,6 @@ export default function ImageEditor({
 			});
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			URL.revokeObjectURL(url);
-			stopped = true;
-			window.clearInterval(tickId);
-			setBusy('Processing 100%…');
 			setWorkingFromCanvas(canvas);
 			setStatus('Background removed. Transparent PNG ready.');
 		} catch (error) {
