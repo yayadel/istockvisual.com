@@ -973,7 +973,7 @@ export default function ImageEditor({
 								ref={stageRef}
 								style={
 									{
-										['--ie-ar']: String(canvasSize.width / Math.max(canvasSize.height, 1)),
+										['--ie-ar']: String(stageSize.width / Math.max(stageSize.height, 1)),
 									} as CSSProperties
 								}
 							>
@@ -991,6 +991,22 @@ export default function ImageEditor({
 									</div>
 								) : (
 									<p className="image-editor-modal__loading">Loading image…</p>
+								)}
+
+								{tool === 'expand' && expandGuideStyle && (
+									<div
+										className="image-editor-modal__expand-guide"
+										style={expandGuideStyle}
+										aria-hidden="true"
+									/>
+								)}
+
+								{tool === 'expand' && ready && expandTarget && (
+									<p className="image-editor-modal__expand-meta">
+										{pendingCommit
+											? `${natural.w}×${natural.h}`
+											: `${natural.w}×${natural.h} → ${expandTarget.width}×${expandTarget.height} · +${expandPct}%`}
+									</p>
 								)}
 
 								{tool === 'transform' && ready && (
