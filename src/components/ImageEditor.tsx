@@ -417,8 +417,17 @@ export default function ImageEditor({
 		}
 	};
 
+	const selectAdjustPreset = (id: string) => {
+		const preset = EDITOR_ADJUST_PRESETS.find((item) => item.id === id);
+		if (!preset) return;
+		setAdjustPresetId(id);
+		setAdjust({ ...preset.values });
+		setStatus(id === 'original' ? 'Preset: Original.' : `Preset: ${preset.label}.`);
+	};
+
 	const resetAdjust = () => {
 		setAdjust(DEFAULT_ADJUST);
+		setAdjustPresetId('original');
 		setStatus('Adjust reset.');
 	};
 
