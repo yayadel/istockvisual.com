@@ -53,7 +53,15 @@ const similar = findSimilarAssets(
 					{asset.isPremium && <span class="badge badge--premium">Pro</span>}
 					{isGenerated && <span class="badge">Generated</span>}
 				</p>
-				<h1>{asset.title}</h1>
+				<div class="detail__title-row">
+					<h1>{asset.title}</h1>
+					<ShareBar
+						client:load
+						compact
+						title={asset.title}
+						url={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
+					/>
+				</div>
 				{asset.shortDescription && (
 					<p class="detail__lead">{asset.shortDescription}</p>
 				)}
@@ -76,11 +84,6 @@ const similar = findSimilarAssets(
 				</div>
 
 				<aside class="detail__info">
-					<ShareBar
-						client:load
-						title={asset.title}
-						url={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
-					/>
 					<DownloadPanel
 						client:only="react"
 						assetId={asset._id}
