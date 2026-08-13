@@ -297,6 +297,7 @@ export async function importGeneratedAsset(
 		imagePageTitle: title,
 		pageShortDescription: formatAcronymsInText(input.meta.pageShortDescription),
 		imageCreationDescription: formatAcronymsInText(input.meta.imageCreationDescription),
+		tags: normalizeTags(input.meta.tags),
 		contentCategories,
 		depictedElements: contentCategories,
 	};

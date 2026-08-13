@@ -34,7 +34,7 @@ function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 		imageCreationDescription: String(row.creationDescription ?? ''),
 		assetUsageTips: String(row.usageTips ?? ''),
 		colorPalette: parseJsonArray(row.colorPalette as string, []),
-		tags: parseJsonArray<string>(row.tags as string, []),
+		tags: normalizeTags(parseJsonArray<string>(row.tags as string, [])),
 		relatedSearchQueries: parseJsonArray<string>(row.relatedQueries as string, []),
 		contentCategories,
 		depictedElements: contentCategories,

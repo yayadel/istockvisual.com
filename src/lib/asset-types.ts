@@ -251,7 +251,7 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 		assetUsageTips:
 			readString(parsed, ['assetUsageTips', 'Asset Functionality & Usage Tips']) || '',
 		colorPalette: normalizePalette(parsed.colorPalette),
-		tags: normalizeStringArray(parsed.tags),
+		tags: normalizeTags(normalizeStringArray(parsed.tags)),
 		relatedSearchQueries: normalizeStringArray(
 			parsed.relatedSearchQueries ?? parsed['Related Search Queries'],
 		),
