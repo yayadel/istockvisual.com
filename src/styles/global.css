@@ -1320,20 +1320,20 @@ body.upload-modal-open {
 }
 
 .download-buy--single {
-	background: #d32f2f;
-	border-color: #d32f2f;
+	background: #1f4f45;
+	border-color: #1f4f45;
 	color: #fff;
 }
 
 .download-buy--single:hover:not(:disabled) {
-	background: #b71c1c;
-	border-color: #b71c1c;
+	background: #173d36;
+	border-color: #173d36;
 }
 
 .download-buy--member {
-	background: #111;
-	border-color: #111;
-	color: #fff;
+	background: #f3f5f2;
+	border-color: rgba(36, 53, 44, 0.12);
+	color: #24352c;
 	justify-content: center;
 	padding: 1.05rem 1rem;
 }
@@ -1346,8 +1346,8 @@ body.upload-modal-open {
 }
 
 .download-buy--member:hover {
-	background: #2a2a2a;
-	border-color: #2a2a2a;
+	background: #e9eee9;
+	border-color: rgba(36, 53, 44, 0.18);
 }
 
 .download-buy:disabled {
