@@ -158,15 +158,12 @@ export function resolveContentCategories(input: {
 	const title = input.title || '';
 	const keyword = input.keyword || '';
 	const text = `${title} ${keyword}`.toLowerCase();
-	const fromTitle = pickContentCategoriesFromTitle(title, keyword);
 	const fromStored = sanitizeStoredCategories(
 		normalizeContentCategories(input.stored),
 		text,
 	);
-
-	// Prefer confident title/subject matches over stale or loose LLM labels.
-	if (fromTitle.length > 0) return fromTitle;
-	return fromStored;
+	if (fromStored.length > 0) return fromStored;
+	return pickContentCategoriesFromTitle(title, keyword);
 }
 
 function sanitizeStoredCategories(categories: string[], text: string): string[] {
