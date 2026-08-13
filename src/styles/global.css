@@ -3035,13 +3035,15 @@ body.image-editor-modal-open {
 .image-editor-modal--page .image-editor-modal__row,
 .image-editor-modal--page .image-editor-modal__row--aspects,
 .image-editor-modal--page .image-editor-modal__row--presets,
+.image-editor-modal--page .image-editor-modal__row--expand,
 .image-editor-modal--page .image-editor-modal__row--tools {
 	min-width: 0;
 	max-width: 100%;
 }
 
 .image-editor-modal--page .image-editor-modal__aspect-list,
-.image-editor-modal--page .image-editor-modal__preset-list {
+.image-editor-modal--page .image-editor-modal__preset-list,
+.image-editor-modal--page .image-editor-modal__expand-list {
 	flex: 1 1 0;
 	width: 0;
 	min-width: 0;
@@ -3552,6 +3554,43 @@ body.image-editor-modal-open {
 	bottom: -5px;
 	right: -5px;
 	cursor: nwse-resize;
+}
+
+.image-editor-modal__expand-pct {
+	padding: 0.38rem 0.7rem;
+	font-size: 0.82rem;
+	font-weight: 650;
+}
+
+.image-editor-modal__expand-guide {
+	position: absolute;
+	z-index: 2;
+	border: 1.5px dashed rgba(255, 255, 255, 0.85);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+	pointer-events: none;
+}
+
+.image-editor-modal__expand-meta {
+	position: absolute;
+	left: 0.55rem;
+	bottom: 0.55rem;
+	z-index: 3;
+	margin: 0;
+	padding: 0.28rem 0.5rem;
+	border-radius: 3px;
+	background: rgba(12, 14, 13, 0.72);
+	color: #fff;
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	pointer-events: none;
+}
+
+.image-editor-modal__expand-dims {
+	margin: 0 0 0.35rem;
+	font-size: 0.84rem;
+	font-weight: 650;
+	color: var(--ie-ink);
 }
 
 .image-editor-modal__busy {
