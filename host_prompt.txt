@@ -36,7 +36,7 @@ Anatomy & Physics: Avoid unnatural proportions, distorted limbs/hands, or physic
 
 Tag Coverage: Tags must include the topic keyword (or close variants), useful category/subject terms, and concrete depicted elements visible or implied in the scene. Provide at least 40 unique English tags; prefer short, searchable phrases. Tag Capitalization: each tag MUST use the same title-case rules as Image Page Title (capitalize major words; keep short words like a/an/the/and/of/in lowercase unless first/last; acronyms uppercase — PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K, USB, 3D; single-letter designators uppercase, e.g. Z Flashing). Examples: "Z Flashing", "Galvanized Metal", "PDF Template" — never "z flashing" or "pdf template".
 
-Content Category Selection: Set contentCategories in the JSON output to 1–3 exact labels from the allowed list above, based on the scene you describe in Image Creation Description / Image Page Title.
+Content Category Selection: Set contentCategories in the JSON output to exactly **1** label from the allowed list above, based on the scene you describe in Image Creation Description / Image Page Title.
 
 Language: All output must be strictly in English.
 

@@ -201,7 +201,7 @@ def ensure_content_categories(meta: AssetMeta, keyword: str) -> AssetMeta:
 		cats = fallback_content_categories(meta.imagePageTitle or "", keyword)
 	if not cats:
 		cats = ["Photography"] if "photo" in (meta.medium or "").lower() else ["Advertising"]
-	meta.contentCategories = cats[:3]
+	meta.contentCategories = cats[:1]
 	return meta
 
 
