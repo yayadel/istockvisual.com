@@ -223,10 +223,18 @@ export default function ImageEditor({
 		[revokeIfBlob],
 	);
 
+	const commitBaseline = useCallback(() => {
+		const working = workingRef.current;
+		if (!working) return;
+		originalRef.current = cloneCanvas(working);
+		setPendingCommit(false);
+	}, []);
+
 	const restoreOriginalWorking = useCallback(() => {
 		const original = originalRef.current;
 		if (!original) return;
 		setWorkingFromCanvas(cloneCanvas(original));
+		setPendingCommit(false);
 	}, [setWorkingFromCanvas]);
 
 	useEffect(() => {
