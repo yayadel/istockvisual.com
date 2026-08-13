@@ -199,6 +199,8 @@ export default function ImageEditor({
 		};
 	}, [expandOrigin.h, expandOrigin.w, expandPct, natural.h, natural.w]);
 
+	previewUrlRef.current = previewUrl;
+
 	/** Stage frame: while previewing, show enlarged canvas with original centered smaller. */
 	const stageSize = useMemo(() => {
 		if (tool === 'expand' && !expandSettled && expandTarget) {

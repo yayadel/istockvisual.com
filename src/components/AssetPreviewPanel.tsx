@@ -10,6 +10,7 @@ type Props = {
 	shareUrl?: string;
 	loggedIn?: boolean;
 	isPro?: boolean;
+	assetId?: string;
 };
 
 export default function AssetPreviewPanel({

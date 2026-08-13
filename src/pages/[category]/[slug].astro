@@ -135,6 +135,7 @@ const jsonLd = assetJsonLd({
 								shareUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
 								loggedIn={Boolean(user)}
 								isPro={user?.plan === 'pro'}
+								assetId={asset._id}
 							/>
 						) : (
 							<div class="empty">No preview available</div>
