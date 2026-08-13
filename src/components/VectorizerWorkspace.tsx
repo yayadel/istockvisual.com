@@ -136,98 +136,89 @@ export default function VectorizerWorkspace() {
 
 	return (
 		<div className="tools-work">
-			<label
-				className="tools-rail"
-				onDragOver={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.add('is-dragover');
-				}}
-				onDragLeave={(event) => {
-					event.currentTarget.classList.remove('is-dragover');
-				}}
-				onDrop={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.remove('is-dragover');
-					loadFile(event.dataTransfer.files?.[0]);
-				}}
-			>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*"
-					hidden
-					onChange={(event) => loadFile(event.currentTarget.files?.[0])}
-				/>
-				<div className="tools-rail__text">
-					<strong>{sourceUrl ? 'Replace image' : 'Open a bitmap'}</strong>
-					<span>Traces locally after scaling to ≤1200px on the long edge.</span>
-				</div>
-				<span className="tools-rail__cta">Browse</span>
-			</label>
+			<ToolsDropzone
+				inputRef={inputRef}
+				title={sourceUrl ? 'Replace bitmap source' : 'Drop a bitmap to vectorize'}
+				hint="Traces locally after scaling to ≤1200px on the long edge."
+				cta="Browse files"
+				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
+				sampleLabel={sourceUrl ? 'Source' : 'Trace sample'}
+				formats={['PNG', 'JPG', 'WebP']}
+				onFiles={(files) => loadFile(files?.[0])}
+			/>
 
-			<section className="tools-controls" aria-label="Vectorize settings">
-				<label className="tools-controls__field">
-					<span>Colors</span>
-					<select
-						value={settings.colors}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								colors: Number(event.currentTarget.value) as VectorColorCount,
-							}))
-						}
-					>
-						{COLOR_OPTIONS.map((n) => (
-							<option key={n} value={n}>
-								{n === 2 ? '2 · silhouette' : `${n} colors`}
-							</option>
-						))}
-					</select>
-				</label>
-				<label className="tools-controls__field tools-controls__field--grow">
-					<span>Blur · {settings.blurRadius}</span>
-					<input
-						type="range"
-						min={0}
-						max={5}
-						step={1}
-						value={settings.blurRadius}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								blurRadius: Number(event.currentTarget.value),
-							}))
-						}
-					/>
-				</label>
-				<label className="tools-controls__field tools-controls__field--grow">
-					<span>Min area · {settings.minArea}</span>
-					<input
-						type="range"
-						min={0}
-						max={40}
-						step={1}
-						value={settings.minArea}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								minArea: Number(event.currentTarget.value),
-							}))
-						}
-					/>
-				</label>
-				<div className="tools-controls__actions">
-					<button type="button" className="btn btn--primary" onClick={runVectorize} disabled={busy || !sourceUrl}>
-						{busy ? 'Tracing…' : 'Re-trace'}
-					</button>
-					<button type="button" className="btn btn--ghost" onClick={copySvg} disabled={!svg || busy}>
-						Copy code
-					</button>
-					<button type="button" className="btn btn--ghost" onClick={downloadSvg} disabled={!svg || busy}>
-						Download SVG
-					</button>
+			<ToolsPanel
+				title="Vectorize settings"
+				note="Fewer colors = cleaner silhouettes. Higher blur and min area remove noise."
+				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
+				sampleCaption={svg ? 'Ready for SVG' : 'Awaiting trace'}
+				actions={
+					<div className="tools-panel__actions">
+						<button type="button" className="btn btn--primary" onClick={runVectorize} disabled={busy || !sourceUrl}>
+							{busy ? 'Tracing…' : 'Re-trace paths'}
+						</button>
+						<button type="button" className="btn btn--ghost" onClick={copySvg} disabled={!svg || busy}>
+							Copy SVG code
+						</button>
+						<button type="button" className="btn btn--ghost" onClick={downloadSvg} disabled={!svg || busy}>
+							Download SVG
+						</button>
+					</div>
+				}
+			>
+				<div className="tools-controls tools-controls--stacked">
+					<label className="tools-controls__field">
+						<span>Colors</span>
+						<select
+							value={settings.colors}
+							onChange={(event) =>
+								setSettings((prev) => ({
+									...prev,
+									colors: Number(event.currentTarget.value) as VectorColorCount,
+								}))
+							}
+						>
+							{COLOR_OPTIONS.map((n) => (
+								<option key={n} value={n}>
+									{n === 2 ? '2 · silhouette' : `${n} colors`}
+								</option>
+							))}
+						</select>
+					</label>
+					<label className="tools-controls__field tools-controls__field--grow">
+						<span>Blur · {settings.blurRadius}</span>
+						<input
+							type="range"
+							min={0}
+							max={5}
+							step={1}
+							value={settings.blurRadius}
+							onChange={(event) =>
+								setSettings((prev) => ({
+									...prev,
+									blurRadius: Number(event.currentTarget.value),
+								}))
+							}
+						/>
+					</label>
+					<label className="tools-controls__field tools-controls__field--grow">
+						<span>Min area · {settings.minArea}</span>
+						<input
+							type="range"
+							min={0}
+							max={40}
+							step={1}
+							value={settings.minArea}
+							onChange={(event) =>
+								setSettings((prev) => ({
+									...prev,
+									minArea: Number(event.currentTarget.value),
+								}))
+							}
+						/>
+					</label>
 				</div>
-			</section>
+			</ToolsPanel>
 
 			{error && <p className="tools-work__error">{error}</p>}
 			{toast && <p className="tools-toast" role="status">{toast}</p>}
