@@ -219,7 +219,10 @@ const jsonLd = assetJsonLd({
 						{
 							asset.colorPalette && asset.colorPalette.length > 0 && (
 								<article class="story-block story-block--palette">
-									<h2>Color palette</h2>
+									<h2>
+										<span class="story-block__emoji" aria-hidden="true">🎨</span>
+										<span>Color palette</span>
+									</h2>
 									<ColorPalette client:load swatches={asset.colorPalette} />
 								</article>
 							)
