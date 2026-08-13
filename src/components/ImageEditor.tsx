@@ -144,9 +144,28 @@ export default function ImageEditor({
 	}, [aspectPreset.ratio, natural.h, natural.w]);
 
 	const canvasSize = useMemo(() => {
+		const sourceW = Math.max(1, natural.w || 1536);
+		const sourceH = Math.max(1, natural.h || 1024);
+		// Standalone Image Tool: always follow the uploaded image (and optional aspect).
+		if (variant === 'page') {
+			if (!aspectPreset.ratio) {
+				return { width: sourceW, height: sourceH };
+			}
+			const longEdge = Math.max(sourceW, sourceH);
+			if (aspectPreset.ratio >= 1) {
+				return {
+					width: longEdge,
+					height: Math.max(1, Math.round(longEdge / aspectPreset.ratio)),
+				};
+			}
+			return {
+				width: Math.max(1, Math.round(longEdge * aspectPreset.ratio)),
+				height: longEdge,
+			};
+		}
 		const selected = sizeOptions.find((item) => item.id === sizeId);
 		return selected?.output ?? { width: 1024, height: 768 };
-	}, [sizeId, sizeOptions]);
+	}, [aspectPreset.ratio, natural.h, natural.w, sizeId, sizeOptions, variant]);
 
 	const keepCircleStyle = useMemo(() => {
 		const { rx, ry } = keepCircleNormRadii(keepCircle, canvasSize.width, canvasSize.height);
