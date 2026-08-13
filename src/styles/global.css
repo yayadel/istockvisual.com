@@ -1102,6 +1102,7 @@ body:has(.detail) .search-strip__inner {
 	border-left: 1px solid rgba(20, 24, 20, 0.12);
 	cursor: pointer;
 	color: #1a1a1a;
+	justify-content: center;
 }
 
 .search-bar__submit:hover {
