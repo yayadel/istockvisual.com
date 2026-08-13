@@ -221,15 +221,12 @@ export default function DownloadPanel({
 									className={`download-menu__row${isSelected ? ' is-selected' : ''}`}
 								>
 									<span className="download-menu__meta">
-										<span className="download-menu__dims">{dims}</span>
 										{needsPro ? (
-											<em className="download-pro-badge">
-												<CrownIcon />
-												Pro
-											</em>
+											<em className="download-tier download-tier--pro">Pro</em>
 										) : (
-											<span className="download-menu__free">Free</span>
+											<span className="download-tier download-tier--free">Free</span>
 										)}
+										<span className="download-menu__dims">{dims}</span>
 									</span>
 									<span className="download-menu__formats">
 										{DOWNLOAD_FORMATS.map((format) => (
