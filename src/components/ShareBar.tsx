@@ -4,6 +4,7 @@ type Props = {
 	title: string;
 	url?: string;
 	compact?: boolean;
+	inlineChannels?: boolean;
 };
 
 function ShareIcon({ size = 16 }: { size?: number }) {

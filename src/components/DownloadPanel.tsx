@@ -13,6 +13,7 @@ import {
 	outputSizeForDownload,
 	type DownloadSizeId,
 } from '../lib/download-sizes';
+import { LONG_PLANS } from '../lib/pricing';
 
 type Props = {
 	assetId: string;
@@ -306,27 +307,15 @@ export default function DownloadPanel({
 								: 'Choose a temporary plan. Full details and checkout are on the pricing page.'}
 						</p>
 						<ul className="download-plan-list">
-							<li>
-								<div>
-									<strong>Monthly</strong>
-									<span>Unlimited downloads · billed monthly</span>
-								</div>
-								<em>$29</em>
-							</li>
-							<li>
-								<div>
-									<strong>Quarterly</strong>
-									<span>Unlimited downloads · best value start</span>
-								</div>
-								<em>$69</em>
-							</li>
-							<li>
-								<div>
-									<strong>Yearly</strong>
-									<span>Unlimited downloads · lowest monthly cost</span>
-								</div>
-								<em>$199</em>
-							</li>
+							{LONG_PLANS.map((plan) => (
+								<li key={plan.id}>
+									<div>
+										<strong>{plan.name}</strong>
+										<span>{plan.rate}</span>
+									</div>
+									<em>{plan.price}</em>
+								</li>
+							))}
 						</ul>
 						<div className="download-auth-modal__actions">
 							<a className="btn btn--primary" href="/price">
