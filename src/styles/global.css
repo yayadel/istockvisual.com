@@ -1444,7 +1444,12 @@ body.upload-modal-open {
 .detail__basics .download-rules {
 	margin: 0;
 	padding: 0.75rem 0 0;
-	border-top: 1px solid var(--line);
+	border-top: 0;
+}
+
+.basic-info-panel__body .meta-list li:last-child {
+	border-bottom: 0;
+	padding-bottom: 0;
 }
 
 .download-rules {
