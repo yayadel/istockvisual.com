@@ -62,7 +62,12 @@ const similar = findSimilarAssets(
 				<div class="detail__preview">
 					{
 						asset.previewUrl ? (
-							<AssetPreviewPanel client:load imageUrl={asset.previewUrl} title={asset.title} />
+							<AssetPreviewPanel
+								client:load
+								imageUrl={asset.previewUrl}
+								title={asset.title}
+								aiEditHref="/tools/ai-edit"
+							/>
 						) : (
 							<div class="empty">No preview available</div>
 						)
@@ -97,7 +102,6 @@ const similar = findSimilarAssets(
 							href: searchPath(label),
 						}))}
 					/>
-					<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
 				</aside>
 			</div>
 
