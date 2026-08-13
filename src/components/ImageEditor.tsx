@@ -1009,7 +1009,26 @@ export default function ImageEditor({
 			setStatus('Nothing to download yet.');
 			return;
 		}
-		canvas.toBlob((blob) => {
+		let exportCanvas = canvas;
+		if (assetId && !allSizesFree && !isPro) {
+			const capped = clampFreeEditorOutput(sizeId, {
+				width: canvas.width,
+				height: canvas.height,
+			});
+			if (capped.width !== canvas.width || capped.height !== canvas.height) {
+				const scaled = document.createElement('canvas');
+				scaled.width = capped.width;
+				scaled.height = capped.height;
+				const ctx = scaled.getContext('2d');
+				if (ctx) {
+					ctx.imageSmoothingEnabled = true;
+					ctx.imageSmoothingQuality = 'high';
+					ctx.drawImage(canvas, 0, 0, capped.width, capped.height);
+					exportCanvas = scaled;
+				}
+			}
+		}
+		exportCanvas.toBlob((blob) => {
 			if (!blob) {
 				setStatus('Download failed (canvas blocked). Apply changes, then try again.');
 				return;
