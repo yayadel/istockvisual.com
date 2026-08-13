@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type MouseEvent } from 'react';
 import ImageEditor from './ImageEditor';
 
 type Props = {
@@ -14,7 +14,7 @@ export default function AssetPreviewPanel({
 }: Props) {
 	const [editing, setEditing] = useState(false);
 	const closeEditor = useCallback(() => setEditing(false), []);
-	const openEditor = useCallback((event: React.MouseEvent) => {
+	const openEditor = useCallback((event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		event.stopPropagation();
 		setEditing(true);
