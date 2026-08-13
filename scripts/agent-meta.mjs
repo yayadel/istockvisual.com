@@ -128,6 +128,15 @@ meta.depictedElements = [];
 fs.writeFileSync(metaPath, `${JSON.stringify(meta, null, 2)}\n`, 'utf8');
 
 const relativeMeta = path.relative(root, metaPath).replaceAll('\\', '/');
+const usagePath = metaPath.replace(/\.json$/i, '.usage.json');
+let usage = null;
+if (fs.existsSync(usagePath)) {
+	try {
+		usage = JSON.parse(fs.readFileSync(usagePath, 'utf8'));
+	} catch {
+		usage = null;
+	}
+}
 console.log(
 	JSON.stringify(
 		{
@@ -137,6 +146,7 @@ console.log(
 			keywordId,
 			keyword,
 			metaPath: relativeMeta,
+			usage,
 			imagePageTitle: meta.imagePageTitle,
 			contentCategories: meta.contentCategories,
 			imagePrompt: meta.imagePrompt,

@@ -343,7 +343,19 @@ def generate_meta(keyword: str) -> tuple[AssetMeta, dict]:
 		data = json.loads(extract_json(raw))
 		meta = AssetMeta.model_validate(data)
 
-	return ensure_content_categories(meta, keyword)
+	usage = usage_to_dict(interaction)
+	usage["model"] = model
+	usage["thinkingLevel"] = thinking
+	usage["googleSearch"] = bool(request.get("tools"))
+	usage["keyword"] = keyword.strip()
+	return ensure_content_categories(meta, keyword), usage
+
+
+def append_usage_log(usage: dict) -> None:
+	log_path = ROOT / ".tmp" / "gemini-usage.jsonl"
+	log_path.parent.mkdir(parents=True, exist_ok=True)
+	with log_path.open("a", encoding="utf-8") as handle:
+		handle.write(json.dumps(usage, ensure_ascii=False) + "\n")
 
 
 def main() -> None:
@@ -355,7 +367,7 @@ def main() -> None:
 	)
 	args = parser.parse_args()
 
-	meta = generate_meta(args.keyword)
+	meta, usage = generate_meta(args.keyword)
 	payload = meta.model_dump()
 	# contentCategories is the topical category field (exactly 1 from /categories).
 	# depictedElements is unused; tags already cover depicted objects.
@@ -369,10 +381,20 @@ def main() -> None:
 	)[:1]
 
 	text = json.dumps(payload, ensure_ascii=False, indent=2)
+	append_usage_log(usage)
+	print(
+		"usage: "
+		f"input={usage['inputTokens']} output={usage['outputTokens']} "
+		f"thoughts={usage['thoughtTokens']} billedOutput={usage['billedOutputTokens']} "
+		f"total={usage['totalTokens']} costUSD={usage['estimatedCostUsd']}",
+		file=sys.stderr,
+	)
 	if args.out:
 		out_path = Path(args.out)
 		out_path.parent.mkdir(parents=True, exist_ok=True)
 		out_path.write_text(text + "\n", encoding="utf-8")
+		usage_path = out_path.with_suffix(".usage.json")
+		usage_path.write_text(json.dumps(usage, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 		print(str(out_path), file=sys.stderr)
 		print(
 			f"contentCategories: {json.dumps(payload.get('contentCategories'), ensure_ascii=False)}",
