@@ -335,20 +335,21 @@ export default function ImageEditor({
 	const handleRemoveBackground = useCallback(async () => {
 		const working = workingRef.current;
 		if (!working) return;
-		setBusy('Loading on-device model…');
+		setBusy('Processing 0%…');
 		setStatus(null);
 		try {
-			const { removeBackground } = await import('@imgly/background-removal');
-			setBusy('Removing background…');
-			const blob = await removeBackground(working.toDataURL('image/png'), {
-				progress: (key, current, total) => {
-					if (total > 0) {
-						setBusy(`Downloading model ${Math.round((current / total) * 100)}%…`);
-					} else {
-						setBusy(String(key));
-					}
+			const { removeBackground, preload } = await import('@imgly/background-removal');
+			const config = {
+				model: 'isnet_fp16' as const,
+				fetchArgs: { cache: 'force-cache' as RequestCache },
+				progress: (_key: string, current: number, total: number) => {
+					const pct = total > 0 ? Math.min(99, Math.round((current / total) * 100)) : 0;
+					setBusy(`Processing ${pct}%…`);
 				},
-			});
+			};
+			await preload(config);
+			setBusy('Processing 99%…');
+			const blob = await removeBackground(working.toDataURL('image/png'), config);
 			const img = new Image();
 			const url = URL.createObjectURL(blob);
 			await new Promise<void>((resolve, reject) => {
@@ -362,7 +363,7 @@ export default function ImageEditor({
 			setStatus('Background removed on-device. Transparent PNG ready.');
 		} catch (error) {
 			console.error(error);
-			setStatus('Background removal failed. Check network for the first model download.');
+			setStatus('Background removal failed. Please try again with a stable network on first use.');
 		} finally {
 			setBusy(null);
 		}

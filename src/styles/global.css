@@ -3065,6 +3065,23 @@ body.image-editor-modal-open {
 	line-height: 1.4;
 }
 
+.image-editor-modal__tip {
+	margin: 0;
+	padding: 0.55rem 0.65rem;
+	border-radius: 3px;
+	background: #f3f5f4;
+	border: 1px solid rgba(20, 24, 20, 0.08);
+	color: #3a443f;
+	font-size: 0.8rem;
+	line-height: 1.45;
+}
+
+[data-theme='dark'] .image-editor-modal__tip {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(238, 243, 239, 0.1);
+	color: rgba(232, 238, 233, 0.88);
+}
+
 [data-theme='dark'] .image-editor-modal__status {
 	background: rgba(196, 240, 75, 0.12);
 	color: #dce8c8;
