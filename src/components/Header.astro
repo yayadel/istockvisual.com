@@ -25,6 +25,9 @@ const isAdmin = isAdminUser(user, env);
 					</a>
 				))
 			}
+			<a href="/c/" aria-current={path === '/c' || path.startsWith('/c/') ? 'page' : undefined}>
+				Categories
+			</a>
 			<a
 				class="nav__ai"
 				href="/tools/ai-edit"
