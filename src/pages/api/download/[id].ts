@@ -4,13 +4,10 @@ import { createAuth, type AppUser } from '../../../lib/auth';
 import {
 	FREE_DOWNLOAD_WIDTH,
 	isDownloadSizeId,
+	isFreeDownloadSize,
 	sizeFileLabel,
 	variantObjectKey,
 } from '../../../lib/download-sizes';
-import {
-	logFullSizeDownload,
-	remainingFullSizeDownloads,
-} from '../../../lib/download-quota';
 import { resolveAssetById } from '../../../lib/generate-asset';
 import { contentDisposition } from '../../../lib/r2';
 import { resizeImageToLongEdgeJpeg, resizeImageToWidthJpeg } from '../../../lib/resize-jpeg';
@@ -96,7 +93,7 @@ export const GET: APIRoute = async (context) => {
 	}
 
 	const size = context.url.searchParams.get('size')?.toLowerCase() || '';
-	const isPreviewSize = size === '500';
+	const freeSize = isFreeDownloadSize(size);
 	const user = await getSessionUser(context);
 
 	if (size && !isDownloadSizeId(size)) {
@@ -106,22 +103,19 @@ export const GET: APIRoute = async (context) => {
 		});
 	}
 
-	if (!isPreviewSize && !user) {
-		return new Response(JSON.stringify({ error: 'Login required', login: '/login' }), {
-			status: 401,
-			headers: { 'Content-Type': 'application/json' },
-		});
-	}
-
-	let remaining: number | null = null;
-	if (!isPreviewSize && user && env.DB) {
-		remaining = await remainingFullSizeDownloads(env.DB, user.id, user.plan);
-		if (remaining === 0) {
+	// 500 / 1K: free for everyone. 2K / 4K / 8K: Pro only.
+	if (size && !freeSize) {
+		if (!user) {
+			return new Response(JSON.stringify({ error: 'Login required', login: '/login' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		if (user.plan !== 'pro') {
 			return new Response(
 				JSON.stringify({
-					error: 'Free full-size downloads used up. Upgrade to Pro for unlimited.',
-					upgrade: '/account',
-					remaining: 0,
+					error: 'Pro membership required for 2K, 4K, and 8K downloads.',
+					upgrade: '/price',
 				}),
 				{ status: 403, headers: { 'Content-Type': 'application/json' } },
 			);
@@ -144,19 +138,9 @@ export const GET: APIRoute = async (context) => {
 	}
 
 	const filename = sizeFileLabel(asset.slug || 'asset', size || 'original');
-	const extra: Record<string, string> = {};
-	if (remaining != null) extra['X-Downloads-Remaining'] = String(Math.max(0, remaining - 1));
 
-	const finish = async (bytes: Uint8Array, headers: Record<string, string> = {}) => {
-		if (!isPreviewSize && user && env.DB && size) {
-			await logFullSizeDownload(env.DB, {
-				userId: user.id,
-				assetId: asset._id,
-				sizeId: size,
-			});
-		}
-		return jpegDownload(bytes, filename, { ...extra, ...headers });
-	};
+	const finish = async (bytes: Uint8Array, headers: Record<string, string> = {}) =>
+		jpegDownload(bytes, filename, headers);
 
 	if (size && asset.r2ObjectKey && env.MEDIA) {
 		const variant = await env.MEDIA.get(variantObjectKey(asset.r2ObjectKey, size));
@@ -209,12 +193,21 @@ export const GET: APIRoute = async (context) => {
 		);
 	}
 
-	if (user && env.DB) {
-		await logFullSizeDownload(env.DB, {
-			userId: user.id,
-			assetId: asset._id,
-			sizeId: 'original',
+	// Original / unspecified size: Pro only
+	if (!user) {
+		return new Response(JSON.stringify({ error: 'Login required', login: '/login' }), {
+			status: 401,
+			headers: { 'Content-Type': 'application/json' },
 		});
+	}
+	if (user.plan !== 'pro') {
+		return new Response(
+			JSON.stringify({
+				error: 'Pro membership required for original downloads.',
+				upgrade: '/price',
+			}),
+			{ status: 403, headers: { 'Content-Type': 'application/json' } },
+		);
 	}
 
 	return new Response(original.bytes, {
@@ -224,7 +217,6 @@ export const GET: APIRoute = async (context) => {
 				asset.r2ObjectKey?.split('/').pop() || `${asset.slug}.jpg`,
 			),
 			'Cache-Control': 'private, no-store',
-			...extra,
 		},
 	});
 };

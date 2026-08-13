@@ -2,7 +2,7 @@ export const FREE_DOWNLOAD_WIDTH = 500;
 
 export const DOWNLOAD_SIZES = [
 	{ id: '500', label: '500', longEdge: 500, free: true, fit: 'width' },
-	{ id: '1k', label: '1K', longEdge: 1024, free: false, fit: 'long-edge' },
+	{ id: '1k', label: '1K', longEdge: 1024, free: true, fit: 'long-edge' },
 	{ id: '2k', label: '2K', longEdge: 2048, free: false, fit: 'long-edge' },
 	{ id: '4k', label: '4K', longEdge: 4096, free: false, fit: 'long-edge' },
 	{ id: '8k', label: '8K', longEdge: 8192, free: false, fit: 'long-edge' },
@@ -10,6 +10,12 @@ export const DOWNLOAD_SIZES = [
 
 export type DownloadSizeId = (typeof DOWNLOAD_SIZES)[number]['id'];
 
+export const DEFAULT_DOWNLOAD_SIZE: DownloadSizeId = '1k';
+
+/** 500 and 1K: free for everyone, no login. */
+export function isFreeDownloadSize(sizeId: string | null | undefined): boolean {
+	return sizeId === '500' || sizeId === '1k';
+}
 export function fitLongEdge(width: number, height: number, longEdge: number) {
 	const longest = Math.max(width, height) || 1;
 	const scale = longEdge / longest;
