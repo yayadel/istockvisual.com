@@ -2071,13 +2071,16 @@ body.upload-modal-open {
 	background: rgba(238, 243, 239, 0.12);
 }
 
+@media (max-width: 960px) {
+	.detail__title-row astro-island:has(.share-bar),
+	.detail__title-row .share-bar {
+		display: none;
+	}
+}
+
 @media (max-width: 640px) {
 	.detail__title-row {
 		flex-wrap: wrap;
-	}
-
-	.share-bar--compact {
-		margin-left: auto;
 	}
 }
 
@@ -2345,7 +2348,7 @@ body.upload-modal-open {
 }
 
 .download-split.is-open {
-	border-radius: 6px 6px 0 0;
+	border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .download-split:disabled {
@@ -2365,7 +2368,7 @@ body.upload-modal-open {
 	background: #fff;
 	border: 1px solid rgba(36, 53, 44, 0.12);
 	border-top: 0;
-	border-radius: 0 0 6px 6px;
+	border-radius: 0 0 var(--radius) var(--radius);
 	box-shadow:
 		0 14px 28px rgba(31, 54, 44, 0.1),
 		0 2px 6px rgba(31, 54, 44, 0.04);
