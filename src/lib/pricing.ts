@@ -16,7 +16,7 @@ export type PricingPlan = {
 };
 
 export const FAIR_USE_POLICY =
-	'Includes up to 100 high-resolution (2K/4K/8K) downloads per day to ensure fast server speeds for all members and protect against automated scraping.';
+	'The first 100 high-resolution (2K/4K/8K) downloads each day are unrestricted. After that, a fair-use cap of 10 HD downloads per hour applies to keep server speeds fast for all members and protect against automated scraping.';
 
 /** Long-term decoy: year vs Lifetime (+$40) vs 6-month (higher monthly rate). */
 export const LONG_PLANS: PricingPlan[] = [
