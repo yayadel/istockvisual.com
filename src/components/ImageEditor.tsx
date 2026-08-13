@@ -425,8 +425,13 @@ export default function ImageEditor({
 						await loadBlob(`/api/download/${assetId}?size=1k`, 'omit');
 						return;
 					} catch {
-						/* fall through to imageUrl */
+						/* fall through */
 					}
+				}
+				if (assetId && !allSizesFree && !isPro) {
+					setStatus('Failed to load image for editing.');
+					setReady(true);
+					return;
 				}
 				try {
 					await loadBlob(imageUrl, 'omit');
