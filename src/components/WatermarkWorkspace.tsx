@@ -55,6 +55,11 @@ export default function WatermarkWorkspace() {
 				URL.revokeObjectURL(item.previewUrl);
 				if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
 			}
+		};
+	}, []);
+
+	useEffect(() => {
+		return () => {
 			if (logoUrl) URL.revokeObjectURL(logoUrl);
 		};
 	}, [logoUrl]);
