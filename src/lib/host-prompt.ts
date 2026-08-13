@@ -1,13 +1,18 @@
 import hostPromptTemplate from '../data/host-prompt.txt?raw';
+import { contentCategoriesPromptList } from './content-categories';
 
-const PLACEHOLDER = '[Insert topic keyword here]';
+const KEYWORD_PLACEHOLDER = '[Insert topic keyword here]';
+const CATEGORIES_PLACEHOLDER = '[Insert allowed content categories here]';
 
 export function buildHostPrompt(keyword: string): string {
 	const trimmed = keyword.trim();
 	if (!trimmed) {
 		throw new Error('Keyword is required');
 	}
-	return hostPromptTemplate.replace(PLACEHOLDER, trimmed);
+	const categoriesList = contentCategoriesPromptList();
+	return hostPromptTemplate
+		.replace(CATEGORIES_PLACEHOLDER, categoriesList)
+		.replace(KEYWORD_PLACEHOLDER, trimmed);
 }
 
 export const JSON_OUTPUT_INSTRUCTION = `
@@ -25,9 +30,9 @@ Respond with a single JSON object only (no markdown fences), using exactly these
   "medium": "Photograph | Illustration | 3D Graphic"
 }
 
-contentCategories MUST be 1–3 items chosen ONLY from:
-Business, Finance, Technology, AI, People, Workplace, Lifestyle, Landscapes, Nature, Plants, Animals, Cityscapes, Architecture, Interior, Food, Beverage, Coffee, Education, Culture, Medical, Health, Sports, Advertising, E-commerce, Web, Vectors, Illustrations, Photography, Aerial, 3D Assets, Backgrounds, Textures, Abstract, Conceptual, Sustainability, Mood.
-Pick them from what the image actually depicts (subject/scene). Gaming peripherals → Technology, not Sports. Sports is physical athletics only. Do NOT invent labels.
+contentCategories is REQUIRED: 1–3 items chosen ONLY from:
+${contentCategoriesPromptList()}
+Pick them from what the image actually depicts (subject/scene). Gaming peripherals → Technology, not Sports. Sports is physical athletics only. Do NOT invent labels. Do NOT leave contentCategories empty.
 Do NOT output separate keywords or depictedElements fields — put those ideas into tags (minimum 40 unique tags).
 Title rules: imagePageTitle uses standard title case; capitalize acronyms (PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K); lowercase short words like a/an/the/and/or/of/in/on/at/to/by/with unless first/last. Example: "Orbital Quenching PDF Process in a Metallurgy Lab".
 `.trim();
