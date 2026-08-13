@@ -6,7 +6,6 @@ import DownloadPanel from '../../components/DownloadPanel';
 import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
-import { remainingFullSizeDownloads } from '../../lib/download-quota';
 import { searchPath } from '../../lib/paths';
 import { env } from 'cloudflare:workers';
 
@@ -24,8 +23,6 @@ if (!asset) {
 }
 
 const user = Astro.locals.user;
-const remainingFullDownloads =
-	user && env.DB ? await remainingFullSizeDownloads(env.DB, user.id, user.plan) : 0;
 const isGenerated = asset.source === 'generated';
 const tags = asset.tags ?? [];
 const similar = findSimilarAssets(

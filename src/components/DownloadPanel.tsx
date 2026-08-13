@@ -16,7 +16,6 @@ type Props = {
 	sourceHeight?: number;
 	loggedIn: boolean;
 	isPro: boolean;
-	remainingFullDownloads: number | null;
 	loginHref: string;
 	signupHref?: string;
 	upgradeHref?: string;
