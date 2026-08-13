@@ -177,34 +177,110 @@ export function expandWithEdgeFill(
 	return out;
 }
 
-export function applyAdjustToImageData(data: ImageData, adjust: AdjustValues): ImageData {
-	const { brightness, contrast, saturation } = adjust;
-	if (!brightness && !contrast && !saturation) return data;
+export function hasAdjustChanges(adjust: AdjustValues): boolean {
+	return (Object.keys(DEFAULT_ADJUST) as (keyof AdjustValues)[]).some(
+		(key) => adjust[key] !== 0,
+	);
+}
 
-	const b = brightness / 100;
-	const c = (contrast / 100) * 255;
-	const contrastFactor = (259 * (c + 255)) / (255 * (259 - c));
-	const s = 1 + saturation / 100;
+function hueRotateRgb(r: number, g: number, b: number, degrees: number) {
+	const rad = (degrees * Math.PI) / 180;
+	const cos = Math.cos(rad);
+	const sin = Math.sin(rad);
+	const matrix = [
+		0.213 + cos * 0.787 - sin * 0.213,
+		0.715 - cos * 0.715 - sin * 0.715,
+		0.072 - cos * 0.072 + sin * 0.928,
+		0.213 - cos * 0.213 + sin * 0.143,
+		0.715 + cos * 0.285 + sin * 0.14,
+		0.072 - cos * 0.072 - sin * 0.283,
+		0.213 - cos * 0.213 - sin * 0.787,
+		0.715 - cos * 0.715 + sin * 0.715,
+		0.072 + cos * 0.928 + sin * 0.072,
+	];
+	return {
+		r: r * matrix[0]! + g * matrix[1]! + b * matrix[2]!,
+		g: r * matrix[3]! + g * matrix[4]! + b * matrix[5]!,
+		b: r * matrix[6]! + g * matrix[7]! + b * matrix[8]!,
+	};
+}
+
+export function applyAdjustToImageData(data: ImageData, adjust: AdjustValues): ImageData {
+	if (!hasAdjustChanges(adjust)) return data;
+
+	const brightness = adjust.brightness / 100;
+	const exposure = adjust.exposure / 100;
+	const contrast = (adjust.contrast / 100) * 255;
+	const contrastFactor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+	const saturation = 1 + adjust.saturation / 100;
+	const vibrance = adjust.vibrance / 100;
+	const highlights = adjust.highlights / 100;
+	const shadows = adjust.shadows / 100;
+	const temperature = adjust.temperature / 100;
+	const tint = adjust.tint / 100;
+	const hue = adjust.hue;
+
 	const out = new ImageData(new Uint8ClampedArray(data.data), data.width, data.height);
 	const px = out.data;
+	const exposureMul = Math.pow(2, exposure);
 
 	for (let i = 0; i < px.length; i += 4) {
-		let r = px[i];
-		let g = px[i + 1];
-		let bl = px[i + 2];
+		let r = px[i]!;
+		let g = px[i + 1]!;
+		let bl = px[i + 2]!;
 
-		r = clamp(contrastFactor * (r - 128) + 128 + b * 255, 0, 255);
-		g = clamp(contrastFactor * (g - 128) + 128 + b * 255, 0, 255);
-		bl = clamp(contrastFactor * (bl - 128) + 128 + b * 255, 0, 255);
+		// Exposure
+		r *= exposureMul;
+		g *= exposureMul;
+		bl *= exposureMul;
 
-		const gray = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
-		r = clamp(gray + (r - gray) * s, 0, 255);
-		g = clamp(gray + (g - gray) * s, 0, 255);
-		bl = clamp(gray + (bl - gray) * s, 0, 255);
+		// Brightness + contrast
+		r = contrastFactor * (r - 128) + 128 + brightness * 255;
+		g = contrastFactor * (g - 128) + 128 + brightness * 255;
+		bl = contrastFactor * (bl - 128) + 128 + brightness * 255;
 
-		px[i] = r;
-		px[i + 1] = g;
-		px[i + 2] = bl;
+		let lum = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+		const highlightMask = clamp((lum - 128) / 127, 0, 1);
+		const shadowMask = clamp((128 - lum) / 128, 0, 1);
+		const hiLift = highlights * 80 * highlightMask;
+		const shLift = shadows * 80 * shadowMask;
+		r += hiLift + shLift;
+		g += hiLift + shLift;
+		bl += hiLift + shLift;
+
+		// Temperature (warm/cool) + tint (green/magenta)
+		r += temperature * 40;
+		bl -= temperature * 40;
+		g += tint * 35;
+		r -= tint * 15;
+		bl -= tint * 15;
+
+		lum = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+		r = lum + (r - lum) * saturation;
+		g = lum + (g - lum) * saturation;
+		bl = lum + (bl - lum) * saturation;
+
+		// Vibrance: boost low-saturation pixels more
+		if (vibrance) {
+			const maxC = Math.max(r, g, bl);
+			const minC = Math.min(r, g, bl);
+			const sat = maxC > 1e-3 ? 1 - minC / maxC : 0;
+			const vibeFactor = 1 + vibrance * (1 - sat);
+			r = lum + (r - lum) * vibeFactor;
+			g = lum + (g - lum) * vibeFactor;
+			bl = lum + (bl - lum) * vibeFactor;
+		}
+
+		if (hue) {
+			const rotated = hueRotateRgb(r, g, bl, hue);
+			r = rotated.r;
+			g = rotated.g;
+			bl = rotated.b;
+		}
+
+		px[i] = clamp(r, 0, 255);
+		px[i + 1] = clamp(g, 0, 255);
+		px[i + 2] = clamp(bl, 0, 255);
 	}
 	return out;
 }
@@ -222,9 +298,17 @@ export function canvasFromImage(
 	return canvas;
 }
 
+/** Fast CSS preview for basic filters; advanced ones use canvas bake. */
 export function cssFilterFromAdjust(adjust: AdjustValues): string {
-	const brightness = 1 + adjust.brightness / 100;
+	const brightness = 1 + adjust.brightness / 100 + adjust.exposure / 120;
 	const contrast = 1 + adjust.contrast / 100;
-	const saturate = 1 + adjust.saturation / 100;
-	return `brightness(${brightness}) contrast(${contrast}) saturate(${saturate})`;
+	const saturate = 1 + adjust.saturation / 100 + adjust.vibrance / 140;
+	const hue = adjust.hue;
+	const parts = [
+		`brightness(${brightness})`,
+		`contrast(${contrast})`,
+		`saturate(${Math.max(0, saturate)})`,
+	];
+	if (hue) parts.push(`hue-rotate(${hue}deg)`);
+	return parts.join(' ');
 }
