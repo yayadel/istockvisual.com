@@ -3972,6 +3972,14 @@ body.image-editor-modal-open {
 	border-radius: 0;
 	width: 100%;
 	max-width: 100%;
+	min-width: 0;
+}
+
+.image-tool-page,
+.image-tool-page__studio,
+.image-convert-page {
+	max-width: 100%;
+	min-width: 0;
 }
 
 @keyframes image-tool-hero-drift {

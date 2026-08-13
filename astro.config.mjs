@@ -24,7 +24,8 @@ export default defineConfig({
 			external: ['@imgly/background-removal', 'onnxruntime-web'],
 		},
 		optimizeDeps: {
-			exclude: ['@imgly/background-removal', 'onnxruntime-web'],
+			exclude: ['@imgly/background-removal', 'onnxruntime-web', 'heic2any'],
+			include: ['jszip'],
 		},
 	},
 });
