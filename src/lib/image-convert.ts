@@ -51,6 +51,7 @@ export type ConvertItem = {
 	resultUrl?: string;
 	resultSize?: number;
 	resultName?: string;
+	isExample?: boolean;
 };
 
 function formatById(id: ConvertFormatId) {
