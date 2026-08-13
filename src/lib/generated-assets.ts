@@ -251,3 +251,42 @@ export async function slugExists(
 		.first<{ id: string }>();
 	return Boolean(row);
 }
+
+/** Top topical categories by published image count (D1 depictedElements). */
+export async function listTopContentCategoriesByCount(
+	db: D1Database | undefined,
+	limit = 10,
+): Promise<ContentCategoryCount[]> {
+	const counts = new Map<string, number>();
+
+	if (db) {
+		try {
+			const result = await db
+				.prepare(
+					`SELECT TRIM(json_extract(depictedElements, '$[0]')) AS label, COUNT(*) AS cnt
+					 FROM generated_asset
+					 WHERE depictedElements IS NOT NULL
+					   AND length(depictedElements) > 2
+					   AND json_valid(depictedElements)
+					   AND json_array_length(depictedElements) >= 1
+					 GROUP BY 1`,
+				)
+				.all<{ label: string | null; cnt: number }>();
+
+			for (const row of result.results ?? []) {
+				const label = normalizeContentCategories([String(row.label ?? '')])[0];
+				if (!label) continue;
+				counts.set(label, (counts.get(label) || 0) + Number(row.cnt ?? 0));
+			}
+		} catch {
+			/* keep empty counts; fall through to vocabulary order */
+		}
+	}
+
+	return CONTENT_CATEGORY_PAGES.map((page) => ({
+		...page,
+		count: counts.get(page.label) || 0,
+	}))
+		.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+		.slice(0, Math.max(1, limit));
+}

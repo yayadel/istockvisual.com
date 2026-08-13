@@ -3,6 +3,8 @@ import { CATEGORIES } from '../config/categories';
 import ThemeToggle from './ThemeToggle.astro';
 import SearchBar from './SearchBar.astro';
 import { isAdminUser } from '../lib/admin';
+import { contentCategoryPath } from '../lib/content-categories';
+import { listTopContentCategoriesByCount } from '../lib/generated-assets';
 import { env } from 'cloudflare:workers';
 
 const user = Astro.locals.user;
@@ -10,6 +12,8 @@ const path = Astro.url.pathname;
 const isHome = path === '/';
 const isAdmin = isAdminUser(user, env);
 const toolsActive = path.startsWith('/tools/');
+const categoriesActive = path === '/c' || path.startsWith('/c/');
+const topCategories = await listTopContentCategoriesByCount(env.DB, 10);
 ---
 
 <header class="site-header">
@@ -26,9 +30,45 @@ const toolsActive = path.startsWith('/tools/');
 					</a>
 				))
 			}
-			<a href="/c/" aria-current={path === '/c' || path.startsWith('/c/') ? 'page' : undefined}>
-				Categories
-			</a>
+			<div class="nav__dropdown nav__dropdown--categories" data-nav-dropdown>
+				<button
+					type="button"
+					class="nav__dropdown-trigger"
+					aria-expanded="false"
+					aria-haspopup="true"
+					aria-controls="nav-categories-menu"
+					data-nav-dropdown-trigger
+					aria-current={categoriesActive ? 'page' : undefined}
+				>
+					Categories
+					<span class="nav__dropdown-caret" aria-hidden="true"></span>
+				</button>
+				<div
+					id="nav-categories-menu"
+					class="nav__dropdown-menu nav__categories-menu"
+					hidden
+					data-nav-dropdown-menu
+					role="menu"
+				>
+					<p class="nav__categories-menu__label">Top categories</p>
+					{
+						topCategories.map((item) => (
+							<a
+								href={contentCategoryPath(item.slug)}
+								role="menuitem"
+								aria-current={path === `/c/${item.slug}` ? 'page' : undefined}
+							>
+								<span>{item.label}</span>
+								<em>{item.count}</em>
+							</a>
+						))
+					}
+					<a class="nav__categories-menu__all" href="/c/" role="menuitem">
+						All Categories
+						<span aria-hidden="true">→</span>
+					</a>
+				</div>
+			</div>
 			<div class="nav__dropdown nav__dropdown--tools" data-nav-dropdown>
 				<button
 					type="button"
@@ -211,6 +251,8 @@ const toolsActive = path.startsWith('/tools/');
 }
 
 <script>
+	var navCloseTimer = null;
+
 	function closeAllNavDropdowns(except) {
 		document.querySelectorAll('[data-nav-dropdown]').forEach(function (root) {
 			if (except && root === except) return;
@@ -220,6 +262,33 @@ const toolsActive = path.startsWith('/tools/');
 			if (trigger) trigger.setAttribute('aria-expanded', 'false');
 			root.classList.remove('is-open');
 		});
+	}
+
+	function openNavDropdown(root) {
+		if (!root) return;
+		if (navCloseTimer) {
+			clearTimeout(navCloseTimer);
+			navCloseTimer = null;
+		}
+		var menu = root.querySelector('[data-nav-dropdown-menu]');
+		var trigger = root.querySelector('[data-nav-dropdown-trigger]');
+		if (!menu || !trigger) return;
+		closeAllNavDropdowns(root);
+		menu.hidden = false;
+		trigger.setAttribute('aria-expanded', 'true');
+		root.classList.add('is-open');
+		if (menu.classList.contains('nav__tools-mega')) {
+			activateToolsPanel(menu, defaultToolsId(menu));
+		}
+	}
+
+	function scheduleCloseNavDropdown(root) {
+		if (navCloseTimer) clearTimeout(navCloseTimer);
+		navCloseTimer = setTimeout(function () {
+			if (root && root.matches(':hover')) return;
+			closeAllNavDropdowns();
+			navCloseTimer = null;
+		}, 160);
 	}
 
 	function activateToolsPanel(menu, id) {
@@ -241,6 +310,15 @@ const toolsActive = path.startsWith('/tools/');
 		return first ? first.getAttribute('data-tools-item') : 'image';
 	}
 
+	document.querySelectorAll('[data-nav-dropdown]').forEach(function (root) {
+		root.addEventListener('pointerenter', function () {
+			openNavDropdown(root);
+		});
+		root.addEventListener('pointerleave', function () {
+			scheduleCloseNavDropdown(root);
+		});
+	});
+
 	document.addEventListener('click', function (event) {
 		var target = event.target;
 		if (!(target instanceof Element)) return;
@@ -251,15 +329,10 @@ const toolsActive = path.startsWith('/tools/');
 			var menu = root && root.querySelector('[data-nav-dropdown-menu]');
 			if (!root || !menu) return;
 			event.preventDefault();
-			var willOpen = menu.hidden;
-			closeAllNavDropdowns();
-			if (willOpen) {
-				menu.hidden = false;
-				trigger.setAttribute('aria-expanded', 'true');
-				root.classList.add('is-open');
-				if (menu.classList.contains('nav__tools-mega')) {
-					activateToolsPanel(menu, defaultToolsId(menu));
-				}
+			if (menu.hidden) {
+				openNavDropdown(root);
+			} else {
+				closeAllNavDropdowns();
 			}
 			return;
 		}
