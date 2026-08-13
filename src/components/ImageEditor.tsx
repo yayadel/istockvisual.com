@@ -762,19 +762,28 @@ export default function ImageEditor({
 				<header className="image-editor-modal__header">
 					<div>
 						{!isPage && (
-							<p className="image-editor-modal__eyebrow">Client-side editor</p>
+							<>
+								<p className="image-editor-modal__eyebrow">Client-side editor</p>
+								<h2 id="image-editor-title">{title}</h2>
+							</>
 						)}
-						<h2 id="image-editor-title">{title}</h2>
+						{isPage && (
+							<h2 id="image-editor-title" className="visually-hidden">
+								{title}
+							</h2>
+						)}
 					</div>
 					<div className="image-editor-modal__header-actions">
-						<button
-							className="btn btn--ghost"
-							type="button"
-							onClick={() => onCloseRef.current()}
-							disabled={Boolean(busy)}
-						>
-							{isPage ? 'New image' : 'Close'}
-						</button>
+						{!isPage && (
+							<button
+								className="btn btn--ghost"
+								type="button"
+								onClick={() => onCloseRef.current()}
+								disabled={Boolean(busy)}
+							>
+								Close
+							</button>
+						)}
 					</div>
 				</header>
 
