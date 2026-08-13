@@ -91,6 +91,8 @@ export default function ImageEditor({
 	variant = 'modal',
 	allSizesFree = false,
 }: Props) {
+	/** Asset editor: Expand is Pro-only so free users can't bypass 2K/4K/8K. Tools page stays open. */
+	const canUseExpand = allSizesFree || isPro;
 	const stageRef = useRef<HTMLDivElement>(null);
 	const workingRef = useRef<HTMLCanvasElement | null>(null);
 	const originalRef = useRef<HTMLCanvasElement | null>(null);
@@ -865,8 +867,8 @@ export default function ImageEditor({
 		const working = workingRef.current;
 		if (!working) return null;
 
-		// If Expand preview is pending, bake fill into a temp canvas for export.
-		if (tool === 'expand' && !expandSettled && expandPct > 0) {
+		// Only Pro / tools-page may bake Expand into download.
+		if (canUseExpand && tool === 'expand' && !expandSettled && expandPct > 0) {
 			const targetW = Math.max(1, Math.round(working.width * (1 + expandPct / 100)));
 			const targetH = Math.max(1, Math.round(working.height * (1 + expandPct / 100)));
 			if (targetW !== working.width || targetH !== working.height) {
@@ -880,7 +882,7 @@ export default function ImageEditor({
 			}
 		}
 		return working;
-	}, [expandPct, expandSettled, tool]);
+	}, [canUseExpand, expandPct, expandSettled, tool]);
 
 	const buildExportCanvas = useCallback(() => {
 		const source = resolveExportSource();
@@ -896,9 +898,11 @@ export default function ImageEditor({
 		const hasLive =
 			hasAdjustChanges(adjust) || hasTransformChanges(liveTransform);
 
-		// Prefer the real edited pixel buffer after Expand (don't squash back to Size preset).
+		// Expanded native export only for users allowed to Expand (Pro / tools page).
 		const preferNative =
-			!hasLive && (expandSettled || (tool === 'expand' && expandPct > 0));
+			canUseExpand &&
+			!hasLive &&
+			(expandSettled || (tool === 'expand' && expandPct > 0));
 
 		const targetW = preferNative ? source.width : canvasSize.width;
 		const targetH = preferNative ? source.height : canvasSize.height;
