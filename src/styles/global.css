@@ -3511,6 +3511,7 @@ body.download-auth-modal-open {
 .asset-preview__footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	align-items: stretch;
 	gap: 0.65rem;
 	width: 100%;
 	margin: 0;
