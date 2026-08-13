@@ -1461,8 +1461,14 @@ body.download-auth-modal-open {
 	background: var(--panel-bg);
 }
 
-[data-theme='dark'] .download-size {
+[data-theme='dark'] .download-menu {
 	background: var(--panel-bg);
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme='dark'] .download-menu__item:hover,
+[data-theme='dark'] .download-menu__item.is-selected {
+	background: rgba(255, 255, 255, 0.06);
 }
 
 .detail__info .meta-list {
