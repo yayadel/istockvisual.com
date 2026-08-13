@@ -10,7 +10,7 @@ Color Palette (including HEX color codes)
 
 Tags (REQUIRED: output **40 or more** tags. Merge into this single list: topic keywords, subject labels, and depicted objects/elements such as cup, male, cat, desk, mountain, etc. Do NOT output separate keywords or depicted-elements fields.)
 
-Content Categories (REQUIRED field name in JSON: contentCategories — an array of **1 to 3** strings. Choose labels that match what the image will actually depict — the visible subject/scene — not loose word associations. Example: a wireless gaming mouse → ["Technology","Advertising"] or ["Technology","E-commerce"], NEVER ["Sports"]. Sports is only for physical athletics. You MUST copy labels EXACTLY from this allowed list (comma-separated): [Insert allowed content categories here]. Do not invent new category names. Do not leave contentCategories empty.)
+Content Categories (REQUIRED field name in JSON: contentCategories — an array with **exactly 1** string. Choose the single best label for what the image will actually depict — the visible subject/scene, not loose word associations. Example: a wireless gaming mouse → ["Technology"], NEVER ["Sports"]. Sports is only for physical athletics. You MUST copy the label EXACTLY from this allowed list (comma-separated): [Insert allowed content categories here]. Do not invent new category names. Do not leave contentCategories empty. Do not return more than one label.)
 
 Related Search Queries
 
@@ -36,7 +36,7 @@ Anatomy & Physics: Avoid unnatural proportions, distorted limbs/hands, or physic
 
 Tag Coverage: Tags must include the topic keyword (or close variants), useful category/subject terms, and concrete depicted elements visible or implied in the scene. Provide at least 40 unique English tags; prefer short, searchable phrases. Tag Capitalization: each tag MUST use the same title-case rules as Image Page Title (capitalize major words; keep short words like a/an/the/and/of/in lowercase unless first/last; acronyms uppercase — PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K, USB, 3D; single-letter designators uppercase, e.g. Z Flashing). Examples: "Z Flashing", "Galvanized Metal", "PDF Template" — never "z flashing" or "pdf template".
 
-Content Category Selection: Set contentCategories in the JSON output to 1–3 exact labels from the allowed list above, based on the scene you describe in Image Creation Description / Image Page Title.
+Content Category Selection: Set contentCategories in the JSON output to exactly **1** label from the allowed list above, based on the scene you describe in Image Creation Description / Image Page Title.
 
 Language: All output must be strictly in English.
 

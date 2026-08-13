@@ -54,9 +54,9 @@ class AssetMeta(BaseModel):
 	)
 	contentCategories: List[str] = Field(
 		min_length=1,
-		max_length=3,
+		max_length=1,
 		description=(
-			"REQUIRED: 1 to 3 exact labels from the allowed content-category list, "
+			"REQUIRED: exactly 1 exact label from the allowed content-category list, "
 			"matching what the image depicts (visible subject/scene). "
 			"Gaming mouse/peripherals = Technology (never Sports). "
 			f"Allowed labels only: {CONTENT_CATEGORIES_CSV}"
