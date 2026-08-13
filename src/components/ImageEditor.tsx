@@ -35,8 +35,8 @@ const DEFAULT_CROP: CropRect = { x: 0, y: 0, w: 1, h: 1 };
 const TOOLS: { id: ToolId; label: string; hint: string }[] = [
 	{ id: 'adjust', label: 'Adjust', hint: 'Color & light' },
 	{ id: 'transform', label: 'Crop & Flip', hint: 'Aspect, crop, rotate' },
-	{ id: 'remove-bg', label: 'Remove BG', hint: 'On-device AI' },
-	{ id: 'expand', label: 'Expand', hint: 'Edge fill' },
+	{ id: 'remove-bg', label: 'Remove BG', hint: 'Cut out subject' },
+	{ id: 'expand', label: 'Expand', hint: 'Extend canvas' },
 ];
 
 function fitCropToAspect(crop: CropRect, ratio: number | null): CropRect {
