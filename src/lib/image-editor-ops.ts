@@ -331,104 +331,127 @@ export function keepCircleNormRadii(
 	};
 }
 
-/**
- * Crop the working image to the keep-circle (plus padding) so remove-bg
- * focuses on the user-chosen subject instead of guessing.
- */
-export function extractKeepCircleCrop(
-	source: HTMLCanvasElement,
+/** Map a stage keep-circle into source-image pixel coordinates. */
+export function mapKeepCircleToSource(
 	circle: KeepCircle,
+	sourceW: number,
+	sourceH: number,
 	frameW: number,
 	frameH: number,
-	padding = 0.18,
-): {
-	crop: HTMLCanvasElement;
-	offsetX: number;
-	offsetY: number;
-	localCx: number;
-	localCy: number;
-	localR: number;
-} {
-	const fit = containSize(source.width, source.height, frameW, frameH);
-	const scale = fit.w / Math.max(1, source.width);
+): { cx: number; cy: number; r: number } {
+	const fit = containSize(sourceW, sourceH, frameW, frameH);
+	const scale = fit.w / Math.max(1, sourceW);
 	const minSide = Math.max(1, Math.min(frameW, frameH));
-	const frameCx = circle.cx * frameW;
-	const frameCy = circle.cy * frameH;
-	const frameR = circle.r * minSide;
-
-	const srcCx = (frameCx - fit.x) / scale;
-	const srcCy = (frameCy - fit.y) / scale;
-	const srcR = frameR / scale;
-	const pad = srcR * padding;
-
-	const x0 = Math.floor(clamp(srcCx - srcR - pad, 0, source.width));
-	const y0 = Math.floor(clamp(srcCy - srcR - pad, 0, source.height));
-	const x1 = Math.ceil(clamp(srcCx + srcR + pad, 0, source.width));
-	const y1 = Math.ceil(clamp(srcCy + srcR + pad, 0, source.height));
-	const cropW = Math.max(1, x1 - x0);
-	const cropH = Math.max(1, y1 - y0);
-
-	const crop = document.createElement('canvas');
-	crop.width = cropW;
-	crop.height = cropH;
-	const ctx = crop.getContext('2d');
-	if (ctx) ctx.drawImage(source, x0, y0, cropW, cropH, 0, 0, cropW, cropH);
-
 	return {
-		crop,
-		offsetX: x0,
-		offsetY: y0,
-		localCx: srcCx - x0,
-		localCy: srcCy - y0,
-		localR: srcR,
+		cx: (circle.cx * frameW - fit.x) / scale,
+		cy: (circle.cy * frameH - fit.y) / scale,
+		r: (circle.r * minSide) / scale,
 	};
 }
 
-/** Soft-gate alpha outside the keep circle so leftover crop corners stay transparent. */
-export function applyKeepCircleAlphaGate(
+/**
+ * After full-image remove-bg: keep only the foreground blob(s) that touch the
+ * keep-circle. The circle marks which subject to retain — it does not crop.
+ * Returns false if no usable foreground was found.
+ */
+export function keepForegroundTouchingCircle(
 	canvas: HTMLCanvasElement,
-	localCx: number,
-	localCy: number,
-	localR: number,
-	softExtra = 0.35,
-): void {
+	cx: number,
+	cy: number,
+	r: number,
+	alphaThreshold = 20,
+): boolean {
 	const ctx = canvas.getContext('2d');
-	if (!ctx) return;
-	const { width, height } = canvas;
-	const image = ctx.getImageData(0, 0, width, height);
+	if (!ctx) return false;
+	const { width: w, height: h } = canvas;
+	const image = ctx.getImageData(0, 0, w, h);
 	const px = image.data;
-	const hard = Math.max(1, localR);
-	const soft = hard * (1 + softExtra);
-	for (let y = 0; y < height; y += 1) {
-		for (let x = 0; x < width; x += 1) {
-			const i = (y * width + x) * 4;
-			const d = Math.hypot(x + 0.5 - localCx, y + 0.5 - localCy);
-			if (d <= hard) continue;
-			if (d >= soft) {
-				px[i + 3] = 0;
-				continue;
-			}
-			const t = 1 - (d - hard) / (soft - hard);
-			px[i + 3] = Math.round((px[i + 3] ?? 0) * t);
+	const n = w * h;
+	const keep = new Uint8Array(n);
+	const isFg = (idx: number) => (px[idx * 4 + 3] ?? 0) >= alphaThreshold;
+
+	const queue: number[] = [];
+	const r2 = Math.max(1, r) * Math.max(1, r);
+	const x0 = Math.max(0, Math.floor(cx - r));
+	const x1 = Math.min(w - 1, Math.ceil(cx + r));
+	const y0 = Math.max(0, Math.floor(cy - r));
+	const y1 = Math.min(h - 1, Math.ceil(cy + r));
+
+	for (let y = y0; y <= y1; y += 1) {
+		for (let x = x0; x <= x1; x += 1) {
+			const dx = x + 0.5 - cx;
+			const dy = y + 0.5 - cy;
+			if (dx * dx + dy * dy > r2) continue;
+			const idx = y * w + x;
+			if (!isFg(idx)) continue;
+			keep[idx] = 1;
+			queue.push(idx);
 		}
 	}
-	ctx.putImageData(image, 0, 0);
-}
 
-/** Paste a cropped subject onto a full-size transparent canvas. */
-export function compositeCropToCanvas(
-	fullW: number,
-	fullH: number,
-	crop: CanvasImageSource,
-	offsetX: number,
-	offsetY: number,
-	cropW: number,
-	cropH: number,
-): HTMLCanvasElement {
-	const out = document.createElement('canvas');
-	out.width = Math.max(1, fullW);
-	out.height = Math.max(1, fullH);
-	const ctx = out.getContext('2d');
-	if (ctx) ctx.drawImage(crop, 0, 0, cropW, cropH, offsetX, offsetY, cropW, cropH);
-	return out;
+	// If the circle missed opaque pixels, seed from the nearest foreground nearby.
+	if (queue.length === 0) {
+		let best = -1;
+		let bestD = Infinity;
+		const searchR = Math.max(r * 2, 24);
+		const sx0 = Math.max(0, Math.floor(cx - searchR));
+		const sx1 = Math.min(w - 1, Math.ceil(cx + searchR));
+		const sy0 = Math.max(0, Math.floor(cy - searchR));
+		const sy1 = Math.min(h - 1, Math.ceil(cy + searchR));
+		for (let y = sy0; y <= sy1; y += 1) {
+			for (let x = sx0; x <= sx1; x += 1) {
+				const idx = y * w + x;
+				if (!isFg(idx)) continue;
+				const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
+				if (d < bestD) {
+					bestD = d;
+					best = idx;
+				}
+			}
+		}
+		if (best < 0) {
+			for (let idx = 0; idx < n; idx += 1) {
+				if (!isFg(idx)) continue;
+				const x = idx % w;
+				const y = (idx / w) | 0;
+				const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
+				if (d < bestD) {
+					bestD = d;
+					best = idx;
+				}
+			}
+		}
+		if (best >= 0) {
+			keep[best] = 1;
+			queue.push(best);
+		}
+	}
+
+	if (queue.length === 0) return false;
+
+	let head = 0;
+	while (head < queue.length) {
+		const idx = queue[head]!;
+		head += 1;
+		const x = idx % w;
+		const y = (idx / w) | 0;
+		const tryPush = (nx: number, ny: number) => {
+			if (nx < 0 || ny < 0 || nx >= w || ny >= h) return;
+			const nidx = ny * w + nx;
+			if (keep[nidx]) return;
+			if (!isFg(nidx)) return;
+			keep[nidx] = 1;
+			queue.push(nidx);
+		};
+		tryPush(x - 1, y);
+		tryPush(x + 1, y);
+		tryPush(x, y - 1);
+		tryPush(x, y + 1);
+	}
+
+	for (let i = 0; i < n; i += 1) {
+		if (!keep[i]) px[i * 4 + 3] = 0;
+	}
+	ctx.putImageData(image, 0, 0);
+	return true;
 }
