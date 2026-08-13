@@ -179,33 +179,20 @@ export default function DownloadPanel({
 		}
 	}
 
-	const selectedHint = `${selectedSize.output.width} × ${selectedSize.output.height}`;
-
 	return (
 		<div className="download-panel" ref={rootRef}>
 			<div className="download-split-wrap">
-				<div className={`download-split${menuOpen ? ' is-open' : ''}`}>
-					<button
-						type="button"
-						className="download-split__main"
-						disabled={busy}
-						onClick={() => downloadSize(selected, 'jpg')}
-					>
-						Download
-						<span className="download-split__size">{selectedHint}</span>
-					</button>
-					<button
-						type="button"
-						className="download-split__toggle"
-						disabled={busy}
-						aria-expanded={menuOpen}
-						aria-haspopup="listbox"
-						aria-label="Choose download size"
-						onClick={() => setMenuOpen((open) => !open)}
-					>
-						<ChevronIcon />
-					</button>
-				</div>
+				<button
+					type="button"
+					className={`download-split${menuOpen ? ' is-open' : ''}`}
+					disabled={busy}
+					aria-expanded={menuOpen}
+					aria-haspopup="listbox"
+					onClick={() => setMenuOpen((open) => !open)}
+				>
+					<span className="download-split__label">Free Download</span>
+					<ChevronIcon />
+				</button>
 
 				{menuOpen && (
 					<ul className="download-menu" role="listbox" aria-label="Download sizes">
