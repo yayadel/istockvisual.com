@@ -10,7 +10,9 @@ import {
 	type WatermarkSettings,
 } from '../lib/watermark';
 import {
+	EXAMPLE_IMAGE_URL,
 	downloadBlob,
+	fetchExampleImageFile,
 	isLikelyImageFile,
 	loadImageElement,
 	newId,
@@ -28,9 +30,15 @@ type QueueItem = {
 	error?: string;
 	resultUrl?: string;
 	resultBlob?: Blob;
+	isExample?: boolean;
 };
 
 const GRID_SLOTS: GridSlot[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+function revokeItemUrls(item: QueueItem) {
+	URL.revokeObjectURL(item.previewUrl);
+	if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+}
 
 export default function WatermarkWorkspace() {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +46,7 @@ export default function WatermarkWorkspace() {
 	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 	const itemsRef = useRef<QueueItem[]>([]);
 	const [items, setItems] = useState<QueueItem[]>([]);
+	const [demoImage, setDemoImage] = useState<HTMLImageElement | null>(null);
 	const [settings, setSettings] = useState<WatermarkSettings>(DEFAULT_WATERMARK_SETTINGS);
 	const [logoUrl, setLogoUrl] = useState<string | null>(null);
 	const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
@@ -48,12 +57,13 @@ export default function WatermarkWorkspace() {
 
 	itemsRef.current = items;
 	const active = items.find((item) => item.id === activeId) ?? items[0] ?? null;
+	const previewImage = active?.image ?? demoImage;
+	const showingExample = !active || Boolean(active.isExample);
 
 	useEffect(() => {
 		return () => {
 			for (const item of itemsRef.current) {
-				URL.revokeObjectURL(item.previewUrl);
-				if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+				revokeItemUrls(item);
 			}
 		};
 	}, []);
@@ -63,6 +73,20 @@ export default function WatermarkWorkspace() {
 			if (logoUrl) URL.revokeObjectURL(logoUrl);
 		};
 	}, [logoUrl]);
+
+	useEffect(() => {
+		let cancelled = false;
+		loadImageElement(EXAMPLE_IMAGE_URL)
+			.then((img) => {
+				if (!cancelled) setDemoImage(img);
+			})
+			.catch(() => {
+				if (!cancelled) setError('Failed to load example image');
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	const patchItem = useCallback((id: string, patch: Partial<QueueItem>) => {
 		setItems((prev) =>
@@ -75,6 +99,37 @@ export default function WatermarkWorkspace() {
 			}),
 		);
 	}, []);
+
+	const seedExample = useCallback(async () => {
+		try {
+			const file = await fetchExampleImageFile('example.jpg');
+			const id = newId();
+			const previewUrl = URL.createObjectURL(file);
+			const item: QueueItem = {
+				id,
+				file,
+				name: file.name,
+				previewUrl,
+				image: null,
+				status: 'loading',
+				isExample: true,
+			};
+			setItems([item]);
+			setActiveId(id);
+			try {
+				const image = await loadImageElement(previewUrl);
+				patchItem(id, { image, status: 'ready' });
+			} catch {
+				patchItem(id, { status: 'error', error: 'Decode failed' });
+			}
+		} catch {
+			setError('Failed to load example image');
+		}
+	}, [patchItem]);
+
+	useEffect(() => {
+		void seedExample();
+	}, [seedExample]);
 
 	const addFiles = useCallback(
 		async (list: FileList | File[] | null | undefined) => {
@@ -93,8 +148,13 @@ export default function WatermarkWorkspace() {
 				image: null,
 				status: 'loading',
 			}));
-			setItems((prev) => [...prev, ...created]);
-			if (!activeId) setActiveId(created[0]!.id);
+			setItems((prev) => {
+				for (const item of prev) {
+					if (item.isExample) revokeItemUrls(item);
+				}
+				return [...prev.filter((item) => !item.isExample), ...created];
+			});
+			setActiveId(created[0]!.id);
 			for (const item of created) {
 				try {
 					const image = await loadImageElement(item.previewUrl);
@@ -105,7 +165,7 @@ export default function WatermarkWorkspace() {
 				await yieldToMain(0);
 			}
 		},
-		[activeId, patchItem],
+		[patchItem],
 	);
 
 	const onLogoFile = useCallback(async (file: File | undefined | null) => {
@@ -128,34 +188,37 @@ export default function WatermarkWorkspace() {
 		}
 	}, []);
 
-	const removeItem = useCallback((id: string) => {
-		setItems((prev) => {
-			const target = prev.find((item) => item.id === id);
-			if (target) {
-				URL.revokeObjectURL(target.previewUrl);
-				if (target.resultUrl) URL.revokeObjectURL(target.resultUrl);
-			}
-			const next = prev.filter((item) => item.id !== id);
-			setActiveId((current) => (current === id ? next[0]?.id ?? null : current));
-			return next;
-		});
-	}, []);
+	const removeItem = useCallback(
+		(id: string) => {
+			setItems((prev) => {
+				const target = prev.find((item) => item.id === id);
+				if (target) revokeItemUrls(target);
+				const next = prev.filter((item) => item.id !== id);
+				setActiveId((current) => (current === id ? next[0]?.id ?? null : current));
+				if (next.length === 0) {
+					queueMicrotask(() => {
+						void seedExample();
+					});
+				}
+				return next;
+			});
+		},
+		[seedExample],
+	);
 
 	const clearAll = useCallback(() => {
 		setItems((prev) => {
-			for (const item of prev) {
-				URL.revokeObjectURL(item.previewUrl);
-				if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
-			}
+			for (const item of prev) revokeItemUrls(item);
 			return [];
 		});
 		setActiveId(null);
 		if (inputRef.current) inputRef.current.value = '';
-	}, []);
+		void seedExample();
+	}, [seedExample]);
 
 	const paintPreview = useCallback(() => {
 		const canvas = previewCanvasRef.current;
-		const image = active?.image;
+		const image = previewImage;
 		if (!canvas || !image) return;
 		const srcW = image.naturalWidth || image.width;
 		const srcH = image.naturalHeight || image.height;
@@ -169,7 +232,7 @@ export default function WatermarkWorkspace() {
 		if (!ctx) return;
 		ctx.drawImage(image, 0, 0, w, h);
 		paintWatermark(ctx, w, h, settings, logoImage);
-	}, [active, logoImage, settings]);
+	}, [logoImage, previewImage, settings]);
 
 	useEffect(() => {
 		paintPreview();
@@ -220,6 +283,25 @@ export default function WatermarkWorkspace() {
 		setBusy(false);
 	}, [logoImage, patchItem, settings]);
 
+	const downloadPreview = useCallback(async () => {
+		const canvas = previewCanvasRef.current;
+		if (!canvas || !previewImage) return;
+		try {
+			const blob = await new Promise<Blob>((resolve, reject) => {
+				canvas.toBlob(
+					(result) => {
+						if (!result) reject(new Error('Failed to encode preview'));
+						else resolve(result);
+					},
+					'image/png',
+				);
+			});
+			downloadBlob(blob, watermarkFileName(active?.name || 'example.jpg'));
+		} catch {
+			setError('Preview download failed');
+		}
+	}, [active?.name, previewImage]);
+
 	const downloadZip = useCallback(async () => {
 		const files = itemsRef.current
 			.filter((item) => item.resultBlob)
@@ -248,11 +330,11 @@ export default function WatermarkWorkspace() {
 			<ToolsDropzone
 				inputRef={inputRef}
 				multiple
-				title="Drop images for batch watermarking"
-				hint="Mark size scales with each photo’s longest edge — consistent from thumbnails to 4K."
+				title={showingExample ? 'Drop images for batch watermarking' : 'Add more images'}
+				hint="Mark size scales with each photo’s longest edge — consistent from thumbnails to 4K. Example is live — adjust controls now."
 				cta="Browse files"
-				sampleSrc={active?.previewUrl || '/demo/studio-orb.jpg'}
-				sampleLabel={active ? 'Active image' : 'Watermark sample'}
+				sampleSrc={active?.previewUrl || EXAMPLE_IMAGE_URL}
+				sampleLabel={showingExample ? 'Live example' : 'Active image'}
 				formats={['JPG', 'PNG', 'WebP']}
 				onFiles={(files) => void addFiles(files)}
 			/>
@@ -260,8 +342,12 @@ export default function WatermarkWorkspace() {
 			<ToolsPanel
 				title="Watermark controls"
 				note="Nine-point placement or diagonal tile. Text includes a soft stroke for contrast."
-				sampleSrc={active?.previewUrl || '/demo/studio-orb.jpg'}
-				sampleCaption={settings.kind === 'logo' ? 'Logo mark' : 'Text mark'}
+				sample={
+					<figure className="tools-panel__sample">
+						<canvas ref={previewCanvasRef} />
+						<figcaption>{showingExample ? 'Live example' : 'Your image'}</figcaption>
+					</figure>
+				}
 				actions={
 					<div className="tools-panel__actions">
 						<button
@@ -271,6 +357,14 @@ export default function WatermarkWorkspace() {
 							disabled={busy || items.length === 0}
 						>
 							{busy ? `Applying ${progress}%` : 'Apply to all'}
+						</button>
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={() => void downloadPreview()}
+							disabled={!previewImage}
+						>
+							Download preview
 						</button>
 						<button
 							type="button"
@@ -473,12 +567,6 @@ export default function WatermarkWorkspace() {
 
 			{error && <p className="tools-work__error">{error}</p>}
 
-			{active?.image && (
-				<section className="tools-focus" aria-label="Live preview">
-					<canvas ref={previewCanvasRef} className="tools-focus-board__canvas tools-focus-board__canvas--framed" />
-				</section>
-			)}
-
 			{items.length > 0 && (
 				<section className="tools-queue" aria-label="Queue">
 					{items.map((item) => (
@@ -489,7 +577,7 @@ export default function WatermarkWorkspace() {
 						>
 							<img src={item.resultUrl || item.previewUrl} alt="" className="tools-queue__thumb" />
 							<div className="tools-queue__meta">
-								<strong title={item.name}>{item.name}</strong>
+								<strong title={item.name}>{item.isExample ? 'Example image' : item.name}</strong>
 								<span>
 									{item.status === 'loading' && 'Loading…'}
 									{item.status === 'ready' && (item.resultBlob ? 'Done' : 'Ready')}
