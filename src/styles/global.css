@@ -2658,12 +2658,14 @@ body.image-editor-modal-open {
 
 .image-editor-modal__size:hover,
 .image-editor-modal__aspect:hover,
+.image-editor-modal__preset:hover,
 .image-editor-modal__tool:hover {
 	border-color: rgba(28, 36, 32, 0.28);
 }
 
 .image-editor-modal__size.is-active,
 .image-editor-modal__aspect.is-active,
+.image-editor-modal__preset.is-active,
 .image-editor-modal__tool.is-active {
 	background: var(--ie-active);
 	border-color: transparent;
@@ -2672,6 +2674,7 @@ body.image-editor-modal-open {
 
 [data-theme='dark'] .image-editor-modal__size.is-active,
 [data-theme='dark'] .image-editor-modal__aspect.is-active,
+[data-theme='dark'] .image-editor-modal__preset.is-active,
 [data-theme='dark'] .image-editor-modal__tool.is-active {
 	color: var(--accent-ink);
 }
@@ -2729,6 +2732,13 @@ body.image-editor-modal-open {
 	font-size: 0.66rem;
 	font-weight: 600;
 	line-height: 1;
+}
+
+.image-editor-modal__preset {
+	padding: 0.38rem 0.7rem;
+	font-size: 0.78rem;
+	font-weight: 600;
+	white-space: nowrap;
 }
 
 .image-editor-modal__body {
