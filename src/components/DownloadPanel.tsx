@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+	DOWNLOAD_FORMATS,
+	convertDownloadBlob,
+	downloadFileLabel,
+	type DownloadFormat,
+} from '../lib/download-formats';
+import {
 	DOWNLOAD_SIZES,
 	isFreeDownloadSize,
 	outputSizeForDownload,
-	sizeFileLabel,
 	type DownloadSizeId,
 } from '../lib/download-sizes';
 
@@ -129,47 +134,49 @@ export default function DownloadPanel({
 
 	const selectedSize = sizes.find((size) => size.id === selected) || sizes[1]!;
 
-	async function downloadSize(sizeId: DownloadSizeId) {
+	function gateSize(sizeId: DownloadSizeId): boolean {
 		const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
-		if (!size) return;
+		if (!size) return false;
 
 		if (!isFreeDownloadSize(size.id)) {
 			if (!loggedIn) {
 				setPendingSize(size.label);
 				setMenuOpen(false);
 				setAuthModalOpen(true);
-				return;
+				return false;
 			}
 			if (!isPro) {
 				setPendingSize(size.label);
 				setMenuOpen(false);
 				setPlansModalOpen(true);
-				return;
+				return false;
 			}
 		}
+		return true;
+	}
+
+	async function downloadSize(sizeId: DownloadSizeId, format: DownloadFormat = 'jpg') {
+		if (!gateSize(sizeId)) return;
 
 		setBusy(true);
 		setError(null);
+		setSelected(sizeId);
 		setMenuOpen(false);
 
 		try {
-			const res = await fetch(`/api/download/${assetId}?size=${size.id}`);
+			const res = await fetch(`/api/download/${assetId}?size=${sizeId}`);
 			if (!res.ok) {
 				const body = (await res.json().catch(() => null)) as { error?: string } | null;
 				throw new Error(body?.error || 'Download failed');
 			}
-			triggerDownload(await res.blob(), sizeFileLabel(slug, size.id));
+			const source = await res.blob();
+			const output = await convertDownloadBlob(source, format);
+			triggerDownload(output, downloadFileLabel(slug, sizeId, format));
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Download failed');
 		} finally {
 			setBusy(false);
 		}
-	}
-
-	function onSelectSize(sizeId: DownloadSizeId) {
-		setSelected(sizeId);
-		setMenuOpen(false);
-		void downloadSize(sizeId);
 	}
 
 	const selectedHint = `${selectedSize.output.width} × ${selectedSize.output.height}`;
@@ -182,7 +189,7 @@ export default function DownloadPanel({
 						type="button"
 						className="download-split__main"
 						disabled={busy}
-						onClick={() => downloadSize(selected)}
+						onClick={() => downloadSize(selected, 'jpg')}
 					>
 						Download
 						<span className="download-split__size">{selectedHint}</span>
@@ -205,26 +212,40 @@ export default function DownloadPanel({
 						{sizes.map((size) => {
 							const dims = `${size.output.width} × ${size.output.height}`;
 							const needsPro = !isFreeDownloadSize(size.id);
+							const isSelected = selected === size.id;
 							return (
-								<li key={size.id} role="option" aria-selected={selected === size.id}>
-									<button
-										type="button"
-										className={`download-menu__item${selected === size.id ? ' is-selected' : ''}`}
-										onClick={() => onSelectSize(size.id)}
-									>
-										<span className="download-menu__dims">{dims}</span>
-										{needsPro ? (
-											<em className="download-pro-badge">
-												<CrownIcon />
-												Pro
-											</em>
-										) : (
-											<span className="download-menu__free">Free</span>
-										)}
-									</button>
+								<li
+									key={size.id}
+									role="option"
+									aria-selected={isSelected}
+									className={`download-menu__row${isSelected ? ' is-selected' : ''}`}
+								>
+									<span className="download-menu__dims">{dims}</span>
+									<span className="download-menu__formats">
+										{DOWNLOAD_FORMATS.map((format) => (
+											<button
+												key={format}
+												type="button"
+												className="download-menu__format"
+												disabled={busy}
+												onClick={() => void downloadSize(size.id, format)}
+											>
+												{format.toUpperCase()}
+											</button>
+										))}
+									</span>
+									{needsPro ? (
+										<em className="download-pro-badge">
+											<CrownIcon />
+											Pro
+										</em>
+									) : (
+										<span className="download-menu__free">Free</span>
+									)}
 								</li>
 							);
-						})}					</ul>
+						})}
+					</ul>
 				)}
 			</div>
 			{error && <p className="download-panel__error">{error}</p>}
