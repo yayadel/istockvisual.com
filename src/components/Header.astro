@@ -29,7 +29,7 @@ const toolsActive = path.startsWith('/tools/');
 			<a href="/c/" aria-current={path === '/c' || path.startsWith('/c/') ? 'page' : undefined}>
 				Categories
 			</a>
-			<div class="nav__dropdown" data-nav-dropdown>
+			<div class="nav__dropdown nav__dropdown--tools" data-nav-dropdown>
 				<button
 					type="button"
 					class="nav__dropdown-trigger"
@@ -44,53 +44,136 @@ const toolsActive = path.startsWith('/tools/');
 				</button>
 				<div
 					id="nav-tool-menu"
-					class="nav__dropdown-menu"
-					role="menu"
+					class="nav__tools-mega"
 					hidden
 					data-nav-dropdown-menu
 				>
-					<a
-						href="/tools/image"
-						role="menuitem"
-						aria-current={path.startsWith('/tools/image') ? 'page' : undefined}
-					>
-						Image Editor
-					</a>
-					<a
-						href="/tools/convert"
-						role="menuitem"
-						aria-current={path.startsWith('/tools/convert') ? 'page' : undefined}
-					>
-						Image Convert
-					</a>
-					<a
-						href="/tools/vectorize"
-						role="menuitem"
-						aria-current={path.startsWith('/tools/vectorize') ? 'page' : undefined}
-					>
-						Image Vectorizer
-					</a>
-					<a
-						href="/tools/social"
-						role="menuitem"
-						aria-current={path.startsWith('/tools/social') ? 'page' : undefined}
-					>
-						Social Resizer
-					</a>
-					<a
-						href="/tools/watermark"
-						role="menuitem"
-						aria-current={path.startsWith('/tools/watermark') ? 'page' : undefined}
-					>
-						Batch Watermark
-					</a>
-					<a
-						href="/tools/palette"
-						role="menuitem"
-						aria-current={path.startsWith('/tools/palette') ? 'page' : undefined}
-					>
-						Palette Generator
-					</a>
+					<div class="nav__tools-mega__preview" aria-live="polite">
+						{
+							[
+								{
+									id: 'image',
+									index: '01',
+									title: 'Image Editor',
+									lede: 'Adjust, crop, remove backgrounds, and expand photos entirely in the browser — private and free.',
+									href: '/tools/image',
+									hint: 'Adjust · Crop · Remove BG · Expand',
+								},
+								{
+									id: 'convert',
+									index: '02',
+									title: 'Image Convert',
+									lede: 'Batch convert JPG, PNG, WebP, and HEIC with quality, scale, and max-width controls. EXIF is stripped locally.',
+									href: '/tools/convert',
+									hint: 'Format · Quality · Batch ZIP',
+								},
+								{
+									id: 'vectorize',
+									index: '03',
+									title: 'Image Vectorizer',
+									lede: 'Trace bitmaps into clean SVG paths. Tune colors, blur, and detail, then copy code or download the file.',
+									href: '/tools/vectorize',
+									hint: 'Bitmap → SVG · Local trace',
+								},
+								{
+									id: 'social',
+									index: '04',
+									title: 'Social Resizer',
+									lede: 'Fit one batch to Instagram, TikTok, YouTube, Facebook, and LinkedIn — cover crop or soft blur pad.',
+									href: '/tools/social',
+									hint: 'Presets · Focus · ZIP export',
+								},
+								{
+									id: 'watermark',
+									index: '05',
+									title: 'Batch Watermark',
+									lede: 'Stamp text or logo marks that scale with each photo. Nine-point placement or diagonal tile for protection.',
+									href: '/tools/watermark',
+									hint: 'Text · Logo · Tile pattern',
+								},
+								{
+									id: 'palette',
+									index: '06',
+									title: 'Palette Generator',
+									lede: 'Extract dominant colors with median cut. Copy HEX, RGB, or HSL, export CSS / Tailwind, or a share card.',
+									href: '/tools/palette',
+									hint: 'Swatches · Eyedropper · Export',
+								},
+							].map((tool, i) => (
+								<article
+									class:list={['nav__tools-mega__panel', i === 0 && 'is-active']}
+									data-tools-panel={tool.id}
+									hidden={i !== 0}
+								>
+									<p class="nav__tools-mega__index">{tool.index}</p>
+									<h3 class="nav__tools-mega__title">{tool.title}</h3>
+									<p class="nav__tools-mega__lede">{tool.lede}</p>
+									<p class="nav__tools-mega__hint">{tool.hint}</p>
+									<a class="nav__tools-mega__cta" href={tool.href}>
+										Open tool
+										<span aria-hidden="true">→</span>
+									</a>
+								</article>
+							))
+						}
+					</div>
+					<div class="nav__tools-mega__list" role="menu">
+						<p class="nav__tools-mega__list-label">Tools</p>
+						<a
+							href="/tools/image"
+							role="menuitem"
+							data-tools-item="image"
+							aria-current={path.startsWith('/tools/image') ? 'page' : undefined}
+						>
+							<span>Image Editor</span>
+							<em>01</em>
+						</a>
+						<a
+							href="/tools/convert"
+							role="menuitem"
+							data-tools-item="convert"
+							aria-current={path.startsWith('/tools/convert') ? 'page' : undefined}
+						>
+							<span>Image Convert</span>
+							<em>02</em>
+						</a>
+						<a
+							href="/tools/vectorize"
+							role="menuitem"
+							data-tools-item="vectorize"
+							aria-current={path.startsWith('/tools/vectorize') ? 'page' : undefined}
+						>
+							<span>Image Vectorizer</span>
+							<em>03</em>
+						</a>
+						<a
+							href="/tools/social"
+							role="menuitem"
+							data-tools-item="social"
+							aria-current={path.startsWith('/tools/social') ? 'page' : undefined}
+						>
+							<span>Social Resizer</span>
+							<em>04</em>
+						</a>
+						<a
+							href="/tools/watermark"
+							role="menuitem"
+							data-tools-item="watermark"
+							aria-current={path.startsWith('/tools/watermark') ? 'page' : undefined}
+						>
+							<span>Batch Watermark</span>
+							<em>05</em>
+						</a>
+						<a
+							href="/tools/palette"
+							role="menuitem"
+							data-tools-item="palette"
+							aria-current={path.startsWith('/tools/palette') ? 'page' : undefined}
+						>
+							<span>Palette Generator</span>
+							<em>06</em>
+						</a>
+					</div>
 				</div>
 			</div>
 			{
