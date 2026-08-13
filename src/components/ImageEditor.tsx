@@ -514,6 +514,36 @@ export default function ImageEditor({
 		setStatus('Expand reset to last applied image.');
 	};
 
+	const applyExpandPercent = useCallback(
+		(pct: number, options?: { fromCustom?: boolean }) => {
+			const next = Math.round(clamp(pct, 1, 200));
+			if (pendingCommit) {
+				restoreOriginalWorking();
+				setCrop(DEFAULT_CROP);
+			}
+			setExpandPct(next);
+			if (!options?.fromCustom) setExpandCustomDraft('');
+			setStatus(null);
+		},
+		[pendingCommit, restoreOriginalWorking],
+	);
+
+	const commitExpandCustomDraft = useCallback(() => {
+		const raw = expandCustomDraft.trim().replace(/%/g, '');
+		if (!raw) {
+			setExpandCustomDraft('');
+			return;
+		}
+		const parsed = Number(raw);
+		if (!Number.isFinite(parsed)) {
+			setExpandCustomDraft(String(expandPct));
+			setStatus('Enter a number between 1 and 200.');
+			return;
+		}
+		applyExpandPercent(parsed, { fromCustom: true });
+		setExpandCustomDraft(String(Math.round(clamp(parsed, 1, 200))));
+	}, [applyExpandPercent, expandCustomDraft, expandPct]);
+
 	const applyAdjustChanges = useCallback(() => {
 		const working = workingRef.current;
 		if (!working) return;
@@ -947,21 +977,53 @@ export default function ImageEditor({
 									<button
 										key={pct}
 										type="button"
-										className={`image-editor-modal__expand-pct${expandPct === pct ? ' is-active' : ''}`}
-										onClick={() => {
-											if (pendingCommit) {
-												restoreOriginalWorking();
-												setCrop(DEFAULT_CROP);
-												setPendingCommit(false);
-											}
-											setExpandPct(pct);
-											setStatus(null);
-										}}
+										className={`image-editor-modal__expand-pct${
+											expandCustomDraft === '' && expandPct === pct ? ' is-active' : ''
+										}`}
+										onClick={() => applyExpandPercent(pct)}
 										disabled={Boolean(busy)}
 									>
 										+{pct}%
 									</button>
 								))}
+								<label className="image-editor-modal__expand-custom">
+									<span className="visually-hidden">Custom expand percent</span>
+									<span className="image-editor-modal__expand-custom-prefix" aria-hidden="true">
+										+
+									</span>
+									<input
+										type="number"
+										min={1}
+										max={200}
+										inputMode="numeric"
+										placeholder="Custom"
+										value={
+											expandCustomDraft !== ''
+												? expandCustomDraft
+												: EXPAND_PERCENTS.includes(
+															expandPct as (typeof EXPAND_PERCENTS)[number],
+													  )
+													? ''
+													: String(expandPct)
+										}
+										onChange={(event) => {
+											setExpandCustomDraft(event.currentTarget.value);
+										}}
+										onBlur={() => commitExpandCustomDraft()}
+										onKeyDown={(event) => {
+											if (event.key === 'Enter') {
+												event.preventDefault();
+												commitExpandCustomDraft();
+												(event.currentTarget as HTMLInputElement).blur();
+											}
+										}}
+										disabled={Boolean(busy)}
+										aria-label="Custom expand percent"
+									/>
+									<span className="image-editor-modal__expand-custom-suffix" aria-hidden="true">
+										%
+									</span>
+								</label>
 							</div>
 						</div>
 					)}
