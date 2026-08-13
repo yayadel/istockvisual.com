@@ -3562,6 +3562,61 @@ body.image-editor-modal-open {
 	font-weight: 650;
 }
 
+.image-editor-modal__expand-custom {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.15rem;
+	min-width: 6.5rem;
+	padding: 0.2rem 0.45rem 0.2rem 0.4rem;
+	border: 1px solid var(--ie-line);
+	border-radius: 3px;
+	background: transparent;
+	color: var(--ie-ink);
+	flex: 0 0 auto;
+}
+
+.image-editor-modal__expand-custom:focus-within {
+	border-color: rgba(28, 36, 32, 0.45);
+}
+
+.image-editor-modal__expand-custom-prefix,
+.image-editor-modal__expand-custom-suffix {
+	font-size: 0.82rem;
+	font-weight: 650;
+	color: var(--ie-muted);
+}
+
+.image-editor-modal__expand-custom input {
+	width: 3.6rem;
+	margin: 0;
+	padding: 0.18rem 0.1rem;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 0.82rem;
+	font-weight: 650;
+	text-align: center;
+	appearance: textfield;
+	-moz-appearance: textfield;
+}
+
+.image-editor-modal__expand-custom input::-webkit-outer-spin-button,
+.image-editor-modal__expand-custom input::-webkit-inner-spin-button {
+	appearance: none;
+	margin: 0;
+}
+
+.image-editor-modal__expand-custom input::placeholder {
+	color: var(--ie-muted);
+	font-weight: 500;
+}
+
+.image-editor-modal__expand-custom input:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
 .image-editor-modal__expand-guide {
 	position: absolute;
 	z-index: 2;
