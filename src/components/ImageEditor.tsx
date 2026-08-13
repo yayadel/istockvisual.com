@@ -104,6 +104,8 @@ export default function ImageEditor({
 	const [frameUrl, setFrameUrl] = useState<string | null>(null);
 	const [busy, setBusy] = useState<string | null>(null);
 	const [status, setStatus] = useState<string | null>(null);
+	/** True after Remove BG / Expand until Apply changes locks the baseline. */
+	const [pendingCommit, setPendingCommit] = useState(false);
 	const [dragging, setDragging] = useState<
 		| null
 		| { kind: 'move'; startX: number; startY: number; origin: CropRect }
