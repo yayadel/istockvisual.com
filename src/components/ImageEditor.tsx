@@ -290,9 +290,10 @@ export default function ImageEditor({
 
 	useEffect(() => {
 		if (!ready) return;
+		if (tool === 'expand' && !expandSettled) return;
 		const timer = window.setTimeout(() => rebuildFramePreview(), 40);
 		return () => window.clearTimeout(timer);
-	}, [ready, rebuildFramePreview, previewUrl]);
+	}, [ready, rebuildFramePreview, previewUrl, tool, expandSettled]);
 
 	const previewTransform = useMemo(() => {
 		const radians = rotation + fineRotation;
@@ -309,27 +310,29 @@ export default function ImageEditor({
 		(canvas: HTMLCanvasElement) => {
 			workingRef.current = canvas;
 			setNatural({ w: canvas.width, h: canvas.height });
-			let next: string | null = null;
-			try {
-				next = canvas.toDataURL('image/png');
-			} catch {
-				next = null;
-			}
-			if (next) {
-				setPreviewUrl((prev) => {
-					revokeIfBlob(prev);
-					return next!;
-				});
-				return;
-			}
-			canvas.toBlob((blob) => {
-				if (!blob) return;
-				const url = URL.createObjectURL(blob);
+			const applyUrl = (url: string) => {
 				setPreviewUrl((prev) => {
 					revokeIfBlob(prev);
 					return url;
 				});
-			}, 'image/png');
+				setFrameUrl(url);
+			};
+			canvas.toBlob(
+				(blob) => {
+					if (blob) {
+						applyUrl(URL.createObjectURL(blob));
+						return;
+					}
+					try {
+						applyUrl(canvas.toDataURL('image/jpeg', 0.92));
+					} catch (error) {
+						console.error(error);
+						setStatus('Preview update failed. Try reloading the image.');
+					}
+				},
+				'image/jpeg',
+				0.92,
+			);
 		},
 		[revokeIfBlob],
 	);
@@ -363,28 +366,61 @@ export default function ImageEditor({
 
 	useEffect(() => {
 		let cancelled = false;
-		const img = new Image();
-		img.crossOrigin = 'anonymous';
-		img.onload = () => {
-			if (cancelled) return;
+		let objectUrl: string | null = null;
+
+		const paintFromImage = (img: HTMLImageElement, preview: string) => {
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			originalRef.current = cloneCanvas(canvas);
 			workingRef.current = canvas;
 			setNatural({ w: img.naturalWidth, h: img.naturalHeight });
 			setExpandOrigin({ w: img.naturalWidth, h: img.naturalHeight });
-			setPreviewUrl(imageUrl);
+			setExpandSettled(false);
+			setPreviewUrl((prev) => {
+				revokeIfBlob(prev);
+				return preview;
+			});
+			setFrameUrl(null);
 			setReady(true);
 		};
-		img.onerror = () => {
-			if (cancelled) return;
-			setStatus('Failed to load image for editing.');
-			setReady(true);
+
+		const load = async () => {
+			try {
+				const response = await fetch(imageUrl, { mode: 'cors', credentials: 'omit' });
+				if (!response.ok) throw new Error(`HTTP ${response.status}`);
+				const blob = await response.blob();
+				if (cancelled) return;
+				objectUrl = URL.createObjectURL(blob);
+				const img = new Image();
+				await new Promise<void>((resolve, reject) => {
+					img.onload = () => resolve();
+					img.onerror = () => reject(new Error('decode failed'));
+					img.src = objectUrl!;
+				});
+				if (cancelled) return;
+				paintFromImage(img, objectUrl);
+				objectUrl = null;
+			} catch {
+				const img = new Image();
+				img.crossOrigin = 'anonymous';
+				img.onload = () => {
+					if (cancelled) return;
+					paintFromImage(img, imageUrl);
+				};
+				img.onerror = () => {
+					if (cancelled) return;
+					setStatus('Failed to load image for editing.');
+					setReady(true);
+				};
+				img.src = imageUrl;
+			}
 		};
-		img.src = imageUrl;
+
+		void load();
 		return () => {
 			cancelled = true;
+			if (objectUrl) URL.revokeObjectURL(objectUrl);
 		};
-	}, [imageUrl]);
+	}, [imageUrl, revokeIfBlob]);
 
 	useEffect(() => {
 		return () => {
@@ -658,10 +694,6 @@ export default function ImageEditor({
 			setStatus('Image not ready yet.');
 			return;
 		}
-		if (expandSettled) {
-			setStatus('Already applied. Pick another expand % to run again.');
-			return;
-		}
 
 		const originW = working.width;
 		const originH = working.height;
@@ -675,7 +707,7 @@ export default function ImageEditor({
 			return;
 		}
 
-		const VISUAL_MS = 1_000;
+		const VISUAL_MS = 900;
 		const startedAt = performance.now();
 		let stopped = false;
 		let displayPct = 0;
@@ -692,43 +724,29 @@ export default function ImageEditor({
 		}, 50);
 
 		try {
-			const expanded = expandWithEdgeFill(
-				working,
-				originW,
-				originH,
-				targetW,
-				targetH,
-			);
+			const expanded = expandWithEdgeFill(working, originW, originH, targetW, targetH);
 			if (!expanded.width || !expanded.height) {
 				throw new Error('Expand produced an empty canvas');
 			}
 
 			const remaining = Math.max(0, VISUAL_MS - (performance.now() - startedAt));
 			if (remaining > 0) {
-				await new Promise<void>((resolve) => {
-					window.setTimeout(resolve, remaining);
-				});
+				await new Promise<void>((resolve) => window.setTimeout(resolve, remaining));
 			}
 
 			stopped = true;
 			window.clearInterval(tickId);
 			setBusy('Filling 100%…');
-			setWorkingFromCanvas(expanded);
-			try {
-				setFrameUrl(expanded.toDataURL('image/jpeg', 0.92));
-			} catch {
-				try {
-					setFrameUrl(expanded.toDataURL('image/png'));
-				} catch {
-					/* previewUrl from setWorkingFromCanvas */
-				}
-			}
+
+			// Commit pixels immediately so Download cannot race an old canvas.
+			workingRef.current = expanded;
 			originalRef.current = cloneCanvas(expanded);
+			setWorkingFromCanvas(expanded);
 			setExpandOrigin({ w: expanded.width, h: expanded.height });
 			setExpandSettled(true);
 			setCrop(DEFAULT_CROP);
 			setPendingCommit(false);
-			setStatus(`Done — expanded +${expandPct}% to ${targetW}×${targetH}.`);
+			setStatus(`Done — expanded +${expandPct}% to ${targetW}×${targetH}. Download uses this result.`);
 		} catch (error) {
 			console.error(error);
 			setStatus('Expand failed. Please try again.');
@@ -737,7 +755,7 @@ export default function ImageEditor({
 			window.clearInterval(tickId);
 			setBusy(null);
 		}
-	}, [expandPct, expandSettled, setWorkingFromCanvas]);
+	}, [expandPct, setWorkingFromCanvas]);
 
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -834,36 +852,73 @@ export default function ImageEditor({
 		}
 	}, [canvasSize.height, canvasSize.width, keepCircle, setWorkingFromCanvas]);
 
-	const buildExportCanvas = useCallback(() => {
+	const resolveExportSource = useCallback(() => {
 		const working = workingRef.current;
 		if (!working) return null;
 
-		const { width: targetW, height: targetH } = canvasSize;
+		// If Expand preview is pending, bake fill into a temp canvas for export.
+		if (tool === 'expand' && !expandSettled && expandPct > 0) {
+			const targetW = Math.max(1, Math.round(working.width * (1 + expandPct / 100)));
+			const targetH = Math.max(1, Math.round(working.height * (1 + expandPct / 100)));
+			if (targetW !== working.width || targetH !== working.height) {
+				return expandWithEdgeFill(
+					working,
+					working.width,
+					working.height,
+					targetW,
+					targetH,
+				);
+			}
+		}
+		return working;
+	}, [expandPct, expandSettled, tool]);
+
+	const buildExportCanvas = useCallback(() => {
+		const source = resolveExportSource();
+		if (!source) return null;
+
+		const liveTransform = {
+			rotation,
+			fineRotation,
+			flipX,
+			flipY,
+			crop,
+		};
+		const hasLive =
+			hasAdjustChanges(adjust) || hasTransformChanges(liveTransform);
+
+		// Prefer the real edited pixel buffer after Expand (don't squash back to Size preset).
+		const preferNative =
+			!hasLive && (expandSettled || (tool === 'expand' && expandPct > 0));
+
+		const targetW = preferNative ? source.width : canvasSize.width;
+		const targetH = preferNative ? source.height : canvasSize.height;
+
 		const frame = document.createElement('canvas');
-		frame.width = targetW;
-		frame.height = targetH;
+		frame.width = Math.max(1, targetW);
+		frame.height = Math.max(1, targetH);
 		const frameCtx = frame.getContext('2d');
 		if (!frameCtx) return null;
 
-		const fit = containSize(working.width, working.height, targetW, targetH);
+		const fit = containSize(source.width, source.height, frame.width, frame.height);
 		frameCtx.save();
-		frameCtx.translate(targetW / 2, targetH / 2);
+		frameCtx.translate(frame.width / 2, frame.height / 2);
 		frameCtx.rotate(((rotation + fineRotation) * Math.PI) / 180);
 		frameCtx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
-		frameCtx.drawImage(working, -fit.w / 2, -fit.h / 2, fit.w, fit.h);
+		frameCtx.drawImage(source, -fit.w / 2, -fit.h / 2, fit.w, fit.h);
 		frameCtx.restore();
 
 		if (hasAdjustChanges(adjust)) {
-			const imageData = frameCtx.getImageData(0, 0, targetW, targetH);
+			const imageData = frameCtx.getImageData(0, 0, frame.width, frame.height);
 			frameCtx.putImageData(applyAdjustToImageData(imageData, adjust), 0, 0);
 		}
 
 		const needsCrop = crop.x > 0.001 || crop.y > 0.001 || crop.w < 0.999 || crop.h < 0.999;
 		if (needsCrop) {
-			const sx = Math.round(crop.x * targetW);
-			const sy = Math.round(crop.y * targetH);
-			const sw = Math.max(1, Math.round(crop.w * targetW));
-			const sh = Math.max(1, Math.round(crop.h * targetH));
+			const sx = Math.round(crop.x * frame.width);
+			const sy = Math.round(crop.y * frame.height);
+			const sw = Math.max(1, Math.round(crop.w * frame.width));
+			const sh = Math.max(1, Math.round(crop.h * frame.height));
 			const out = document.createElement('canvas');
 			out.width = sw;
 			out.height = sh;
@@ -874,7 +929,18 @@ export default function ImageEditor({
 		}
 
 		return frame;
-	}, [adjust, canvasSize, crop, fineRotation, flipX, flipY, rotation]);
+	}, [
+		adjust,
+		canvasSize.height,
+		canvasSize.width,
+		crop,
+		expandSettled,
+		fineRotation,
+		flipX,
+		flipY,
+		resolveExportSource,
+		rotation,
+	]);
 
 	const handleDownload = useCallback(() => {
 		if (!allSizesFree && !isFreeDownloadSize(sizeId)) {
@@ -888,15 +954,22 @@ export default function ImageEditor({
 			}
 		}
 		const canvas = buildExportCanvas();
-		if (!canvas) return;
+		if (!canvas) {
+			setStatus('Nothing to download yet.');
+			return;
+		}
 		canvas.toBlob((blob) => {
-			if (!blob) return;
+			if (!blob) {
+				setStatus('Download failed (canvas blocked). Apply changes, then try again.');
+				return;
+			}
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-edited.png`;
+			link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-edited-${canvas.width}x${canvas.height}.png`;
 			link.click();
 			URL.revokeObjectURL(url);
+			setStatus(`Downloaded ${canvas.width}×${canvas.height}.`);
 		}, 'image/png');
 	}, [allSizesFree, buildExportCanvas, isPro, loggedIn, sizeId, title]);
 
@@ -1408,7 +1481,11 @@ export default function ImageEditor({
 								Download edited ·{' '}
 								{tool === 'transform'
 									? aspectPreset.label
-									: `${canvasSize.width}×${canvasSize.height}`}
+									: tool === 'expand' && !expandSettled && expandTarget
+										? `${expandTarget.width}×${expandTarget.height}`
+										: expandSettled || natural.w > canvasSize.width
+											? `${natural.w}×${natural.h}`
+											: `${canvasSize.width}×${canvasSize.height}`}
 							</button>
 						</aside>
 					</div>
