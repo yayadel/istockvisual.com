@@ -944,7 +944,7 @@ body:has(.detail) .search-strip__inner {
 
 .search-bar {
 	display: grid;
-	grid-template-columns: auto 1fr auto auto;
+	grid-template-columns: auto minmax(0, 1fr) 3.25rem 3.25rem;
 	align-items: stretch;
 	width: 100%;
 	background: #ffffff;
@@ -955,6 +955,10 @@ body:has(.detail) .search-strip__inner {
 	color: #1a1a1a;
 	position: relative;
 	z-index: 5;
+}
+
+.search-bar--hero {
+	grid-template-columns: auto minmax(0, 1fr) auto auto;
 }
 
 .search-bar--bar {
