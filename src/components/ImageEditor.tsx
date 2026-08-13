@@ -762,33 +762,21 @@ export default function ImageEditor({
 									</div>
 								)}
 
-								{tool === 'remove-bg' && ready && (() => {
-									const { rx, ry } = keepCircleNormRadii(
-										keepCircle,
-										canvasSize.width,
-										canvasSize.height,
-									);
-									return (
-										<div
-											className="image-editor-modal__keep-circle"
-											style={{
-												left: `${(keepCircle.cx - rx) * 100}%`,
-												top: `${(keepCircle.cy - ry) * 100}%`,
-												width: `${rx * 2 * 100}%`,
-												height: `${ry * 2 * 100}%`,
-											}}
-											onPointerDown={(event) => onKeepPointerDown(event, 'move')}
-											role="presentation"
-											title="Drag to mark the subject to keep"
-										>
-											<span className="image-editor-modal__keep-label">Keep subject</span>
-											<span
-												className="image-editor-modal__handle image-editor-modal__handle--se"
-												onPointerDown={(event) => onKeepPointerDown(event, 'resize')}
-											/>
-										</div>
-									);
-								})()}
+								{tool === 'remove-bg' && ready && (
+									<div
+										className="image-editor-modal__keep-circle"
+										style={keepCircleStyle}
+										onPointerDown={(event) => onKeepPointerDown(event, 'move')}
+										role="presentation"
+										title="Drag to mark the subject to keep"
+									>
+										<span className="image-editor-modal__keep-label">Keep subject</span>
+										<span
+											className="image-editor-modal__handle image-editor-modal__handle--se"
+											onPointerDown={(event) => onKeepPointerDown(event, 'resize')}
+										/>
+									</div>
+								)}
 
 								{busy && (
 									<div className="image-editor-modal__busy" role="status">
