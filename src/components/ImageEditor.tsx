@@ -944,6 +944,7 @@ export default function ImageEditor({
 		return frame;
 	}, [
 		adjust,
+		canUseExpand,
 		canvasSize.height,
 		canvasSize.width,
 		crop,
@@ -993,8 +994,6 @@ export default function ImageEditor({
 	};
 
 	const isPage = variant === 'page';
-	/** Asset editor: Expand is Pro-only so free users can't bypass 2K/4K/8K. Tools page stays open. */
-	const canUseExpand = allSizesFree || isPro;
 
 	const editor = (
 		<div
