@@ -360,10 +360,10 @@ export default function ImageEditor({
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			URL.revokeObjectURL(url);
 			setWorkingFromCanvas(canvas);
-			setStatus('Background removed on-device. Transparent PNG ready.');
+			setStatus('Background removed. Transparent PNG ready.');
 		} catch (error) {
 			console.error(error);
-			setStatus('Background removal failed. Please try again with a stable network on first use.');
+			setStatus('Background removal failed. Please try again.');
 		} finally {
 			setBusy(null);
 		}
