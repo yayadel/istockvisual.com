@@ -455,13 +455,14 @@ textarea {
 
 @media (max-width: 899px) {
 	.nav__dropdown--categories {
-		position: static;
+		position: relative;
+		z-index: 61;
 	}
 
 	.nav__categories-mega {
-		left: 1rem;
-		right: 1rem;
-		width: auto;
+		right: 0;
+		left: auto;
+		width: min(720px, calc(100vw - 2rem));
 		grid-template-columns: 1fr;
 		min-height: 0;
 	}
