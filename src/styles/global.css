@@ -1674,6 +1674,7 @@ body.download-auth-modal-open {
 	margin: 0;
 	padding: 1.15rem 1.2rem;
 	border: 1px solid var(--line);
+	/* Match .basic-info-panel */
 	border-radius: 3px;
 	background: #fafafa;
 }
