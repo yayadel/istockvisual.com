@@ -85,8 +85,10 @@ const similar = findSimilarAssets(
 						client:load
 						license="Free to use — commercial, no attribution required"
 						fileType={asset.fileType || '—'}
-						categoryLabel={category.label}
-						categoryHref={`/${category.slug}`}
+						categories={(asset.contentCategories || []).map((label) => ({
+							label,
+							href: searchPath(label),
+						}))}
 						medium={asset.medium}
 						keyword={asset.keyword}
 						keywordHref={asset.keyword ? searchPath(asset.keyword) : undefined}

@@ -1,9 +1,8 @@
 import type { CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
-import {
-	normalizeContentCategories,
-	pickContentCategoriesFromTitle,
-} from './content-categories';
+import { resolveContentCategories } from './content-categories';
+
+export { resolveContentCategories } from './content-categories';
 
 function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[] {
 	if (!value) return fallback;
@@ -13,17 +12,6 @@ function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[]
 	} catch {
 		return fallback;
 	}
-}
-
-/** Resolve 1–3 vocabulary categories from stored JSON or title fallback. */
-export function resolveContentCategories(input: {
-	stored?: string[] | null;
-	title?: string;
-	keyword?: string;
-}): string[] {
-	const fromStored = normalizeContentCategories(input.stored);
-	if (fromStored.length > 0) return fromStored;
-	return pickContentCategoriesFromTitle(input.title || '', input.keyword || '');
 }
 
 function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {

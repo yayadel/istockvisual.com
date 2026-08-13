@@ -37,7 +37,19 @@ class AssetMeta(BaseModel):
 		min_length=40,
 		description=(
 			"At least 40 unique English tags merging topic keywords, "
-			"category/subject labels, and depicted objects/elements"
+			"subject labels, and depicted objects/elements"
+		),
+	)
+	contentCategories: List[str] = Field(
+		min_length=1,
+		max_length=3,
+		description=(
+			"1 to 3 exact labels from: Business, Finance, Technology, AI, People, "
+			"Workplace, Lifestyle, Landscapes, Nature, Plants, Animals, Cityscapes, "
+			"Architecture, Interior, Food, Beverage, Coffee, Education, Culture, "
+			"Medical, Health, Sports, Advertising, E-commerce, Web, Vectors, "
+			"Illustrations, Photography, Aerial, 3D Assets, Backgrounds, Textures, "
+			"Abstract, Conceptual, Sustainability, Mood"
 		),
 	)
 	relatedSearchQueries: List[str] = Field(description="Related search queries")

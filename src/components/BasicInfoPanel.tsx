@@ -1,8 +1,16 @@
 import { useState } from 'react';
 
+type CategoryLink = {
+	label: string;
+	href: string;
+};
+
 type Props = {
 	license?: string;
 	fileType?: string;
+	/** Topical categories (1–3) from the fixed vocabulary. */
+	categories?: CategoryLink[];
+	/** @deprecated Prefer categories[] */
 	categoryLabel?: string;
 	categoryHref?: string;
 	medium?: string;
@@ -13,6 +21,7 @@ type Props = {
 export default function BasicInfoPanel({
 	license = 'Free to use — commercial, no attribution required',
 	fileType = '—',
+	categories,
 	categoryLabel,
 	categoryHref,
 	medium,
@@ -20,6 +29,12 @@ export default function BasicInfoPanel({
 	keywordHref,
 }: Props) {
 	const [open, setOpen] = useState(false);
+	const categoryLinks =
+		categories && categories.length > 0
+			? categories
+			: categoryLabel
+				? [{ label: categoryLabel, href: categoryHref || '' }]
+				: [];
 
 	return (
 		<div className={`basic-info-panel${open ? ' is-open' : ''}`}>
@@ -42,15 +57,16 @@ export default function BasicInfoPanel({
 							<span>License</span>
 							<span>{license}</span>
 						</li>
-						{categoryLabel && (
+						{categoryLinks.length > 0 && (
 							<li>
 								<span>Category</span>
-								<span>
-									{categoryHref ? (
-										<a href={categoryHref}>{categoryLabel}</a>
-									) : (
-										categoryLabel
-									)}
+								<span className="meta-list__links">
+									{categoryLinks.map((item, index) => (
+										<span key={item.label}>
+											{index > 0 ? ', ' : null}
+											{item.href ? <a href={item.href}>{item.label}</a> : item.label}
+										</span>
+									))}
 								</span>
 							</li>
 						)}
