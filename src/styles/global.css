@@ -2967,7 +2967,12 @@ body.image-editor-modal-open {
 .image-editor-modal__action-row {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.4rem;
+	gap: 0.45rem;
+}
+
+.image-editor-modal__action-row .btn {
+	flex: 1 1 auto;
+	min-width: 5.5rem;
 }
 
 .image-editor-modal__action-row .btn.is-active {

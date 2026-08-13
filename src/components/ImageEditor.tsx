@@ -588,10 +588,8 @@ export default function ImageEditor({
 								ref={stageRef}
 								style={
 									{
-										['--ie-ar' as string]: String(
-											canvasSize.width / Math.max(canvasSize.height, 1),
-										),
-									} as React.CSSProperties
+										['--ie-ar']: String(canvasSize.width / Math.max(canvasSize.height, 1)),
+									} as CSSProperties
 								}
 							>
 								{ready && (frameUrl || previewUrl) ? (
