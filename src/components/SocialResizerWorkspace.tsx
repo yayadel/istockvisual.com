@@ -9,7 +9,9 @@ import {
 	type SocialPreset,
 } from '../lib/social-resize';
 import {
+	EXAMPLE_IMAGE_URL,
 	downloadBlob,
+	fetchExampleImageFile,
 	isLikelyImageFile,
 	loadImageElement,
 	newId,
@@ -27,13 +29,28 @@ type QueueItem = {
 	error?: string;
 	resultUrl?: string;
 	resultBlob?: Blob;
+	isExample?: boolean;
 };
+
+function revokeItemUrls(item: QueueItem) {
+	URL.revokeObjectURL(item.previewUrl);
+	if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+}
+
+function clearCanvasSafe(canvas: HTMLCanvasElement | null) {
+	if (!canvas) return;
+	const ctx = canvas.getContext('2d');
+	if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+	canvas.width = 0;
+	canvas.height = 0;
+}
 
 export default function SocialResizerWorkspace() {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 	const itemsRef = useRef<QueueItem[]>([]);
 	const [items, setItems] = useState<QueueItem[]>([]);
+	const [demoImage, setDemoImage] = useState<HTMLImageElement | null>(null);
 	const [presetId, setPresetId] = useState(SOCIAL_PRESETS[0]!.id);
 	const [mode, setMode] = useState<SocialFitMode>('cover');
 	const [focusX, setFocusX] = useState(0.5);
@@ -47,13 +64,28 @@ export default function SocialResizerWorkspace() {
 	itemsRef.current = items;
 	const preset = SOCIAL_PRESETS.find((p) => p.id === presetId) ?? SOCIAL_PRESETS[0]!;
 	const active = items.find((item) => item.id === activeId) ?? items[0] ?? null;
+	const previewImage = active?.image ?? demoImage;
+	const showingExample = !active || Boolean(active.isExample);
 
 	useEffect(() => {
 		return () => {
 			for (const item of itemsRef.current) {
-				URL.revokeObjectURL(item.previewUrl);
-				if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+				revokeItemUrls(item);
 			}
+		};
+	}, []);
+
+	useEffect(() => {
+		let cancelled = false;
+		loadImageElement(EXAMPLE_IMAGE_URL)
+			.then((img) => {
+				if (!cancelled) setDemoImage(img);
+			})
+			.catch(() => {
+				if (!cancelled) setError('Failed to load example image');
+			});
+		return () => {
+			cancelled = true;
 		};
 	}, []);
 
@@ -68,6 +100,37 @@ export default function SocialResizerWorkspace() {
 			}),
 		);
 	}, []);
+
+	const seedExample = useCallback(async () => {
+		try {
+			const file = await fetchExampleImageFile('example.jpg');
+			const id = newId();
+			const previewUrl = URL.createObjectURL(file);
+			const item: QueueItem = {
+				id,
+				file,
+				name: file.name,
+				previewUrl,
+				image: null,
+				status: 'loading',
+				isExample: true,
+			};
+			setItems([item]);
+			setActiveId(id);
+			try {
+				const image = await loadImageElement(previewUrl);
+				patchItem(id, { image, status: 'ready' });
+			} catch {
+				patchItem(id, { status: 'error', error: 'Decode failed' });
+			}
+		} catch {
+			setError('Failed to load example image');
+		}
+	}, [patchItem]);
+
+	useEffect(() => {
+		void seedExample();
+	}, [seedExample]);
 
 	const addFiles = useCallback(
 		async (list: FileList | File[] | null | undefined) => {
@@ -86,8 +149,13 @@ export default function SocialResizerWorkspace() {
 				image: null,
 				status: 'loading',
 			}));
-			setItems((prev) => [...prev, ...created]);
-			if (!activeId) setActiveId(created[0]!.id);
+			setItems((prev) => {
+				for (const item of prev) {
+					if (item.isExample) revokeItemUrls(item);
+				}
+				return [...prev.filter((item) => !item.isExample), ...created];
+			});
+			setActiveId(created[0]!.id);
 
 			for (const item of created) {
 				try {
@@ -99,37 +167,40 @@ export default function SocialResizerWorkspace() {
 				await yieldToMain(0);
 			}
 		},
-		[activeId, patchItem],
+		[patchItem],
 	);
 
-	const removeItem = useCallback((id: string) => {
-		setItems((prev) => {
-			const target = prev.find((item) => item.id === id);
-			if (target) {
-				URL.revokeObjectURL(target.previewUrl);
-				if (target.resultUrl) URL.revokeObjectURL(target.resultUrl);
-			}
-			const next = prev.filter((item) => item.id !== id);
-			setActiveId((current) => (current === id ? next[0]?.id ?? null : current));
-			return next;
-		});
-	}, []);
+	const removeItem = useCallback(
+		(id: string) => {
+			setItems((prev) => {
+				const target = prev.find((item) => item.id === id);
+				if (target) revokeItemUrls(target);
+				const next = prev.filter((item) => item.id !== id);
+				setActiveId((current) => (current === id ? next[0]?.id ?? null : current));
+				if (next.length === 0) {
+					queueMicrotask(() => {
+						void seedExample();
+					});
+				}
+				return next;
+			});
+		},
+		[seedExample],
+	);
 
 	const clearAll = useCallback(() => {
 		setItems((prev) => {
-			for (const item of prev) {
-				URL.revokeObjectURL(item.previewUrl);
-				if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
-			}
+			for (const item of prev) revokeItemUrls(item);
 			return [];
 		});
 		setActiveId(null);
 		if (inputRef.current) inputRef.current.value = '';
-	}, []);
+		void seedExample();
+	}, [seedExample]);
 
 	const paintPreview = useCallback(() => {
 		const canvas = previewCanvasRef.current;
-		const image = active?.image;
+		const image = previewImage;
 		if (!canvas || !image) return;
 		const maxPreview = 520;
 		const scale = Math.min(1, maxPreview / Math.max(preset.width, preset.height));
@@ -148,7 +219,7 @@ export default function SocialResizerWorkspace() {
 			h,
 			{ mode, focusX, focusY, blurPx: Math.max(12, 24 * scale) },
 		);
-	}, [active, focusX, focusY, mode, preset.height, preset.width]);
+	}, [focusX, focusY, mode, preset.height, preset.width, previewImage]);
 
 	useEffect(() => {
 		paintPreview();
@@ -230,7 +301,7 @@ export default function SocialResizerWorkspace() {
 	useEffect(() => {
 		const onMove = (event: PointerEvent) => {
 			if (!draggingFocus.current || mode !== 'cover') return;
-			const board = document.querySelector('.tools-focus-board') as HTMLElement | null;
+			const board = document.querySelector('.tools-panel__sample .tools-focus-board') as HTMLElement | null;
 			if (!board) return;
 			const rect = board.getBoundingClientRect();
 			setFocusX(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)));
@@ -252,11 +323,11 @@ export default function SocialResizerWorkspace() {
 			<ToolsDropzone
 				inputRef={inputRef}
 				multiple
-				title="Drop a batch for social sizes"
-				hint="Pick a preset, drag the focus point, then render and download a ZIP."
+				title={showingExample ? 'Drop a batch for social sizes' : 'Add more images'}
+				hint="Pick a preset, drag the focus point, then render and download a ZIP. Example is live — try presets now."
 				cta="Browse files"
-				sampleSrc={active?.previewUrl || '/demo/studio-orb.jpg'}
-				sampleLabel={active ? 'Active image' : 'Social sample'}
+				sampleSrc={active?.previewUrl || EXAMPLE_IMAGE_URL}
+				sampleLabel={showingExample ? 'Live example' : 'Active image'}
 				formats={['JPG', 'PNG', 'WebP']}
 				onFiles={(files) => void addFiles(files)}
 			/>
@@ -264,8 +335,30 @@ export default function SocialResizerWorkspace() {
 			<ToolsPanel
 				title="Platform & fit"
 				note="Cover crops to fill the frame. Contain + blur keeps the full image on a soft backdrop."
-				sampleSrc={active?.previewUrl || '/demo/studio-orb.jpg'}
-				sampleCaption={`${preset.label} · ${preset.width}×${preset.height}`}
+				sample={
+					<figure className="tools-panel__sample">
+						<div
+							className="tools-focus-board"
+							onPointerDown={(event) => {
+								if (mode !== 'cover') return;
+								draggingFocus.current = true;
+								onFocusPointer(event);
+							}}
+						>
+							<canvas ref={previewCanvasRef} className="tools-focus-board__canvas" />
+							{mode === 'cover' && (
+								<span
+									className="tools-focus-board__pin"
+									style={{ left: `${focusX * 100}%`, top: `${focusY * 100}%` }}
+									aria-hidden="true"
+								/>
+							)}
+						</div>
+						<figcaption>
+							{showingExample ? 'Live example' : 'Your image'} · {preset.label}
+						</figcaption>
+					</figure>
+				}
 				actions={
 					<div className="tools-panel__actions">
 						<button
@@ -315,13 +408,21 @@ export default function SocialResizerWorkspace() {
 						<span>Mode</span>
 						<select
 							value={mode}
-							onChange={(event) => setMode(event.currentTarget.value as SocialFitMode)}
+							onChange={(event) => {
+								const next = event.currentTarget.value as SocialFitMode;
+								setMode(next);
+							}}
 						>
 							<option value="cover">Cover / crop</option>
 							<option value="contain-blur">Contain + blur</option>
 						</select>
 					</label>
 				</div>
+				{mode === 'cover' && (
+					<p className="tools-work__note" style={{ marginTop: '0.75rem', marginBottom: 0 }}>
+						Drag on the preview to move the crop focus.
+					</p>
+				)}
 			</ToolsPanel>
 
 			{error && <p className="tools-work__error">{error}</p>}
@@ -330,33 +431,6 @@ export default function SocialResizerWorkspace() {
 					<span className="tools-progress__bar" style={{ ['--p' as string]: `${progress}%` }} />
 					<span>Batch progress {progress}%</span>
 				</div>
-			)}
-
-			{active?.image && (
-				<section className="tools-focus" aria-label="Preview">
-					<div
-						className="tools-focus-board"
-						onPointerDown={(event) => {
-							if (mode !== 'cover') return;
-							draggingFocus.current = true;
-							onFocusPointer(event);
-						}}
-					>
-						<canvas ref={previewCanvasRef} className="tools-focus-board__canvas" />
-						{mode === 'cover' && (
-							<span
-								className="tools-focus-board__pin"
-								style={{ left: `${focusX * 100}%`, top: `${focusY * 100}%` }}
-								aria-hidden="true"
-							/>
-						)}
-					</div>
-					<p className="tools-work__note">
-						{mode === 'cover'
-							? 'Drag on the preview to move the crop focus.'
-							: 'Full image kept; empty areas use a blurred backdrop.'}
-					</p>
-				</section>
 			)}
 
 			{items.length > 0 && (
@@ -369,7 +443,7 @@ export default function SocialResizerWorkspace() {
 						>
 							<img src={item.resultUrl || item.previewUrl} alt="" className="tools-queue__thumb" />
 							<div className="tools-queue__meta">
-								<strong title={item.name}>{item.name}</strong>
+								<strong title={item.name}>{item.isExample ? 'Example image' : item.name}</strong>
 								<span>
 									{item.status === 'loading' && 'Loading…'}
 									{item.status === 'ready' && (item.resultBlob ? 'Rendered' : 'Ready')}
@@ -407,12 +481,4 @@ export default function SocialResizerWorkspace() {
 			)}
 		</div>
 	);
-}
-
-function clearCanvasSafe(canvas: HTMLCanvasElement | null) {
-	if (!canvas) return;
-	const ctx = canvas.getContext('2d');
-	if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-	canvas.width = 0;
-	canvas.height = 0;
 }

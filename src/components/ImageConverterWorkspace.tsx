@@ -1,71 +1,80 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-	SOCIAL_PRESETS,
-	drawSocialFrame,
-	renderSocialBlob,
-	socialFileName,
-	zipSocialResults,
-	type SocialFitMode,
-	type SocialPreset,
-} from '../lib/social-resize';
-import {
-	EXAMPLE_IMAGE_URL,
+	CONVERT_FORMATS,
+	DEFAULT_CONVERT_SETTINGS,
+	canEncodeMime,
+	convertImageFile,
 	downloadBlob,
-	fetchExampleImageFile,
-	isLikelyImageFile,
-	loadImageElement,
-	newId,
-	yieldToMain,
-} from '../lib/tools-shared';
+	formatBytes,
+	zipConvertedFiles,
+	type ConvertItem,
+	type ConvertSettings,
+} from '../lib/image-convert';
+import { EXAMPLE_IMAGE_URL, fetchExampleImageFile } from '../lib/tools-shared';
 import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
-type QueueItem = {
-	id: string;
-	file: File;
-	name: string;
-	previewUrl: string;
-	image: HTMLImageElement | null;
-	status: 'loading' | 'ready' | 'error' | 'rendering';
-	error?: string;
-	resultUrl?: string;
-	resultBlob?: Blob;
-	isExample?: boolean;
-};
+function newId() {
+	return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
 
-function revokeItemUrls(item: QueueItem) {
+function makeItem(file: File, isExample = false): ConvertItem {
+	return {
+		id: newId(),
+		file,
+		name: file.name,
+		size: file.size,
+		previewUrl: URL.createObjectURL(file),
+		status: 'queued',
+		progress: 0,
+		isExample,
+	};
+}
+
+function revokeItemUrls(item: ConvertItem) {
 	URL.revokeObjectURL(item.previewUrl);
 	if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
 }
 
-function clearCanvasSafe(canvas: HTMLCanvasElement | null) {
-	if (!canvas) return;
-	const ctx = canvas.getContext('2d');
-	if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-	canvas.width = 0;
-	canvas.height = 0;
+function statusLabel(item: ConvertItem) {
+	if (item.status === 'queued') return 'Queued';
+	if (item.status === 'converting') return `Converting ${item.progress}%`;
+	if (item.status === 'done') return 'Done';
+	return item.error || 'Error';
 }
 
-export default function SocialResizerWorkspace() {
+export default function ImageConverterWorkspace() {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-	const itemsRef = useRef<QueueItem[]>([]);
-	const [items, setItems] = useState<QueueItem[]>([]);
-	const [demoImage, setDemoImage] = useState<HTMLImageElement | null>(null);
-	const [presetId, setPresetId] = useState(SOCIAL_PRESETS[0]!.id);
-	const [mode, setMode] = useState<SocialFitMode>('cover');
-	const [focusX, setFocusX] = useState(0.5);
-	const [focusY, setFocusY] = useState(0.5);
-	const [activeId, setActiveId] = useState<string | null>(null);
+	const itemsRef = useRef<ConvertItem[]>([]);
+	const [items, setItems] = useState<ConvertItem[]>([]);
+	const [settings, setSettings] = useState<ConvertSettings>(DEFAULT_CONVERT_SETTINGS);
 	const [busy, setBusy] = useState(false);
-	const [progress, setProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
-	const draggingFocus = useRef(false);
+	const [avifOk, setAvifOk] = useState(true);
 
 	itemsRef.current = items;
-	const preset = SOCIAL_PRESETS.find((p) => p.id === presetId) ?? SOCIAL_PRESETS[0]!;
-	const active = items.find((item) => item.id === activeId) ?? items[0] ?? null;
-	const previewImage = active?.image ?? demoImage;
-	const showingExample = !active || Boolean(active.isExample);
+	const showingExample = items.length > 0 && items.every((item) => item.isExample);
+	const panelSrc = items[0]?.previewUrl || EXAMPLE_IMAGE_URL;
+	const panelCaption = showingExample
+		? 'Live example'
+		: items[0]
+			? 'First in queue'
+			: 'Live example';
+
+	useEffect(() => {
+		let cancelled = false;
+		canEncodeMime('image/avif').then((ok) => {
+			if (cancelled) return;
+			setAvifOk(ok);
+			if (!ok) {
+				setSettings((prev) =>
+					prev.formatId === 'avif' ? { ...prev, formatId: 'webp' } : prev,
+				);
+			}
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	useEffect(() => {
 		return () => {
@@ -75,21 +84,7 @@ export default function SocialResizerWorkspace() {
 		};
 	}, []);
 
-	useEffect(() => {
-		let cancelled = false;
-		loadImageElement(EXAMPLE_IMAGE_URL)
-			.then((img) => {
-				if (!cancelled) setDemoImage(img);
-			})
-			.catch(() => {
-				if (!cancelled) setError('Failed to load example image');
-			});
-		return () => {
-			cancelled = true;
-		};
-	}, []);
-
-	const patchItem = useCallback((id: string, patch: Partial<QueueItem>) => {
+	const patchItem = useCallback((id: string, patch: Partial<ConvertItem>) => {
 		setItems((prev) =>
 			prev.map((item) => {
 				if (item.id !== id) return item;
@@ -104,71 +99,37 @@ export default function SocialResizerWorkspace() {
 	const seedExample = useCallback(async () => {
 		try {
 			const file = await fetchExampleImageFile('example.jpg');
-			const id = newId();
-			const previewUrl = URL.createObjectURL(file);
-			const item: QueueItem = {
-				id,
-				file,
-				name: file.name,
-				previewUrl,
-				image: null,
-				status: 'loading',
-				isExample: true,
-			};
-			setItems([item]);
-			setActiveId(id);
-			try {
-				const image = await loadImageElement(previewUrl);
-				patchItem(id, { image, status: 'ready' });
-			} catch {
-				patchItem(id, { status: 'error', error: 'Decode failed' });
-			}
+			setItems([makeItem(file, true)]);
 		} catch {
 			setError('Failed to load example image');
 		}
-	}, [patchItem]);
+	}, []);
 
 	useEffect(() => {
 		void seedExample();
 	}, [seedExample]);
 
-	const addFiles = useCallback(
-		async (list: FileList | File[] | null | undefined) => {
-			if (!list?.length) return;
-			const accepted = Array.from(list).filter(isLikelyImageFile);
-			if (!accepted.length) {
-				setError('Please drop image files.');
-				return;
+	const addFiles = useCallback((list: FileList | File[] | null | undefined) => {
+		if (!list || list.length === 0) return;
+		const next: ConvertItem[] = [];
+		for (const file of Array.from(list)) {
+			if (!file.type.startsWith('image/') && !/\.(heic|heif)$/i.test(file.name)) {
+				continue;
 			}
-			setError(null);
-			const created: QueueItem[] = accepted.map((file) => ({
-				id: newId(),
-				file,
-				name: file.name,
-				previewUrl: URL.createObjectURL(file),
-				image: null,
-				status: 'loading',
-			}));
-			setItems((prev) => {
-				for (const item of prev) {
-					if (item.isExample) revokeItemUrls(item);
-				}
-				return [...prev.filter((item) => !item.isExample), ...created];
-			});
-			setActiveId(created[0]!.id);
-
-			for (const item of created) {
-				try {
-					const image = await loadImageElement(item.previewUrl);
-					patchItem(item.id, { image, status: 'ready' });
-				} catch {
-					patchItem(item.id, { status: 'error', error: 'Decode failed' });
-				}
-				await yieldToMain(0);
+			next.push(makeItem(file));
+		}
+		if (!next.length) {
+			setError('Please drop image files (JPG, PNG, WebP, HEIC, etc.).');
+			return;
+		}
+		setError(null);
+		setItems((prev) => {
+			for (const item of prev) {
+				if (item.isExample) revokeItemUrls(item);
 			}
-		},
-		[patchItem],
-	);
+			return [...prev.filter((item) => !item.isExample), ...next];
+		});
+	}, []);
 
 	const removeItem = useCallback(
 		(id: string) => {
@@ -176,7 +137,6 @@ export default function SocialResizerWorkspace() {
 				const target = prev.find((item) => item.id === id);
 				if (target) revokeItemUrls(target);
 				const next = prev.filter((item) => item.id !== id);
-				setActiveId((current) => (current === id ? next[0]?.id ?? null : current));
 				if (next.length === 0) {
 					queueMicrotask(() => {
 						void seedExample();
@@ -193,187 +153,107 @@ export default function SocialResizerWorkspace() {
 			for (const item of prev) revokeItemUrls(item);
 			return [];
 		});
-		setActiveId(null);
 		if (inputRef.current) inputRef.current.value = '';
 		void seedExample();
 	}, [seedExample]);
 
-	const paintPreview = useCallback(() => {
-		const canvas = previewCanvasRef.current;
-		const image = previewImage;
-		if (!canvas || !image) return;
-		const maxPreview = 520;
-		const scale = Math.min(1, maxPreview / Math.max(preset.width, preset.height));
-		const w = Math.round(preset.width * scale);
-		const h = Math.round(preset.height * scale);
-		canvas.width = w;
-		canvas.height = h;
-		const ctx = canvas.getContext('2d');
-		if (!ctx) return;
-		drawSocialFrame(
-			ctx,
-			image,
-			image.naturalWidth || image.width,
-			image.naturalHeight || image.height,
-			w,
-			h,
-			{ mode, focusX, focusY, blurPx: Math.max(12, 24 * scale) },
+	const doneItems = useMemo(
+		() => items.filter((item) => item.status === 'done' && item.resultBlob && item.resultName),
+		[items],
+	);
+
+	const convertAll = useCallback(async () => {
+		const queue = itemsRef.current.filter(
+			(item) => item.status === 'queued' || item.status === 'error',
 		);
-	}, [focusX, focusY, mode, preset.height, preset.width, previewImage]);
-
-	useEffect(() => {
-		paintPreview();
-	}, [paintPreview]);
-
-	useEffect(() => {
-		return () => clearCanvasSafe(previewCanvasRef.current);
-	}, []);
-
-	const renderAll = useCallback(async () => {
-		const queue = itemsRef.current.filter((item) => item.image && item.status !== 'error');
 		if (!queue.length) {
-			setError('Add images first.');
+			setError('Add images first, or reset failed items.');
 			return;
 		}
 		setBusy(true);
 		setError(null);
-		setProgress(0);
-		let done = 0;
 		for (const item of queue) {
-			patchItem(item.id, { status: 'rendering' });
+			patchItem(item.id, { status: 'converting', progress: 12, error: undefined });
 			try {
-				const blob = await renderSocialBlob(item.image!, preset, { mode, focusX, focusY });
-				const resultUrl = URL.createObjectURL(blob);
+				await new Promise((resolve) => window.setTimeout(resolve, 16));
+				patchItem(item.id, { progress: 45 });
+				const result = await convertImageFile(item.file, settings);
+				const resultUrl = URL.createObjectURL(result.blob);
 				patchItem(item.id, {
-					status: 'ready',
-					resultBlob: blob,
+					status: 'done',
+					progress: 100,
+					resultBlob: result.blob,
 					resultUrl,
+					resultSize: result.blob.size,
+					resultName: result.fileName,
 				});
 			} catch (err) {
 				console.error(err);
 				patchItem(item.id, {
 					status: 'error',
-					error: err instanceof Error ? err.message : 'Render failed',
+					progress: 0,
+					error: err instanceof Error ? err.message : 'Conversion failed',
 				});
 			}
-			done += 1;
-			setProgress(Math.round((done / queue.length) * 100));
-			await yieldToMain(8);
+			await new Promise((resolve) => window.setTimeout(resolve, 20));
 		}
 		setBusy(false);
-	}, [focusX, focusY, mode, patchItem, preset]);
+	}, [patchItem, settings]);
 
 	const downloadZip = useCallback(async () => {
-		const files = itemsRef.current
-			.filter((item) => item.resultBlob)
-			.map((item) => ({
-				name: socialFileName(item.name, preset),
-				blob: item.resultBlob!,
-			}));
-		if (!files.length) {
-			setError('Render images before downloading.');
-			return;
-		}
+		const files = doneItems
+			.filter((item) => item.resultBlob && item.resultName)
+			.map((item) => ({ name: item.resultName!, blob: item.resultBlob! }));
+		if (!files.length) return;
 		setBusy(true);
 		try {
-			const blob = await zipSocialResults(files);
-			downloadBlob(blob, `social-resize-${preset.width}x${preset.height}.zip`);
+			const blob = await zipConvertedFiles(files);
+			downloadBlob(blob, `istockvisual-converted-${Date.now()}.zip`);
 		} catch (err) {
 			console.error(err);
-			setError('ZIP failed');
+			setError('ZIP download failed. Try individual downloads.');
 		} finally {
 			setBusy(false);
 		}
-	}, [preset]);
+	}, [doneItems]);
 
-	const onFocusPointer = useCallback(
-		(event: React.PointerEvent<HTMLDivElement>) => {
-			if (mode !== 'cover') return;
-			const rect = event.currentTarget.getBoundingClientRect();
-			const x = (event.clientX - rect.left) / rect.width;
-			const y = (event.clientY - rect.top) / rect.height;
-			setFocusX(Math.min(1, Math.max(0, x)));
-			setFocusY(Math.min(1, Math.max(0, y)));
-		},
-		[mode],
-	);
-
-	useEffect(() => {
-		const onMove = (event: PointerEvent) => {
-			if (!draggingFocus.current || mode !== 'cover') return;
-			const board = document.querySelector('.tools-panel__sample .tools-focus-board') as HTMLElement | null;
-			if (!board) return;
-			const rect = board.getBoundingClientRect();
-			setFocusX(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)));
-			setFocusY(Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height)));
-		};
-		const onUp = () => {
-			draggingFocus.current = false;
-		};
-		window.addEventListener('pointermove', onMove);
-		window.addEventListener('pointerup', onUp);
-		return () => {
-			window.removeEventListener('pointermove', onMove);
-			window.removeEventListener('pointerup', onUp);
-		};
-	}, [mode]);
+	const formats = CONVERT_FORMATS.filter((item) => item.id !== 'avif' || avifOk);
 
 	return (
 		<div className="tools-work">
 			<ToolsDropzone
 				inputRef={inputRef}
 				multiple
-				title={showingExample ? 'Drop a batch for social sizes' : 'Add more images'}
-				hint="Pick a preset, drag the focus point, then render and download a ZIP. Example is live — try presets now."
+				accept="image/*,.heic,.heif"
+				title={showingExample ? 'Drop images to convert' : 'Add more images'}
+				hint="Batch convert locally — formats, quality, and scale stay on this device. Example is live — convert it now."
 				cta="Browse files"
-				sampleSrc={active?.previewUrl || EXAMPLE_IMAGE_URL}
-				sampleLabel={showingExample ? 'Live example' : 'Active image'}
-				formats={['JPG', 'PNG', 'WebP']}
-				onFiles={(files) => void addFiles(files)}
+				sampleSrc={panelSrc}
+				sampleLabel={showingExample || items.length === 0 ? 'Live example' : 'Queue preview'}
+				formats={['JPG', 'PNG', 'WebP', 'HEIC']}
+				onFiles={(files) => addFiles(files)}
 			/>
 
 			<ToolsPanel
-				title="Platform & fit"
-				note="Cover crops to fill the frame. Contain + blur keeps the full image on a soft backdrop."
-				sample={
-					<figure className="tools-panel__sample">
-						<div
-							className="tools-focus-board"
-							onPointerDown={(event) => {
-								if (mode !== 'cover') return;
-								draggingFocus.current = true;
-								onFocusPointer(event);
-							}}
-						>
-							<canvas ref={previewCanvasRef} className="tools-focus-board__canvas" />
-							{mode === 'cover' && (
-								<span
-									className="tools-focus-board__pin"
-									style={{ left: `${focusX * 100}%`, top: `${focusY * 100}%` }}
-									aria-hidden="true"
-								/>
-							)}
-						</div>
-						<figcaption>
-							{showingExample ? 'Live example' : 'Your image'} · {preset.label}
-						</figcaption>
-					</figure>
-				}
+				title="Conversion settings"
+				note="Canvas re-encode strips EXIF. Set max width to 0 to keep the original width."
+				sampleSrc={panelSrc}
+				sampleCaption={panelCaption}
 				actions={
 					<div className="tools-panel__actions">
 						<button
 							type="button"
 							className="btn btn--primary"
-							onClick={renderAll}
+							onClick={convertAll}
 							disabled={busy || items.length === 0}
 						>
-							{busy ? `Rendering ${progress}%` : 'Render all sizes'}
+							{busy ? 'Converting…' : 'Convert all'}
 						</button>
 						<button
 							type="button"
 							className="btn btn--ghost"
 							onClick={downloadZip}
-							disabled={busy || !items.some((item) => item.resultBlob)}
+							disabled={busy || doneItems.length === 0}
 						>
 							Download ZIP
 						</button>
@@ -388,78 +268,108 @@ export default function SocialResizerWorkspace() {
 					</div>
 				}
 			>
-				<section className="tools-preset-grid" aria-label="Social presets">
-					{SOCIAL_PRESETS.map((item: SocialPreset) => (
-						<button
-							key={item.id}
-							type="button"
-							className={`tools-preset${presetId === item.id ? ' is-active' : ''}`}
-							onClick={() => setPresetId(item.id)}
-						>
-							<strong>{item.label}</strong>
-							<span>
-								{item.ratioLabel} · {item.width}×{item.height}
-							</span>
-						</button>
-					))}
-				</section>
 				<div className="tools-controls tools-controls--stacked">
 					<label className="tools-controls__field">
-						<span>Mode</span>
+						<span>Format</span>
 						<select
-							value={mode}
+							value={settings.formatId}
 							onChange={(event) => {
-								const next = event.currentTarget.value as SocialFitMode;
-								setMode(next);
+								const formatId = event.currentTarget.value as ConvertSettings['formatId'];
+								setSettings((prev) => ({ ...prev, formatId }));
 							}}
 						>
-							<option value="cover">Cover / crop</option>
-							<option value="contain-blur">Contain + blur</option>
+							{formats.map((format) => (
+								<option key={format.id} value={format.id}>
+									{format.label}
+								</option>
+							))}
 						</select>
 					</label>
+					<label className="tools-controls__field tools-controls__field--grow">
+						<span>Quality · {settings.quality}%</span>
+						<input
+							type="range"
+							min={40}
+							max={100}
+							value={settings.quality}
+							onChange={(event) => {
+								const quality = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, quality }));
+							}}
+						/>
+					</label>
+					<label className="tools-controls__field tools-controls__field--grow">
+						<span>Scale · {settings.scalePercent}%</span>
+						<input
+							type="range"
+							min={10}
+							max={100}
+							value={settings.scalePercent}
+							onChange={(event) => {
+								const scalePercent = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, scalePercent }));
+							}}
+						/>
+					</label>
+					<label className="tools-controls__field">
+						<span>Max width</span>
+						<input
+							type="number"
+							min={0}
+							step={64}
+							value={settings.maxWidth}
+							onChange={(event) => {
+								const maxWidth = Math.max(0, Number(event.currentTarget.value) || 0);
+								setSettings((prev) => ({ ...prev, maxWidth }));
+							}}
+						/>
+					</label>
+					{settings.formatId === 'jpeg' && (
+						<label className="tools-controls__field tools-controls__field--color">
+							<span>JPG background</span>
+							<input
+								type="color"
+								value={settings.jpgBackground}
+								onChange={(event) => {
+									const jpgBackground = event.currentTarget.value;
+									setSettings((prev) => ({ ...prev, jpgBackground }));
+								}}
+							/>
+						</label>
+					)}
 				</div>
-				{mode === 'cover' && (
-					<p className="tools-work__note" style={{ marginTop: '0.75rem', marginBottom: 0 }}>
-						Drag on the preview to move the crop focus.
-					</p>
-				)}
 			</ToolsPanel>
 
 			{error && <p className="tools-work__error">{error}</p>}
-			{busy && (
-				<div className="tools-progress" aria-live="polite">
-					<span className="tools-progress__bar" style={{ ['--p' as string]: `${progress}%` }} />
-					<span>Batch progress {progress}%</span>
-				</div>
-			)}
 
 			{items.length > 0 && (
-				<section className="tools-queue" aria-label="Queue">
+				<section className="tools-queue" aria-label="Queued images">
 					{items.map((item) => (
-						<article
-							key={item.id}
-							className={`tools-queue__row${activeId === item.id ? ' is-active' : ''}`}
-							onClick={() => setActiveId(item.id)}
-						>
-							<img src={item.resultUrl || item.previewUrl} alt="" className="tools-queue__thumb" />
+						<article key={item.id} className="tools-queue__row">
+							<img src={item.previewUrl} alt="" className="tools-queue__thumb" />
 							<div className="tools-queue__meta">
 								<strong title={item.name}>{item.isExample ? 'Example image' : item.name}</strong>
 								<span>
-									{item.status === 'loading' && 'Loading…'}
-									{item.status === 'ready' && (item.resultBlob ? 'Rendered' : 'Ready')}
-									{item.status === 'rendering' && 'Rendering…'}
-									{item.status === 'error' && (item.error || 'Error')}
+									{formatBytes(item.size)}
+									{item.resultSize != null ? ` → ${formatBytes(item.resultSize)}` : ''}
+									{' · '}
+									<em className={`tools-queue__status is-${item.status}`}>
+										{statusLabel(item)}
+									</em>
 								</span>
+								{item.status === 'converting' && (
+									<span
+										className="tools-queue__bar"
+										style={{ ['--p' as string]: `${item.progress}%` }}
+									/>
+								)}
 							</div>
 							<div className="tools-queue__actions">
-								{item.resultBlob && (
+								{item.status === 'done' && item.resultBlob && item.resultName && (
 									<button
 										type="button"
 										className="btn btn--primary"
-										onClick={(event) => {
-											event.stopPropagation();
-											downloadBlob(item.resultBlob!, socialFileName(item.name, preset));
-										}}
+										onClick={() => downloadBlob(item.resultBlob!, item.resultName!)}
 									>
 										Download
 									</button>
@@ -467,10 +377,8 @@ export default function SocialResizerWorkspace() {
 								<button
 									type="button"
 									className="tools-queue__remove"
-									onClick={(event) => {
-										event.stopPropagation();
-										removeItem(item.id);
-									}}
+									onClick={() => removeItem(item.id)}
+									disabled={busy && item.status === 'converting'}
 								>
 									Remove
 								</button>

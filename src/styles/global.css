@@ -4107,6 +4107,30 @@ body.image-editor-modal-open {
 	object-fit: cover;
 }
 
+.tools-panel__sample canvas {
+	width: 100%;
+	height: 100%;
+	min-height: 180px;
+	object-fit: cover;
+	display: block;
+}
+
+.tools-panel__sample .tools-focus-board {
+	width: 100%;
+	height: 100%;
+	min-height: 180px;
+	justify-self: stretch;
+	border: 0;
+	background: transparent;
+}
+
+.tools-panel__sample .tools-focus-board__canvas {
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: cover;
+}
+
 .tools-panel__sample figcaption {
 	padding: 0.55rem 0.7rem;
 	border-top: 1px solid rgba(255, 255, 255, 0.12);
