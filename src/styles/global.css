@@ -3262,6 +3262,7 @@ body.image-editor-modal-open {
 .image-editor-modal__size:hover,
 .image-editor-modal__aspect:hover,
 .image-editor-modal__preset:hover,
+.image-editor-modal__expand-pct:hover,
 .image-editor-modal__tool:hover {
 	border-color: rgba(28, 36, 32, 0.28);
 }
@@ -3269,6 +3270,7 @@ body.image-editor-modal-open {
 .image-editor-modal__size.is-active,
 .image-editor-modal__aspect.is-active,
 .image-editor-modal__preset.is-active,
+.image-editor-modal__expand-pct.is-active,
 .image-editor-modal__tool.is-active {
 	background: var(--ie-active);
 	border-color: transparent;
