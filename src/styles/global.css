@@ -2770,12 +2770,22 @@ body.image-editor-modal-open {
 .image-editor-modal__row--presets {
 	flex-wrap: nowrap;
 	align-items: center;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 }
 
 .image-editor-modal__row--aspects .image-editor-modal__row-label,
 .image-editor-modal__row--presets .image-editor-modal__row-label {
 	margin-top: 0;
 	align-self: center;
+}
+
+.image-editor-modal__row--aspects .image-editor-modal__aspect-list,
+.image-editor-modal__row--presets .image-editor-modal__preset-list {
+	flex: 1 1 0;
+	min-width: 0;
+	max-width: 100%;
 }
 
 /* Keep Size on one line with its options too */
