@@ -112,14 +112,9 @@ const similar = findSimilarAssets(
 					)}
 				</ul>
 				<ul class="download-rules">
-					<li>Not signed in: 500px-wide preview only, keeping the original aspect ratio.</li>
-					<li>
-						Signed in: 5 free full-size downloads (1K–8K).
-						{user && remainingFullDownloads != null && (
-							<> {remainingFullDownloads} left.</>
-						)}
-					</li>
-					<li>Pro: unlimited full-size downloads.</li>
+					<li>500 and 1K: free download, no login required. Default is 1K.</li>
+					<li>2K / 4K / 8K: requires a registered Pro membership.</li>
+					<li>Pro: unlimited high-resolution downloads.</li>
 				</ul>
 			</section>
 
