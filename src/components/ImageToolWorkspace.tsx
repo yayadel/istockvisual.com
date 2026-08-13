@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ImageEditor from './ImageEditor';
+import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
 type Props = {
 	loggedIn?: boolean;
@@ -82,59 +83,48 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 
 	return (
 		<div className="tools-work">
-			<label
-				className="tools-rail"
-				onDragOver={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.add('is-dragover');
-				}}
-				onDragLeave={(event) => {
-					event.currentTarget.classList.remove('is-dragover');
-				}}
-				onDrop={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.remove('is-dragover');
-					loadFile(event.dataTransfer.files?.[0]);
-				}}
-			>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*"
-					hidden
-					onChange={(event) => loadFile(event.currentTarget.files?.[0])}
-				/>
-				<div className="tools-rail__text">
-					<strong>{isExample ? 'Open your image' : 'Replace image'}</strong>
-					<span>Drop a file here, or browse. PNG / JPG / WebP.</span>
-				</div>
-				<span className="tools-rail__cta">Browse</span>
-			</label>
+			<ToolsDropzone
+				inputRef={inputRef}
+				title={isExample ? 'Drop your photo to start editing' : 'Replace the working image'}
+				hint="Local editor — adjust, crop, remove background, and expand without uploading to a server."
+				cta="Browse files"
+				sampleSrc={isExample ? EXAMPLE_IMAGE.url : imageUrl}
+				sampleLabel={isExample ? 'Live example' : 'Your image'}
+				formats={['PNG', 'JPG', 'WebP']}
+				onFiles={(files) => loadFile(files?.[0])}
+			/>
 
 			{error && <p className="tools-work__error">{error}</p>}
 
-			<section className="tools-stage" ref={editorWrapRef} aria-label="Editor">
-				<div className="tools-stage__meta">
-					<span>{isExample ? 'Showing example' : title}</span>
-					{isExample ? null : (
-						<button type="button" className="tools-stage__link" onClick={resetToExample}>
-							Use example again
-						</button>
-					)}
-				</div>
-				<div className="tools-stage__frame">
-					<ImageEditor
-						key={imageUrl}
-						variant="page"
-						imageUrl={imageUrl}
-						title={title}
-						onClose={resetToExample}
-						loggedIn={loggedIn}
-						isPro={isPro}
-						allSizesFree
-					/>
-				</div>
-			</section>
+			<div ref={editorWrapRef}>
+				<ToolsPanel
+					title="Editor workspace"
+					note={isExample ? 'Showing example — upload to replace.' : title}
+					sampleSrc={imageUrl}
+					sampleCaption={isExample ? 'Example in use' : 'Current image'}
+					flush
+					actions={
+						!isExample ? (
+							<button type="button" className="tools-stage__link" onClick={resetToExample}>
+								Use example again
+							</button>
+						) : null
+					}
+				>
+					<div className="tools-stage__frame">
+						<ImageEditor
+							key={imageUrl}
+							variant="page"
+							imageUrl={imageUrl}
+							title={title}
+							onClose={resetToExample}
+							loggedIn={loggedIn}
+							isPro={isPro}
+							allSizesFree
+						/>
+					</div>
+				</ToolsPanel>
+			</div>
 		</div>
 	);
 }

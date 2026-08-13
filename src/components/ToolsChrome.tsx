@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react';
+import { type ReactNode, type RefObject } from 'react';
 
 type ToolsDropzoneProps = {
 	title: string;
@@ -9,6 +9,7 @@ type ToolsDropzoneProps = {
 	sampleSrc?: string;
 	sampleLabel?: string;
 	formats?: string[];
+	inputRef?: RefObject<HTMLInputElement | null>;
 	onFiles: (files: FileList | null) => void;
 };
 
@@ -23,10 +24,9 @@ export function ToolsDropzone({
 	sampleSrc = DEFAULT_SAMPLE,
 	sampleLabel = 'Sample',
 	formats = ['JPG', 'PNG', 'WebP'],
+	inputRef,
 	onFiles,
 }: ToolsDropzoneProps) {
-	const inputRef = useRef<HTMLInputElement>(null);
-
 	return (
 		<label
 			className="tools-drop"
@@ -77,6 +77,8 @@ type ToolsPanelProps = {
 	sampleCaption?: string;
 	children: ReactNode;
 	actions?: ReactNode;
+	/** When true, sample column is hidden and body spans full width (e.g. live editor). */
+	flush?: boolean;
 };
 
 export function ToolsPanel({
@@ -86,9 +88,10 @@ export function ToolsPanel({
 	sampleCaption = 'Example preview',
 	children,
 	actions,
+	flush = false,
 }: ToolsPanelProps) {
 	return (
-		<section className="tools-panel" aria-label={title}>
+		<section className={`tools-panel${flush ? ' tools-panel--flush' : ''}`} aria-label={title}>
 			<header className="tools-panel__head">
 				<div>
 					<h2>{title}</h2>
@@ -97,10 +100,12 @@ export function ToolsPanel({
 				{actions ? <div className="tools-panel__head-actions">{actions}</div> : null}
 			</header>
 			<div className="tools-panel__layout">
-				<figure className="tools-panel__sample">
-					<img src={sampleSrc} alt="" />
-					<figcaption>{sampleCaption}</figcaption>
-				</figure>
+				{!flush && (
+					<figure className="tools-panel__sample">
+						<img src={sampleSrc} alt="" />
+						<figcaption>{sampleCaption}</figcaption>
+					</figure>
+				)}
 				<div className="tools-panel__body">{children}</div>
 			</div>
 		</section>
