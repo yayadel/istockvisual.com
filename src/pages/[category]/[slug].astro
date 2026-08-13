@@ -92,7 +92,7 @@ const similar = findSimilarAssets(
 						client:load
 						license="Free to use — commercial, no attribution required"
 						fileType={asset.fileType || '—'}
-						categories={(asset.contentCategories || []).map((label) => ({
+						categories={contentCategories.map((label) => ({
 							label,
 							href: searchPath(label),
 						}))}

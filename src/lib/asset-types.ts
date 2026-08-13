@@ -214,6 +214,14 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 			`${keyword} stock asset`,
 	);
 
+	const contentCategories = (() => {
+		const fromMeta = normalizeContentCategories(
+			normalizeStringArray(parsed.contentCategories ?? parsed['Content Categories']),
+		);
+		if (fromMeta.length > 0) return fromMeta;
+		return pickContentCategoriesFromTitle(imagePageTitle, keyword);
+	})();
+
 	return {
 		imagePrompt,
 		imageCreationDescription: formatAcronymsInText(
@@ -227,11 +235,9 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 		relatedSearchQueries: normalizeStringArray(
 			parsed.relatedSearchQueries ?? parsed['Related Search Queries'],
 		),
-		contentCategories: normalizeStringArray(
-			parsed.contentCategories ?? parsed['Content Categories'],
-		),
-		// Legacy field; topical categories live in contentCategories.
-		depictedElements: [],
+		contentCategories,
+		// Legacy field; topical categories live in contentCategories (DB: depictedElements).
+		depictedElements: contentCategories,
 		imagePageTitle,
 		pageShortDescription,
 		medium: readString(parsed, ['medium', 'Medium']) || 'Photograph',
