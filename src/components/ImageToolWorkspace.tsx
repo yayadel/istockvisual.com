@@ -6,6 +6,11 @@ type Props = {
 	isPro?: boolean;
 };
 
+const EXAMPLE_IMAGE = {
+	url: '/demo/studio-orb.jpg',
+	title: 'Example Image',
+} as const;
+
 function fileTitle(file: File) {
 	return file.name.replace(/\.[^.]+$/, '') || 'Uploaded image';
 }
@@ -13,18 +18,23 @@ function fileTitle(file: File) {
 export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: Props) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const editorWrapRef = useRef<HTMLDivElement>(null);
-	const [imageUrl, setImageUrl] = useState<string | null>(null);
-	const [title, setTitle] = useState('Uploaded image');
+	const [imageUrl, setImageUrl] = useState<string>(EXAMPLE_IMAGE.url);
+	const [title, setTitle] = useState<string>(EXAMPLE_IMAGE.title);
+	const [isExample, setIsExample] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const skipScrollRef = useRef(true);
 
 	useEffect(() => {
 		return () => {
-			if (imageUrl?.startsWith('blob:')) URL.revokeObjectURL(imageUrl);
+			if (imageUrl.startsWith('blob:')) URL.revokeObjectURL(imageUrl);
 		};
 	}, [imageUrl]);
 
 	useEffect(() => {
-		if (!imageUrl) return;
+		if (skipScrollRef.current) {
+			skipScrollRef.current = false;
+			return;
+		}
 		let cancelled = false;
 		const scrollEditorIntoView = () => {
 			if (cancelled) return;
@@ -43,12 +53,13 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 		};
 	}, [imageUrl]);
 
-	const clearImage = useCallback(() => {
+	const resetToExample = useCallback(() => {
 		setImageUrl((prev) => {
-			if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev);
-			return null;
+			if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+			return EXAMPLE_IMAGE.url;
 		});
-		setTitle('Uploaded image');
+		setTitle(EXAMPLE_IMAGE.title);
+		setIsExample(true);
 		setError(null);
 		if (inputRef.current) inputRef.current.value = '';
 	}, []);
@@ -62,10 +73,11 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 		setError(null);
 		const url = URL.createObjectURL(file);
 		setImageUrl((prev) => {
-			if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev);
+			if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
 			return url;
 		});
 		setTitle(fileTitle(file));
+		setIsExample(false);
 	}, []);
 
 	const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,47 +102,53 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 				</p>
 			</aside>
 
-			{!imageUrl ? (
-				<label
-					className="image-tool-page__dropzone"
-					onDragOver={(event) => {
-						event.preventDefault();
-						event.currentTarget.classList.add('is-dragover');
-					}}
-					onDragLeave={(event) => {
-						event.currentTarget.classList.remove('is-dragover');
-					}}
-					onDrop={onDrop}
-				>
-					<input
-						ref={inputRef}
-						type="file"
-						accept="image/*"
-						hidden
-						onChange={onInputChange}
-					/>
-					<span className="image-tool-page__dropzone-title">Upload an image to start</span>
-					<span className="image-tool-page__dropzone-hint">
-						Drag &amp; drop, or click to choose a file. Adjust, crop, remove background, and
-						expand — all free, all on-device.
-					</span>
-					<span className="btn btn--primary image-tool-page__dropzone-btn">Choose image</span>
-				</label>
-			) : (
-				<div className="image-tool-page__editor" ref={editorWrapRef}>
-					<ImageEditor
-						variant="page"
-						imageUrl={imageUrl}
-						title={title}
-						onClose={clearImage}
-						loggedIn={loggedIn}
-						isPro={isPro}
-						allSizesFree
-					/>
-				</div>
-			)}
+			<label
+				className="image-tool-page__dropzone"
+				onDragOver={(event) => {
+					event.preventDefault();
+					event.currentTarget.classList.add('is-dragover');
+				}}
+				onDragLeave={(event) => {
+					event.currentTarget.classList.remove('is-dragover');
+				}}
+				onDrop={onDrop}
+			>
+				<input
+					ref={inputRef}
+					type="file"
+					accept="image/*"
+					hidden
+					onChange={onInputChange}
+				/>
+				<span className="image-tool-page__dropzone-title">
+					{isExample ? 'Upload your image' : 'Replace image'}
+				</span>
+				<span className="image-tool-page__dropzone-hint">
+					Drag &amp; drop, or click to choose a file. Try the example editor below first —
+					Adjust, Crop &amp; Flip, Remove BG, and Expand all run on-device.
+				</span>
+				<span className="btn btn--primary image-tool-page__dropzone-btn">Choose image</span>
+			</label>
 
 			{error && <p className="image-tool-page__error">{error}</p>}
+
+			<div className="image-tool-page__editor" ref={editorWrapRef}>
+				{isExample && (
+					<p className="image-tool-page__example-badge">
+						Showing <strong>Example</strong> image — upload yours above anytime.
+					</p>
+				)}
+				<ImageEditor
+					key={imageUrl}
+					variant="page"
+					imageUrl={imageUrl}
+					title={title}
+					onClose={resetToExample}
+					loggedIn={loggedIn}
+					isPro={isPro}
+					allSizesFree
+				/>
+			</div>
 		</div>
 	);
 }
