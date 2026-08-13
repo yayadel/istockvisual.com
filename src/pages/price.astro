@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PricingPlans from '../components/PricingPlans';
 import { LICENSE_PATH } from '../lib/seo';
+import { LIFETIME_PLAN, MONTH_PLAN, YEAR_PLAN } from '../lib/pricing';
 
 const origin = Astro.url.origin;
 const pageUrl = new URL('/price', origin).href;
