@@ -248,6 +248,9 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 					</div>
 				</div>
 			</div>
+			<a href="/price" aria-current={priceActive ? 'page' : undefined}>
+				Price
+			</a>
 			{
 				isAdmin && (
 					<a href="/admin" aria-current={path.startsWith('/admin') ? 'page' : undefined}>
