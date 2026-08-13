@@ -133,6 +133,57 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 			if (drop) drop.classList.remove('is-dragover', 'is-uploading');
 		}
 
+		async function extractQuery(file) {
+			return new Promise(function (resolve, reject) {
+				var url = URL.createObjectURL(file);
+				var img = new Image();
+				img.onload = function () {
+					var canvas = document.createElement('canvas');
+					var size = 48;
+					canvas.width = size;
+					canvas.height = size;
+					var ctx = canvas.getContext('2d');
+					if (!ctx) {
+						URL.revokeObjectURL(url);
+						reject(new Error('Canvas unavailable'));
+						return;
+					}
+					ctx.drawImage(img, 0, 0, size, size);
+					var data = ctx.getImageData(0, 0, size, size).data;
+					var buckets = {};
+					for (var i = 0; i < data.length; i += 4) {
+						if (data[i + 3] < 128) continue;
+						var r = data[i] & 240;
+						var g = data[i + 1] & 240;
+						var b = data[i + 2] & 240;
+						var key = r + ',' + g + ',' + b;
+						buckets[key] = (buckets[key] || 0) + 1;
+					}
+					var hexes = Object.keys(buckets)
+						.sort(function (a, b) {
+							return buckets[b] - buckets[a];
+						})
+						.slice(0, 5)
+						.map(function (k) {
+							return k
+								.split(',')
+								.map(function (n) {
+									return Number(n).toString(16).padStart(2, '0');
+								})
+								.join('');
+						});
+					var thumb = canvas.toDataURL('image/jpeg', 0.72);
+					URL.revokeObjectURL(url);
+					resolve({ hexes: hexes, thumb: thumb });
+				};
+				img.onerror = function () {
+					URL.revokeObjectURL(url);
+					reject(new Error('Could not read that image'));
+				};
+				img.src = url;
+			});
+		}
+
 		async function uploadFile(file) {
 			var modal = getModal();
 			var status = modal && modal.querySelector('[data-upload-status]');
@@ -155,36 +206,37 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 
 			if (status) {
 				status.hidden = false;
-				status.textContent = 'Uploading “' + file.name + '”…';
+				status.textContent = 'Reading “' + file.name + '” in this browser…';
 			}
 			if (choose) choose.disabled = true;
 			if (drop) drop.classList.add('is-uploading');
 
 			try {
-				var body = new FormData();
-				body.append('file', file);
-				var res = await fetch('/api/upload/visual-search', {
-					method: 'POST',
-					body: body,
-				});
-				var data = await res.json();
-				if (!res.ok || !data.ok) {
-					throw new Error((data && data.error) || 'Upload failed');
+				var query = await extractQuery(file);
+				try {
+					sessionStorage.setItem(
+						'istockvisual-visual-search',
+						JSON.stringify({
+							name: file.name,
+							thumb: query.thumb,
+							colors: query.hexes,
+						}),
+					);
+				} catch (err) {
+					/* quota / private mode */
 				}
-
 				var params = new URLSearchParams({
 					mode: 'visual',
-					key: data.key || '',
-					name: data.filename || file.name,
-					stored: data.stored ? '1' : '0',
+					name: file.name,
+					c: query.hexes.join(','),
 				});
 				window.location.href = '/s/?' + params.toString();
 			} catch (err) {
 				if (status) {
 					status.hidden = false;
-					status.textContent = err instanceof Error ? err.message : 'Upload failed';
+					status.textContent = err instanceof Error ? err.message : 'Could not read that image';
 				} else {
-					alert(err instanceof Error ? err.message : 'Upload failed');
+					alert(err instanceof Error ? err.message : 'Could not read that image');
 				}
 				if (choose) choose.disabled = false;
 				if (drop) drop.classList.remove('is-uploading');
