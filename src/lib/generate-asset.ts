@@ -238,6 +238,66 @@ export function filterAssetsBySearch(
 	});
 }
 
+function parseHexColor(value: string): { r: number; g: number; b: number } | null {
+	const hex = value.trim().replace(/^#/, '');
+	if (!/^[0-9a-fA-F]{6}$/.test(hex)) return null;
+	return {
+		r: Number.parseInt(hex.slice(0, 2), 16),
+		g: Number.parseInt(hex.slice(2, 4), 16),
+		b: Number.parseInt(hex.slice(4, 6), 16),
+	};
+}
+
+function colorDistance(
+	a: { r: number; g: number; b: number },
+	b: { r: number; g: number; b: number },
+) {
+	return (a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2;
+}
+
+export function parseVisualSearchColors(raw: string | null | undefined): string[] {
+	if (!raw) return [];
+	const seen = new Set<string>();
+	for (const part of raw.split(',')) {
+		const hex = part.trim().replace(/^#/, '').toLowerCase();
+		if (!/^[0-9a-f]{6}$/.test(hex) || seen.has(hex)) continue;
+		seen.add(hex);
+		if (seen.size >= 6) break;
+	}
+	return [...seen];
+}
+
+/** Rank library assets by palette distance. Query photo never leaves the browser. */
+export function rankAssetsByPalette(assets: AssetDetail[], queryHexes: string[]): AssetDetail[] {
+	const query = queryHexes.map(parseHexColor).filter(Boolean) as {
+		r: number;
+		g: number;
+		b: number;
+	}[];
+	if (!query.length) return assets;
+
+	return assets
+		.map((asset) => {
+			const palette = (asset.colorPalette || [])
+				.map((swatch) => parseHexColor(swatch.hex))
+				.filter(Boolean) as { r: number; g: number; b: number }[];
+			if (!palette.length) {
+				return { asset, score: Number.POSITIVE_INFINITY };
+			}
+			let total = 0;
+			for (const color of query) {
+				let best = Number.POSITIVE_INFINITY;
+				for (const swatch of palette) {
+					best = Math.min(best, colorDistance(color, swatch));
+				}
+				total += best;
+			}
+			return { asset, score: total / query.length };
+		})
+		.sort((a, b) => a.score - b.score)
+		.map((item) => item.asset);
+}
+
 async function uniqueSlug(
 	db: D1Database,
 	category: CategorySlug,
