@@ -10,21 +10,25 @@ const href = `/${asset.category}/${asset.slug}`;
 ---
 
 <a class="asset-card" href={href}>
-	<div class="asset-card__media">
-		{
-			asset.previewUrl ? (
-				<img src={asset.previewUrl} alt={asset.title} loading="lazy" />
-			) : (
-				<div style="display:grid;place-items:center;height:100%;color:var(--text-muted)">No preview</div>
-			)
-		}
-	</div>
-	<div class="asset-card__body">
-		<h3 class="asset-card__title">{asset.title}</h3>
-		<p class="asset-card__meta">
-			<span>{asset.category}</span>
-			{asset.isPremium && <span class="badge badge--premium">Pro</span>}
-			{asset.fileType && <span>{asset.fileType}</span>}
-		</p>
-	</div>
+	{
+		asset.previewUrl ? (
+			<img
+				src={asset.previewUrl}
+				alt={asset.title}
+				width={asset.width}
+				height={asset.height}
+				loading="lazy"
+			/>
+		) : (
+			<div class="asset-card__empty">No preview</div>
+		)
+	}
+	{
+		asset.isPremium && (
+			<span class="asset-card__pro" aria-label="Pro">
+				Pro
+			</span>
+		)
+	}
+	<span class="asset-card__caption">{asset.title}</span>
 </a>
