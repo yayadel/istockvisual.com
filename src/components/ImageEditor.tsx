@@ -7,6 +7,7 @@ import {
 	DEFAULT_DOWNLOAD_SIZE,
 	DEFAULT_KEEP_CIRCLE,
 	DOWNLOAD_SIZES,
+	EDITOR_ADJUST_PRESETS,
 	EDITOR_ASPECT_PRESETS,
 	applyAdjustToImageData,
 	aspectPreviewBox,
@@ -97,6 +98,7 @@ export default function ImageEditor({
 	const [sizeGateMessage, setSizeGateMessage] = useState<string | null>(null);
 	const [tool, setTool] = useState<ToolId>('adjust');
 	const [adjust, setAdjust] = useState<AdjustValues>(DEFAULT_ADJUST);
+	const [adjustPresetId, setAdjustPresetId] = useState('original');
 	const [rotation, setRotation] = useState(0);
 	const [fineRotation, setFineRotation] = useState(0);
 	const [flipX, setFlipX] = useState(false);

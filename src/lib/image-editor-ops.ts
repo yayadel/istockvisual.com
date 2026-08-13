@@ -68,6 +68,79 @@ export const DEFAULT_ADJUST: AdjustValues = {
 	vibrance: 0,
 };
 
+export type AdjustPreset = {
+	id: string;
+	label: string;
+	values: AdjustValues;
+};
+
+/** Common one-tap looks for the Adjust tool. */
+export const EDITOR_ADJUST_PRESETS: AdjustPreset[] = [
+	{ id: 'original', label: 'Original', values: { ...DEFAULT_ADJUST } },
+	{
+		id: 'brighten',
+		label: 'Brighten',
+		values: { ...DEFAULT_ADJUST, brightness: 12, exposure: 8, shadows: 12 },
+	},
+	{
+		id: 'darken',
+		label: 'Darken',
+		values: { ...DEFAULT_ADJUST, brightness: -10, exposure: -8, highlights: -10 },
+	},
+	{
+		id: 'vivid',
+		label: 'Vivid',
+		values: { ...DEFAULT_ADJUST, saturation: 18, vibrance: 16, contrast: 10 },
+	},
+	{
+		id: 'soft',
+		label: 'Soft',
+		values: { ...DEFAULT_ADJUST, contrast: -12, highlights: -8, shadows: 10, saturation: 6 },
+	},
+	{
+		id: 'warm',
+		label: 'Warm',
+		values: { ...DEFAULT_ADJUST, temperature: 22, tint: 4, vibrance: 6 },
+	},
+	{
+		id: 'cool',
+		label: 'Cool',
+		values: { ...DEFAULT_ADJUST, temperature: -20, tint: -4, saturation: -4 },
+	},
+	{
+		id: 'contrast',
+		label: 'Contrast',
+		values: { ...DEFAULT_ADJUST, contrast: 18, highlights: -6, shadows: -10 },
+	},
+	{
+		id: 'matte',
+		label: 'Matte',
+		values: { ...DEFAULT_ADJUST, contrast: -8, shadows: 14, highlights: -10, saturation: -6 },
+	},
+	{
+		id: 'fade',
+		label: 'Fade',
+		values: { ...DEFAULT_ADJUST, contrast: -14, saturation: -10, brightness: 6, highlights: 8 },
+	},
+	{
+		id: 'dramatic',
+		label: 'Dramatic',
+		values: { ...DEFAULT_ADJUST, contrast: 22, shadows: -16, highlights: -12, vibrance: 8 },
+	},
+	{
+		id: 'golden',
+		label: 'Golden',
+		values: {
+			...DEFAULT_ADJUST,
+			temperature: 28,
+			tint: 8,
+			exposure: 4,
+			vibrance: 10,
+			saturation: 8,
+		},
+	},
+];
+
 export const ADJUST_SLIDERS: {
 	key: keyof AdjustValues;
 	label: string;
