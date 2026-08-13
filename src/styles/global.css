@@ -278,19 +278,14 @@ textarea {
 
 /* Tool mega menu */
 .nav__dropdown--tools {
-	position: static;
-}
-
-@media (min-width: 900px) {
-	.nav__dropdown--tools {
-		position: relative;
-	}
+	position: relative;
 }
 
 .nav__tools-mega {
 	position: absolute;
 	top: calc(100% + 0.55rem);
-	right: max(1rem, calc((100vw - min(100vw, 1280px)) / 2 + 1rem));
+	right: 0;
+	left: auto;
 	z-index: 60;
 	display: grid;
 	grid-template-columns: minmax(0, 1.35fr) minmax(220px, 260px);
