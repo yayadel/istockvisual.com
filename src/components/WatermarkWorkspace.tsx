@@ -296,12 +296,10 @@ export default function WatermarkWorkspace() {
 						<span>Type</span>
 						<select
 							value={settings.kind}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									kind: event.currentTarget.value as WatermarkSettings['kind'],
-								}))
-							}
+							onChange={(event) => {
+								const kind = event.currentTarget.value as WatermarkSettings['kind'];
+								setSettings((prev) => ({ ...prev, kind }));
+							}}
 						>
 							<option value="text">Text</option>
 							<option value="logo">Logo</option>
@@ -314,18 +312,20 @@ export default function WatermarkWorkspace() {
 								<input
 									type="text"
 									value={settings.text}
-									onChange={(event) =>
-										setSettings((prev) => ({ ...prev, text: event.currentTarget.value }))
-									}
+									onChange={(event) => {
+										const text = event.currentTarget.value;
+										setSettings((prev) => ({ ...prev, text }));
+									}}
 								/>
 							</label>
 							<label className="tools-controls__field">
 								<span>Font</span>
 								<select
 									value={settings.fontFamily}
-									onChange={(event) =>
-										setSettings((prev) => ({ ...prev, fontFamily: event.currentTarget.value }))
-									}
+									onChange={(event) => {
+										const fontFamily = event.currentTarget.value;
+										setSettings((prev) => ({ ...prev, fontFamily }));
+									}}
 								>
 									{WATERMARK_FONTS.map((font) => (
 										<option key={font.id} value={font.value}>
@@ -339,9 +339,10 @@ export default function WatermarkWorkspace() {
 								<input
 									type="color"
 									value={settings.color}
-									onChange={(event) =>
-										setSettings((prev) => ({ ...prev, color: event.currentTarget.value }))
-									}
+									onChange={(event) => {
+										const color = event.currentTarget.value;
+										setSettings((prev) => ({ ...prev, color }));
+									}}
 								/>
 							</label>
 						</>
@@ -368,12 +369,10 @@ export default function WatermarkWorkspace() {
 						<span>Layout</span>
 						<select
 							value={settings.layout}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									layout: event.currentTarget.value as WatermarkSettings['layout'],
-								}))
-							}
+							onChange={(event) => {
+								const layout = event.currentTarget.value as WatermarkSettings['layout'];
+								setSettings((prev) => ({ ...prev, layout }));
+							}}
 						>
 							<option value="grid">Nine-point</option>
 							<option value="tile">Diagonal tile</option>
@@ -386,12 +385,10 @@ export default function WatermarkWorkspace() {
 							min={5}
 							max={100}
 							value={settings.opacity}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									opacity: Number(event.currentTarget.value),
-								}))
-							}
+							onChange={(event) => {
+								const opacity = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, opacity }));
+							}}
 						/>
 					</label>
 					<label className="tools-controls__field tools-controls__field--grow">
@@ -420,9 +417,10 @@ export default function WatermarkWorkspace() {
 							<input
 								type="checkbox"
 								checked={settings.stroke}
-								onChange={(event) =>
-									setSettings((prev) => ({ ...prev, stroke: event.currentTarget.checked }))
-								}
+								onChange={(event) => {
+									const stroke = event.currentTarget.checked;
+									setSettings((prev) => ({ ...prev, stroke }));
+								}}
 							/>
 							<span>Stroke</span>
 						</label>
@@ -449,12 +447,10 @@ export default function WatermarkWorkspace() {
 									min={8}
 									max={40}
 									value={settings.tileGapPercent}
-									onChange={(event) =>
-										setSettings((prev) => ({
-											...prev,
-											tileGapPercent: Number(event.currentTarget.value),
-										}))
-									}
+									onChange={(event) => {
+										const tileGapPercent = Number(event.currentTarget.value);
+										setSettings((prev) => ({ ...prev, tileGapPercent }));
+									}}
 								/>
 							</label>
 							<label className="tools-controls__field tools-controls__field--grow">
@@ -464,12 +460,10 @@ export default function WatermarkWorkspace() {
 									min={-60}
 									max={60}
 									value={settings.tileAngleDeg}
-									onChange={(event) =>
-										setSettings((prev) => ({
-											...prev,
-											tileAngleDeg: Number(event.currentTarget.value),
-										}))
-									}
+									onChange={(event) => {
+										const tileAngleDeg = Number(event.currentTarget.value);
+										setSettings((prev) => ({ ...prev, tileAngleDeg }));
+									}}
 								/>
 							</label>
 						</>
