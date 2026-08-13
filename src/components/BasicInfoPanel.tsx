@@ -7,6 +7,7 @@ type CategoryLink = {
 
 type Props = {
 	license?: string;
+	licenseHref?: string;
 	/** Topical category (exactly 1) from the fixed vocabulary. */
 	categories?: CategoryLink[];
 	/** @deprecated Prefer categories[] */
@@ -18,6 +19,7 @@ const FORMAT_LABELS = DOWNLOAD_FORMATS.map((format) => format.toUpperCase()).joi
 
 export default function BasicInfoPanel({
 	license = 'Free to use — commercial OK, attribution required',
+	licenseHref = '/info/license',
 	categories,
 	categoryLabel,
 	categoryHref,
