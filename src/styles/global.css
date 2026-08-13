@@ -1056,8 +1056,61 @@ body.upload-modal-open {
 .share-bar {
 	display: grid;
 	gap: 0.55rem;
-	margin: 0 0 0.85rem;
+	margin: 0;
 	padding: 0;
+}
+
+.share-bar--compact {
+	position: relative;
+	flex: 0 0 auto;
+	z-index: 5;
+}
+
+.share-bar__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin: 0;
+	padding: 0.48rem 0.8rem;
+	border: 1px solid rgba(36, 53, 44, 0.12);
+	border-radius: 3px;
+	background: #f3f5f2;
+	color: #24352c;
+	font: inherit;
+	font-size: 0.84rem;
+	font-weight: 650;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.share-bar__toggle:hover,
+.share-bar.is-open .share-bar__toggle {
+	background: #e9eee9;
+	border-color: rgba(36, 53, 44, 0.2);
+}
+
+.share-bar__toggle svg {
+	opacity: 0.55;
+	transition: transform 0.15s ease;
+}
+
+.share-bar.is-open .share-bar__toggle svg {
+	transform: rotate(180deg);
+}
+
+.share-bar__menu {
+	position: absolute;
+	top: calc(100% + 0.35rem);
+	right: 0;
+	z-index: 20;
+	display: grid;
+	gap: 0.35rem;
+	min-width: 10.5rem;
+	padding: 0.45rem;
+	border: 1px solid rgba(36, 53, 44, 0.12);
+	border-radius: 3px;
+	background: #fff;
+	box-shadow: 0 10px 28px rgba(36, 53, 44, 0.12);
 }
 
 .share-bar__head {
@@ -1074,8 +1127,8 @@ body.upload-modal-open {
 }
 
 .share-bar__actions {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	display: flex;
+	flex-wrap: wrap;
 	gap: 0.4rem;
 }
 
@@ -1084,14 +1137,14 @@ body.upload-modal-open {
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	min-height: 2.25rem;
-	padding: 0.45rem 0.4rem;
-	border: 1px solid rgba(36, 53, 44, 0.12);
+	min-height: 2.1rem;
+	padding: 0.45rem 0.65rem;
+	border: 1px solid rgba(36, 53, 44, 0.1);
 	border-radius: 3px;
 	background: #f3f5f2;
 	color: #24352c;
 	font: inherit;
-	font-size: 0.8rem;
+	font-size: 0.82rem;
 	font-weight: 600;
 	line-height: 1;
 	text-decoration: none;
@@ -1109,14 +1162,28 @@ body.upload-modal-open {
 	color: rgba(238, 243, 239, 0.55);
 }
 
-[data-theme='dark'] .share-bar__btn {
+[data-theme='dark'] .share-bar__toggle,
+[data-theme='dark'] .share-bar__btn,
+[data-theme='dark'] .share-bar__menu {
 	background: #18201c;
 	border-color: rgba(238, 243, 239, 0.12);
 	color: #eef3ef;
 }
 
+[data-theme='dark'] .share-bar__toggle:hover,
+[data-theme='dark'] .share-bar.is-open .share-bar__toggle,
 [data-theme='dark'] .share-bar__btn:hover {
 	background: #1e2923;
+}
+
+@media (max-width: 640px) {
+	.detail__title-row {
+		flex-wrap: wrap;
+	}
+
+	.share-bar--compact {
+		margin-left: auto;
+	}
 }
 
 .pro-promo {
