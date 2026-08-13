@@ -1204,22 +1204,23 @@ export default function ImageEditor({
 								<>
 									<h3>Expand canvas</h3>
 									<p>
-										{isPage
-											? 'Widen the canvas around the current image with edge fill.'
-											: 'Choose a larger Size above, then expand the image to fill the new frame.'}
+										Pick how much to grow the frame. The preview keeps the original centered;
+										confirm to fill the new margins.
 									</p>
+									{expandTarget && (
+										<p className="image-editor-modal__expand-dims">
+											{pendingCommit
+												? `Result ${natural.w}×${natural.h}`
+												: `Target ${expandTarget.width}×${expandTarget.height} (+${expandPct}%)`}
+										</p>
+									)}
 									<button
 										className="btn btn--primary"
 										type="button"
-										onClick={handleExpand}
-										disabled={Boolean(busy) || !ready}
+										onClick={() => void handleExpand()}
+										disabled={Boolean(busy) || !ready || pendingCommit}
 									>
-										{isPage &&
-										natural.w > 0 &&
-										canvasSize.width === natural.w &&
-										canvasSize.height === natural.h
-											? `Expand to ${Math.round(natural.w * 1.25)}×${Math.round(natural.h * 1.25)}`
-											: `Expand to ${canvasSize.width}×${canvasSize.height}`}
+										Confirm expand +{expandPct}%
 									</button>
 									<button
 										className="btn btn--primary"
