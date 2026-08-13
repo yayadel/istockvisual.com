@@ -1548,13 +1548,31 @@ body.download-auth-modal-open {
 }
 
 [data-theme='dark'] .download-menu {
-	background: var(--panel-bg);
-	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+	background: #18201c;
+	border-color: rgba(238, 243, 239, 0.12);
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme='dark'] .download-menu__item:hover,
 [data-theme='dark'] .download-menu__item.is-selected {
-	background: rgba(255, 255, 255, 0.06);
+	background: rgba(196, 240, 75, 0.08);
+}
+
+[data-theme='dark'] .download-menu__dims {
+	color: #eef3ef;
+}
+
+[data-theme='dark'] .detail__info .btn--ghost,
+[data-theme='dark'] .basic-info-panel__toggle,
+[data-theme='dark'] .basic-info-panel__body {
+	background: #18201c;
+	border-color: rgba(238, 243, 239, 0.12);
+	color: #eef3ef;
+}
+
+[data-theme='dark'] .detail__info .btn--ghost:hover,
+[data-theme='dark'] .basic-info-panel__toggle:hover {
+	background: #1e2923;
 }
 
 .detail__info .meta-list {
