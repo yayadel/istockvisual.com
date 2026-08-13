@@ -46,13 +46,45 @@ export type AdjustValues = {
 	brightness: number;
 	contrast: number;
 	saturation: number;
+	exposure: number;
+	highlights: number;
+	shadows: number;
+	temperature: number;
+	tint: number;
+	hue: number;
+	vibrance: number;
 };
 
 export const DEFAULT_ADJUST: AdjustValues = {
 	brightness: 0,
 	contrast: 0,
 	saturation: 0,
+	exposure: 0,
+	highlights: 0,
+	shadows: 0,
+	temperature: 0,
+	tint: 0,
+	hue: 0,
+	vibrance: 0,
 };
+
+export const ADJUST_SLIDERS: {
+	key: keyof AdjustValues;
+	label: string;
+	min: number;
+	max: number;
+}[] = [
+	{ key: 'brightness', label: 'Brightness', min: -50, max: 50 },
+	{ key: 'exposure', label: 'Exposure', min: -50, max: 50 },
+	{ key: 'contrast', label: 'Contrast', min: -50, max: 50 },
+	{ key: 'highlights', label: 'Highlights', min: -50, max: 50 },
+	{ key: 'shadows', label: 'Shadows', min: -50, max: 50 },
+	{ key: 'saturation', label: 'Saturation', min: -50, max: 50 },
+	{ key: 'vibrance', label: 'Vibrance', min: -50, max: 50 },
+	{ key: 'temperature', label: 'Temperature', min: -50, max: 50 },
+	{ key: 'tint', label: 'Tint', min: -50, max: 50 },
+	{ key: 'hue', label: 'Hue', min: -180, max: 180 },
+];
 
 export { DOWNLOAD_SIZES, DEFAULT_DOWNLOAD_SIZE };
 export type { DownloadSizeId };
