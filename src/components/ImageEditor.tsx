@@ -786,7 +786,10 @@ export default function ImageEditor({
 								onClick={handleDownload}
 								disabled={!ready || Boolean(busy)}
 							>
-								Download edited · {canvasSize.width}×{canvasSize.height}
+								Download edited ·{' '}
+								{tool === 'transform'
+									? aspectPreset.label
+									: `${canvasSize.width}×${canvasSize.height}`}
 							</button>
 						</aside>
 					</div>
