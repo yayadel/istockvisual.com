@@ -29,6 +29,9 @@ const categoryLabel = isCategorySlug(categoryParam)
 	: 'All media';
 
 const pool = await listAllAssets(env.DB, Astro.url.origin, 400);
+if (isVisual) {
+	await purgeVisualSearchUploads(env.MEDIA, false);
+}
 const scoped = filterAssetsBySearch(
 	pool,
 	'',
