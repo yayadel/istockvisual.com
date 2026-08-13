@@ -279,9 +279,11 @@ def main() -> None:
 	# contentCategories is the topical category field (exactly 1 from /categories).
 	# depictedElements is unused; tags already cover depicted objects.
 	payload["depictedElements"] = []
-	payload["contentCategories"] = normalize_content_categories(
-		payload.get("contentCategories")
-	) or payload.get("contentCategories") or []
+	payload["contentCategories"] = (
+		normalize_content_categories(payload.get("contentCategories"))
+		or payload.get("contentCategories")
+		or []
+	)[:1]
 
 	text = json.dumps(payload, ensure_ascii=False, indent=2)
 	if args.out:
