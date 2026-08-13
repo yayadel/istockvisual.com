@@ -51,7 +51,6 @@ class AssetMeta(BaseModel):
 		max_length=1,
 		description="Exactly 1 allowed category label for the depicted scene",
 	)
-	relatedSearchQueries: List[str] = Field(description="Related search queries")
 	imagePageTitle: str = Field(description="Title-case title containing the keyword")
 	pageShortDescription: str = Field(
 		description="Sentence-case short description containing the keyword"
