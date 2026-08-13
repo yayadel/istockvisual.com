@@ -3726,13 +3726,13 @@ body.image-editor-modal-open {
 	overflow-x: clip;
 }
 
-.tools-work {
+.tools-masthead {
 	display: grid;
-	gap: 1.15rem;
-	width: 100%;
+	gap: 1rem;
+	padding-bottom: 1.35rem;
+	border-bottom: 1px solid var(--line);
 	max-width: 100%;
 	min-width: 0;
-	overflow-x: clip;
 }
 
 .tools-masthead__switch {
