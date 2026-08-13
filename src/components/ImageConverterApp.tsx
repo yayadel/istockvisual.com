@@ -18,8 +18,8 @@ export class ImageConverterBoundary extends Component<Props, State> {
 	render() {
 		if (this.state.error) {
 			return (
-				<div className="image-convert-page">
-					<p className="image-convert-page__error">
+				<div className="tools-work">
+					<p className="tools-work__error">
 						Converter error: {this.state.error}. Refresh the page and try again.
 					</p>
 				</div>
