@@ -4381,7 +4381,7 @@ body.image-editor-modal-open {
 	max-width: 100%;
 	min-width: 0;
 	border-top: 1px solid var(--line);
-	overflow-x: clip;
+	overflow-x: hidden;
 }
 
 .tools-queue__row {
