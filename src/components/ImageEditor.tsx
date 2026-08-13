@@ -586,10 +586,13 @@ export default function ImageEditor({
 							<div
 								className="image-editor-modal__stage"
 								ref={stageRef}
-								style={{
-									aspectRatio: `${canvasSize.width} / ${canvasSize.height}`,
-									width: `min(100%, ${canvasSize.width}px)`,
-								}}
+								style={
+									{
+										['--ie-ar' as string]: String(
+											canvasSize.width / Math.max(canvasSize.height, 1),
+										),
+									} as React.CSSProperties
+								}
 							>
 								{ready && (frameUrl || previewUrl) ? (
 									<div
