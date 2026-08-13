@@ -10,7 +10,7 @@ export function assetSearchTitle(imageName: string): string {
 function stockNoun(category: CategorySlug): string {
 	switch (category) {
 		case 'illustrations':
- mar	return 'stock illustration';
+			return 'stock illustration';
 		case 'vectors':
 			return 'stock vector';
 		case '3d':
