@@ -191,32 +191,40 @@ const jsonLd = assetJsonLd({
 			{
 				isGenerated && (
 					<section class="detail__story">
-						<div class="info-grid">
-							{asset.creationDescription && (
-								<article class="info-card">
-									<h2>Creation description</h2>
-									<p>{asset.creationDescription}</p>
-								</article>
-							)}
-							{asset.usageTips && (
-								<article class="info-card">
-									<h2>Usage tips</h2>
-									<p>{asset.usageTips}</p>
-								</article>
-							)}
-							{asset.colorPalette && asset.colorPalette.length > 0 && (
-								<article class="info-card info-card--wide info-card--palette">
+						{
+							(asset.creationDescription || asset.usageTips) && (
+								<div class="story-pair">
+									{asset.creationDescription && (
+										<article class="story-block">
+											<h2>Creation description</h2>
+											<p>{asset.creationDescription}</p>
+										</article>
+									)}
+									{asset.usageTips && (
+										<article class="story-block">
+											<h2>Usage tips</h2>
+											<p>{asset.usageTips}</p>
+										</article>
+									)}
+								</div>
+							)
+						}
+						{
+							asset.colorPalette && asset.colorPalette.length > 0 && (
+								<article class="story-block story-block--palette">
 									<h2>Color palette</h2>
 									<ColorPalette client:load swatches={asset.colorPalette} />
 								</article>
-							)}
-							{asset.imagePrompt && (
-								<article class="info-card info-card--wide">
+							)
+						}
+						{
+							asset.imagePrompt && (
+								<article class="story-block story-block--prompt">
 									<h2>Image generation prompt</h2>
 									<p>{asset.imagePrompt}</p>
 								</article>
-							)}
-						</div>
+							)
+						}
 					</section>
 				)
 			}
