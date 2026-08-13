@@ -22,7 +22,7 @@ Respond with a single JSON object only (no markdown fences), using exactly these
   "imageCreationDescription": "English description containing the topic keyword",
   "assetUsageTips": "English usage tips for designers/marketers",
   "colorPalette": [{"name": "Color name", "hex": "#RRGGBB"}],
-  "tags": ["at least 40 tags merging keywords + depicted elements"],
+  "tags": ["at least 40 title-case tags; acronyms like PDF/USB/AI uppercase"],
   "contentCategories": ["1 to 3 exact labels from the allowed category list"],
   "relatedSearchQueries": ["query1", "query2"],
   "imagePageTitle": "English title-case title containing the topic keyword (acronyms like PDF/UAE uppercase)",
