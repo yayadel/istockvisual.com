@@ -1082,15 +1082,6 @@ body.upload-modal-open {
 	margin: 0 0 0.75rem;
 }
 
-.download-panel__label {
-	margin: 0;
-	font-size: 0.78rem;
-	font-weight: 650;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	color: #6a776e;
-}
-
 .download-split-wrap {
 	position: relative;
 }
