@@ -1930,6 +1930,16 @@ body.download-auth-modal-open {
 	color: #fff;
 }
 
+[data-theme='dark'] .download-tier--free {
+	background: rgba(238, 243, 239, 0.1);
+	color: #c8d4cc;
+}
+
+[data-theme='dark'] .download-tier--pro {
+	background: #c4f04b;
+	color: #14352d;
+}
+
 [data-theme='dark'] .detail__info .btn--ghost,
 [data-theme='dark'] .basic-info-panel,
 [data-theme='dark'] .basic-info-panel__title,
