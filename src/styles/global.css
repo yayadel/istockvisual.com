@@ -3637,12 +3637,25 @@ body.image-editor-modal-open {
 	outline-offset: -2px;
 }
 
+.image-editor-modal__stage.is-expand-preview {
+	background-color: #1a1d1b;
+}
+
+.image-editor-modal__expand-source {
+	position: absolute;
+	z-index: 1;
+	display: block;
+	object-fit: fill;
+	pointer-events: none;
+	box-sizing: border-box;
+}
+
 .image-editor-modal__expand-guide {
 	position: absolute;
 	z-index: 2;
 	box-sizing: border-box;
 	border: 2px solid #c4f04b;
-	box-shadow: 0 0 0 9999px rgba(8, 10, 9, 0.52);
+	box-shadow: 0 0 0 9999px rgba(8, 10, 9, 0.55);
 	pointer-events: none;
 }
 

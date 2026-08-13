@@ -654,7 +654,14 @@ export default function ImageEditor({
 
 	const applyExpandChanges = useCallback(async () => {
 		const working = workingRef.current;
-		if (!working) return;
+		if (!working) {
+			setStatus('Image not ready yet.');
+			return;
+		}
+		if (expandSettled) {
+			setStatus('Already applied. Pick another expand % to run again.');
+			return;
+		}
 
 		const originW = working.width;
 		const originH = working.height;
@@ -668,7 +675,7 @@ export default function ImageEditor({
 			return;
 		}
 
-		const VISUAL_MS = 1_200;
+		const VISUAL_MS = 1_000;
 		const startedAt = performance.now();
 		let stopped = false;
 		let displayPct = 0;
@@ -692,6 +699,9 @@ export default function ImageEditor({
 				targetW,
 				targetH,
 			);
+			if (!expanded.width || !expanded.height) {
+				throw new Error('Expand produced an empty canvas');
+			}
 
 			const remaining = Math.max(0, VISUAL_MS - (performance.now() - startedAt));
 			if (remaining > 0) {
@@ -705,18 +715,20 @@ export default function ImageEditor({
 			setBusy('Filling 100%…');
 			setWorkingFromCanvas(expanded);
 			try {
-				setFrameUrl(expanded.toDataURL('image/png'));
+				setFrameUrl(expanded.toDataURL('image/jpeg', 0.92));
 			} catch {
-				/* previewUrl covers display */
+				try {
+					setFrameUrl(expanded.toDataURL('image/png'));
+				} catch {
+					/* previewUrl from setWorkingFromCanvas */
+				}
 			}
 			originalRef.current = cloneCanvas(expanded);
 			setExpandOrigin({ w: expanded.width, h: expanded.height });
 			setExpandSettled(true);
 			setCrop(DEFAULT_CROP);
 			setPendingCommit(false);
-			setStatus(
-				`Expanded +${expandPct}% to ${targetW}×${targetH} with edge fill (blur + mirror, no AI).`,
-			);
+			setStatus(`Done — expanded +${expandPct}% to ${targetW}×${targetH}.`);
 		} catch (error) {
 			console.error(error);
 			setStatus('Expand failed. Please try again.');
@@ -725,7 +737,7 @@ export default function ImageEditor({
 			window.clearInterval(tickId);
 			setBusy(null);
 		}
-	}, [expandPct, setWorkingFromCanvas]);
+	}, [expandPct, expandSettled, setWorkingFromCanvas]);
 
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1116,7 +1128,7 @@ export default function ImageEditor({
 					<div className="image-editor-modal__workspace">
 						<div className="image-editor-modal__stage-wrap">
 							<div
-								className={`image-editor-modal__stage${tool === 'expand' ? ' image-editor-modal__stage--expand' : ''}`}
+								className={`image-editor-modal__stage${tool === 'expand' ? ' image-editor-modal__stage--expand' : ''}${expandPreviewing ? ' is-expand-preview' : ''}`}
 								ref={stageRef}
 								style={
 									{
@@ -1124,7 +1136,24 @@ export default function ImageEditor({
 									} as CSSProperties
 								}
 							>
-								{ready && (frameUrl || previewUrl) ? (
+								{ready && expandPreviewing && expandGuideStyle ? (
+									<>
+										<img
+											src={previewUrl}
+											alt=""
+											className="image-editor-modal__expand-source"
+											style={expandGuideStyle}
+											draggable={false}
+										/>
+										<div
+											className="image-editor-modal__expand-guide"
+											style={expandGuideStyle}
+											aria-hidden="true"
+										>
+											<span className="image-editor-modal__expand-guide-label">Original</span>
+										</div>
+									</>
+								) : ready && (frameUrl || previewUrl) ? (
 									<div
 										className="image-editor-modal__image-layer"
 										style={{ transform: previewTransform, filter: previewFilter }}
@@ -1138,16 +1167,6 @@ export default function ImageEditor({
 									</div>
 								) : (
 									<p className="image-editor-modal__loading">Loading image…</p>
-								)}
-
-								{tool === 'expand' && expandGuideStyle && (
-									<div
-										className="image-editor-modal__expand-guide"
-										style={expandGuideStyle}
-										aria-hidden="true"
-									>
-										<span className="image-editor-modal__expand-guide-label">Original</span>
-									</div>
 								)}
 
 								{tool === 'expand' && ready && expandTarget && (
