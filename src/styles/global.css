@@ -2900,7 +2900,7 @@ body.download-auth-modal-open {
 }
 
 [data-theme='dark'] .basic-info-panel__title {
-	color: var(--text-muted);
+	color: #c4f04b;
 }
 
 .detail__info .meta-list {
@@ -2973,15 +2973,6 @@ body.download-auth-modal-open {
 	text-transform: uppercase;
 	color: #1f4f45;
 	line-height: 1.2;
-}
-
-.story-block__emoji {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.35rem;
-	line-height: 1;
-	transform: translateY(-0.04em);
 }
 
 [data-theme='dark'] .story-block h2 {
