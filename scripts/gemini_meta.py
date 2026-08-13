@@ -231,29 +231,38 @@ def generate_meta(keyword: str) -> AssetMeta:
 	thinking = (
 		os.environ.get("GEMINI_THINKING_LEVEL")
 		or dev_vars.get("GEMINI_THINKING_LEVEL")
-		or "medium"
+		or "low"
+	)
+	max_output = int(
+		os.environ.get("GEMINI_MAX_OUTPUT_TOKENS")
+		or dev_vars.get("GEMINI_MAX_OUTPUT_TOKENS")
+		or "8192"
 	)
 
 	client = genai.Client(api_key=api_key)
 	prompt = build_prompt(keyword)
 
-	tools = [{"type": "google_search"}]
 	generation_config = {
-		"max_output_tokens": 65536,
+		"max_output_tokens": max_output,
 		"thinking_level": thinking,
 	}
 
-	interaction = client.interactions.create(
-		model=model,
-		input=prompt,
-		tools=tools,
-		generation_config=generation_config,
-		response_format={
+	request: dict = {
+		"model": model,
+		"input": prompt,
+		"generation_config": generation_config,
+		"response_format": {
 			"type": "text",
 			"mime_type": "application/json",
-			"schema": AssetMeta.model_json_schema(),
+			"schema": response_schema(),
 		},
-	)
+	}
+	# Search snippets are billed as extra input tokens and are not required
+	# for the host_prompt JSON. Opt in with GEMINI_GOOGLE_SEARCH=1.
+	if env_flag(dev_vars, "GEMINI_GOOGLE_SEARCH"):
+		request["tools"] = [{"type": "google_search"}]
+
+	interaction = client.interactions.create(**request)
 
 	raw = getattr(interaction, "output_text", None)
 	if not raw and getattr(interaction, "steps", None):
