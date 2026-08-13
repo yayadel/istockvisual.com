@@ -563,6 +563,7 @@ export default function ImageEditor({
 		if (original) {
 			setExpandOrigin({ w: original.width, h: original.height });
 		}
+		setExpandSettled(false);
 		setCrop(DEFAULT_CROP);
 		setStatus('Expand reset to last applied image.');
 	};
@@ -570,24 +571,16 @@ export default function ImageEditor({
 	const applyExpandPercent = useCallback(
 		(pct: number, options?: { fromCustom?: boolean }) => {
 			const next = Math.round(clamp(pct, 1, 200));
-			if (pendingCommit) {
-				restoreOriginalWorking();
-				setCrop(DEFAULT_CROP);
-				const original = originalRef.current;
-				if (original) {
-					setExpandOrigin({ w: original.width, h: original.height });
-				}
-			} else {
-				const working = workingRef.current;
-				if (working) {
-					setExpandOrigin({ w: working.width, h: working.height });
-				}
+			const working = workingRef.current;
+			if (working) {
+				setExpandOrigin({ w: working.width, h: working.height });
 			}
+			setExpandSettled(false);
 			setExpandPct(next);
 			if (!options?.fromCustom) setExpandCustomDraft('');
 			setStatus(null);
 		},
-		[pendingCommit, restoreOriginalWorking],
+		[],
 	);
 
 	const commitExpandCustomDraft = useCallback(() => {
