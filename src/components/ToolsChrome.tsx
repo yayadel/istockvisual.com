@@ -1,0 +1,108 @@
+import { useRef, type ReactNode } from 'react';
+
+type ToolsDropzoneProps = {
+	title: string;
+	hint: string;
+	cta?: string;
+	accept?: string;
+	multiple?: boolean;
+	sampleSrc?: string;
+	sampleLabel?: string;
+	formats?: string[];
+	onFiles: (files: FileList | null) => void;
+};
+
+const DEFAULT_SAMPLE = '/demo/studio-orb.jpg';
+
+export function ToolsDropzone({
+	title,
+	hint,
+	cta = 'Browse files',
+	accept = 'image/*',
+	multiple = false,
+	sampleSrc = DEFAULT_SAMPLE,
+	sampleLabel = 'Sample',
+	formats = ['JPG', 'PNG', 'WebP'],
+	onFiles,
+}: ToolsDropzoneProps) {
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	return (
+		<label
+			className="tools-drop"
+			onDragOver={(event) => {
+				event.preventDefault();
+				event.currentTarget.classList.add('is-dragover');
+			}}
+			onDragLeave={(event) => {
+				event.currentTarget.classList.remove('is-dragover');
+			}}
+			onDrop={(event) => {
+				event.preventDefault();
+				event.currentTarget.classList.remove('is-dragover');
+				onFiles(event.dataTransfer.files);
+			}}
+		>
+			<input
+				ref={inputRef}
+				type="file"
+				accept={accept}
+				multiple={multiple}
+				hidden
+				onChange={(event) => onFiles(event.currentTarget.files)}
+			/>
+			<figure className="tools-drop__visual">
+				<img src={sampleSrc} alt="" />
+				<figcaption>{sampleLabel}</figcaption>
+			</figure>
+			<div className="tools-drop__body">
+				<p className="tools-drop__kicker">Drop zone</p>
+				<strong className="tools-drop__title">{title}</strong>
+				<span className="tools-drop__hint">{hint}</span>
+				<ul className="tools-drop__formats" aria-label="Supported formats">
+					{formats.map((format) => (
+						<li key={format}>{format}</li>
+					))}
+				</ul>
+			</div>
+			<span className="tools-drop__cta">{cta}</span>
+		</label>
+	);
+}
+
+type ToolsPanelProps = {
+	title: string;
+	note?: string;
+	sampleSrc?: string;
+	sampleCaption?: string;
+	children: ReactNode;
+	actions?: ReactNode;
+};
+
+export function ToolsPanel({
+	title,
+	note,
+	sampleSrc = DEFAULT_SAMPLE,
+	sampleCaption = 'Example preview',
+	children,
+	actions,
+}: ToolsPanelProps) {
+	return (
+		<section className="tools-panel" aria-label={title}>
+			<header className="tools-panel__head">
+				<div>
+					<h2>{title}</h2>
+					{note ? <p>{note}</p> : null}
+				</div>
+				{actions ? <div className="tools-panel__head-actions">{actions}</div> : null}
+			</header>
+			<div className="tools-panel__layout">
+				<figure className="tools-panel__sample">
+					<img src={sampleSrc} alt="" />
+					<figcaption>{sampleCaption}</figcaption>
+				</figure>
+				<div className="tools-panel__body">{children}</div>
+			</div>
+		</section>
+	);
+}
