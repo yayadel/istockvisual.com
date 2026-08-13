@@ -10,7 +10,7 @@ Color Palette (including HEX color codes)
 
 Tags (REQUIRED: output **40 or more** tags. Merge into this single list: topic keywords, subject labels, and depicted objects/elements such as cup, male, cat, desk, mountain, etc. Do NOT output separate keywords or depicted-elements fields.)
 
-Content Categories (REQUIRED: choose **1 to 3** labels that best fit the Image Page Title / topic. You MUST pick exact labels only from this list: Business, Finance, Technology, AI, People, Workplace, Lifestyle, Landscapes, Nature, Plants, Animals, Cityscapes, Architecture, Interior, Food, Beverage, Coffee, Education, Culture, Medical, Health, Sports, Advertising, E-commerce, Web, Vectors, Illustrations, Photography, Aerial, 3D Assets, Backgrounds, Textures, Abstract, Conceptual, Sustainability, Mood. Do not invent new category names.)
+Content Categories (REQUIRED: choose **1 to 3** labels that best match what the image actually depicts — the visible subject/scene, not loose word associations. Example: a wireless gaming mouse is Technology (and maybe Advertising / E-commerce), NEVER Sports. Sports is only for physical athletics. You MUST pick exact labels only from this list: Business, Finance, Technology, AI, People, Workplace, Lifestyle, Landscapes, Nature, Plants, Animals, Cityscapes, Architecture, Interior, Food, Beverage, Coffee, Education, Culture, Medical, Health, Sports, Advertising, E-commerce, Web, Vectors, Illustrations, Photography, Aerial, 3D Assets, Backgrounds, Textures, Abstract, Conceptual, Sustainability, Mood. Do not invent new category names.)
 
 Related Search Queries
 

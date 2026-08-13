@@ -27,7 +27,7 @@ Respond with a single JSON object only (no markdown fences), using exactly these
 
 contentCategories MUST be 1–3 items chosen ONLY from:
 Business, Finance, Technology, AI, People, Workplace, Lifestyle, Landscapes, Nature, Plants, Animals, Cityscapes, Architecture, Interior, Food, Beverage, Coffee, Education, Culture, Medical, Health, Sports, Advertising, E-commerce, Web, Vectors, Illustrations, Photography, Aerial, 3D Assets, Backgrounds, Textures, Abstract, Conceptual, Sustainability, Mood.
-Pick them based on the image page title / topic. Do NOT invent labels.
+Pick them from what the image actually depicts (subject/scene). Gaming peripherals → Technology, not Sports. Sports is physical athletics only. Do NOT invent labels.
 Do NOT output separate keywords or depictedElements fields — put those ideas into tags (minimum 40 unique tags).
 Title rules: imagePageTitle uses standard title case; capitalize acronyms (PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K); lowercase short words like a/an/the/and/or/of/in/on/at/to/by/with unless first/last. Example: "Orbital Quenching PDF Process in a Metallurgy Lab".
 `.trim();

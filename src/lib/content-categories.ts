@@ -24,6 +24,11 @@ const ALIASES: Record<string, string[]> = {
 		'headset',
 		'laptop',
 		'smartphone',
+		'peripheral',
+		'gaming',
+		'esports',
+		'controller',
+		'monitor',
 	],
 	finance: ['money', 'bank', 'invest', 'stock', 'trading', 'currency', 'yen', 'aud', 'usd'],
 	business: ['office', 'corporate', 'company', 'startup', 'commerce'],
@@ -44,7 +49,21 @@ const ALIASES: Record<string, string[]> = {
 	culture: ['art', 'museum', 'heritage', 'tradition'],
 	medical: ['hospital', 'clinic', 'doctor', 'surgery'],
 	health: ['wellness', 'fitness', 'nutrition', 'care'],
-	sports: ['sport', 'athlete', 'game', 'training', 'esports', 'gaming', 'tackle'],
+	// Physical sports only — never use gaming/esports/game (those are Technology).
+	sports: [
+		'sport',
+		'athlete',
+		'soccer',
+		'football',
+		'basketball',
+		'tennis',
+		'baseball',
+		'running',
+		'yoga',
+		'gym',
+		'stadium',
+		'tackle',
+	],
 	advertising: ['marketing', 'campaign', 'brand', 'promo'],
 	'e-commerce': ['ecommerce', 'shopping', 'retail', 'product', 'cart'],
 	web: ['website', 'ui', 'interface', 'browser'],
@@ -115,19 +134,15 @@ export function pickContentCategoriesFromTitle(
 		for (const alias of ALIASES[key] || []) {
 			if (includesTerm(text, alias)) score += 6;
 		}
-		// Prefer multi-word exact-ish hits
 		const words = key.split(/\s+/);
 		if (words.length > 1 && words.every((word) => includesTerm(text, word))) score += 4;
 		return { label, score };
 	})
-		.filter((item) => item.score > 0)
+		.filter((item) => item.score >= 6)
 		.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label));
 
-	const picked = scored.slice(0, Math.min(Math.max(limit, 1), 3)).map((item) => item.label);
-	if (picked.length > 0) return picked;
-
-	// Soft fallback for photo-like stock when nothing matched
-	return normalizeContentCategories(['Photography', 'Advertising']).slice(0, 2);
+	// Only return confident matches — never pad with unrelated defaults.
+	return scored.slice(0, Math.min(Math.max(limit, 1), 3)).map((item) => item.label);
 }
 
 export function isKnownContentCategory(value: string): boolean {
@@ -140,9 +155,38 @@ export function resolveContentCategories(input: {
 	title?: string;
 	keyword?: string;
 }): string[] {
-	const fromStored = normalizeContentCategories(input.stored);
-	if (fromStored.length > 0) return fromStored;
-	return pickContentCategoriesFromTitle(input.title || '', input.keyword || '');
+	const title = input.title || '';
+	const keyword = input.keyword || '';
+	const text = `${title} ${keyword}`.toLowerCase();
+	const fromTitle = pickContentCategoriesFromTitle(title, keyword);
+	const fromStored = sanitizeStoredCategories(
+		normalizeContentCategories(input.stored),
+		text,
+	);
+
+	// Prefer confident title/subject matches over stale or loose LLM labels.
+	if (fromTitle.length > 0) return fromTitle;
+	return fromStored;
+}
+
+function sanitizeStoredCategories(categories: string[], text: string): string[] {
+	const isPeripheral = [
+		'mouse',
+		'keyboard',
+		'headset',
+		'laptop',
+		'wireless',
+		'peripheral',
+		'controller',
+		'monitor',
+		'smartphone',
+	].some((term) => includesTerm(text, term));
+	const hasPhysicalSport = (ALIASES.sports || []).some((term) => includesTerm(text, term));
+
+	return categories.filter((label) => {
+		if (label === 'Sports' && isPeripheral && !hasPhysicalSport) return false;
+		return true;
+	});
 }
 
 export function contentCategoriesPromptList(): string {
