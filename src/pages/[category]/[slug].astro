@@ -83,7 +83,6 @@ const dimensions =
 							<p class="download-panel__hint">Loading sizes…</p>
 						</div>
 					</DownloadPanel>
-					<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
 					<BasicInfoPanel
 						client:load
 						license={asset.license || 'Standard'}
@@ -93,6 +92,7 @@ const dimensions =
 						keyword={asset.keyword}
 						keywordHref={asset.keyword ? searchPath(asset.keyword) : undefined}
 					/>
+					<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
 				</aside>
 			</div>
 
