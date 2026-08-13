@@ -165,6 +165,7 @@ textarea {
 	background: #0b0b0b;
 	border-bottom: 0;
 	color: #ffffff;
+	overflow: visible;
 }
 
 .site-header__inner {
