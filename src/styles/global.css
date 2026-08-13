@@ -3854,26 +3854,6 @@ body.image-editor-modal-open {
 	pointer-events: none;
 }
 
-.image-tool-page__features {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.45rem;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.image-tool-page__features li {
-	padding: 0.35rem 0.7rem;
-	border: 1px solid var(--line);
-	border-radius: 999px;
-	background: transparent;
-	font-size: 0.78rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
-	color: var(--text-muted);
-}
-
 .image-tool-page__error {
 	margin: 0;
 	color: var(--danger);

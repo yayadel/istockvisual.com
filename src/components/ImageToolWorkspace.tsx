@@ -120,12 +120,6 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 					</span>
 					<span className="image-tool-page__dropzone-btn">Choose image</span>
 				</label>
-				<ul className="image-tool-page__features" aria-label="Included tools">
-					<li>Adjust</li>
-					<li>Crop &amp; Flip</li>
-					<li>Remove BG</li>
-					<li>Expand</li>
-				</ul>
 			</section>
 
 			{error && <p className="image-tool-page__error">{error}</p>}
