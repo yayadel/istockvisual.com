@@ -172,6 +172,8 @@ export default function DownloadPanel({
 		void downloadSize(sizeId);
 	}
 
+	const selectedHint = `${selectedSize.output.width} × ${selectedSize.output.height}`;
+
 	return (
 		<div className="download-panel" ref={rootRef}>
 			<p className="download-panel__label">Download</p>
@@ -185,7 +187,7 @@ export default function DownloadPanel({
 						onClick={() => downloadSize(selected)}
 					>
 						{busy ? 'Downloading…' : 'Download'}
-						<span className="download-split__size">{selectedSize.label}</span>
+						<span className="download-split__size">{selectedHint}</span>
 					</button>
 					<button
 						type="button"
@@ -203,7 +205,7 @@ export default function DownloadPanel({
 				{menuOpen && (
 					<ul className="download-menu" role="listbox" aria-label="Download sizes">
 						{sizes.map((size) => {
-							const hint = `${size.output.width} × ${size.output.height}`;
+							const dims = `${size.output.width} × ${size.output.height}`;
 							const needsPro = !isFreeDownloadSize(size.id);
 							return (
 								<li key={size.id} role="option" aria-selected={selected === size.id}>
@@ -212,24 +214,25 @@ export default function DownloadPanel({
 										className={`download-menu__item${selected === size.id ? ' is-selected' : ''}`}
 										onClick={() => onSelectSize(size.id)}
 									>
-										<span className="download-menu__label">
-											{size.label}
-											{needsPro && (
-												<em className="download-pro-badge">
-													<CrownIcon />
-													Pro
-												</em>
-											)}
+										<span className="download-menu__dims-block">
+											<strong className="download-menu__dims">{dims}</strong>
+											<span className="download-menu__tier">{size.label}</span>
 										</span>
-										<span className="download-menu__dims">{hint}</span>
+										{needsPro ? (
+											<em className="download-pro-badge">
+												<CrownIcon />
+												Pro
+											</em>
+										) : (
+											<span className="download-menu__free">Free</span>
+										)}
 									</button>
 								</li>
 							);
 						})}
 					</ul>
 				)}
-			</div>
-			{busy && (
+			</div>			{busy && (
 				<p className="download-panel__hint" aria-live="polite">
 					Downloading {title}…
 				</p>
