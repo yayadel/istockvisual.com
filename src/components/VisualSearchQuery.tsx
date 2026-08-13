@@ -8,10 +8,20 @@ type StoredQuery = {
 	colors?: string[];
 };
 
-export default function VisualSearchQuery({ colors }: { colors: string[] }) {
-	const [thumb, setThumb] = useState<string | null>(null);
+export default function VisualSearchQuery({
+	colors,
+	previewUrl,
+}: {
+	colors: string[];
+	previewUrl?: string | null;
+}) {
+	const [thumb, setThumb] = useState<string | null>(previewUrl || null);
 
 	useEffect(() => {
+		if (previewUrl) {
+			setThumb(previewUrl);
+			return;
+		}
 		try {
 			const raw = sessionStorage.getItem(STORAGE_KEY);
 			if (!raw) return;
@@ -22,7 +32,7 @@ export default function VisualSearchQuery({ colors }: { colors: string[] }) {
 		} catch {
 			/* ignore */
 		}
-	}, []);
+	}, [previewUrl]);
 
 	return (
 		<div className="upload-result">
@@ -32,8 +42,8 @@ export default function VisualSearchQuery({ colors }: { colors: string[] }) {
 				) : null}
 				<div>
 					<p>
-						<strong>Your photo stayed in this browser.</strong> Nothing was uploaded to the
-						server.
+						<strong>Query photo is in a temporary folder</strong> and is removed after 1 hour.
+						Library files are not touched.
 					</p>
 					{colors.length ? (
 						<p className="upload-result__swatches">

@@ -11,7 +11,10 @@ import {
 	rankAssetsByPalette,
 } from '../../lib/generate-asset';
 import { searchPath } from '../../lib/paths';
-import { purgeVisualSearchUploads } from '../../lib/visual-search-storage';
+import {
+	isVisualSearchObjectKey,
+	purgeExpiredVisualSearchUploads,
+} from '../../lib/visual-search-storage';
 
 const q = (Astro.url.searchParams.get('q') || '').trim();
 if (q) {
@@ -22,7 +25,12 @@ const categoryParam = Astro.url.searchParams.get('category') || 'all';
 const mode = Astro.url.searchParams.get('mode') || '';
 const uploadName = Astro.url.searchParams.get('name') || 'your image';
 const queryColors = parseVisualSearchColors(Astro.url.searchParams.get('c'));
+const queryKey = Astro.url.searchParams.get('key') || '';
 const isVisual = mode === 'visual';
+const previewUrl =
+	isVisual && isVisualSearchObjectKey(queryKey)
+		? `/api/visual-search/preview?key=${encodeURIComponent(queryKey)}`
+		: null;
 
 const categoryLabel = isCategorySlug(categoryParam)
 	? CATEGORIES.find((c) => c.slug === categoryParam)?.label

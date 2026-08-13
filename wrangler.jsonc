@@ -24,5 +24,8 @@
 			"binding": "MEDIA",
 			"bucket_name": "istockvisual-media"
 		}
-	]
+	],
+	"triggers": {
+		"crons": ["0 * * * *"]
+	}
 }
