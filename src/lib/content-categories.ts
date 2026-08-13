@@ -1,12 +1,25 @@
 import raw from '../data/content-categories.txt?raw';
+import { toPathSlug } from './paths';
 
-/** Curated topical categories from /categories — pick 1–3 per asset from the title. */
+/** Fixed topical categories from /categories — not expandable at runtime. */
 export const CONTENT_CATEGORIES = raw
 	.split(',')
 	.map((item) => item.trim())
 	.filter(Boolean);
 
+export type ContentCategory = {
+	label: string;
+	slug: string;
+};
+
+/** Fixed catalog used by /c/ pages — labels only from the categories file. */
+export const CONTENT_CATEGORY_PAGES: ContentCategory[] = CONTENT_CATEGORIES.map((label) => ({
+	label,
+	slug: toPathSlug(label),
+}));
+
 const CATEGORY_SET = new Set(CONTENT_CATEGORIES.map((item) => item.toLowerCase()));
+const PAGE_BY_SLUG = new Map(CONTENT_CATEGORY_PAGES.map((item) => [item.slug, item]));
 
 const ALIASES: Record<string, string[]> = {
 	ai: ['artificial intelligence', 'machine learning', 'neural', 'llm'],
@@ -49,7 +62,6 @@ const ALIASES: Record<string, string[]> = {
 	culture: ['art', 'museum', 'heritage', 'tradition'],
 	medical: ['hospital', 'clinic', 'doctor', 'surgery'],
 	health: ['wellness', 'fitness', 'nutrition', 'care'],
-	// Physical sports only — never use gaming/esports/game (those are Technology).
 	sports: [
 		'sport',
 		'athlete',
@@ -87,7 +99,7 @@ function canonicalCategory(value: string): string | null {
 	return exact ?? null;
 }
 
-/** Keep only allowed vocabulary labels, unique, max 3. */
+/** Keep only allowed vocabulary labels; exactly one primary category. */
 export function normalizeContentCategories(values: string[] | undefined | null): string[] {
 	const out: string[] = [];
 	const seen = new Set<string>();
@@ -98,7 +110,7 @@ export function normalizeContentCategories(values: string[] | undefined | null):
 		if (seen.has(key)) continue;
 		seen.add(key);
 		out.push(matched);
-		if (out.length >= 3) break;
+		if (out.length >= 1) break;
 	}
 	return out;
 }
@@ -110,7 +122,6 @@ function escapeRegExp(value: string): string {
 function includesTerm(text: string, term: string): boolean {
 	const needle = term.trim().toLowerCase();
 	if (!needle) return false;
-	// Short tokens (AI, Web, 3D) must match as whole words/phrases.
 	if (needle.length <= 3 || !needle.includes(' ')) {
 		const pattern = new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(needle)}(?:[^a-z0-9]|$)`, 'i');
 		return pattern.test(text);
@@ -118,11 +129,11 @@ function includesTerm(text: string, term: string): boolean {
 	return text.includes(needle);
 }
 
-/** Score title/keyword text against the fixed category vocabulary; return 1–3 labels. */
+/** Score title/keyword text; return exactly one best label when confident. */
 export function pickContentCategoriesFromTitle(
 	title: string,
 	extra = '',
-	limit = 3,
+	limit = 1,
 ): string[] {
 	const text = `${title} ${extra}`.toLowerCase();
 	if (!text.trim()) return [];
@@ -141,15 +152,29 @@ export function pickContentCategoriesFromTitle(
 		.filter((item) => item.score >= 6)
 		.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label));
 
-	// Only return confident matches — never pad with unrelated defaults.
-	return scored.slice(0, Math.min(Math.max(limit, 1), 3)).map((item) => item.label);
+	return scored.slice(0, Math.min(Math.max(limit, 1), 1)).map((item) => item.label);
 }
 
 export function isKnownContentCategory(value: string): boolean {
 	return CATEGORY_SET.has(value.trim().toLowerCase());
 }
 
-/** Resolve 1–3 vocabulary categories from stored JSON or title fallback. */
+export function getContentCategoryBySlug(slug: string): ContentCategory | undefined {
+	return PAGE_BY_SLUG.get(toPathSlug(slug));
+}
+
+export function isContentCategorySlug(slug: string): boolean {
+	return PAGE_BY_SLUG.has(toPathSlug(slug));
+}
+
+export function contentCategoryPath(labelOrSlug: string): string {
+	const page =
+		PAGE_BY_SLUG.get(toPathSlug(labelOrSlug)) ||
+		CONTENT_CATEGORY_PAGES.find((item) => item.label.toLowerCase() === labelOrSlug.toLowerCase());
+	return page ? `/c/${encodeURIComponent(page.slug)}` : '/c/';
+}
+
+/** Resolve exactly one vocabulary category from stored JSON or title fallback. */
 export function resolveContentCategories(input: {
 	stored?: string[] | null;
 	title?: string;
@@ -162,8 +187,8 @@ export function resolveContentCategories(input: {
 		normalizeContentCategories(input.stored),
 		text,
 	);
-	if (fromStored.length > 0) return fromStored;
-	return pickContentCategoriesFromTitle(title, keyword);
+	if (fromStored.length > 0) return fromStored.slice(0, 1);
+	return pickContentCategoriesFromTitle(title, keyword, 1).slice(0, 1);
 }
 
 function sanitizeStoredCategories(categories: string[], text: string): string[] {
@@ -188,4 +213,13 @@ function sanitizeStoredCategories(categories: string[], text: string): string[] 
 
 export function contentCategoriesPromptList(): string {
 	return CONTENT_CATEGORIES.join(', ');
+}
+
+export function assetMatchesContentCategory(
+	asset: { contentCategories?: string[]; depictedElements?: string[] },
+	labelOrSlug: string,
+): boolean {
+	const target = toPathSlug(labelOrSlug);
+	const labels = [...(asset.contentCategories || []), ...(asset.depictedElements || [])];
+	return labels.some((label) => toPathSlug(label) === target && isKnownContentCategory(label));
 }

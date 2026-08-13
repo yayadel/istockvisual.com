@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CONTENT_CATEGORY_PAGES, contentCategoryPath } from '../../lib/content-categories';
+---
+
+<BaseLayout title="Categories" description="Browse fixed topical categories on iStockVisual.">
+	<div class="section-head">
+		<div>
+			<h1>Categories</h1>
+			<p>Fixed topical categories — browse by subject.</p>
+		</div>
+	</div>
+
+	<ul class="content-category-grid">
+		{
+			CONTENT_CATEGORY_PAGES.map((item) => (
+				<li>
+					<a href={contentCategoryPath(item.slug)}>{item.label}</a>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>

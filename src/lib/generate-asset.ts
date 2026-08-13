@@ -176,6 +176,14 @@ export function filterAssetsByTag(assets: AssetDetail[], tagSlug: string): Asset
 	});
 }
 
+/** Topic category page (/c/…): match fixed contentCategories vocabulary. */
+export function filterAssetsByContentCategory(
+	assets: AssetDetail[],
+	labelOrSlug: string,
+): AssetDetail[] {
+	return assets.filter((asset) => assetMatchesContentCategory(asset, labelOrSlug));
+}
+
 function tokenSet(values?: string[]): Set<string> {
 	return new Set((values || []).map((value) => toPathSlug(value)).filter(Boolean));
 }

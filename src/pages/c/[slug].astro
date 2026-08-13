@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AssetGrid from '../../components/AssetGrid.astro';
+import {
+	CONTENT_CATEGORY_PAGES,
+	contentCategoryPath,
+	getContentCategoryBySlug,
+	isContentCategorySlug,
+} from '../../lib/content-categories';
+import { filterAssetsByContentCategory, listAllAssets } from '../../lib/generate-asset';
+import { env } from 'cloudflare:workers';
+
+const slug = Astro.params.slug || '';
+
+if (!slug || !isContentCategorySlug(slug)) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const topic = getContentCategoryBySlug(slug)!;
+const pools = await listAllAssets(env.DB, Astro.url.origin, 600);
+const assets = filterAssetsByContentCategory(pools, topic.label);
+---
+
+<BaseLayout
+	title={topic.label}
+	description={`Browse ${topic.label} stock assets on iStockVisual.`}
+>
+	<div class="section-head">
+		<div>
+			<p class="asset-card__meta">
+				<a href="/c/">Categories</a>
+				<span>/</span>
+				<span>{topic.label}</span>
+			</p>
+			<h1>{topic.label}</h1>
+			<p>
+				{assets.length} asset{assets.length === 1 ? '' : 's'} in {topic.label}.
+			</p>
+		</div>
+	</div>
+
+	<div class="category-pills">
+		{
+			CONTENT_CATEGORY_PAGES.map((item) => (
+				<a
+					href={contentCategoryPath(item.slug)}
+					aria-current={item.slug === topic.slug ? 'page' : undefined}
+				>
+					{item.label}
+				</a>
+			))
+		}
+	</div>
+
+	<AssetGrid
+		assets={assets}
+		emptyMessage={`No ${topic.label.toLowerCase()} assets published yet.`}
+	/>
+</BaseLayout>
