@@ -3905,7 +3905,7 @@ body.image-editor-modal-open {
 	width: 100%;
 	max-width: 100%;
 	min-width: 0;
-	overflow-x: clip;
+	overflow-x: hidden;
 }
 
 .tools-page__boot {
