@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { FREE_FULL_DOWNLOAD_LIMIT } from '../lib/download-quota';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	DOWNLOAD_SIZES,
+	isFreeDownloadSize,
 	outputSizeForDownload,
 	sizeFileLabel,
 	type DownloadSizeId,
@@ -44,6 +44,14 @@ function CrownIcon() {
 	);
 }
 
+function ChevronIcon() {
+	return (
+		<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+			<path fill="currentColor" d="M3.2 5.6 8 10.4l4.8-4.8 1.1 1.1L8 12.6 2.1 6.7z" />
+		</svg>
+	);
+}
+
 export default function DownloadPanel({
 	assetId,
 	title,
@@ -53,18 +61,18 @@ export default function DownloadPanel({
 	sourceHeight = 1024,
 	loggedIn,
 	isPro,
-	remainingFullDownloads,
 	loginHref,
 	signupHref = '/signup',
-	upgradeHref = '/account',
 }: Props) {
-	const [active, setActive] = useState<DownloadSizeId | null>(null);
+	const [selected, setSelected] = useState<DownloadSizeId>('1k');
+	const [menuOpen, setMenuOpen] = useState(false);
+	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [remaining, setRemaining] = useState(remainingFullDownloads);
 	const [natural, setNatural] = useState({ width: sourceWidth, height: sourceHeight });
 	const [authModalOpen, setAuthModalOpen] = useState(false);
 	const [plansModalOpen, setPlansModalOpen] = useState(false);
 	const [pendingSize, setPendingSize] = useState<string | null>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
 
 	const anyModalOpen = authModalOpen || plansModalOpen;
 
@@ -95,6 +103,22 @@ export default function DownloadPanel({
 		};
 	}, [anyModalOpen]);
 
+	useEffect(() => {
+		if (!menuOpen) return;
+		const onPointer = (event: MouseEvent) => {
+			if (!rootRef.current?.contains(event.target as Node)) setMenuOpen(false);
+		};
+		const onKey = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') setMenuOpen(false);
+		};
+		window.addEventListener('mousedown', onPointer);
+		window.addEventListener('keydown', onKey);
+		return () => {
+			window.removeEventListener('mousedown', onPointer);
+			window.removeEventListener('keydown', onKey);
+		};
+	}, [menuOpen]);
+
 	const sizes = useMemo(
 		() =>
 			DOWNLOAD_SIZES.map((size) => ({
@@ -104,83 +128,107 @@ export default function DownloadPanel({
 		[natural.height, natural.width],
 	);
 
+	const selectedSize = sizes.find((size) => size.id === selected) || sizes[1]!;
+
 	async function downloadSize(sizeId: DownloadSizeId) {
 		const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
 		if (!size) return;
 
-		if (!size.free && !loggedIn) {
-			setPendingSize(size.label);
-			setAuthModalOpen(true);
-			return;
-		}
-		if (!size.free && !isPro && remaining === 0) {
-			window.location.href = upgradeHref;
-			return;
+		if (!isFreeDownloadSize(size.id)) {
+			if (!loggedIn) {
+				setPendingSize(size.label);
+				setMenuOpen(false);
+				setAuthModalOpen(true);
+				return;
+			}
+			if (!isPro) {
+				setPendingSize(size.label);
+				setMenuOpen(false);
+				setPlansModalOpen(true);
+				return;
+			}
 		}
 
-		setActive(sizeId);
+		setBusy(true);
 		setError(null);
+		setMenuOpen(false);
 
 		try {
 			const res = await fetch(`/api/download/${assetId}?size=${size.id}`);
 			if (!res.ok) {
-				const body = (await res.json().catch(() => null)) as {
-					error?: string;
-					remaining?: number;
-				} | null;
-				if (typeof body?.remaining === 'number') setRemaining(body.remaining);
+				const body = (await res.json().catch(() => null)) as { error?: string } | null;
 				throw new Error(body?.error || 'Download failed');
 			}
-			const headerRemaining = res.headers.get('X-Downloads-Remaining');
-			if (headerRemaining != null) setRemaining(Number(headerRemaining));
 			triggerDownload(await res.blob(), sizeFileLabel(slug, size.id));
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Download failed');
 		} finally {
-			setActive(null);
+			setBusy(false);
 		}
 	}
 
-	const busy = active !== null;
+	function onSelectSize(sizeId: DownloadSizeId) {
+		setSelected(sizeId);
+		setMenuOpen(false);
+		void downloadSize(sizeId);
+	}
 
 	return (
-		<div className="download-panel">
+		<div className="download-panel" ref={rootRef}>
 			<p className="download-panel__label">Download</p>
-			<div className="download-sizes">
-				{sizes.map((size) => {
-					const quotaLocked = !size.free && !isPro && remaining === 0;
-					const needsAuth = !size.free && !loggedIn;
-					const showPro = needsAuth || quotaLocked;
-					const label =
-						size.free && !loggedIn ? `${size.label} · without login` : size.label;
-					const hint = `${size.output.width} × ${size.output.height}`;
-					return (
-						<button
-							key={size.id}
-							type="button"
-							className={`download-size${size.free && !loggedIn ? ' download-size--free' : ''}${active === size.id ? ' is-busy' : ''}`}
-							disabled={busy}
-							onClick={() => downloadSize(size.id)}
-							title={
-								needsAuth
-									? 'Create a free account to download this size'
-									: quotaLocked
-										? 'Free full-size downloads used up'
-										: `Download ${hint}`
-							}
-						>
-							<strong>{label}</strong>
-							<span>{hint}</span>
-							{showPro && (
-								<em className="download-pro-badge">
-									<CrownIcon />
-									Pro
-								</em>
-							)}
-						</button>
-					);
-				})}
+
+			<div className={`download-split${menuOpen ? ' is-open' : ''}`}>
+				<button
+					type="button"
+					className="download-split__main"
+					disabled={busy}
+					onClick={() => downloadSize(selected)}
+				>
+					{busy ? 'Downloading…' : 'Download'}
+					<span className="download-split__size">{selectedSize.label}</span>
+				</button>
+				<button
+					type="button"
+					className="download-split__toggle"
+					disabled={busy}
+					aria-expanded={menuOpen}
+					aria-haspopup="listbox"
+					aria-label="Choose download size"
+					onClick={() => setMenuOpen((open) => !open)}
+				>
+					<ChevronIcon />
+				</button>
 			</div>
+
+			{menuOpen && (
+				<ul className="download-menu" role="listbox" aria-label="Download sizes">
+					{sizes.map((size) => {
+						const hint = `${size.output.width} × ${size.output.height}`;
+						const needsPro = !isFreeDownloadSize(size.id);
+						return (
+							<li key={size.id} role="option" aria-selected={selected === size.id}>
+								<button
+									type="button"
+									className={`download-menu__item${selected === size.id ? ' is-selected' : ''}`}
+									onClick={() => onSelectSize(size.id)}
+								>
+									<span className="download-menu__label">
+										{size.label}
+										{needsPro && (
+											<em className="download-pro-badge">
+												<CrownIcon />
+												Pro
+											</em>
+										)}
+									</span>
+									<span className="download-menu__dims">{hint}</span>
+								</button>
+							</li>
+						);
+					})}
+				</ul>
+			)}
+
 			{busy && (
 				<p className="download-panel__hint" aria-live="polite">
 					Downloading {title}…
@@ -227,10 +275,10 @@ export default function DownloadPanel({
 						<p className="download-auth-modal__eyebrow">
 							<CrownIcon /> Pro download
 						</p>
-						<h2 id="download-auth-title">Sign up to download {pendingSize || 'full size'}</h2>
+						<h2 id="download-auth-title">Sign up for {pendingSize || '2K+'} downloads</h2>
 						<p>
-							Guests can download the 500px preview without logging in. Create a free account to
-							unlock 1K–8K downloads ({FREE_FULL_DOWNLOAD_LIMIT} full-size downloads included).
+							500 and 1K are free without logging in. Create an account and upgrade to Pro for
+							2K, 4K, and 8K.
 						</p>
 						<div className="download-auth-modal__actions">
 							<a className="btn btn--primary" href={signupHref}>
@@ -270,7 +318,11 @@ export default function DownloadPanel({
 							<CrownIcon /> Membership
 						</p>
 						<h2 id="download-plans-title">Unlimited downloads</h2>
-						<p>Choose a temporary plan. Full details and checkout are on the pricing page.</p>
+						<p>
+							{pendingSize
+								? `${pendingSize} requires Pro. Choose a plan below, or open the pricing page.`
+								: 'Choose a temporary plan. Full details and checkout are on the pricing page.'}
+						</p>
 						<ul className="download-plan-list">
 							<li>
 								<div>
