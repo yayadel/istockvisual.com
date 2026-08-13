@@ -1829,14 +1829,14 @@ body.upload-modal-open {
 
 .detail__preview {
 	min-width: 0;
-	border: 1px solid var(--line);
-	border-radius: 2px;
-	background: #fff;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
 	overflow: visible;
 }
 
 [data-theme='dark'] .detail__preview {
-	background: var(--surface);
+	background: transparent;
 }
 
 .detail__preview .asset-preview__image-wrap {
@@ -1844,7 +1844,8 @@ body.upload-modal-open {
 	display: grid;
 	place-items: center;
 	overflow: hidden;
-	border-radius: 1px 1px 0 0;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
 }
 
 [data-theme='dark'] .detail__preview .asset-preview__image-wrap {
