@@ -100,6 +100,22 @@ const similar = findSimilarAssets(
 							href: searchPath(label),
 						}))}
 					/>
+					{
+						user?.plan !== 'pro' && (
+							<a
+								class="pro-promo"
+								href={`/price?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
+							>
+								<span class="pro-promo__glow" aria-hidden="true" />
+								<span class="pro-promo__badge">Pro</span>
+								<span class="pro-promo__copy">
+									<strong>Unlimited HD downloads</strong>
+									<span>Unlock 2K, 4K, and 8K for every image — no monthly caps.</span>
+								</span>
+								<span class="pro-promo__cta">Go Pro</span>
+							</a>
+						)
+					}
 				</aside>
 			</div>
 
