@@ -115,6 +115,11 @@ export default function ImageEditor({
 		}));
 	}, [aspectPreset.ratio, natural.h, natural.w]);
 
+	const canvasSize = useMemo(() => {
+		const selected = sizeOptions.find((item) => item.id === sizeId);
+		return selected?.output ?? { width: 1024, height: 768 };
+	}, [sizeId, sizeOptions]);
+
 	const rebuildFramePreview = useCallback(() => {
 		const working = workingRef.current;
 		if (!working) return;
