@@ -1072,11 +1072,12 @@ body:has(.detail) .search-strip__inner {
 }
 
 .search-bar__visual {
-	padding: 0 0.95rem;
+	padding: 0 1rem;
 	border-left: 1px solid rgba(20, 24, 20, 0.12);
 	font-size: 0.86rem;
 	color: #444;
 	cursor: pointer;
+	justify-content: center;
 }
 
 .search-bar__visual:hover {
