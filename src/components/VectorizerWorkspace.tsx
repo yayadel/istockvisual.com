@@ -233,7 +233,7 @@ export default function VectorizerWorkspace() {
 
 			{sourceUrl && (
 				<section className="tools-compare" ref={compareRef} aria-label="Before and after">
-					<div className="tools-compare__stage">
+					<div className="tools-compare__stage" style={{ ['--split' as string]: `${split}%` }}>
 						{svgPreviewUrl && (
 							<img src={svgPreviewUrl} alt="Vector result" className="tools-compare__layer" />
 						)}
@@ -242,7 +242,7 @@ export default function VectorizerWorkspace() {
 								{busy ? 'Tracing paths…' : 'SVG preview will appear here'}
 							</div>
 						)}
-						<div className="tools-compare__before" style={{ width: `${split}%` }}>
+						<div className="tools-compare__before">
 							<img src={sourceUrl} alt="Original bitmap" />
 						</div>
 						<button
