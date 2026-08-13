@@ -1502,6 +1502,8 @@ body.upload-modal-open {
 	background: #f4f5f6;
 	display: grid;
 	place-items: center;
+	overflow: hidden;
+	border-radius: 1px 1px 0 0;
 }
 
 [data-theme='dark'] .detail__preview .asset-preview__image-wrap {
@@ -2912,6 +2914,10 @@ body.download-auth-modal-open {
 	border-top: 1px solid var(--line);
 	background: #f7f8f7;
 	box-sizing: border-box;
+	overflow: visible;
+	position: relative;
+	z-index: 8;
+	border-radius: 0 0 1px 1px;
 }
 
 [data-theme='dark'] .asset-preview__footer {
