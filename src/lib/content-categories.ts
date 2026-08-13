@@ -174,6 +174,172 @@ export function contentCategoryPath(labelOrSlug: string): string {
 	return page ? `/c/${encodeURIComponent(page.slug)}` : '/c/';
 }
 
+export type ContentCategoryIntro = {
+	lede: string;
+	hint: string;
+};
+
+/** Short nav blurbs for mega-menu preview panels. */
+const CONTENT_CATEGORY_INTROS: Record<string, ContentCategoryIntro> = {
+	Business: {
+		lede: 'Boardrooms, startups, and everyday commerce — visuals that signal work getting done.',
+		hint: 'Office · Startup · Commerce',
+	},
+	Finance: {
+		lede: 'Markets, money, and modern banking scenes for reports, fintech, and wealth stories.',
+		hint: 'Markets · Banking · Investing',
+	},
+	Technology: {
+		lede: 'Devices, software, and digital workplaces — clean tech imagery for product and brand use.',
+		hint: 'Devices · Software · Digital',
+	},
+	AI: {
+		lede: 'Neural nets, assistants, and machine intelligence — forward-looking AI concepts and interfaces.',
+		hint: 'ML · Interfaces · Future',
+	},
+	People: {
+		lede: 'Portraits and real human moments — diverse faces and gestures for editorial and ads.',
+		hint: 'Portraits · Diversity · Emotion',
+	},
+	Workplace: {
+		lede: 'Desks, meetings, and collaboration — authentic workplace energy without the stock clichés.',
+		hint: 'Desk · Meeting · Team',
+	},
+	Lifestyle: {
+		lede: 'Home, leisure, and everyday living — warm lifestyle frames for brand and editorial stories.',
+		hint: 'Home · Leisure · Daily life',
+	},
+	Landscapes: {
+		lede: 'Wide horizons and scenic terrain — mountains, valleys, and open-sky landscape stills.',
+		hint: 'Scenic · Horizon · Terrain',
+	},
+	Nature: {
+		lede: 'Forests, wilderness, and outdoor calm — nature photography for eco and travel brands.',
+		hint: 'Forest · Outdoor · Wilderness',
+	},
+	Plants: {
+		lede: 'Botanicals, leaves, and blooms — green detail shots for wellness, design, and packaging.',
+		hint: 'Botanical · Floral · Green',
+	},
+	Animals: {
+		lede: 'Wildlife and companions — from pets to wild subjects for story-driven campaigns.',
+		hint: 'Wildlife · Pets · Fauna',
+	},
+	Cityscapes: {
+		lede: 'Skylines, streets, and urban rhythm — city energy for travel, real estate, and culture.',
+		hint: 'Skyline · Street · Urban',
+	},
+	Architecture: {
+		lede: 'Facades, structures, and built form — architecture detail for design and property brands.',
+		hint: 'Facade · Structure · Built',
+	},
+	Interior: {
+		lede: 'Rooms, furniture, and indoor atmosphere — interiors that sell space and lifestyle.',
+		hint: 'Room · Furniture · Indoor',
+	},
+	Food: {
+		lede: 'Plated dishes and kitchen craft — appetizing food photography for menus and campaigns.',
+		hint: 'Cuisine · Plating · Kitchen',
+	},
+	Beverage: {
+		lede: 'Drinks poured and chilled — beverage stills for bars, brands, and hospitality.',
+		hint: 'Drinks · Pour · Hospitality',
+	},
+	Coffee: {
+		lede: 'Espresso, cafés, and coffee ritual — warm brew moments for F&B and lifestyle brands.',
+		hint: 'Espresso · Café · Brew',
+	},
+	Education: {
+		lede: 'Study, classrooms, and learning — education visuals for schools, edtech, and publishing.',
+		hint: 'Study · Classroom · Learning',
+	},
+	Culture: {
+		lede: 'Art, heritage, and tradition — cultural scenes for museums, travel, and storytelling.',
+		hint: 'Art · Heritage · Tradition',
+	},
+	Medical: {
+		lede: 'Clinics, care, and clinical focus — medical imagery for healthcare and research brands.',
+		hint: 'Clinic · Care · Clinical',
+	},
+	Health: {
+		lede: 'Wellness, fitness, and everyday care — healthy living visuals with a human touch.',
+		hint: 'Wellness · Fitness · Care',
+	},
+	Sports: {
+		lede: 'Athletes, arenas, and motion — physical sports energy for media and performance brands.',
+		hint: 'Athlete · Arena · Motion',
+	},
+	Advertising: {
+		lede: 'Campaign-ready concepts and brand moments — bold frames built for marketing layouts.',
+		hint: 'Campaign · Brand · Promo',
+	},
+	'E-commerce': {
+		lede: 'Product, cart, and retail flow — shoppable scenes for stores and marketplace creatives.',
+		hint: 'Product · Retail · Shopping',
+	},
+	Web: {
+		lede: 'Interfaces, screens, and digital UX — web and product UI moments for tech storytelling.',
+		hint: 'UI · Screens · Digital',
+	},
+	Vectors: {
+		lede: 'Clean vector graphics and icons — scalable shapes for decks, apps, and print.',
+		hint: 'Icons · Shapes · Scalable',
+	},
+	Illustrations: {
+		lede: 'Hand-drawn and digital art — illustration styles that add character to any layout.',
+		hint: 'Drawn · Digital · Character',
+	},
+	Photography: {
+		lede: 'Photographic craft across genres — versatile photo stock for editorial and commercial use.',
+		hint: 'Photo · Editorial · Commercial',
+	},
+	Aerial: {
+		lede: 'Bird’s-eye views and drone perspectives — aerial frames of cities, land, and coast.',
+		hint: 'Drone · Overhead · Landscape',
+	},
+	'3D Assets': {
+		lede: 'Rendered objects and 3D scenes — dimensional assets for product, ads, and motion stills.',
+		hint: 'Render · Objects · Dimensional',
+	},
+	Backgrounds: {
+		lede: 'Full-bleed backdrops and scenic fills — backgrounds ready for text, UI, and collage.',
+		hint: 'Backdrop · Fill · Texture',
+	},
+	Textures: {
+		lede: 'Surface detail and material close-ups — textures for overlays, packaging, and design.',
+		hint: 'Surface · Material · Detail',
+	},
+	Abstract: {
+		lede: 'Shape, color, and form without literal subject — abstract art for covers and concepts.',
+		hint: 'Shape · Color · Form',
+	},
+	Conceptual: {
+		lede: 'Metaphor and idea-driven imagery — conceptual frames that say more than they show.',
+		hint: 'Metaphor · Idea · Symbol',
+	},
+	Sustainability: {
+		lede: 'Green energy, recycling, and planet care — sustainability visuals for ESG and eco brands.',
+		hint: 'Green · ESG · Planet',
+	},
+	Mood: {
+		lede: 'Atmosphere-first frames — soft light, color, and feeling for brand mood boards.',
+		hint: 'Atmosphere · Light · Feeling',
+	},
+};
+
+const DEFAULT_CATEGORY_INTRO: ContentCategoryIntro = {
+	lede: 'Browse topical stock visuals in this category — ready for commercial and editorial use.',
+	hint: 'Browse · Stock · Topics',
+};
+
+export function getContentCategoryIntro(labelOrSlug: string): ContentCategoryIntro {
+	const page =
+		PAGE_BY_SLUG.get(toPathSlug(labelOrSlug)) ||
+		CONTENT_CATEGORY_PAGES.find((item) => item.label.toLowerCase() === labelOrSlug.toLowerCase());
+	if (!page) return DEFAULT_CATEGORY_INTRO;
+	return CONTENT_CATEGORY_INTROS[page.label] || DEFAULT_CATEGORY_INTRO;
+}
+
 /** Resolve exactly one vocabulary category from stored JSON or title fallback. */
 export function resolveContentCategories(input: {
 	stored?: string[] | null;
