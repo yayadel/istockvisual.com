@@ -171,12 +171,10 @@ export default function VectorizerWorkspace() {
 						<span>Colors</span>
 						<select
 							value={settings.colors}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									colors: Number(event.currentTarget.value) as VectorColorCount,
-								}))
-							}
+							onChange={(event) => {
+								const colors = Number(event.currentTarget.value) as VectorColorCount;
+								setSettings((prev) => ({ ...prev, colors }));
+							}}
 						>
 							{COLOR_OPTIONS.map((n) => (
 								<option key={n} value={n}>
@@ -193,12 +191,10 @@ export default function VectorizerWorkspace() {
 							max={5}
 							step={1}
 							value={settings.blurRadius}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									blurRadius: Number(event.currentTarget.value),
-								}))
-							}
+							onChange={(event) => {
+								const blurRadius = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, blurRadius }));
+							}}
 						/>
 					</label>
 					<label className="tools-controls__field tools-controls__field--grow">
@@ -209,12 +205,10 @@ export default function VectorizerWorkspace() {
 							max={40}
 							step={1}
 							value={settings.minArea}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									minArea: Number(event.currentTarget.value),
-								}))
-							}
+							onChange={(event) => {
+								const minArea = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, minArea }));
+							}}
 						/>
 					</label>
 				</div>

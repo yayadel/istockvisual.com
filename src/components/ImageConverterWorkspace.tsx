@@ -237,12 +237,10 @@ export default function ImageConverterWorkspace() {
 						<span>Format</span>
 						<select
 							value={settings.formatId}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									formatId: event.currentTarget.value as ConvertSettings['formatId'],
-								}))
-							}
+							onChange={(event) => {
+								const formatId = event.currentTarget.value as ConvertSettings['formatId'];
+								setSettings((prev) => ({ ...prev, formatId }));
+							}}
 						>
 							{formats.map((format) => (
 								<option key={format.id} value={format.id}>
@@ -258,12 +256,10 @@ export default function ImageConverterWorkspace() {
 							min={40}
 							max={100}
 							value={settings.quality}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									quality: Number(event.currentTarget.value),
-								}))
-							}
+							onChange={(event) => {
+								const quality = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, quality }));
+							}}
 						/>
 					</label>
 					<label className="tools-controls__field tools-controls__field--grow">
@@ -273,12 +269,10 @@ export default function ImageConverterWorkspace() {
 							min={10}
 							max={100}
 							value={settings.scalePercent}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									scalePercent: Number(event.currentTarget.value),
-								}))
-							}
+							onChange={(event) => {
+								const scalePercent = Number(event.currentTarget.value);
+								setSettings((prev) => ({ ...prev, scalePercent }));
+							}}
 						/>
 					</label>
 					<label className="tools-controls__field">
@@ -288,12 +282,10 @@ export default function ImageConverterWorkspace() {
 							min={0}
 							step={64}
 							value={settings.maxWidth}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									maxWidth: Math.max(0, Number(event.currentTarget.value) || 0),
-								}))
-							}
+							onChange={(event) => {
+								const maxWidth = Math.max(0, Number(event.currentTarget.value) || 0);
+								setSettings((prev) => ({ ...prev, maxWidth }));
+							}}
 						/>
 					</label>
 					{settings.formatId === 'jpeg' && (
@@ -302,12 +294,10 @@ export default function ImageConverterWorkspace() {
 							<input
 								type="color"
 								value={settings.jpgBackground}
-								onChange={(event) =>
-									setSettings((prev) => ({
-										...prev,
-										jpgBackground: event.currentTarget.value,
-									}))
-								}
+								onChange={(event) => {
+									const jpgBackground = event.currentTarget.value;
+									setSettings((prev) => ({ ...prev, jpgBackground }));
+								}}
 							/>
 						</label>
 					)}
