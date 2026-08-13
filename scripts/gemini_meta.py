@@ -348,6 +348,7 @@ def generate_meta(keyword: str) -> tuple[AssetMeta, dict]:
 	usage["thinkingLevel"] = thinking
 	usage["googleSearch"] = bool(request.get("tools"))
 	usage["keyword"] = keyword.strip()
+	usage["recordedAt"] = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
 	return ensure_content_categories(meta, keyword), usage
 
 
