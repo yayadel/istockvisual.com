@@ -5,19 +5,9 @@ const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
 const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
 
 function listLocalAssetIds() {
-	const raw = execFileSync(
-		'npx',
-		[
-			'wrangler',
-			'd1',
-			'execute',
-			'istockvisual-db',
-			'--local',
-			'--json',
-			'--command',
-			'SELECT id FROM generated_asset',
-		],
-		{ encoding: 'utf8', cwd: process.cwd() },
+	const raw = execSync(
+		'npx wrangler d1 execute istockvisual-db --local --json --command "SELECT id FROM generated_asset"',
+		{ encoding: 'utf8' },
 	);
 	const start = raw.indexOf('[');
 	const parsed = JSON.parse(raw.slice(start));
