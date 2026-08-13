@@ -934,12 +934,14 @@ export default function ImageEditor({
 		canvasSize.height,
 		canvasSize.width,
 		crop,
+		expandPct,
 		expandSettled,
 		fineRotation,
 		flipX,
 		flipY,
 		resolveExportSource,
 		rotation,
+		tool,
 	]);
 
 	const handleDownload = useCallback(() => {
