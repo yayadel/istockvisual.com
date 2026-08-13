@@ -7,6 +7,7 @@ import {
 	type VectorizeSettings,
 } from '../lib/image-vectorize';
 import { downloadBlob, isLikelyImageFile, yieldToMain } from '../lib/tools-shared';
+import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
 const COLOR_OPTIONS: VectorColorCount[] = [2, 8, 16, 64];
 

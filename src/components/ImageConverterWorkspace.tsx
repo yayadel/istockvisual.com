@@ -186,144 +186,133 @@ export default function ImageConverterWorkspace() {
 
 	return (
 		<div className="tools-work">
-			<label
-				className="tools-rail"
-				onDragOver={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.add('is-dragover');
-				}}
-				onDragLeave={(event) => {
-					event.currentTarget.classList.remove('is-dragover');
-				}}
-				onDrop={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.remove('is-dragover');
-					addFiles(event.dataTransfer.files);
-				}}
-			>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*,.heic,.heif"
-					multiple
-					hidden
-					onChange={(event) => addFiles(event.currentTarget.files)}
-				/>
-				<div className="tools-rail__text">
-					<strong>Add images to convert</strong>
-					<span>Drop multiple files, or browse. JPG / PNG / WebP / HEIC.</span>
-				</div>
-				<span className="tools-rail__cta">Browse</span>
-			</label>
+			<ToolsDropzone
+				inputRef={inputRef}
+				multiple
+				accept="image/*,.heic,.heif"
+				title="Drop images to convert"
+				hint="Batch convert locally — formats, quality, and scale stay on this device."
+				cta="Browse files"
+				sampleLabel="Convert sample"
+				formats={['JPG', 'PNG', 'WebP', 'HEIC']}
+				onFiles={(files) => addFiles(files)}
+			/>
 
-			<section className="tools-controls" aria-label="Output settings">
-				<label className="tools-controls__field">
-					<span>Format</span>
-					<select
-						value={settings.formatId}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								formatId: event.currentTarget.value as ConvertSettings['formatId'],
-							}))
-						}
-					>
-						{formats.map((format) => (
-							<option key={format.id} value={format.id}>
-								{format.label}
-							</option>
-						))}
-					</select>
-				</label>
-				<label className="tools-controls__field tools-controls__field--grow">
-					<span>Quality · {settings.quality}%</span>
-					<input
-						type="range"
-						min={40}
-						max={100}
-						value={settings.quality}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								quality: Number(event.currentTarget.value),
-							}))
-						}
-					/>
-				</label>
-				<label className="tools-controls__field tools-controls__field--grow">
-					<span>Scale · {settings.scalePercent}%</span>
-					<input
-						type="range"
-						min={10}
-						max={100}
-						value={settings.scalePercent}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								scalePercent: Number(event.currentTarget.value),
-							}))
-						}
-					/>
-				</label>
-				<label className="tools-controls__field">
-					<span>Max width</span>
-					<input
-						type="number"
-						min={0}
-						step={64}
-						value={settings.maxWidth}
-						onChange={(event) =>
-							setSettings((prev) => ({
-								...prev,
-								maxWidth: Math.max(0, Number(event.currentTarget.value) || 0),
-							}))
-						}
-					/>
-				</label>
-				{settings.formatId === 'jpeg' && (
-					<label className="tools-controls__field tools-controls__field--color">
-						<span>JPG bg</span>
-						<input
-							type="color"
-							value={settings.jpgBackground}
+			<ToolsPanel
+				title="Conversion settings"
+				note="Canvas re-encode strips EXIF. Set max width to 0 to keep the original width."
+				sampleSrc={items[0]?.previewUrl || '/demo/studio-orb.jpg'}
+				sampleCaption={items[0] ? 'First in queue' : 'Example preview'}
+				actions={
+					<div className="tools-panel__actions">
+						<button
+							type="button"
+							className="btn btn--primary"
+							onClick={convertAll}
+							disabled={busy || items.length === 0}
+						>
+							{busy ? 'Converting…' : 'Convert all'}
+						</button>
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={downloadZip}
+							disabled={busy || doneItems.length === 0}
+						>
+							Download ZIP
+						</button>
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={clearAll}
+							disabled={busy || items.length === 0}
+						>
+							Clear queue
+						</button>
+					</div>
+				}
+			>
+				<div className="tools-controls tools-controls--stacked">
+					<label className="tools-controls__field">
+						<span>Format</span>
+						<select
+							value={settings.formatId}
 							onChange={(event) =>
 								setSettings((prev) => ({
 									...prev,
-									jpgBackground: event.currentTarget.value,
+									formatId: event.currentTarget.value as ConvertSettings['formatId'],
+								}))
+							}
+						>
+							{formats.map((format) => (
+								<option key={format.id} value={format.id}>
+									{format.label}
+								</option>
+							))}
+						</select>
+					</label>
+					<label className="tools-controls__field tools-controls__field--grow">
+						<span>Quality · {settings.quality}%</span>
+						<input
+							type="range"
+							min={40}
+							max={100}
+							value={settings.quality}
+							onChange={(event) =>
+								setSettings((prev) => ({
+									...prev,
+									quality: Number(event.currentTarget.value),
 								}))
 							}
 						/>
 					</label>
-				)}
-				<div className="tools-controls__actions">
-					<button
-						type="button"
-						className="btn btn--primary"
-						onClick={convertAll}
-						disabled={busy || items.length === 0}
-					>
-						{busy ? 'Converting…' : 'Convert'}
-					</button>
-					<button
-						type="button"
-						className="btn btn--ghost"
-						onClick={downloadZip}
-						disabled={busy || doneItems.length === 0}
-					>
-						ZIP
-					</button>
-					<button
-						type="button"
-						className="btn btn--ghost"
-						onClick={clearAll}
-						disabled={busy || items.length === 0}
-					>
-						Clear
-					</button>
+					<label className="tools-controls__field tools-controls__field--grow">
+						<span>Scale · {settings.scalePercent}%</span>
+						<input
+							type="range"
+							min={10}
+							max={100}
+							value={settings.scalePercent}
+							onChange={(event) =>
+								setSettings((prev) => ({
+									...prev,
+									scalePercent: Number(event.currentTarget.value),
+								}))
+							}
+						/>
+					</label>
+					<label className="tools-controls__field">
+						<span>Max width</span>
+						<input
+							type="number"
+							min={0}
+							step={64}
+							value={settings.maxWidth}
+							onChange={(event) =>
+								setSettings((prev) => ({
+									...prev,
+									maxWidth: Math.max(0, Number(event.currentTarget.value) || 0),
+								}))
+							}
+						/>
+					</label>
+					{settings.formatId === 'jpeg' && (
+						<label className="tools-controls__field tools-controls__field--color">
+							<span>JPG background</span>
+							<input
+								type="color"
+								value={settings.jpgBackground}
+								onChange={(event) =>
+									setSettings((prev) => ({
+										...prev,
+										jpgBackground: event.currentTarget.value,
+									}))
+								}
+							/>
+						</label>
+					)}
 				</div>
-			</section>
-
-			<p className="tools-work__note">Canvas re-encode strips EXIF. 0 max width keeps original.</p>
+			</ToolsPanel>
 
 			{error && <p className="tools-work__error">{error}</p>}
 
