@@ -668,42 +668,59 @@ export default function ImageEditor({
 		}
 	}, [canvasSize.height, canvasSize.width, keepCircle, setWorkingFromCanvas]);
 
-	const handleExpand = useCallback(() => {
+	const handleExpand = useCallback(async () => {
 		const working = workingRef.current;
-		if (!working) return;
-		let { width, height } = canvasSize;
-		// Page tool has no Size row — grow ~25% past the current image when needed.
+		if (!working || !expandTarget) return;
 		if (
-			variant === 'page' &&
-			width === working.width &&
-			height === working.height
+			expandTarget.width === working.width &&
+			expandTarget.height === working.height
 		) {
-			width = Math.max(1, Math.round(working.width * 1.25));
-			height = Math.max(1, Math.round(working.height * 1.25));
-		}
-		if (width === working.width && height === working.height) {
-			setStatus('Canvas already matches the selected size. Pick a larger size preset first.');
+			setStatus('Choose an expand amount above 0% first.');
 			return;
 		}
-		setBusy('Expanding edges…');
+
+		const VISUAL_MS = 1_100;
+		const startedAt = performance.now();
+		let stopped = false;
+		let displayPct = 0;
+		setBusy('Expanding 0%…');
+		setStatus(null);
+		const tickId = window.setInterval(() => {
+			if (stopped) return;
+			const elapsed = performance.now() - startedAt;
+			const next = Math.min(95, (elapsed / VISUAL_MS) * 95);
+			const rounded = Math.floor(next);
+			if (rounded <= displayPct) return;
+			displayPct = rounded;
+			setBusy(`Expanding ${displayPct}%…`);
+		}, 50);
+
 		try {
+			await new Promise<void>((resolve) => {
+				window.setTimeout(resolve, VISUAL_MS);
+			});
 			const expanded = expandWithEdgeFill(
 				working,
 				working.width,
 				working.height,
-				width,
-				height,
+				expandTarget.width,
+				expandTarget.height,
 			);
+			stopped = true;
+			window.clearInterval(tickId);
+			setBusy('Expanding 100%…');
 			setWorkingFromCanvas(expanded);
 			setCrop(DEFAULT_CROP);
 			setPendingCommit(true);
 			setStatus(
-				`Expanded to ${width}×${height}. Click Apply changes to keep editing with other tools.`,
+				`Expanded +${expandPct}% to ${expandTarget.width}×${expandTarget.height}. Click Apply changes to keep editing with other tools.`,
 			);
 		} finally {
+			stopped = true;
+			window.clearInterval(tickId);
 			setBusy(null);
 		}
-	}, [canvasSize, setWorkingFromCanvas, variant]);
+	}, [expandPct, expandTarget, setWorkingFromCanvas]);
 
 	const buildExportCanvas = useCallback(() => {
 		const working = workingRef.current;
