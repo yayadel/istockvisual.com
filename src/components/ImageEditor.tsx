@@ -510,8 +510,9 @@ export default function ImageEditor({
 					<div className="image-editor-modal__row">
 						<span className="image-editor-modal__row-label">Size</span>
 						<div className="image-editor-modal__size-list">
-							{DOWNLOAD_SIZES.map((size) => {
+							{sizeOptions.map((size) => {
 								const needsPro = !isFreeDownloadSize(size.id);
+								const dims = `${size.output.width}×${size.output.height}`;
 								return (
 									<button
 										key={size.id}
@@ -519,8 +520,9 @@ export default function ImageEditor({
 										className={`image-editor-modal__size${sizeId === size.id ? ' is-active' : ''}`}
 										onClick={() => selectSize(size.id)}
 										disabled={Boolean(busy)}
+										title={dims}
 									>
-										<span className="image-editor-modal__size-name">{size.label}</span>
+										<span className="image-editor-modal__size-name">{dims}</span>
 										{needsPro ? (
 											<em className="download-tier download-tier--pro">Pro</em>
 										) : (
@@ -530,9 +532,6 @@ export default function ImageEditor({
 								);
 							})}
 						</div>
-						<span className="image-editor-modal__size-meta">
-							{canvasSize.width}×{canvasSize.height}px
-						</span>
 					</div>
 					{sizeGateMessage && (
 						<p className="image-editor-modal__gate">
