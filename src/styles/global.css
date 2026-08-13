@@ -2860,6 +2860,32 @@ body.image-editor-modal-open {
 	cursor: move;
 }
 
+.image-editor-modal__keep-circle {
+	position: absolute;
+	z-index: 2;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+	cursor: move;
+	box-sizing: border-box;
+}
+
+.image-editor-modal__keep-label {
+	position: absolute;
+	left: 50%;
+	top: -1.55rem;
+	transform: translateX(-50%);
+	padding: 0.15rem 0.45rem;
+	border-radius: 999px;
+	background: rgba(17, 17, 17, 0.82);
+	color: #fff;
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
 .image-editor-modal__handle {
 	position: absolute;
 	width: 10px;

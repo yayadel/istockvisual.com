@@ -467,8 +467,22 @@ export default function ImageEditor({
 			});
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			URL.revokeObjectURL(url);
+
+			// Full-image cutout, then keep only the subject touching the circle.
+			const mapped = mapKeepCircleToSource(
+				keepCircle,
+				canvas.width,
+				canvas.height,
+				canvasSize.width,
+				canvasSize.height,
+			);
+			const kept = keepForegroundTouchingCircle(canvas, mapped.cx, mapped.cy, mapped.r);
 			setWorkingFromCanvas(canvas);
-			setStatus('Background removed. Transparent PNG ready.');
+			setStatus(
+				kept
+					? 'Background removed. Subject inside the circle kept.'
+					: 'Background removed, but no subject was found near the circle.',
+			);
 		} catch (error) {
 			console.error(error);
 			setStatus('Background removal failed. Please try again.');
@@ -477,7 +491,7 @@ export default function ImageEditor({
 			window.clearInterval(tickId);
 			setBusy(null);
 		}
-	}, [setWorkingFromCanvas]);
+	}, [canvasSize.height, canvasSize.width, keepCircle, setWorkingFromCanvas]);
 
 	const handleExpand = useCallback(() => {
 		const working = workingRef.current;
@@ -737,6 +751,34 @@ export default function ImageEditor({
 										))}
 									</div>
 								)}
+
+								{tool === 'remove-bg' && ready && (() => {
+									const { rx, ry } = keepCircleNormRadii(
+										keepCircle,
+										canvasSize.width,
+										canvasSize.height,
+									);
+									return (
+										<div
+											className="image-editor-modal__keep-circle"
+											style={{
+												left: `${(keepCircle.cx - rx) * 100}%`,
+												top: `${(keepCircle.cy - ry) * 100}%`,
+												width: `${rx * 2 * 100}%`,
+												height: `${ry * 2 * 100}%`,
+											}}
+											onPointerDown={(event) => onKeepPointerDown(event, 'move')}
+											role="presentation"
+											title="Drag to mark the subject to keep"
+										>
+											<span className="image-editor-modal__keep-label">Keep subject</span>
+											<span
+												className="image-editor-modal__handle image-editor-modal__handle--se"
+												onPointerDown={(event) => onKeepPointerDown(event, 'resize')}
+											/>
+										</div>
+									);
+								})()}
 
 								{busy && (
 									<div className="image-editor-modal__busy" role="status">
