@@ -8,7 +8,7 @@ import ShareBar from '../../components/ShareBar';
 import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
-import { resolveContentCategories } from '../../lib/content-categories';
+import { resolveContentCategories, contentCategoryPath } from '../../lib/content-categories';
 import { searchPath } from '../../lib/paths';
 import { env } from 'cloudflare:workers';
 

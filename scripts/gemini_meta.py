@@ -276,7 +276,7 @@ def main() -> None:
 
 	meta = generate_meta(args.keyword)
 	payload = meta.model_dump()
-	# contentCategories is the topical category field (1–3 from /categories).
+	# contentCategories is the topical category field (exactly 1 from /categories).
 	# depictedElements is unused; tags already cover depicted objects.
 	payload["depictedElements"] = []
 	payload["contentCategories"] = normalize_content_categories(

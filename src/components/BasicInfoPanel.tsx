@@ -6,7 +6,7 @@ type CategoryLink = {
 type Props = {
 	license?: string;
 	fileType?: string;
-	/** Topical categories (1–3) from the fixed vocabulary. */
+	/** Topical category (exactly 1) from the fixed vocabulary. */
 	categories?: CategoryLink[];
 	/** @deprecated Prefer categories[] */
 	categoryLabel?: string;

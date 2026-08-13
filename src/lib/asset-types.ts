@@ -16,7 +16,7 @@ export type GeneratedAssetMeta = {
 	colorPalette: ColorSwatch[];
 	tags: string[];
 	relatedSearchQueries: string[];
-	/** 1–3 labels from /categories vocabulary (stored in DB depictedElements). */
+	/** Exactly 1 label from /categories vocabulary (stored in DB depictedElements). */
 	contentCategories: string[];
 	/** @deprecated Prefer contentCategories; kept empty for older meta JSON. */
 	depictedElements: string[];
