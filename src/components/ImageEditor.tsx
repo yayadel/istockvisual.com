@@ -1529,9 +1529,9 @@ export default function ImageEditor({
 								Download edited ·{' '}
 								{tool === 'transform'
 									? aspectPreset.label
-									: tool === 'expand' && !expandSettled && expandTarget
+									: canUseExpand && tool === 'expand' && !expandSettled && expandTarget
 										? `${expandTarget.width}×${expandTarget.height}`
-										: expandSettled || natural.w > canvasSize.width
+										: canUseExpand && expandSettled
 											? `${natural.w}×${natural.h}`
 											: `${canvasSize.width}×${canvasSize.height}`}
 							</button>
