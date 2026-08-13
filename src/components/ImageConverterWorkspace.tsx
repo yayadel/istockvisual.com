@@ -174,12 +174,6 @@ export default function ImageConverterWorkspace() {
 		}
 	}, [doneItems]);
 
-	const onDrop = (event: React.DragEvent<HTMLLabelElement>) => {
-		event.preventDefault();
-		event.currentTarget.classList.remove('is-dragover');
-		addFiles(event.dataTransfer.files);
-	};
-
 	const formats = CONVERT_FORMATS.filter((item) => item.id !== 'avif' || avifOk);
 
 	return (
