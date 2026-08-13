@@ -823,7 +823,7 @@ export default function ImageEditor({
 										</div>
 									))}
 									<button className="btn btn--ghost" type="button" onClick={resetAdjust}>
-										Reset
+										Reset all
 									</button>
 								</>
 							)}
