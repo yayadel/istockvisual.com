@@ -48,11 +48,20 @@ const similar = findSimilarAssets(
 	<article class="detail">
 		<div class="detail__shell">
 			<header class="detail__title">
-				<p class="asset-card__meta">
-					<a href={`/${category.slug}`}>{category.label}</a>
-					{asset.isPremium && <span class="badge badge--premium">Pro</span>}
-					{isGenerated && <span class="badge">Generated</span>}
-				</p>
+				<nav class="detail__breadcrumb" aria-label="Breadcrumb">
+					<ol>
+						<li>
+							<a href={`/${category.slug}`}>{category.label}</a>
+						</li>
+						{
+							contentCategories.map((label) => (
+								<li>
+									<a href={searchPath(label)}>{label}</a>
+								</li>
+							))
+						}
+					</ol>
+				</nav>
 				<div class="detail__title-row">
 					<h1>{asset.title}</h1>
 					<ShareBar
