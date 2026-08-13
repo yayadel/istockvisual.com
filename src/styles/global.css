@@ -3297,16 +3297,54 @@ body.image-editor-modal-open {
 }
 
 .image-editor-modal__gate {
-	margin: 0;
-	padding: 0;
-	background: transparent;
-	color: var(--ie-muted);
-	font-size: 0.8rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.85rem 1rem;
+	width: 100%;
+	margin: 0.15rem 0 0.35rem;
+	padding: 0.7rem 0.85rem;
+	border: 1px solid rgba(19, 32, 15, 0.12);
+	border-radius: 4px;
+	background: linear-gradient(90deg, #c4f04b 0%, #d7f76f 55%, #c4f04b 100%);
+	color: #13200f;
+	box-shadow: 0 8px 22px rgba(196, 240, 75, 0.28);
 }
 
-.image-editor-modal__gate a {
-	color: var(--ie-ink);
+.image-editor-modal__gate-text {
+	margin: 0;
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: 0.88rem;
 	font-weight: 650;
+	line-height: 1.35;
+	letter-spacing: -0.01em;
+}
+
+.image-editor-modal__gate-cta {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.55rem 1.05rem;
+	border-radius: 3px;
+	background: #111;
+	color: #c4f04b !important;
+	font-size: 0.82rem;
+	font-weight: 750;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.image-editor-modal__gate-cta:hover {
+	background: #000;
+	color: #d4f76a !important;
+}
+
+[data-theme='dark'] .image-editor-modal__gate {
+	border-color: rgba(196, 240, 75, 0.35);
 }
 
 .image-editor-modal__aspect {

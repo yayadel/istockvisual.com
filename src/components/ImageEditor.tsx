@@ -1064,10 +1064,12 @@ export default function ImageEditor({
 								</div>
 							</div>
 							{sizeGateMessage && (
-								<p className="image-editor-modal__gate">
-									{sizeGateMessage}{' '}
-									<a href="/price">Go Pro</a>
-								</p>
+								<div className="image-editor-modal__gate" role="status">
+									<p className="image-editor-modal__gate-text">{sizeGateMessage}</p>
+									<a className="image-editor-modal__gate-cta" href="/price">
+										Go Pro
+									</a>
+								</div>
 							)}
 						</>
 					)}
