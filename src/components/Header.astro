@@ -3,7 +3,7 @@ import { CATEGORIES } from '../config/categories';
 import ThemeToggle from './ThemeToggle.astro';
 import SearchBar from './SearchBar.astro';
 import { isAdminUser } from '../lib/admin';
-import { contentCategoryPath } from '../lib/content-categories';
+import { contentCategoryPath, getContentCategoryIntro } from '../lib/content-categories';
 import { listTopContentCategoriesByCount } from '../lib/generated-assets';
 import { env } from 'cloudflare:workers';
 
@@ -13,7 +13,16 @@ const isHome = path === '/';
 const isAdmin = isAdminUser(user, env);
 const toolsActive = path.startsWith('/tools/');
 const categoriesActive = path === '/c' || path.startsWith('/c/');
-const topCategories = await listTopContentCategoriesByCount(env.DB, 10);
+const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((item, index) => {
+	const intro = getContentCategoryIntro(item.label);
+	return {
+		...item,
+		index: String(index + 1).padStart(2, '0'),
+		lede: intro.lede,
+		hint: intro.hint,
+		href: contentCategoryPath(item.slug),
+	};
+});
 ---
 
 <header class="site-header">
@@ -45,28 +54,50 @@ const topCategories = await listTopContentCategoriesByCount(env.DB, 10);
 				</button>
 				<div
 					id="nav-categories-menu"
-					class="nav__dropdown-menu nav__categories-menu"
+					class="nav__categories-mega"
 					hidden
 					data-nav-dropdown-menu
-					role="menu"
 				>
-					<p class="nav__categories-menu__label">Top categories</p>
-					{
-						topCategories.map((item) => (
-							<a
-								href={contentCategoryPath(item.slug)}
-								role="menuitem"
-								aria-current={path === `/c/${item.slug}` ? 'page' : undefined}
-							>
-								<span>{item.label}</span>
-								<em>{item.count}</em>
-							</a>
-						))
-					}
-					<a class="nav__categories-menu__all" href="/c/" role="menuitem">
-						All Categories
-						<span aria-hidden="true">→</span>
-					</a>
+					<div class="nav__categories-mega__preview" aria-live="polite">
+						{
+							topCategories.map((item, i) => (
+								<article
+									class:list={['nav__categories-mega__panel', i === 0 && 'is-active']}
+									data-categories-panel={item.slug}
+									hidden={i !== 0}
+								>
+									<p class="nav__categories-mega__index">{item.index}</p>
+									<h3 class="nav__categories-mega__title">{item.label}</h3>
+									<p class="nav__categories-mega__lede">{item.lede}</p>
+									<p class="nav__categories-mega__hint">{item.hint}</p>
+									<a class="nav__categories-mega__cta" href={item.href}>
+										Browse category
+										<span aria-hidden="true">→</span>
+									</a>
+								</article>
+							))
+						}
+					</div>
+					<div class="nav__categories-mega__list" role="menu">
+						<p class="nav__categories-mega__list-label">Top categories</p>
+						{
+							topCategories.map((item) => (
+								<a
+									href={item.href}
+									role="menuitem"
+									data-categories-item={item.slug}
+									aria-current={path === `/c/${item.slug}` ? 'page' : undefined}
+								>
+									<span>{item.label}</span>
+									<em>{item.index}</em>
+								</a>
+							))
+						}
+						<a class="nav__categories-mega__all" href="/c/" role="menuitem">
+							All Categories
+							<span aria-hidden="true">→</span>
+						</a>
+					</div>
 				</div>
 			</div>
 			<div class="nav__dropdown nav__dropdown--tools" data-nav-dropdown>
