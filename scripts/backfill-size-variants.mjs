@@ -60,3 +60,21 @@ for (const assetId of assetIds) {
 	console.log(`  stored ${variantData.key} (${variantData.bytes} bytes)`);
 	console.log(`  deleted ${variantData.deleted?.length ?? 0} variant keys`);
 }
+
+console.log('\nPurging leftover generated/ variants and unreferenced keys…');
+const purgeRes = await fetch(`${baseUrl}/api/generate/variants`, {
+	method: 'POST',
+	headers: {
+		'x-generate-secret': secret,
+		Origin: baseUrl,
+		'Content-Type': 'application/json',
+	},
+	body: JSON.stringify({ purge: true }),
+});
+const purgeData = await purgeRes.json();
+if (!purgeRes.ok) {
+	console.error('purge failed:', purgeData.error || purgeRes.status);
+	process.exit(1);
+}
+console.log(`deleted ${purgeData.deleted?.length ?? 0} leftover objects`);
+console.log(`kept ${purgeData.kept?.length ?? 0} masters`);
