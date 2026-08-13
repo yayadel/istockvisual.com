@@ -113,6 +113,36 @@ export default function ImageEditor({
 
 	const stageAspect = canvasSize.width / Math.max(canvasSize.height, 1);
 
+	const rebuildFramePreview = useCallback(() => {
+		const working = workingRef.current;
+		if (!working) return;
+		const { width, height } = canvasSize;
+		const frame = document.createElement('canvas');
+		frame.width = Math.max(1, width);
+		frame.height = Math.max(1, height);
+		const ctx = frame.getContext('2d');
+		if (!ctx) return;
+		const fit = containSize(working.width, working.height, frame.width, frame.height);
+		ctx.clearRect(0, 0, frame.width, frame.height);
+		ctx.drawImage(
+			working,
+			0,
+			0,
+			working.width,
+			working.height,
+			Math.round(fit.x),
+			Math.round(fit.y),
+			Math.round(fit.w),
+			Math.round(fit.h),
+		);
+		setFrameUrl(frame.toDataURL('image/png'));
+	}, [canvasSize]);
+
+	useEffect(() => {
+		if (!ready) return;
+		rebuildFramePreview();
+	}, [ready, rebuildFramePreview, previewUrl]);
+
 	const previewTransform = useMemo(() => {
 		const radians = rotation + fineRotation;
 		return `rotate(${radians}deg) scale(${flipX ? -1 : 1}, ${flipY ? -1 : 1})`;
@@ -557,15 +587,18 @@ export default function ImageEditor({
 							<div
 								className="image-editor-modal__stage"
 								ref={stageRef}
-								style={{ aspectRatio: String(stageAspect) }}
+								style={{
+									aspectRatio: `${canvasSize.width} / ${canvasSize.height}`,
+									width: `min(100%, ${canvasSize.width}px)`,
+								}}
 							>
-								{ready ? (
+								{ready && (frameUrl || previewUrl) ? (
 									<div
 										className="image-editor-modal__image-layer"
 										style={{ transform: previewTransform, filter: previewFilter }}
 									>
 										<img
-											src={previewUrl}
+											src={frameUrl || previewUrl}
 											alt=""
 											className="image-editor-modal__image"
 											draggable={false}
