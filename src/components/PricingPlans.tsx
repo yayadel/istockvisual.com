@@ -1,8 +1,10 @@
 import { useId, useState } from 'react';
 import {
+	LIFETIME_WHY,
 	LONG_PLANS,
 	PRICING_COPY,
 	PRICING_FEATURES,
+	PRICING_TRUST,
 	SHORT_PLANS,
 	type PricingPlan,
 	type PricingTab,
@@ -15,9 +17,13 @@ function PlanCard({ plan }: { plan: PricingPlan }) {
 			<h2>{plan.name}</h2>
 			<p className="pricing-card__amount">
 				{plan.price}
+				{plan.originalPrice ? (
+					<del aria-label={`Was ${plan.originalPrice}`}>{plan.originalPrice}</del>
+				) : null}
 				{plan.period ? <span> {plan.period}</span> : null}
 			</p>
 			<p className="pricing-card__rate">{plan.rate}</p>
+			{plan.highlight ? <p className="pricing-card__highlight">{plan.highlight}</p> : null}
 			<ul className="pricing-card__features">
 				{PRICING_FEATURES.map((item) => (
 					<li key={item}>{item}</li>
@@ -26,7 +32,7 @@ function PlanCard({ plan }: { plan: PricingPlan }) {
 			<a className={plan.featured ? 'btn btn--primary' : 'btn btn--ghost'} href={plan.href}>
 				{plan.cta}
 			</a>
-			{plan.note ? <p className="pricing-card__note">✔ {plan.note}</p> : null}
+			{plan.note ? <p className="pricing-card__note">* {plan.note}</p> : null}
 		</article>
 	);
 }
@@ -85,6 +91,16 @@ export default function PricingPlans() {
 					<PlanCard key={plan.id} plan={plan} />
 				))}
 			</div>
+
+			<ul className="pricing-trust">
+				{PRICING_TRUST.map((item) => (
+					<li key={item.title}>
+						<strong>✔ {item.title}</strong>
+						<span>{item.text}</span>
+					</li>
+				))}
+			</ul>
+			<p className="pricing-trust__why">{LIFETIME_WHY}</p>
 		</div>
 	);
 }
