@@ -3641,18 +3641,34 @@ body.download-auth-modal-open {
 	z-index: 50;
 }
 
-[data-theme='dark'] .asset-preview__action.btn:not(.asset-preview__action--edit),
-[data-theme='dark'] .asset-preview__share .share-bar__toggle {
+[data-theme='dark'] .asset-preview__action.btn:not(.asset-preview__action--edit) {
 	background: transparent;
 	border-color: var(--line);
 	color: var(--text);
 }
 
-[data-theme='dark'] .asset-preview__action.btn:not(.asset-preview__action--edit):hover,
-[data-theme='dark'] .asset-preview__share .share-bar__toggle:hover,
-[data-theme='dark'] .asset-preview__share .share-bar.is-open .share-bar__toggle {
+[data-theme='dark'] .asset-preview__action.btn:not(.asset-preview__action--edit):hover {
 	background: var(--ghost-bg);
 	color: var(--text);
+}
+
+[data-theme='dark'] .share-bar--inline .share-bar__face {
+	background: transparent;
+	border-color: var(--line);
+}
+
+[data-theme='dark'] .share-bar--inline .share-bar__face:hover {
+	background: var(--ghost-bg);
+}
+
+[data-theme='dark'] .share-bar--inline .share-bar__toggle {
+	color: var(--text);
+	background: transparent;
+}
+
+[data-theme='dark'] .share-bar__channel .share-bar__icon--x,
+[data-theme='dark'] .share-bar__channel .share-bar__icon--muted {
+	background: rgba(238, 243, 239, 0.1);
 }
 
 [data-theme='dark'] .asset-preview__action.btn.asset-preview__action--edit {
