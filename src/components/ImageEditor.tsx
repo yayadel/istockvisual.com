@@ -144,12 +144,33 @@ export default function ImageEditor({
 			Math.round(fit.w),
 			Math.round(fit.h),
 		);
+		// Bake advanced adjusts that CSS cannot express (temp/tint/shadows/highlights).
+		const needsBake =
+			adjust.temperature !== 0 ||
+			adjust.tint !== 0 ||
+			adjust.highlights !== 0 ||
+			adjust.shadows !== 0;
+		if (needsBake) {
+			const imageData = ctx.getImageData(0, 0, frame.width, frame.height);
+			ctx.putImageData(
+				applyAdjustToImageData(imageData, {
+					...DEFAULT_ADJUST,
+					temperature: adjust.temperature,
+					tint: adjust.tint,
+					highlights: adjust.highlights,
+					shadows: adjust.shadows,
+				}),
+				0,
+				0,
+			);
+		}
 		setFrameUrl(frame.toDataURL('image/png'));
-	}, [canvasSize]);
+	}, [adjust.highlights, adjust.shadows, adjust.temperature, adjust.tint, canvasSize]);
 
 	useEffect(() => {
 		if (!ready) return;
-		rebuildFramePreview();
+		const timer = window.setTimeout(() => rebuildFramePreview(), 40);
+		return () => window.clearTimeout(timer);
 	}, [ready, rebuildFramePreview, previewUrl]);
 
 	const previewTransform = useMemo(() => {
@@ -424,7 +445,7 @@ export default function ImageEditor({
 		frameCtx.drawImage(working, -fit.w / 2, -fit.h / 2, fit.w, fit.h);
 		frameCtx.restore();
 
-		if (adjust.brightness || adjust.contrast || adjust.saturation) {
+		if (hasAdjustChanges(adjust)) {
 			const imageData = frameCtx.getImageData(0, 0, targetW, targetH);
 			frameCtx.putImageData(applyAdjustToImageData(imageData, adjust), 0, 0);
 		}
