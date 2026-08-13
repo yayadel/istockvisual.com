@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ImageToolWorkspace from '../../components/ImageToolWorkspace';
+
+const user = Astro.locals.user;
+---
+
+<BaseLayout
+	title="Image Tool — Free Browser Photo Editor"
+	description="Free on-device image editor: adjust, crop, remove background, and expand. No uploads stored. No personal data kept."
+>
+	<div class="section-head image-tool-page__head">
+		<div>
+			<h1>Image Tool</h1>
+			<p>
+				Upload any photo and edit it with Adjust, Crop &amp; Flip, Remove BG, and Expand —
+				entirely in your browser.
+			</p>
+		</div>
+	</div>
+	<ImageToolWorkspace
+		client:load
+		loggedIn={Boolean(user)}
+		isPro={user?.plan === 'pro'}
+	/>
+</BaseLayout>

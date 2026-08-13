@@ -9,6 +9,7 @@ const user = Astro.locals.user;
 const path = Astro.url.pathname;
 const isHome = path === '/';
 const isAdmin = isAdminUser(user, env);
+const toolsActive = path.startsWith('/tools/');
 ---
 
 <header class="site-header">
@@ -28,17 +29,49 @@ const isAdmin = isAdminUser(user, env);
 			<a href="/c/" aria-current={path === '/c' || path.startsWith('/c/') ? 'page' : undefined}>
 				Categories
 			</a>
-			<a
-				class="nav__ai"
-				href="/tools/ai-edit"
-				aria-current={path.startsWith('/tools/ai-edit') ? 'page' : undefined}
-			>
-				<span class="nav__ai-icon" aria-hidden="true">✦</span>
-				AI Tools
-			</a>
-			<a href="/tools/generate" aria-current={path === '/tools/generate' ? 'page' : undefined}>
-				Generate
-			</a>
+			<div class="nav__dropdown" data-nav-dropdown>
+				<button
+					type="button"
+					class="nav__dropdown-trigger"
+					aria-expanded="false"
+					aria-haspopup="true"
+					aria-controls="nav-tool-menu"
+					data-nav-dropdown-trigger
+					aria-current={toolsActive ? 'page' : undefined}
+				>
+					Tool
+					<span class="nav__dropdown-caret" aria-hidden="true"></span>
+				</button>
+				<div
+					id="nav-tool-menu"
+					class="nav__dropdown-menu"
+					role="menu"
+					hidden
+					data-nav-dropdown-menu
+				>
+					<a
+						href="/tools/image"
+						role="menuitem"
+						aria-current={path.startsWith('/tools/image') ? 'page' : undefined}
+					>
+						Image Tool
+					</a>
+					<a
+						href="/tools/ai-edit"
+						role="menuitem"
+						aria-current={path.startsWith('/tools/ai-edit') ? 'page' : undefined}
+					>
+						AI Tools
+					</a>
+					<a
+						href="/tools/generate"
+						role="menuitem"
+						aria-current={path === '/tools/generate' ? 'page' : undefined}
+					>
+						Generate
+					</a>
+				</div>
+			</div>
 			{
 				isAdmin && (
 					<a href="/admin" aria-current={path.startsWith('/admin') ? 'page' : undefined}>
@@ -72,3 +105,45 @@ const isAdmin = isAdminUser(user, env);
 		</div>
 	)
 }
+
+<script>
+	function closeAllNavDropdowns(except) {
+		document.querySelectorAll('[data-nav-dropdown]').forEach(function (root) {
+			if (except && root === except) return;
+			var menu = root.querySelector('[data-nav-dropdown-menu]');
+			var trigger = root.querySelector('[data-nav-dropdown-trigger]');
+			if (menu) menu.hidden = true;
+			if (trigger) trigger.setAttribute('aria-expanded', 'false');
+			root.classList.remove('is-open');
+		});
+	}
+
+	document.addEventListener('click', function (event) {
+		var target = event.target;
+		if (!(target instanceof Element)) return;
+
+		var trigger = target.closest('[data-nav-dropdown-trigger]');
+		if (trigger) {
+			var root = trigger.closest('[data-nav-dropdown]');
+			var menu = root && root.querySelector('[data-nav-dropdown-menu]');
+			if (!root || !menu) return;
+			event.preventDefault();
+			var willOpen = menu.hidden;
+			closeAllNavDropdowns();
+			if (willOpen) {
+				menu.hidden = false;
+				trigger.setAttribute('aria-expanded', 'true');
+				root.classList.add('is-open');
+			}
+			return;
+		}
+
+		if (!target.closest('[data-nav-dropdown]')) {
+			closeAllNavDropdowns();
+		}
+	});
+
+	document.addEventListener('keydown', function (event) {
+		if (event.key === 'Escape') closeAllNavDropdowns();
+	});
+</script>
