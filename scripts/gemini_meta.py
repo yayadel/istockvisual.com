@@ -139,13 +139,13 @@ def normalize_content_categories(values: list[str] | None) -> list[str]:
 			continue
 		seen.add(key)
 		out.append(matched)
-		if len(out) >= 3:
+		if len(out) >= 1:
 			break
 	return out
 
 
 def fallback_content_categories(title: str, keyword: str) -> list[str]:
-	"""Conservative keyword hits when the model omits/invalidates categories."""
+	"""Conservative keyword hit when the model omits/invalidates categories."""
 	text = f"{title} {keyword}".lower()
 	aliases: dict[str, list[str]] = {
 		"Technology": [
@@ -192,7 +192,7 @@ def fallback_content_categories(title: str, keyword: str) -> list[str]:
 		if score:
 			scored.append((label, score))
 	scored.sort(key=lambda item: (-item[1], item[0]))
-	return [label for label, _ in scored[:3]]
+	return [label for label, _ in scored[:1]]
 
 
 def ensure_content_categories(meta: AssetMeta, keyword: str) -> AssetMeta:
