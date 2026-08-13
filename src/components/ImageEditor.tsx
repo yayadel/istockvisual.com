@@ -41,6 +41,10 @@ type Props = {
 	onClose: () => void;
 	loggedIn?: boolean;
 	isPro?: boolean;
+	/** Inline page layout instead of fullscreen modal portal. */
+	variant?: 'modal' | 'page';
+	/** Standalone Image Tool: every output size is free. */
+	allSizesFree?: boolean;
 };
 
 const DEFAULT_CROP: CropRect = { x: 0, y: 0, w: 1, h: 1 };
