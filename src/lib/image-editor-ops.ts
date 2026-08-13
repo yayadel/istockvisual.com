@@ -211,7 +211,7 @@ export function containSize(imgW: number, imgH: number, boxW: number, boxH: numb
 	return { w, h: boxH, x: (boxW - w) / 2, y: 0 };
 }
 
-/** Mirror + blur edge fill for outpainting empty canvas margins (no AI model). */
+/** Blur-extended backdrop + centered original for outpainting margins (no AI model). */
 export function expandWithEdgeFill(
 	source: CanvasImageSource,
 	sourceW: number,
@@ -220,32 +220,91 @@ export function expandWithEdgeFill(
 	targetH: number,
 ): HTMLCanvasElement {
 	const out = document.createElement('canvas');
-	out.width = targetW;
-	out.height = targetH;
+	out.width = Math.max(1, Math.round(targetW));
+	out.height = Math.max(1, Math.round(targetH));
 	const ctx = out.getContext('2d');
 	if (!ctx) return out;
 
-	const fit = containSize(sourceW, sourceH, targetW, targetH);
+	const srcW = Math.max(1, Math.round(sourceW));
+	const srcH = Math.max(1, Math.round(sourceH));
+	const fit = containSize(srcW, srcH, out.width, out.height);
 	const dx = Math.round(fit.x);
 	const dy = Math.round(fit.y);
 	const dw = Math.max(1, Math.round(fit.w));
 	const dh = Math.max(1, Math.round(fit.h));
 
+	// Soft cover so new margins are filled (never leave transparent checkerboard).
 	ctx.save();
-	ctx.filter = 'blur(28px) saturate(1.05)';
-	const cover = Math.max(targetW / sourceW, targetH / sourceH);
-	const cw = sourceW * cover;
-	const ch = sourceH * cover;
-	ctx.drawImage(source, (targetW - cw) / 2, (targetH - ch) / 2, cw, ch);
+	ctx.filter = 'blur(40px) saturate(1.08)';
+	const cover = Math.max(out.width / srcW, out.height / srcH) * 1.15;
+	const cw = srcW * cover;
+	const ch = srcH * cover;
+	ctx.drawImage(source, (out.width - cw) / 2, (out.height - ch) / 2, cw, ch);
 	ctx.restore();
 
 	ctx.save();
-	ctx.globalAlpha = 0.35;
+	ctx.globalAlpha = 0.2;
 	ctx.fillStyle = '#000';
-	ctx.fillRect(0, 0, targetW, targetH);
+	ctx.fillRect(0, 0, out.width, out.height);
 	ctx.restore();
 
-	ctx.drawImage(source, 0, 0, sourceW, sourceH, dx, dy, dw, dh);
+	// Mirror edge bands into the margins.
+	ctx.save();
+	ctx.imageSmoothingEnabled = true;
+	if (dy > 0) {
+		ctx.save();
+		ctx.translate(dx, dy);
+		ctx.scale(1, -1);
+		ctx.drawImage(source, 0, 0, srcW, Math.min(srcH, dy), 0, 0, dw, dy);
+		ctx.restore();
+	}
+	if (out.height - dy - dh > 0) {
+		const hh = out.height - dy - dh;
+		ctx.save();
+		ctx.translate(dx, dy + dh);
+		ctx.scale(1, -1);
+		ctx.drawImage(
+			source,
+			0,
+			Math.max(0, srcH - Math.min(srcH, hh)),
+			srcW,
+			Math.min(srcH, hh),
+			0,
+			-hh,
+			dw,
+			hh,
+		);
+		ctx.restore();
+	}
+	if (dx > 0) {
+		ctx.save();
+		ctx.translate(dx, dy);
+		ctx.scale(-1, 1);
+		ctx.drawImage(source, 0, 0, Math.min(srcW, dx), srcH, 0, 0, dx, dh);
+		ctx.restore();
+	}
+	if (out.width - dx - dw > 0) {
+		const ww = out.width - dx - dw;
+		ctx.save();
+		ctx.translate(dx + dw, dy);
+		ctx.scale(-1, 1);
+		ctx.drawImage(
+			source,
+			Math.max(0, srcW - Math.min(srcW, ww)),
+			0,
+			Math.min(srcW, ww),
+			srcH,
+			-ww,
+			0,
+			ww,
+			dh,
+		);
+		ctx.restore();
+	}
+	ctx.restore();
+
+	// Centered original — must use source pixel size, not target size.
+	ctx.drawImage(source, 0, 0, srcW, srcH, dx, dy, dw, dh);
 
 	return out;
 }

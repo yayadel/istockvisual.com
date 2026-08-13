@@ -278,11 +278,27 @@ export default function ImageEditor({
 		(canvas: HTMLCanvasElement) => {
 			workingRef.current = canvas;
 			setNatural({ w: canvas.width, h: canvas.height });
-			const next = canvas.toDataURL('image/png');
-			setPreviewUrl((prev) => {
-				revokeIfBlob(prev);
-				return next;
-			});
+			let next: string | null = null;
+			try {
+				next = canvas.toDataURL('image/png');
+			} catch {
+				next = null;
+			}
+			if (next) {
+				setPreviewUrl((prev) => {
+					revokeIfBlob(prev);
+					return next!;
+				});
+				return;
+			}
+			canvas.toBlob((blob) => {
+				if (!blob) return;
+				const url = URL.createObjectURL(blob);
+				setPreviewUrl((prev) => {
+					revokeIfBlob(prev);
+					return url;
+				});
+			}, 'image/png');
 		},
 		[revokeIfBlob],
 	);
