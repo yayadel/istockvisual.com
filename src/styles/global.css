@@ -1041,6 +1041,70 @@ body.upload-modal-open {
 	background: #173d36;
 }
 
+.share-bar {
+	display: grid;
+	gap: 0.55rem;
+	margin: 0 0 0.85rem;
+	padding: 0.85rem 0 0;
+}
+
+.share-bar__head {
+	display: flex;
+	align-items: center;
+}
+
+.share-bar__label {
+	font-size: 0.78rem;
+	font-weight: 650;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #6a776e;
+}
+
+.share-bar__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.share-bar__btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.15rem;
+	padding: 0.4rem 0.75rem;
+	border: 1px solid rgba(36, 53, 44, 0.12);
+	border-radius: 3px;
+	background: #f3f5f2;
+	color: #24352c;
+	font: inherit;
+	font-size: 0.82rem;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.share-bar__btn:hover {
+	background: #e9eee9;
+	border-color: rgba(36, 53, 44, 0.2);
+}
+
+[data-theme='dark'] .share-bar__label {
+	color: rgba(238, 243, 239, 0.55);
+}
+
+[data-theme='dark'] .share-bar__btn {
+	background: #18201c;
+	border-color: rgba(238, 243, 239, 0.12);
+	color: #eef3ef;
+}
+
+[data-theme='dark'] .share-bar__btn:hover {
+	background: #1e2923;
+}
+
 .pro-promo {
 	position: relative;
 	display: grid;
