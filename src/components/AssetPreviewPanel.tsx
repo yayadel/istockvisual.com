@@ -1,10 +1,11 @@
 import { useCallback, useState, type MouseEvent } from 'react';
 import ImageEditor from './ImageEditor';
+import ShareBar from './ShareBar';
 
 type Props = {
 	imageUrl: string;
 	title: string;
-	aiEditHref?: string;
+	shareUrl?: string;
 	loggedIn?: boolean;
 	isPro?: boolean;
 };
@@ -12,7 +13,7 @@ type Props = {
 export default function AssetPreviewPanel({
 	imageUrl,
 	title,
-	aiEditHref = '/tools/ai-edit',
+	shareUrl,
 	loggedIn = false,
 	isPro = false,
 }: Props) {
@@ -41,9 +42,9 @@ export default function AssetPreviewPanel({
 				<button className="asset-preview__action" type="button" onClick={openEditor}>
 					Edit image
 				</button>
-				<a className="asset-preview__action asset-preview__action--secondary" href={aiEditHref}>
-					Open in AI Edit
-				</a>
+				<div className="asset-preview__share">
+					<ShareBar title={title} url={shareUrl} compact />
+				</div>
 			</div>
 			{editing ? (
 				<ImageEditor

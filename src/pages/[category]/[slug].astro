@@ -84,7 +84,7 @@ const similar = findSimilarAssets(
 								client:load
 								imageUrl={asset.previewUrl}
 								title={asset.title}
-								aiEditHref="/tools/ai-edit"
+								shareUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
 								loggedIn={Boolean(user)}
 								isPro={user?.plan === 'pro'}
 							/>
