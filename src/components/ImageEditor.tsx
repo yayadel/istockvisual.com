@@ -712,6 +712,7 @@ export default function ImageEditor({
 			}
 			originalRef.current = cloneCanvas(expanded);
 			setExpandOrigin({ w: expanded.width, h: expanded.height });
+			setExpandSettled(true);
 			setCrop(DEFAULT_CROP);
 			setPendingCommit(false);
 			setStatus(
