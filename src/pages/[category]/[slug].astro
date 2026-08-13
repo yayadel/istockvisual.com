@@ -76,6 +76,11 @@ const similar = findSimilarAssets(
 				</div>
 
 				<aside class="detail__info">
+					<ShareBar
+						client:load
+						title={asset.title}
+						url={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
+					/>
 					<DownloadPanel
 						client:only="react"
 						assetId={asset._id}
@@ -93,11 +98,6 @@ const similar = findSimilarAssets(
 							<p class="download-panel__hint">Loading sizes…</p>
 						</div>
 					</DownloadPanel>
-					<ShareBar
-						client:load
-						title={asset.title}
-						url={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
-					/>
 					<BasicInfoPanel
 						license="Free to use — commercial, no attribution required"
 						fileType={asset.fileType || '—'}
