@@ -937,12 +937,13 @@ export default function ImageEditor({
 											<button
 												className="image-editor-modal__slider-reset"
 												type="button"
-												onClick={() =>
+												onClick={() => {
+													setAdjustPresetId('custom');
 													setAdjust((prev) => ({
 														...prev,
 														[item.key]: DEFAULT_ADJUST[item.key],
-													}))
-												}
+													}));
+												}}
 												disabled={adjust[item.key] === DEFAULT_ADJUST[item.key]}
 												title={`Reset ${item.label}`}
 											>

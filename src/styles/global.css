@@ -2628,7 +2628,8 @@ body.image-editor-modal-open {
 }
 
 .image-editor-modal__size-list,
-.image-editor-modal__aspect-list {
+.image-editor-modal__aspect-list,
+.image-editor-modal__preset-list {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.35rem;
@@ -2637,6 +2638,7 @@ body.image-editor-modal-open {
 
 .image-editor-modal__size,
 .image-editor-modal__aspect,
+.image-editor-modal__preset,
 .image-editor-modal__tool {
 	border: 1px solid var(--ie-line);
 	border-radius: 3px;
