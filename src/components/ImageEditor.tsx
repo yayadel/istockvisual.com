@@ -42,6 +42,8 @@ type Props = {
 	onClose: () => void;
 	loggedIn?: boolean;
 	isPro?: boolean;
+	/** Asset detail editor: load 1K for free users, 4K for Pro. */
+	assetId?: string;
 	/** Inline page layout instead of fullscreen modal portal. */
 	variant?: 'modal' | 'page';
 	/** Standalone Image Tool: every output size is free. */
@@ -89,6 +91,7 @@ export default function ImageEditor({
 	onClose,
 	loggedIn = false,
 	isPro = false,
+	assetId,
 	variant = 'modal',
 	allSizesFree = false,
 }: Props) {

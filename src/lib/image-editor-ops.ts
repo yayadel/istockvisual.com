@@ -191,6 +191,21 @@ export function resolveEditorCanvasSize(
 	};
 }
 
+/** Free asset-editor exports: 500px or 1000px wide, never the 4K master. */
+export function clampFreeEditorOutput(
+	sizeId: DownloadSizeId,
+	size: { width: number; height: number },
+): { width: number; height: number } {
+	if (!isFreeDownloadSize(sizeId)) return size;
+	const maxW = sizeId === '500' ? 500 : 1000;
+	if (size.width <= maxW) return size;
+	const scale = maxW / size.width;
+	return {
+		width: maxW,
+		height: Math.max(1, Math.round(size.height * scale)),
+	};
+}
+
 /** Tiny rectangle dims inside a fixed box for aspect chips. */
 export function aspectPreviewBox(ratio: number | null, box = 22): { width: number; height: number } {
 	if (!ratio || !Number.isFinite(ratio) || ratio <= 0) {
