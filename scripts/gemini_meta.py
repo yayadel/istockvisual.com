@@ -45,31 +45,38 @@ class AssetMeta(BaseModel):
 	)
 	assetUsageTips: str = Field(description="English usage tips for designers/marketers")
 	colorPalette: List[ColorSwatch] = Field(description="Palette with HEX codes")
-	tags: List[str] = Field(
-		min_length=40,
-		description=(
-			"At least 40 unique English tags merging topic keywords, "
-			"subject labels, and depicted objects/elements"
-		),
-	)
+	tags: List[str] = Field(min_length=40, description=">=40 unique title-case tags")
 	contentCategories: List[str] = Field(
 		min_length=1,
 		max_length=1,
-		description=(
-			"REQUIRED: exactly 1 exact label from the allowed content-category list, "
-			"matching what the image depicts (visible subject/scene). "
-			"Gaming mouse/peripherals = Technology (never Sports). "
-			f"Allowed labels only: {CONTENT_CATEGORIES_CSV}"
-		),
+		description="Exactly 1 allowed category label for the depicted scene",
 	)
 	relatedSearchQueries: List[str] = Field(description="Related search queries")
-	imagePageTitle: str = Field(
-		description="Title-case English title containing the topic keyword"
-	)
+	imagePageTitle: str = Field(description="Title-case title containing the keyword")
 	pageShortDescription: str = Field(
-		description="Sentence-case short description containing the topic keyword"
+		description="Sentence-case short description containing the keyword"
 	)
 	medium: str = Field(description="Photograph | Illustration | 3D Graphic")
+
+
+def env_flag(dev_vars: dict[str, str], key: str, default: str = "0") -> bool:
+	raw = (os.environ.get(key) or dev_vars.get(key) or default).strip().lower()
+	return raw in {"1", "true", "yes", "on"}
+
+
+def response_schema() -> dict:
+	"""JSON schema for structured output — keep it small; rules live in host_prompt."""
+	schema = AssetMeta.model_json_schema()
+	props = schema.get("properties") or {}
+	cats = props.get("contentCategories")
+	if isinstance(cats, dict):
+		cats["minItems"] = 1
+		cats["maxItems"] = 1
+		cats["items"] = {"type": "string", "enum": CONTENT_CATEGORIES}
+	medium = props.get("medium")
+	if isinstance(medium, dict):
+		medium["enum"] = ["Photograph", "Illustration", "3D Graphic"]
+	return schema
 
 
 def load_dev_vars(path: Path = DEV_VARS) -> dict[str, str]:

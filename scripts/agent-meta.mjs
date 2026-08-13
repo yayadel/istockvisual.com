@@ -62,7 +62,7 @@ const env = {
 	GEMINI_API_KEY: geminiKey,
 	GEMINI_MODEL: geminiModel,
 	GEMINI_THINKING_LEVEL:
-		process.env.GEMINI_THINKING_LEVEL || devVars.GEMINI_THINKING_LEVEL || 'medium',
+		process.env.GEMINI_THINKING_LEVEL || devVars.GEMINI_THINKING_LEVEL || 'low',
 };
 if (devVars.HTTPS_PROXY && !env.HTTPS_PROXY) env.HTTPS_PROXY = devVars.HTTPS_PROXY;
 if (devVars.HTTP_PROXY && !env.HTTP_PROXY) env.HTTP_PROXY = devVars.HTTP_PROXY;
