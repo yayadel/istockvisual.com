@@ -2352,6 +2352,7 @@ body.download-auth-modal-open {
 .meta-list li {
 	display: flex;
 	justify-content: space-between;
+	align-items: flex-start;
 	gap: 1rem;
 	padding-bottom: 0.45rem;
 	border-bottom: 1px solid var(--line);
@@ -2359,6 +2360,12 @@ body.download-auth-modal-open {
 
 .meta-list span:first-child {
 	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.meta-list li > span:last-child {
+	text-align: right;
+	min-width: 0;
 }
 
 .auth-panel,
