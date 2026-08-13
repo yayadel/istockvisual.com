@@ -6,15 +6,21 @@ import {
 	type VectorColorCount,
 	type VectorizeSettings,
 } from '../lib/image-vectorize';
-import { downloadBlob, isLikelyImageFile, yieldToMain } from '../lib/tools-shared';
+import {
+	EXAMPLE_IMAGE_URL,
+	downloadBlob,
+	isLikelyImageFile,
+	yieldToMain,
+} from '../lib/tools-shared';
 import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
 const COLOR_OPTIONS: VectorColorCount[] = [2, 8, 16, 64];
 
 export default function VectorizerWorkspace() {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [sourceUrl, setSourceUrl] = useState<string | null>(null);
-	const [fileName, setFileName] = useState('image');
+	const [sourceUrl, setSourceUrl] = useState<string>(EXAMPLE_IMAGE_URL);
+	const [isExample, setIsExample] = useState(true);
+	const [fileName, setFileName] = useState('example');
 	const [settings, setSettings] = useState<VectorizeSettings>(DEFAULT_VECTORIZE_SETTINGS);
 	const [svg, setSvg] = useState<string | null>(null);
 	const [busy, setBusy] = useState(false);
@@ -27,7 +33,7 @@ export default function VectorizerWorkspace() {
 
 	useEffect(() => {
 		return () => {
-			if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+			if (sourceUrl.startsWith('blob:')) URL.revokeObjectURL(sourceUrl);
 		};
 	}, [sourceUrl]);
 
@@ -47,9 +53,10 @@ export default function VectorizerWorkspace() {
 		setSvg(null);
 		const url = URL.createObjectURL(file);
 		setSourceUrl((prev) => {
-			if (prev) URL.revokeObjectURL(prev);
+			if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
 			return url;
 		});
+		setIsExample(false);
 		setFileName(file.name.replace(/\.[^.]+$/, '') || 'image');
 	}, []);
 
@@ -138,11 +145,11 @@ export default function VectorizerWorkspace() {
 		<div className="tools-work">
 			<ToolsDropzone
 				inputRef={inputRef}
-				title={sourceUrl ? 'Replace bitmap source' : 'Drop a bitmap to vectorize'}
-				hint="Traces locally after scaling to ≤1200px on the long edge."
+				title={isExample ? 'Drop a bitmap to vectorize' : 'Replace bitmap source'}
+				hint="Traces locally after scaling to ≤1200px on the long edge. Example is live — tweak colors and re-trace now."
 				cta="Browse files"
-				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
-				sampleLabel={sourceUrl ? 'Source' : 'Trace sample'}
+				sampleSrc={sourceUrl}
+				sampleLabel={isExample ? 'Live example' : 'Your image'}
 				formats={['PNG', 'JPG', 'WebP']}
 				onFiles={(files) => loadFile(files?.[0])}
 			/>
@@ -150,8 +157,8 @@ export default function VectorizerWorkspace() {
 			<ToolsPanel
 				title="Vectorize settings"
 				note="Fewer colors = cleaner silhouettes. Higher blur and min area remove noise."
-				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
-				sampleCaption={svg ? 'Ready for SVG' : 'Awaiting trace'}
+				sampleSrc={sourceUrl}
+				sampleCaption={svg ? 'Ready for SVG' : busy ? 'Tracing…' : 'Awaiting trace'}
 				actions={
 					<div className="tools-panel__actions">
 						<button type="button" className="btn btn--primary" onClick={runVectorize} disabled={busy || !sourceUrl}>
@@ -217,44 +224,42 @@ export default function VectorizerWorkspace() {
 			{error && <p className="tools-work__error">{error}</p>}
 			{toast && <p className="tools-toast" role="status">{toast}</p>}
 
-			{sourceUrl && (
-				<section className="tools-compare" ref={compareRef} aria-label="Before and after">
-					<div className="tools-compare__stage" style={{ ['--split' as string]: `${split}%` }}>
-						{svgPreviewUrl && (
-							<img src={svgPreviewUrl} alt="Vector result" className="tools-compare__layer" />
-						)}
-						{!svgPreviewUrl && (
-							<div className="tools-compare__placeholder">
-								{busy ? 'Tracing paths…' : 'SVG preview will appear here'}
-							</div>
-						)}
-						<div className="tools-compare__before">
-							<img src={sourceUrl} alt="Original bitmap" />
-						</div>
-						<button
-							type="button"
-							className="tools-compare__handle"
-							style={{ left: `${split}%` }}
-							aria-label="Drag comparison slider"
-							onPointerDown={(event) => {
-								event.preventDefault();
-								dragSplit.current = true;
-								updateSplitFromClientX(event.clientX);
-							}}
-						/>
-					</div>
-					<div className="tools-compare__labels">
-						<span>Bitmap</span>
-						<span>SVG</span>
-					</div>
-					{busy && (
-						<div className="tools-progress" aria-live="polite">
-							<span className="tools-progress__bar tools-progress__bar--indeterminate" />
-							<span>Vectorizing on-device…</span>
+			<section className="tools-compare" ref={compareRef} aria-label="Before and after">
+				<div className="tools-compare__stage" style={{ ['--split' as string]: `${split}%` }}>
+					{svgPreviewUrl && (
+						<img src={svgPreviewUrl} alt="Vector result" className="tools-compare__layer" />
+					)}
+					{!svgPreviewUrl && (
+						<div className="tools-compare__placeholder">
+							{busy ? 'Tracing paths…' : 'SVG preview will appear here'}
 						</div>
 					)}
-				</section>
-			)}
+					<div className="tools-compare__before">
+						<img src={sourceUrl} alt="Original bitmap" />
+					</div>
+					<button
+						type="button"
+						className="tools-compare__handle"
+						style={{ left: `${split}%` }}
+						aria-label="Drag comparison slider"
+						onPointerDown={(event) => {
+							event.preventDefault();
+							dragSplit.current = true;
+							updateSplitFromClientX(event.clientX);
+						}}
+					/>
+				</div>
+				<div className="tools-compare__labels">
+					<span>Bitmap</span>
+					<span>SVG</span>
+				</div>
+				{busy && (
+					<div className="tools-progress" aria-live="polite">
+						<span className="tools-progress__bar tools-progress__bar--indeterminate" />
+						<span>Vectorizing on-device…</span>
+					</div>
+				)}
+			</section>
 		</div>
 	);
 }
