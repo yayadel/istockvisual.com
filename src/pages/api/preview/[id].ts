@@ -53,8 +53,8 @@ export const GET: APIRoute = async (context) => {
 		return new Response('Preview not found in R2', { status: 404 });
 	}
 
+	const master = new Uint8Array(await object.arrayBuffer());
 	try {
-		const master = new Uint8Array(await object.arrayBuffer());
 		const resized = resizeImageToLongEdgeJpeg(master, PREVIEW_LONG_EDGE, 82);
 		await bucket.put(previewKey, resized.bytes, {
 			httpMetadata: { contentType: 'image/jpeg' },
@@ -66,11 +66,11 @@ export const GET: APIRoute = async (context) => {
 			},
 		});
 	} catch {
-		const headers = new Headers();
-		object.writeHttpMetadata(headers);
-		headers.set('etag', object.httpEtag);
-		headers.set('Content-Type', fileType);
-		headers.set('Cache-Control', 'public, max-age=86400');
-		return new Response(object.body, { headers });
+		return new Response(master, {
+			headers: {
+				'Content-Type': fileType,
+				'Cache-Control': 'public, max-age=86400',
+			},
+		});
 	}
 };
