@@ -3471,7 +3471,7 @@ body.download-auth-modal-open {
 	transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.asset-preview__action.btn:hover,
+.asset-preview__action.btn:not(.asset-preview__action--edit):hover,
 .asset-preview__share .share-bar__toggle:hover,
 .asset-preview__share .share-bar.is-open .share-bar__toggle {
 	background: var(--ghost-bg);
@@ -3479,6 +3479,42 @@ body.download-auth-modal-open {
 	color: var(--text);
 	box-shadow: none;
 	transform: none;
+}
+
+.asset-preview__action--edit {
+	flex-direction: column;
+	gap: 0.18rem;
+	min-height: 3.15rem;
+	padding: 0.5rem 0.9rem 0.55rem;
+	background: #1f4f45;
+	border-color: #1f4f45;
+	color: #fff;
+}
+
+.asset-preview__action--edit:hover {
+	background: #173d36;
+	border-color: #173d36;
+	color: #fff;
+}
+
+.asset-preview__action-label {
+	font-size: 0.92rem;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	line-height: 1.15;
+}
+
+.asset-preview__action-tools {
+	display: block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.66rem;
+	font-weight: 550;
+	letter-spacing: 0.02em;
+	line-height: 1.2;
+	color: rgba(255, 255, 255, 0.78);
 }
 
 .asset-preview__share {
