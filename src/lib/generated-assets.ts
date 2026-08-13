@@ -66,7 +66,7 @@ export function generatedToDetail(record: GeneratedAssetRecord, origin: string):
 		description: record.description,
 		shortDescription: record.shortDescription,
 		tags: record.tags,
-		previewUrl: `${origin}/api/preview/${record.id}`,
+		previewUrl: `${origin}/api/preview/${record.id}?v=webp`,
 		r2ObjectKey: record.r2ObjectKey,
 		fileType: record.fileType,
 		width: record.width,
