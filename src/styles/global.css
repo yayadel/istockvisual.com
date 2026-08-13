@@ -2686,6 +2686,7 @@ body.image-editor-modal-open {
 	color: var(--ie-ink);
 	font: inherit;
 	cursor: pointer;
+	flex: 0 0 auto;
 }
 
 .image-editor-modal__size {
