@@ -485,6 +485,13 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 	});
 
 	document.addEventListener('keydown', function (event) {
-		if (event.key === 'Escape') closeAllNavDropdowns();
+		if (event.key === 'Escape') {
+			closeAllNavDropdowns();
+			setMobileNavOpen(false);
+		}
+	});
+
+	navQuery.addEventListener('change', function () {
+		if (!navQuery.matches) setMobileNavOpen(false);
 	});
 </script>
