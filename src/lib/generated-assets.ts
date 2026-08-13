@@ -43,7 +43,7 @@ function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 		fileType: String(row.fileType ?? 'image/jpeg'),
 		width: Number(row.width ?? 0),
 		height: Number(row.height ?? 0),
-		license: String(row.license ?? 'Free to use — commercial, no attribution required'),
+		license: String(row.license ?? 'Free to use — commercial OK, attribution required'),
 		isPremium: Boolean(row.isPremium),
 		publishedAt: String(row.publishedAt),
 		createdAt: String(row.createdAt),
@@ -138,7 +138,7 @@ export async function insertGeneratedAsset(
 			input.fileType,
 			input.width,
 			input.height,
-			'Free to use — commercial, no attribution required',
+			'Free to use — commercial OK, attribution required',
 			0,
 			publishedAt,
 		)

@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function BasicInfoPanel({
-	license = 'Free to use — commercial, no attribution required',
+	license = 'Free to use — commercial OK, attribution required',
 	fileType = '—',
 	categories,
 	categoryLabel,
