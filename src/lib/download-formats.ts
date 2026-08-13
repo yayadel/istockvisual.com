@@ -1,4 +1,9 @@
-import { sizeFileLabel } from './download-sizes';
+import {
+	DOWNLOAD_SIZES,
+	outputSizeForDownload,
+	sizeFileLabel,
+	type DownloadSizeId,
+} from './download-sizes';
 
 export const DOWNLOAD_FORMATS = ['jpg', 'png', 'webp', 'svg'] as const;
 export type DownloadFormat = (typeof DOWNLOAD_FORMATS)[number];
