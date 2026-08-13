@@ -141,7 +141,10 @@ export default function ImageEditor({
 		| { kind: 'resize'; startX: number; startY: number; origin: KeepCircle }
 	>(null);
 
-	previewUrlRef.current = previewUrl;
+	const editorSourceUrl = useMemo(() => {
+		if (allSizesFree || variant === 'page' || !assetId) return imageUrl;
+		return isPro ? `/api/download/${assetId}?size=4k` : `/api/download/${assetId}?size=1k`;
+	}, [allSizesFree, assetId, imageUrl, isPro, variant]);
 
 	const aspectPreset = useMemo(
 		() => EDITOR_ASPECT_PRESETS.find((item) => item.id === aspectId) ?? EDITOR_ASPECT_PRESETS[0]!,
@@ -151,11 +154,15 @@ export default function ImageEditor({
 	const sizeOptions = useMemo(() => {
 		const sourceW = natural.w || 1536;
 		const sourceH = natural.h || 1024;
-		return DOWNLOAD_SIZES.map((size) => ({
-			...size,
-			output: resolveEditorCanvasSize(size.id, aspectPreset.ratio, sourceW, sourceH),
-		}));
-	}, [aspectPreset.ratio, natural.h, natural.w]);
+		const lockFree = Boolean(assetId) && !allSizesFree && !isPro;
+		return DOWNLOAD_SIZES.map((size) => {
+			const output = resolveEditorCanvasSize(size.id, aspectPreset.ratio, sourceW, sourceH);
+			return {
+				...size,
+				output: lockFree ? clampFreeEditorOutput(size.id, output) : output,
+			};
+		});
+	}, [allSizesFree, aspectPreset.ratio, assetId, isPro, natural.h, natural.w]);
 
 	const canvasSize = useMemo(() => {
 		const sourceW = Math.max(1, natural.w || 1536);
