@@ -373,6 +373,16 @@ export default function ImageEditor({
 	}, [adjust, canvasSize, crop, fineRotation, flipX, flipY, rotation]);
 
 	const handleDownload = useCallback(() => {
+		if (!isFreeDownloadSize(sizeId)) {
+			if (!loggedIn) {
+				setSizeGateMessage('Sign in and upgrade to Pro for 2K / 4K / 8K.');
+				return;
+			}
+			if (!isPro) {
+				setSizeGateMessage('Pro required for 2K / 4K / 8K. Free sizes: 500 and 1K.');
+				return;
+			}
+		}
 		const canvas = buildExportCanvas();
 		if (!canvas) return;
 		canvas.toBlob((blob) => {
@@ -384,7 +394,7 @@ export default function ImageEditor({
 			link.click();
 			URL.revokeObjectURL(url);
 		}, 'image/png');
-	}, [buildExportCanvas, title]);
+	}, [buildExportCanvas, isPro, loggedIn, sizeId, title]);
 
 	const stop = (event: React.SyntheticEvent) => {
 		event.stopPropagation();
