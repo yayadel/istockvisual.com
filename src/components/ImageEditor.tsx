@@ -97,6 +97,7 @@ export default function ImageEditor({
 	const [flipX, setFlipX] = useState(false);
 	const [flipY, setFlipY] = useState(false);
 	const [crop, setCrop] = useState<CropRect>(DEFAULT_CROP);
+	const [keepCircle, setKeepCircle] = useState<KeepCircle>(DEFAULT_KEEP_CIRCLE);
 	const [frameUrl, setFrameUrl] = useState<string | null>(null);
 	const [busy, setBusy] = useState<string | null>(null);
 	const [status, setStatus] = useState<string | null>(null);
@@ -104,6 +105,11 @@ export default function ImageEditor({
 		| null
 		| { kind: 'move'; startX: number; startY: number; origin: CropRect }
 		| { kind: 'resize'; handle: string; startX: number; startY: number; origin: CropRect }
+	>(null);
+	const [keepDragging, setKeepDragging] = useState<
+		| null
+		| { kind: 'move'; startX: number; startY: number; origin: KeepCircle }
+		| { kind: 'resize'; startX: number; startY: number; origin: KeepCircle }
 	>(null);
 
 	previewUrlRef.current = previewUrl;
@@ -272,6 +278,14 @@ export default function ImageEditor({
 		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
 	};
 
+	const onKeepPointerDown = (event: React.PointerEvent, kind: 'move' | 'resize') => {
+		event.preventDefault();
+		event.stopPropagation();
+		const point = pointerToNorm(event.clientX, event.clientY);
+		setKeepDragging({ kind, startX: point.x, startY: point.y, origin: keepCircle });
+		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+	};
+
 	useEffect(() => {
 		if (!dragging) return;
 		const onMove = (event: PointerEvent) => {
@@ -313,6 +327,45 @@ export default function ImageEditor({
 			window.removeEventListener('pointerup', onUp);
 		};
 	}, [aspectPreset.ratio, dragging, pointerToNorm]);
+
+	useEffect(() => {
+		if (!keepDragging) return;
+		const frameW = canvasSize.width;
+		const frameH = canvasSize.height;
+		const onMove = (event: PointerEvent) => {
+			const point = pointerToNorm(event.clientX, event.clientY);
+			const origin = keepDragging.origin;
+			const { rx, ry } = keepCircleNormRadii(origin, frameW, frameH);
+			if (keepDragging.kind === 'move') {
+				const dx = point.x - keepDragging.startX;
+				const dy = point.y - keepDragging.startY;
+				setKeepCircle({
+					...origin,
+					cx: clamp(origin.cx + dx, rx, 1 - rx),
+					cy: clamp(origin.cy + dy, ry, 1 - ry),
+				});
+				return;
+			}
+			const dxPx = (point.x - origin.cx) * frameW;
+			const dyPx = (point.y - origin.cy) * frameH;
+			const dist = Math.hypot(dxPx, dyPx);
+			const minSide = Math.max(1, Math.min(frameW, frameH));
+			const nextR = clamp(dist / minSide, 0.06, 0.48);
+			const radii = keepCircleNormRadii({ ...origin, r: nextR }, frameW, frameH);
+			setKeepCircle({
+				cx: clamp(origin.cx, radii.rx, 1 - radii.rx),
+				cy: clamp(origin.cy, radii.ry, 1 - radii.ry),
+				r: nextR,
+			});
+		};
+		const onUp = () => setKeepDragging(null);
+		window.addEventListener('pointermove', onMove);
+		window.addEventListener('pointerup', onUp);
+		return () => {
+			window.removeEventListener('pointermove', onMove);
+			window.removeEventListener('pointerup', onUp);
+		};
+	}, [canvasSize.height, canvasSize.width, keepDragging, pointerToNorm]);
 
 	const selectSize = (next: DownloadSizeId) => {
 		if (!isFreeDownloadSize(next)) {
