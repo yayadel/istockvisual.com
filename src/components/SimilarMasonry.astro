@@ -1,5 +1,6 @@
 ---
 import type { AssetDetail } from '../lib/asset-types';
+import AssetCard from './AssetCard.astro';
 
 interface Props {
 	assets: AssetDetail[];
@@ -20,12 +21,9 @@ const { assets, viewAllHref, viewAllLabel } = Astro.props;
 						{viewAllLabel} <span aria-hidden="true">›</span>
 					</a>
 				</div>
-				<div class="similar-masonry">
-					{assets.map((asset) => (
-						<a class="similar-card" href={`/${asset.category}/${asset.slug}`}>
-							<img src={asset.previewUrl} alt={asset.title} loading="lazy" />
-							<span class="similar-card__caption">{asset.title}</span>
-						</a>
+				<div class="asset-grid">
+					{assets.map((asset, index) => (
+						<AssetCard asset={asset} index={index} />
 					))}
 				</div>
 			</div>
