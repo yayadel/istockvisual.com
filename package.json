@@ -22,6 +22,7 @@
 		"agent:meta:py": "python scripts/gemini_meta.py",
 		"agent:import": "node scripts/agent-import.mjs",
 		"images:variants": "node scripts/backfill-size-variants.mjs",
+		"images:master": "node scripts/backfill-size-variants.mjs",
 		"sync:host-prompt": "node scripts/sync-host-prompt.mjs",
 		"sanity:dev": "npm run dev --prefix sanity",
 		"deploy": "npm run build && wrangler deploy",
