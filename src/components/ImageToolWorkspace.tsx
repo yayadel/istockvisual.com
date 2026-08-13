@@ -12,6 +12,7 @@ function fileTitle(file: File) {
 
 export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: Props) {
 	const inputRef = useRef<HTMLInputElement>(null);
+	const editorWrapRef = useRef<HTMLDivElement>(null);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [title, setTitle] = useState('Uploaded image');
 	const [error, setError] = useState<string | null>(null);
@@ -20,6 +21,18 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 		return () => {
 			if (imageUrl?.startsWith('blob:')) URL.revokeObjectURL(imageUrl);
 		};
+	}, [imageUrl]);
+
+	useEffect(() => {
+		if (!imageUrl) return;
+		const frame = window.requestAnimationFrame(() => {
+			editorWrapRef.current?.scrollIntoView({
+				behavior: 'smooth',
+				block: 'center',
+				inline: 'nearest',
+			});
+		});
+		return () => window.cancelAnimationFrame(frame);
 	}, [imageUrl]);
 
 	const clearImage = useCallback(() => {
@@ -96,15 +109,17 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 					<span className="btn btn--primary image-tool-page__dropzone-btn">Choose image</span>
 				</label>
 			) : (
-				<ImageEditor
-					variant="page"
-					imageUrl={imageUrl}
-					title={title}
-					onClose={clearImage}
-					loggedIn={loggedIn}
-					isPro={isPro}
-					allSizesFree
-				/>
+				<div className="image-tool-page__editor" ref={editorWrapRef}>
+					<ImageEditor
+						variant="page"
+						imageUrl={imageUrl}
+						title={title}
+						onClose={clearImage}
+						loggedIn={loggedIn}
+						isPro={isPro}
+						allSizesFree
+					/>
+				</div>
 			)}
 
 			{error && <p className="image-tool-page__error">{error}</p>}
