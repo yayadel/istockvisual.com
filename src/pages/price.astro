@@ -329,6 +329,119 @@ const jsonLd = {
 		text-align: center;
 	}
 
+	.pricing-perks {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1rem;
+		margin: 2rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.pricing-perks li {
+		display: grid;
+		gap: 0.35rem;
+		padding: 1.05rem 1rem;
+		border: 1px solid var(--line);
+		background: var(--panel-bg, #fff);
+	}
+
+	.pricing-perks strong {
+		font-size: 0.92rem;
+	}
+
+	.pricing-perks span,
+	.pricing-perks a {
+		color: var(--text-muted);
+		font-size: 0.86rem;
+		line-height: 1.5;
+	}
+
+	.pricing-perks a {
+		color: var(--accent);
+		text-decoration: underline;
+		text-underline-offset: 0.12em;
+	}
+
+	.pricing-compare .section-head,
+	.pricing-faq .section-head {
+		margin-bottom: 0.85rem;
+	}
+
+	.pricing-compare__table {
+		border: 1px solid var(--line);
+		background: var(--panel-bg, #fff);
+	}
+
+	.pricing-compare__row {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+		gap: 0.75rem;
+		padding: 0.8rem 1rem;
+		border-top: 1px solid var(--line);
+		font-size: 0.9rem;
+	}
+
+	.pricing-compare__row:first-child {
+		border-top: 0;
+	}
+
+	.pricing-compare__row--head {
+		color: var(--text-muted);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.pricing-compare__row span:last-child {
+		font-weight: 600;
+	}
+
+	.pricing-faq__list {
+		display: grid;
+		border: 1px solid var(--line);
+		background: var(--panel-bg, #fff);
+	}
+
+	.pricing-faq__list details {
+		border-top: 1px solid var(--line);
+	}
+
+	.pricing-faq__list details:first-child {
+		border-top: 0;
+	}
+
+	.pricing-faq__list summary {
+		cursor: pointer;
+		list-style: none;
+		padding: 0.95rem 1.05rem;
+		font-weight: 600;
+	}
+
+	.pricing-faq__list summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.pricing-faq__list summary::after {
+		content: '+';
+		float: right;
+		color: var(--text-muted);
+		font-weight: 500;
+	}
+
+	.pricing-faq__list details[open] summary::after {
+		content: '–';
+	}
+
+	.pricing-faq__list p {
+		margin: 0;
+		padding: 0 1.05rem 1rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		max-width: 62ch;
+	}
+
 	@media (max-width: 860px) {
 		.pricing-grid {
 			grid-template-columns: 1fr;
@@ -341,6 +454,27 @@ const jsonLd = {
 
 		.pricing-tabs__tab {
 			font-size: 0.82rem;
+		}
+
+		.pricing-perks {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.pricing-perks,
+		.pricing-compare__row {
+			grid-template-columns: 1fr;
+		}
+
+		.pricing-compare__row--head {
+			display: none;
+		}
+
+		.pricing-compare__row span:last-child::before {
+			content: 'Pro / Pass · ';
+			color: var(--text-muted);
+			font-weight: 500;
 		}
 	}
 </style>
