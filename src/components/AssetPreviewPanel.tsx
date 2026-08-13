@@ -41,13 +41,13 @@ export default function AssetPreviewPanel({
 			</div>
 			<div className="asset-preview__footer">
 				<button
-					className="btn btn--ghost asset-preview__edit"
+					className="btn btn--primary asset-preview__edit"
 					type="button"
 					onClick={() => setEditing(true)}
 				>
 					Edit image
 				</button>
-				<a className="btn btn--ghost asset-preview__edit" href={aiEditHref}>
+				<a className="btn btn--primary asset-preview__edit" href={aiEditHref}>
 					Open in AI Edit
 				</a>
 			</div>
