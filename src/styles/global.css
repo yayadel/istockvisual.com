@@ -3439,7 +3439,8 @@ body.download-auth-modal-open {
 	z-index: 8;
 }
 
-.asset-preview__action,
+.asset-preview__action.btn,
+.asset-preview__action.btn--ghost,
 .asset-preview__share .share-bar__toggle {
 	display: inline-flex;
 	align-items: center;
