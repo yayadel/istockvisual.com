@@ -5,6 +5,8 @@ import ShareBar from './ShareBar';
 type Props = {
 	imageUrl: string;
 	title: string;
+	width?: number;
+	height?: number;
 	shareUrl?: string;
 	loggedIn?: boolean;
 	isPro?: boolean;
@@ -13,6 +15,8 @@ type Props = {
 export default function AssetPreviewPanel({
 	imageUrl,
 	title,
+	width,
+	height,
 	shareUrl,
 	loggedIn = false,
 	isPro = false,
@@ -34,7 +38,11 @@ export default function AssetPreviewPanel({
 				<img
 					src={imageUrl}
 					alt={title}
+					width={width}
+					height={height}
 					className="asset-preview__image"
+					fetchPriority="high"
+					decoding="async"
 					draggable={false}
 				/>
 			</div>
