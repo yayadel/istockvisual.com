@@ -70,6 +70,21 @@ export function normalizeContentCategories(values: string[] | undefined | null):
 	return out;
 }
 
+function escapeRegExp(value: string): string {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function includesTerm(text: string, term: string): boolean {
+	const needle = term.trim().toLowerCase();
+	if (!needle) return false;
+	// Short tokens (AI, Web, 3D) must match as whole words/phrases.
+	if (needle.length <= 3 || !needle.includes(' ')) {
+		const pattern = new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(needle)}(?:[^a-z0-9]|$)`, 'i');
+		return pattern.test(text);
+	}
+	return text.includes(needle);
+}
+
 /** Score title/keyword text against the fixed category vocabulary; return 1–3 labels. */
 export function pickContentCategoriesFromTitle(
 	title: string,
@@ -82,13 +97,13 @@ export function pickContentCategoriesFromTitle(
 	const scored = CONTENT_CATEGORIES.map((label) => {
 		const key = label.toLowerCase();
 		let score = 0;
-		if (text.includes(key)) score += 12;
+		if (includesTerm(text, key)) score += 12;
 		for (const alias of ALIASES[key] || []) {
-			if (text.includes(alias.toLowerCase())) score += 6;
+			if (includesTerm(text, alias)) score += 6;
 		}
 		// Prefer multi-word exact-ish hits
 		const words = key.split(/\s+/);
-		if (words.length > 1 && words.every((word) => text.includes(word))) score += 4;
+		if (words.length > 1 && words.every((word) => includesTerm(text, word))) score += 4;
 		return { label, score };
 	})
 		.filter((item) => item.score > 0)
