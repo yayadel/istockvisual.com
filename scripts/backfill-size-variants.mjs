@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { masterJpegInfo } from './build-image-variants.mjs';
 
 const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
