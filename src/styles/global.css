@@ -2763,7 +2763,12 @@ body.image-editor-modal-open {
 }
 
 .image-editor-modal__row--tools {
-	align-items: stretch;
+	align-items: center;
+}
+
+.image-editor-modal__row--tools .image-editor-modal__row-label {
+	margin-top: 0;
+	align-self: center;
 }
 
 .image-editor-modal__row--tools .image-editor-modal__tools {
