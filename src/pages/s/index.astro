@@ -11,6 +11,7 @@ import {
 	rankAssetsByPalette,
 } from '../../lib/generate-asset';
 import { searchPath } from '../../lib/paths';
+import { purgeVisualSearchUploads } from '../../lib/visual-search-storage';
 
 const q = (Astro.url.searchParams.get('q') || '').trim();
 if (q) {
