@@ -197,13 +197,19 @@ const jsonLd = assetJsonLd({
 								<div class="story-pair">
 									{asset.creationDescription && (
 										<article class="story-block">
-											<h2>Creation description</h2>
+											<h2>
+												<span class="story-block__emoji" aria-hidden="true">✨</span>
+												<span>Creation description</span>
+											</h2>
 											<p>{asset.creationDescription}</p>
 										</article>
 									)}
 									{asset.usageTips && (
 										<article class="story-block">
-											<h2>Usage tips</h2>
+											<h2>
+												<span class="story-block__emoji" aria-hidden="true">💡</span>
+												<span>Usage tips</span>
+											</h2>
 											<p>{asset.usageTips}</p>
 										</article>
 									)}
