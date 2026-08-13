@@ -49,6 +49,8 @@ type Props = {
 
 const DEFAULT_CROP: CropRect = { x: 0, y: 0, w: 1, h: 1 };
 
+const EXPAND_PERCENTS = [10, 20, 30, 40, 80] as const;
+
 const TOOLS: { id: ToolId; label: string; hint: string }[] = [
 	{ id: 'adjust', label: 'Adjust', hint: 'Color & light' },
 	{ id: 'transform', label: 'Crop & Flip', hint: 'Aspect, crop, rotate' },
