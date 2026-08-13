@@ -41,7 +41,13 @@ export default function ImageConverterWorkspace() {
 	useEffect(() => {
 		let cancelled = false;
 		canEncodeMime('image/avif').then((ok) => {
-			if (!cancelled) setAvifOk(ok);
+			if (cancelled) return;
+			setAvifOk(ok);
+			if (!ok) {
+				setSettings((prev) =>
+					prev.formatId === 'avif' ? { ...prev, formatId: 'webp' } : prev,
+				);
+			}
 		});
 		return () => {
 			cancelled = true;
