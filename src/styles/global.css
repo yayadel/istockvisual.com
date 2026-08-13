@@ -1173,9 +1173,69 @@ body.upload-modal-open {
 	margin: 0;
 }
 
+.basic-info-panel__body .meta-list li {
+	padding-top: 0.15rem;
+	padding-bottom: 0.55rem;
+}
+
+.basic-info-panel__body .meta-list li:last-child {
+	border-bottom: 1px solid rgba(36, 53, 44, 0.12);
+	margin-bottom: 0.85rem;
+	padding-bottom: 0.65rem;
+}
+
 .basic-info-panel__body .download-rules {
-	margin-top: 0.85rem;
-	padding-top: 0.85rem;
+	margin: 0;
+	padding: 0.7rem 0.8rem;
+	border: 0;
+	border-radius: 3px;
+	background: rgba(36, 53, 44, 0.045);
+}
+
+.detail__basics .download-rules {
+	margin: 0;
+	padding: 0.7rem 0.8rem;
+	border-top: 0;
+}
+
+.download-rules {
+	list-style: none;
+	padding: 0.7rem 0.8rem;
+	margin: 0;
+	border-top: 0;
+	display: grid;
+	gap: 0.35rem;
+	font-size: 0.78rem;
+	line-height: 1.45;
+	color: var(--text-muted);
+}
+
+.download-rules li {
+	padding-left: 0.9rem;
+	position: relative;
+}
+
+.download-rules li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.45em;
+	width: 0.3rem;
+	height: 0.3rem;
+	border-radius: 1px;
+	background: rgba(36, 53, 44, 0.35);
+}
+
+[data-theme='dark'] .basic-info-panel__body .meta-list li:last-child {
+	border-bottom-color: rgba(238, 243, 239, 0.12);
+}
+
+[data-theme='dark'] .basic-info-panel__body .download-rules {
+	background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .download-rules li::before {
+	background: rgba(238, 243, 239, 0.35);
 }
 
 .download-panel {
