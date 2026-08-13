@@ -28,14 +28,15 @@ export function assetSearchDescription(input: {
 }): string {
 	const noun = stockNoun(input.category);
 	const lead = (input.shortDescription || input.description || '').trim();
+	const prefix = 'Download high-quality';
 	const closer = `Free HD ${noun} download. Royalty-free for commercial use.`;
 
 	if (!lead) {
-		return clipDescription(`Free download ${input.title} ${noun}. ${closer}`);
+		return clipDescription(`${prefix} ${input.title} ${noun}. ${closer}`);
 	}
 
 	const punctuated = /[.!?]$/.test(lead) ? lead : `${lead}.`;
-	return clipDescription(`${punctuated} ${closer}`);
+	return clipDescription(`${prefix} ${punctuated} ${closer}`);
 }
 
 function clipDescription(text: string): string {
