@@ -118,6 +118,7 @@ export default function ImageEditor({
 	const [status, setStatus] = useState<string | null>(null);
 	/** True after Remove BG / Expand until Apply changes locks the baseline. */
 	const [pendingCommit, setPendingCommit] = useState(false);
+	const [expandPct, setExpandPct] = useState<(typeof EXPAND_PERCENTS)[number]>(20);
 	const [dragging, setDragging] = useState<
 		| null
 		| { kind: 'move'; startX: number; startY: number; origin: CropRect }
