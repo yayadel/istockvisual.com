@@ -132,8 +132,6 @@ export default function DownloadPanel({
 		[natural.height, natural.width],
 	);
 
-	const selectedSize = sizes.find((size) => size.id === selected) || sizes[1]!;
-
 	function gateSize(sizeId: DownloadSizeId): boolean {
 		const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
 		if (!size) return false;
