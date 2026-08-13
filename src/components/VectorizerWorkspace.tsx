@@ -6,7 +6,7 @@ import {
 	type VectorColorCount,
 	type VectorizeSettings,
 } from '../lib/image-vectorize';
-import { downloadBlob, isLikelyImageFile, loadImageFromFile, yieldToMain } from '../lib/tools-shared';
+import { downloadBlob, isLikelyImageFile, yieldToMain } from '../lib/tools-shared';
 
 const COLOR_OPTIONS: VectorColorCount[] = [2, 8, 16, 64];
 
