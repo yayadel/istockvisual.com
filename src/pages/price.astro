@@ -1,89 +1,202 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PricingPlans from '../components/PricingPlans';
 ---
 
-<BaseLayout title="Pricing" description="iStockVisual membership and single-download pricing.">
-	<section class="price-page">
+<BaseLayout
+	title="Pricing"
+	description="iStockVisual Pro plans: Lifetime, yearly, and flexible short-term passes for unlimited HD downloads."
+>
+	<section class="pricing-page">
 		<div class="section-head">
 			<div>
 				<p class="asset-card__meta">Pricing</p>
-				<h1>Plans &amp; downloads</h1>
-				<p>Buy a single image or unlock unlimited full-size downloads with Pro.</p>
+				<h1>Unlimited HD downloads</h1>
+				<p>
+					Pick a long-term plan for the best value, or a short pass if you only need files today.
+				</p>
 			</div>
 		</div>
 
-		<div class="price-grid">
-			<article class="price-card">
-				<h2>Single download</h2>
-				<p class="price-card__amount">$0.99</p>
-				<p>One full-size file (1K–8K) for this asset. No membership required after purchase.</p>
-				<a class="btn btn--ghost" href="/signup">Continue</a>
-			</article>
-
-			<article class="price-card price-card--pro">
-				<p class="price-card__badge">Recommended</p>
-				<h2>Pro membership</h2>
-				<p class="price-card__amount">Coming soon</p>
-				<p>Unlimited full-size downloads across the library, plus Pro assets.</p>
-				<a class="btn btn--primary" href="/signup">Get Pro</a>
-			</article>
-		</div>
+		<PricingPlans client:load />
 	</section>
 </BaseLayout>
 
-<style>
-	.price-page {
-		width: min(100% - 2rem, 920px);
+<style is:global>
+	.pricing-page {
+		width: min(100% - 2rem, 1080px);
 		margin-inline: auto;
 	}
 
-	.price-grid {
-		display: grid;
-		gap: 1rem;
-		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-		margin-top: 0.5rem;
+	.pricing-plans {
+		margin-top: 0.35rem;
 	}
 
-	.price-card {
-		padding: 1.35rem 1.25rem;
+	.pricing-tabs {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		border: 1px solid var(--line);
 		background: var(--panel-bg, #fff);
 	}
 
-	.price-card--pro {
-		border-color: #d4a017;
+	.pricing-tabs__tab {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.28rem;
+		min-height: 3.4rem;
+		padding: 0.7rem 0.85rem;
+		border: 0;
+		background: transparent;
+		color: var(--text-muted);
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
 	}
 
-	.price-card__badge {
+	.pricing-tabs__tab em {
+		font-style: normal;
+		font-size: 0.62rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: #fff;
+		background: #c62828;
+		padding: 0.12rem 0.4rem;
+	}
+
+	.pricing-tabs__tab.is-active {
+		background: var(--text);
+		color: var(--bg);
+	}
+
+	[data-theme='dark'] .pricing-tabs__tab.is-active {
+		background: #eef3ef;
+		color: #0f1412;
+	}
+
+	.pricing-switch-hint {
+		margin: 0.85rem 0 0;
+		text-align: center;
+		color: var(--text-muted);
+		font-size: 0.88rem;
+	}
+
+	.pricing-switch-hint button {
+		border: 0;
+		padding: 0;
+		background: none;
+		color: var(--accent);
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.pricing-switch-hint button:hover {
+		text-decoration: underline;
+	}
+
+	.pricing-grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		margin-top: 1.1rem;
+		align-items: stretch;
+	}
+
+	.pricing-card {
+		display: flex;
+		flex-direction: column;
+		padding: 1.35rem 1.2rem 1.2rem;
+		border: 1px solid var(--line);
+		background: var(--panel-bg, #fff);
+	}
+
+	.pricing-card.is-featured {
+		border-color: #d4a017;
+		box-shadow: 0 10px 28px rgba(212, 160, 23, 0.12);
+		transform: translateY(-4px);
+	}
+
+	.pricing-card__badge {
 		margin: 0 0 0.55rem;
 		font-size: 0.72rem;
 		font-weight: 700;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.03em;
 		text-transform: uppercase;
-		color: #d4a017;
+		color: #b8860b;
 	}
 
-	.price-card h2 {
+	.pricing-card h2 {
 		margin: 0;
 		font-family: var(--font-body);
-		font-size: 1.05rem;
+		font-size: 1.08rem;
 	}
 
-	.price-card__amount {
-		margin: 0.55rem 0 0.7rem;
-		font-size: 1.85rem;
+	.pricing-card__amount {
+		margin: 0.55rem 0 0.2rem;
+		font-size: 2rem;
 		font-weight: 700;
-		letter-spacing: -0.03em;
+		letter-spacing: -0.04em;
+		line-height: 1.1;
 	}
 
-	.price-card p {
-		margin: 0 0 1.1rem;
-		color: var(--text-muted);
-		line-height: 1.55;
+	.pricing-card__amount span {
 		font-size: 0.92rem;
+		font-weight: 500;
+		color: var(--text-muted);
+		letter-spacing: 0;
 	}
 
-	.price-card .btn {
+	.pricing-card__rate {
+		margin: 0 0 0.85rem;
+		color: var(--text-muted);
+		font-size: 0.88rem;
+	}
+
+	.pricing-card__features {
+		margin: 0 0 1.15rem;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 0.4rem;
+		flex: 1;
+		color: var(--text-muted);
+		font-size: 0.88rem;
+		line-height: 1.45;
+	}
+
+	.pricing-card__features li::before {
+		content: '✔ ';
+		color: var(--accent);
+	}
+
+	.pricing-card .btn {
 		width: 100%;
+		text-align: center;
+	}
+
+	.pricing-card__note {
+		margin: 0.7rem 0 0;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		line-height: 1.45;
+		text-align: center;
+	}
+
+	@media (max-width: 860px) {
+		.pricing-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.pricing-card.is-featured {
+			transform: none;
+			order: -1;
+		}
+
+		.pricing-tabs__tab {
+			font-size: 0.82rem;
+		}
 	}
 </style>
