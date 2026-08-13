@@ -16,6 +16,7 @@ import {
 	newId,
 	yieldToMain,
 } from '../lib/tools-shared';
+import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
 type QueueItem = {
 	id: string;

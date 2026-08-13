@@ -249,85 +249,80 @@ export default function SocialResizerWorkspace() {
 
 	return (
 		<div className="tools-work">
-			<label
-				className="tools-rail"
-				onDragOver={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.add('is-dragover');
-				}}
-				onDragLeave={(event) => {
-					event.currentTarget.classList.remove('is-dragover');
-				}}
-				onDrop={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.remove('is-dragover');
-					void addFiles(event.dataTransfer.files);
-				}}
+			<ToolsDropzone
+				inputRef={inputRef}
+				multiple
+				title="Drop a batch for social sizes"
+				hint="Pick a preset, drag the focus point, then render and download a ZIP."
+				cta="Browse files"
+				sampleSrc={active?.previewUrl || '/demo/studio-orb.jpg'}
+				sampleLabel={active ? 'Active image' : 'Social sample'}
+				formats={['JPG', 'PNG', 'WebP']}
+				onFiles={(files) => void addFiles(files)}
+			/>
+
+			<ToolsPanel
+				title="Platform & fit"
+				note="Cover crops to fill the frame. Contain + blur keeps the full image on a soft backdrop."
+				sampleSrc={active?.previewUrl || '/demo/studio-orb.jpg'}
+				sampleCaption={`${preset.label} · ${preset.width}×${preset.height}`}
+				actions={
+					<div className="tools-panel__actions">
+						<button
+							type="button"
+							className="btn btn--primary"
+							onClick={renderAll}
+							disabled={busy || items.length === 0}
+						>
+							{busy ? `Rendering ${progress}%` : 'Render all sizes'}
+						</button>
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={downloadZip}
+							disabled={busy || !items.some((item) => item.resultBlob)}
+						>
+							Download ZIP
+						</button>
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={clearAll}
+							disabled={busy || items.length === 0}
+						>
+							Clear queue
+						</button>
+					</div>
+				}
 			>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*"
-					multiple
-					hidden
-					onChange={(event) => void addFiles(event.currentTarget.files)}
-				/>
-				<div className="tools-rail__text">
-					<strong>Drop up to a batch of images</strong>
-					<span>Pick a preset, adjust focus, then render and ZIP.</span>
+				<section className="tools-preset-grid" aria-label="Social presets">
+					{SOCIAL_PRESETS.map((item: SocialPreset) => (
+						<button
+							key={item.id}
+							type="button"
+							className={`tools-preset${presetId === item.id ? ' is-active' : ''}`}
+							onClick={() => setPresetId(item.id)}
+						>
+							<strong>{item.label}</strong>
+							<span>
+								{item.ratioLabel} · {item.width}×{item.height}
+							</span>
+						</button>
+					))}
+				</section>
+				<div className="tools-controls tools-controls--stacked">
+					<label className="tools-controls__field">
+						<span>Mode</span>
+						<select
+							value={mode}
+							onChange={(event) => setMode(event.currentTarget.value as SocialFitMode)}
+						>
+							<option value="cover">Cover / crop</option>
+							<option value="contain-blur">Contain + blur</option>
+						</select>
+					</label>
 				</div>
-				<span className="tools-rail__cta">Browse</span>
-			</label>
-
-			<section className="tools-preset-grid" aria-label="Social presets">
-				{SOCIAL_PRESETS.map((item: SocialPreset) => (
-					<button
-						key={item.id}
-						type="button"
-						className={`tools-preset${presetId === item.id ? ' is-active' : ''}`}
-						onClick={() => setPresetId(item.id)}
-					>
-						<strong>{item.label}</strong>
-						<span>
-							{item.ratioLabel} · {item.width}×{item.height}
-						</span>
-					</button>
-				))}
-			</section>
-
-			<section className="tools-controls" aria-label="Fit mode">
-				<label className="tools-controls__field">
-					<span>Mode</span>
-					<select
-						value={mode}
-						onChange={(event) => setMode(event.currentTarget.value as SocialFitMode)}
-					>
-						<option value="cover">Cover / crop</option>
-						<option value="contain-blur">Contain + blur</option>
-					</select>
-				</label>
-				<div className="tools-controls__actions">
-					<button
-						type="button"
-						className="btn btn--primary"
-						onClick={renderAll}
-						disabled={busy || items.length === 0}
-					>
-						{busy ? `Rendering ${progress}%` : 'Render all'}
-					</button>
-					<button
-						type="button"
-						className="btn btn--ghost"
-						onClick={downloadZip}
-						disabled={busy || !items.some((item) => item.resultBlob)}
-					>
-						Download ZIP
-					</button>
-					<button type="button" className="btn btn--ghost" onClick={clearAll} disabled={busy || items.length === 0}>
-						Clear
-					</button>
-				</div>
-			</section>
+			</ToolsPanel>
 
 			{error && <p className="tools-work__error">{error}</p>}
 			{busy && (
