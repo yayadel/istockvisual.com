@@ -1354,31 +1354,24 @@ export default function ImageEditor({
 								<>
 									<h3>Expand canvas</h3>
 									<p>
-										Pick how much to grow the frame. The dimmed outer ring is the added area;
-										the lime box is the original photo. Confirm fills the new margins.
+										Choose a ratio — the original shrinks into the center and the outer frame
+										is the added area. Apply Changes fills those margins (blur + edge mirror,
+										no AI model).
 									</p>
 									{expandTarget && (
 										<p className="image-editor-modal__expand-dims">
-											{pendingCommit
-												? `Result ${natural.w}×${natural.h} (was ${expandOrigin.w}×${expandOrigin.h})`
-												: `Target ${expandTarget.width}×${expandTarget.height} (+${expandPct}%)`}
+											{expandSettled
+												? `Result ${natural.w}×${natural.h}`
+												: `Preview ${expandOrigin.w || natural.w}×${expandOrigin.h || natural.h} → ${expandTarget.width}×${expandTarget.height} (+${expandPct}%)`}
 										</p>
 									)}
 									<button
 										className="btn btn--primary"
 										type="button"
-										onClick={() => void handleExpand()}
-										disabled={Boolean(busy) || !ready || pendingCommit}
+										onClick={() => void applyExpandChanges()}
+										disabled={!ready || Boolean(busy) || expandSettled}
 									>
-										Confirm expand +{expandPct}%
-									</button>
-									<button
-										className="btn btn--primary"
-										type="button"
-										onClick={applyExpandChanges}
-										disabled={!ready || Boolean(busy) || !pendingCommit}
-									>
-										Apply changes
+										Apply changes · +{expandPct}%
 									</button>
 									<button className="btn btn--ghost" type="button" onClick={resetExpand}>
 										Reset
