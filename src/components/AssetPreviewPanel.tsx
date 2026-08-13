@@ -49,8 +49,15 @@ export default function AssetPreviewPanel({
 				/>
 			</div>
 			<div className="asset-preview__footer">
-				<button className="btn btn--ghost asset-preview__action" type="button" onClick={openEditor}>
-					Edit image
+				<button
+					className="btn asset-preview__action asset-preview__action--edit"
+					type="button"
+					onClick={openEditor}
+				>
+					<span className="asset-preview__action-label">Edit image</span>
+					<span className="asset-preview__action-tools">
+						Adjust · Crop &amp; Flip · Remove BG · Expand
+					</span>
 				</button>
 				<div className="asset-preview__share">
 					<ShareBar title={title} url={shareUrl} compact />
