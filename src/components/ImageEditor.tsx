@@ -574,8 +574,8 @@ export default function ImageEditor({
 				cutout,
 				offsetX,
 				offsetY,
-				cutout.width,
-				cutout.height,
+				crop.width,
+				crop.height,
 			);
 			const kept = keepForegroundTouchingCircle(canvas, mapped.cx, mapped.cy, mapped.r);
 			setWorkingFromCanvas(canvas);
