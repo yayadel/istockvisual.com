@@ -118,7 +118,7 @@ export default function ShareBar({ title, url, compact = true }: Props) {
 				aria-haspopup="menu"
 				onClick={() => setOpen((value) => !value)}
 			>
-				<ShareIcon size={15} />
+				<ShareIcon size={18} />
 				<span>Share</span>
 			</button>
 

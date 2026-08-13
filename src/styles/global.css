@@ -881,9 +881,9 @@ body.upload-modal-open {
 
 .detail__title-row {
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	justify-content: space-between;
-	gap: 1rem;
+	gap: 1.25rem;
 }
 
 .detail__title-row h1 {
