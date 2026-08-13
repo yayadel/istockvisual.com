@@ -9,7 +9,13 @@ import {
 	toTailwindSnippet,
 	type PaletteColor,
 } from '../lib/palette-extract';
-import { downloadBlob, isLikelyImageFile, loadImageFromFile } from '../lib/tools-shared';
+import {
+	EXAMPLE_IMAGE_URL,
+	downloadBlob,
+	isLikelyImageFile,
+	loadImageElement,
+	loadImageFromFile,
+} from '../lib/tools-shared';
 import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
 type CopyFormat = 'hex' | 'rgb' | 'hsl';
@@ -22,7 +28,8 @@ declare global {
 
 export default function PaletteWorkspace() {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [sourceUrl, setSourceUrl] = useState<string | null>(null);
+	const [sourceUrl, setSourceUrl] = useState<string>(EXAMPLE_IMAGE_URL);
+	const [isExample, setIsExample] = useState(true);
 	const [image, setImage] = useState<HTMLImageElement | null>(null);
 	const [colors, setColors] = useState<PaletteColor[]>([]);
 	const [colorCount, setColorCount] = useState(6);
@@ -38,7 +45,7 @@ export default function PaletteWorkspace() {
 
 	useEffect(() => {
 		return () => {
-			if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+			if (sourceUrl.startsWith('blob:')) URL.revokeObjectURL(sourceUrl);
 		};
 	}, [sourceUrl]);
 
@@ -52,8 +59,7 @@ export default function PaletteWorkspace() {
 		setBusy(true);
 		window.setTimeout(() => {
 			try {
-				const next = paletteFromImageElement(img, count);
-				setColors(next);
+				setColors(paletteFromImageElement(img, count));
 				setError(null);
 			} catch (err) {
 				console.error(err);
@@ -62,6 +68,20 @@ export default function PaletteWorkspace() {
 				setBusy(false);
 			}
 		}, 0);
+	}, []);
+
+	useEffect(() => {
+		let cancelled = false;
+		loadImageElement(EXAMPLE_IMAGE_URL)
+			.then((img) => {
+				if (!cancelled) setImage(img);
+			})
+			.catch(() => {
+				if (!cancelled) setError('Failed to load example image');
+			});
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	const loadFile = useCallback(
@@ -76,9 +96,10 @@ export default function PaletteWorkspace() {
 				const img = await loadImageFromFile(file);
 				const url = URL.createObjectURL(file);
 				setSourceUrl((prev) => {
-					if (prev) URL.revokeObjectURL(prev);
+					if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
 					return url;
 				});
+				setIsExample(false);
 				setImage(img);
 				extract(img, colorCount);
 			} catch (err) {
@@ -140,7 +161,7 @@ export default function PaletteWorkspace() {
 			});
 			setToast(`Added ${manual.hex}`);
 		} catch {
-			/* user cancelled */
+			/* cancelled */
 		}
 	}, []);
 
@@ -148,8 +169,7 @@ export default function PaletteWorkspace() {
 		if (!image || !colors.length) return;
 		setBusy(true);
 		try {
-			const blob = await renderPaletteShareCard(image, colors);
-			downloadBlob(blob, 'palette-share.png');
+			downloadBlob(await renderPaletteShareCard(image, colors), 'palette-share.png');
 		} catch (err) {
 			console.error(err);
 			setError('Share image export failed');
@@ -162,11 +182,11 @@ export default function PaletteWorkspace() {
 		<div className="tools-work">
 			<ToolsDropzone
 				inputRef={inputRef}
-				title={sourceUrl ? 'Replace source image' : 'Drop an image to extract colors'}
-				hint="Median-cut palette, local only. Click a swatch to copy HEX, RGB, or HSL."
+				title={isExample ? 'Drop an image to extract colors' : 'Replace source image'}
+				hint="Median-cut palette, local only. Example is live — change color count or copy swatches now."
 				cta="Browse files"
-				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
-				sampleLabel={sourceUrl ? 'Source' : 'Palette sample'}
+				sampleSrc={sourceUrl}
+				sampleLabel={isExample ? 'Live example' : 'Your image'}
 				formats={['JPG', 'PNG', 'WebP']}
 				onFiles={(files) => void loadFile(files?.[0])}
 			/>
@@ -174,8 +194,8 @@ export default function PaletteWorkspace() {
 			<ToolsPanel
 				title="Palette options"
 				note="Export as CSS variables, Tailwind snippet, or a shareable color card."
-				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
-				sampleCaption={colors[0] ? colors[0].hex : 'Awaiting extract'}
+				sampleSrc={sourceUrl}
+				sampleCaption={colors[0] ? `Primary ${colors[0].hex}` : 'Extracting…'}
 				actions={
 					<div className="tools-panel__actions">
 						{eyeDropperOk && (
@@ -241,32 +261,30 @@ export default function PaletteWorkspace() {
 			{error && <p className="tools-work__error">{error}</p>}
 			{toast && <p className="tools-toast" role="status">{toast}</p>}
 
-			{sourceUrl && (
-				<section className="tools-palette" aria-label="Extracted palette">
-					<div className="tools-palette__media">
-						<img src={sourceUrl} alt="Source for palette extraction" />
-						{busy && <span className="tools-palette__busy">Extracting…</span>}
+			<section className="tools-palette" aria-label="Extracted palette">
+				<div className="tools-palette__media">
+					<img src={sourceUrl} alt="Source for palette extraction" />
+					{busy && <span className="tools-palette__busy">Extracting…</span>}
+				</div>
+				{colors.length > 0 && (
+					<div className="tools-swatches" role="list">
+						{colors.map((color) => (
+							<button
+								key={color.hex + String(color.ratio)}
+								type="button"
+								role="listitem"
+								className="tools-swatch"
+								style={{ background: color.hex, color: color.ink }}
+								onClick={() => void copyValue(color)}
+								title="Click to copy"
+							>
+								<strong>{color.hex}</strong>
+								<span>{color.ratio > 0 ? `${Math.round(color.ratio * 100)}%` : 'Manual'}</span>
+							</button>
+						))}
 					</div>
-					{colors.length > 0 && (
-						<div className="tools-swatches" role="list">
-							{colors.map((color) => (
-								<button
-									key={color.hex + String(color.ratio)}
-									type="button"
-									role="listitem"
-									className="tools-swatch"
-									style={{ background: color.hex, color: color.ink }}
-									onClick={() => void copyValue(color)}
-									title="Click to copy"
-								>
-									<strong>{color.hex}</strong>
-									<span>{color.ratio > 0 ? `${Math.round(color.ratio * 100)}%` : 'Manual'}</span>
-								</button>
-							))}
-						</div>
-					)}
-				</section>
-			)}
+				)}
+			</section>
 		</div>
 	);
 }
