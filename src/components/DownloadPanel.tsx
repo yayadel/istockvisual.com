@@ -157,13 +157,14 @@ export default function DownloadPanel({
 		setMenuOpen(false);
 
 		try {
-			const res = await fetch(`/api/download/${assetId}?size=${sizeId}`);
+			const res = await fetch(`/api/download/${assetId}?size=${fetchSizeForDownload(sizeId)}`);
 			if (!res.ok) {
 				const body = (await res.json().catch(() => null)) as { error?: string } | null;
 				throw new Error(body?.error || 'Download failed');
 			}
 			const source = await res.blob();
-			const output = await convertDownloadBlob(source, format);
+			const sized = await scaleDownloadBlob(source, sizeId, natural.width, natural.height);
+			const output = await convertDownloadBlob(sized, format);
 			triggerDownload(output, downloadFileLabel(slug, sizeId, format));
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Download failed');
