@@ -36,7 +36,7 @@ export default function ColorPalette({ swatches }: { swatches: Swatch[] }) {
 	if (!swatches.length) return null;
 
 	return (
-		<div className="color-palette" style={{ '--palette-count': swatches.length } as React.CSSProperties}>
+		<div className="color-palette" style={{ '--palette-count': swatches.length } as CSSProperties}>
 			<div className="color-palette__tray" aria-label="Color palette">
 				{swatches.map((swatch, index) => {
 					const isCopied = copied === swatch.hex;
