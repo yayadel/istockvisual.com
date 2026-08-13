@@ -2607,21 +2607,28 @@ body.image-editor-modal-open {
 	gap: 0.5rem;
 }
 
-.image-editor-modal__sizes {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.55rem 0.75rem;
+.image-editor-modal__controls {
+	display: grid;
+	gap: 0.55rem;
 	padding: 0.7rem 1rem;
 	border-bottom: 1px solid var(--line);
 	background: #eef1ef;
 }
 
-[data-theme='dark'] .image-editor-modal__sizes {
+[data-theme='dark'] .image-editor-modal__controls {
 	background: rgba(0, 0, 0, 0.18);
 }
 
-.image-editor-modal__sizes-label {
+.image-editor-modal__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.55rem 0.75rem;
+}
+
+.image-editor-modal__row-label {
+	flex: 0 0 auto;
+	min-width: 3.2rem;
 	font-size: 0.8rem;
 	font-weight: 700;
 	color: var(--text-muted);
@@ -2630,18 +2637,21 @@ body.image-editor-modal-open {
 .image-editor-modal__size-list {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.35rem;
+	gap: 0.4rem;
 	flex: 1 1 auto;
 }
 
 .image-editor-modal__size {
-	padding: 0.35rem 0.6rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.4rem 0.65rem;
 	border: 1px solid rgba(20, 24, 20, 0.14);
 	border-radius: 3px;
 	background: #fff;
 	color: #3a443f;
 	font: inherit;
-	font-size: 0.8rem;
+	font-size: 0.82rem;
 	cursor: pointer;
 }
 
@@ -2653,7 +2663,15 @@ body.image-editor-modal-open {
 	background: #24302b;
 	border-color: transparent;
 	color: #fff;
-	font-weight: 600;
+}
+
+.image-editor-modal__size.is-active .download-tier--free,
+.image-editor-modal__size.is-active .download-tier--pro {
+	filter: none;
+}
+
+.image-editor-modal__size-name {
+	font-weight: 700;
 }
 
 [data-theme='dark'] .image-editor-modal__size {
@@ -2671,6 +2689,99 @@ body.image-editor-modal-open {
 	font-size: 0.78rem;
 	color: var(--text-muted);
 	font-variant-numeric: tabular-nums;
+}
+
+.image-editor-modal__gate {
+	margin: 0;
+	padding: 0.45rem 0.6rem;
+	border-radius: 3px;
+	background: #fff6e8;
+	color: #5a3d12;
+	font-size: 0.8rem;
+}
+
+.image-editor-modal__gate a {
+	color: inherit;
+	font-weight: 700;
+}
+
+[data-theme='dark'] .image-editor-modal__gate {
+	background: rgba(255, 196, 80, 0.12);
+	color: #f0d9a8;
+}
+
+.image-editor-modal__aspect-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	flex: 1 1 auto;
+}
+
+.image-editor-modal__aspect {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.28rem;
+	min-width: 3.35rem;
+	padding: 0.4rem 0.35rem 0.35rem;
+	border: 1px solid rgba(20, 24, 20, 0.14);
+	border-radius: 3px;
+	background: #fff;
+	color: #3a443f;
+	font: inherit;
+	cursor: pointer;
+}
+
+.image-editor-modal__aspect:hover {
+	border-color: rgba(20, 24, 20, 0.28);
+}
+
+.image-editor-modal__aspect.is-active {
+	background: #24302b;
+	border-color: transparent;
+	color: #fff;
+}
+
+.image-editor-modal__aspect-icon {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+}
+
+.image-editor-modal__aspect-shape {
+	display: block;
+	border: 1.5px solid currentColor;
+	border-radius: 1px;
+	background: rgba(36, 48, 43, 0.08);
+	box-sizing: border-box;
+}
+
+.image-editor-modal__aspect.is-active .image-editor-modal__aspect-shape {
+	background: rgba(255, 255, 255, 0.18);
+}
+
+.image-editor-modal__aspect-label {
+	font-size: 0.68rem;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.01em;
+}
+
+[data-theme='dark'] .image-editor-modal__aspect {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(238, 243, 239, 0.14);
+	color: #e8eee9;
+}
+
+[data-theme='dark'] .image-editor-modal__aspect.is-active {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+
+[data-theme='dark'] .image-editor-modal__aspect-shape {
+	background: rgba(255, 255, 255, 0.12);
 }
 
 .image-editor-modal__body {
