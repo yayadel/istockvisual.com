@@ -50,7 +50,40 @@ export const POST: APIRoute = async (context) => {
 	}
 
 	try {
-		const body = (await context.request.json()) as VariantBody;
+		const body = (await context.request.json()) as VariantBody & { purge?: boolean };
+		if (body?.purge) {
+			const keep = new Set(
+				(
+					(
+						await env.DB.prepare('SELECT r2ObjectKey FROM generated_asset').all<{
+							r2ObjectKey: string;
+						}>()
+					).results ?? []
+				)
+					.map((row) => row.r2ObjectKey)
+					.filter(Boolean),
+			);
+
+			const deleted: string[] = [];
+			let cursor: string | undefined;
+			do {
+				const listed = await env.MEDIA.list({ prefix: 'generated/', cursor, limit: 1000 });
+				for (const object of listed.objects) {
+					const key = object.key;
+					const isVariant = /-(500|1k|2k|4k|8k)\.jpe?g$/i.test(key);
+					if (isVariant || !keep.has(key)) {
+						await env.MEDIA.delete(key);
+						deleted.push(key);
+					}
+				}
+				cursor = listed.truncated ? listed.cursor : undefined;
+			} while (cursor);
+
+			return new Response(JSON.stringify({ ok: true, deleted, kept: [...keep] }), {
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+
 		if (!body?.assetId || !body.imageBase64) {
 			return new Response(JSON.stringify({ error: 'assetId and imageBase64 are required' }), {
 				status: 400,
