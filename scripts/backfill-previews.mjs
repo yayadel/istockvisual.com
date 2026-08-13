@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { buildPreviewWebp } from './build-image-variants.mjs';
+import { buildPreviewAvif } from './build-image-variants.mjs';
 
 const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
 const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
@@ -23,7 +23,7 @@ if (assetIds.length === 0) {
 	process.exit(1);
 }
 
-console.log(`Building WEBP display previews for ${assetIds.length} asset(s)…`);
+console.log(`Building AVIF display previews for ${assetIds.length} asset(s)…`);
 
 for (const assetId of assetIds) {
 	console.log(`\n${assetId}`);

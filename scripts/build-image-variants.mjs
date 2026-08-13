@@ -38,7 +38,7 @@ export async function masterJpegInfo(input) {
 	};
 }
 
-export async function buildPreviewWebp(input) {
+export async function buildPreviewAvif(input) {
 	return sharp(input, { failOn: 'none' })
 		.resize({
 			width: PREVIEW_LONG_EDGE,
@@ -47,6 +47,6 @@ export async function buildPreviewWebp(input) {
 			withoutEnlargement: false,
 			kernel: 'lanczos3',
 		})
-		.webp({ quality: 78, effort: 4 })
+		.avif({ quality: 50, effort: 4 })
 		.toBuffer();
 }

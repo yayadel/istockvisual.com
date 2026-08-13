@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { buildPreviewWebp, masterJpegInfo } from './build-image-variants.mjs';
+import { buildPreviewAvif, masterJpegInfo } from './build-image-variants.mjs';
 
 const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
 const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
@@ -45,8 +45,8 @@ if (!res.ok) {
 
 const assetId = data.asset?.id;
 if (assetId) {
-	console.log('Building WEBP display preview…');
-	const preview = await buildPreviewWebp(imageBuffer);
+	console.log('Building AVIF display preview…');
+	const preview = await buildPreviewAvif(imageBuffer);
 	const previewRes = await fetch(`${baseUrl}/api/generate/variants`, {
 		method: 'POST',
 		headers: {
