@@ -1054,8 +1054,6 @@ body.upload-modal-open {
 }
 
 .share-bar {
-	display: grid;
-	gap: 0.55rem;
 	margin: 0;
 	padding: 0;
 }
@@ -1069,111 +1067,140 @@ body.upload-modal-open {
 .share-bar__toggle {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.35rem;
+	gap: 0.45rem;
 	margin: 0;
-	padding: 0.48rem 0.8rem;
-	border: 1px solid rgba(36, 53, 44, 0.12);
-	border-radius: 3px;
-	background: #f3f5f2;
-	color: #24352c;
+	padding: 0.48rem 0.85rem;
+	border: 1px solid rgba(20, 24, 20, 0.12);
+	border-radius: 8px;
+	background: #fff;
+	color: #3a4240;
 	font: inherit;
-	font-size: 0.84rem;
-	font-weight: 650;
+	font-size: 0.88rem;
+	font-weight: 550;
+	line-height: 1;
 	cursor: pointer;
 	white-space: nowrap;
+	box-shadow: 0 1px 2px rgba(20, 24, 20, 0.06);
+	transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .share-bar__toggle:hover,
 .share-bar.is-open .share-bar__toggle {
-	background: #e9eee9;
-	border-color: rgba(36, 53, 44, 0.2);
+	background: #fafafa;
+	border-color: rgba(20, 24, 20, 0.18);
+	box-shadow: 0 2px 8px rgba(20, 24, 20, 0.08);
 }
 
 .share-bar__toggle svg {
-	opacity: 0.55;
-	transition: transform 0.15s ease;
-}
-
-.share-bar.is-open .share-bar__toggle svg {
-	transform: rotate(180deg);
+	color: #4a5250;
 }
 
 .share-bar__menu {
 	position: absolute;
-	top: calc(100% + 0.35rem);
+	top: calc(100% + 0.4rem);
 	right: 0;
-	z-index: 20;
+	z-index: 30;
 	display: grid;
-	gap: 0.35rem;
-	min-width: 10.5rem;
+	gap: 0.1rem;
+	min-width: 13.5rem;
 	padding: 0.45rem;
-	border: 1px solid rgba(36, 53, 44, 0.12);
-	border-radius: 3px;
+	border: 1px solid rgba(20, 24, 20, 0.1);
+	border-radius: 10px;
 	background: #fff;
-	box-shadow: 0 10px 28px rgba(36, 53, 44, 0.12);
+	box-shadow: 0 12px 32px rgba(20, 24, 20, 0.12);
 }
 
-.share-bar__head {
+.share-bar__item {
 	display: flex;
 	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	margin: 0;
+	padding: 0.62rem 0.7rem;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: #2f3634;
+	font: inherit;
+	font-size: 0.92rem;
+	font-weight: 500;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+	box-sizing: border-box;
+	transition: background 0.12s ease;
 }
 
-.share-bar__label {
-	font-size: 0.78rem;
-	font-weight: 650;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	color: #6a776e;
+.share-bar__item:hover {
+	background: rgba(20, 24, 20, 0.05);
 }
 
-.share-bar__actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.4rem;
-}
-
-.share-bar__btn {
+.share-bar__icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
-	min-height: 2.1rem;
-	padding: 0.45rem 0.65rem;
-	border: 1px solid rgba(36, 53, 44, 0.1);
-	border-radius: 3px;
-	background: #f3f5f2;
-	color: #24352c;
-	font: inherit;
-	font-size: 0.82rem;
-	font-weight: 600;
+	width: 1.35rem;
+	height: 1.35rem;
+	flex: 0 0 auto;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 700;
 	line-height: 1;
-	text-decoration: none;
-	cursor: pointer;
-	transition: background 0.15s ease, border-color 0.15s ease;
-	box-sizing: border-box;
 }
 
-.share-bar__btn:hover {
-	background: #e9eee9;
-	border-color: rgba(36, 53, 44, 0.2);
+.share-bar__icon--facebook {
+	background: #1877f2;
+	color: #fff;
 }
 
-[data-theme='dark'] .share-bar__label {
-	color: rgba(238, 243, 239, 0.55);
+.share-bar__icon--pinterest {
+	background: #e60023;
+	color: #fff;
+}
+
+.share-bar__icon--x,
+.share-bar__icon--muted {
+	background: transparent;
+	color: #5a6360;
+}
+
+.share-bar__icon--x svg,
+.share-bar__icon--muted svg {
+	display: block;
+}
+
+.share-bar__divider {
+	height: 1px;
+	margin: 0.35rem 0.35rem;
+	background: rgba(20, 24, 20, 0.1);
 }
 
 [data-theme='dark'] .share-bar__toggle,
-[data-theme='dark'] .share-bar__btn,
 [data-theme='dark'] .share-bar__menu {
 	background: #18201c;
 	border-color: rgba(238, 243, 239, 0.12);
 	color: #eef3ef;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme='dark'] .share-bar__toggle:hover,
 [data-theme='dark'] .share-bar.is-open .share-bar__toggle,
-[data-theme='dark'] .share-bar__btn:hover {
+[data-theme='dark'] .share-bar__item:hover {
 	background: #1e2923;
+}
+
+[data-theme='dark'] .share-bar__item {
+	color: #eef3ef;
+}
+
+[data-theme='dark'] .share-bar__icon--x,
+[data-theme='dark'] .share-bar__icon--muted,
+[data-theme='dark'] .share-bar__toggle svg {
+	color: #c8d0cb;
+}
+
+[data-theme='dark'] .share-bar__divider {
+	background: rgba(238, 243, 239, 0.12);
 }
 
 @media (max-width: 640px) {
