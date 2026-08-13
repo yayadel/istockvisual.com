@@ -1528,7 +1528,7 @@ body.upload-modal-open {
 	margin: 0;
 	padding: 0.72rem 0.8rem;
 	border: 0;
-	border-radius: 4px;
+	border-radius: 3px;
 	background: transparent;
 	color: var(--text);
 	font: inherit;
@@ -1541,6 +1541,27 @@ body.upload-modal-open {
 	background: rgba(31, 79, 69, 0.07);
 }
 
+.download-menu__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.65rem;
+	padding: 0.55rem 0.55rem;
+	border-radius: 3px;
+}
+
+.download-menu__row:hover,
+.download-menu__row.is-selected {
+	background: rgba(31, 79, 69, 0.07);
+}
+
+.download-menu__meta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	min-width: 0;
+}
+
 .download-menu__dims {
 	font-size: 0.95rem;
 	font-weight: 650;
@@ -1550,12 +1571,47 @@ body.upload-modal-open {
 	font-variant-numeric: tabular-nums;
 }
 
+.download-menu__formats {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	flex: 0 0 auto;
+	margin-left: auto;
+}
+
+.download-menu__format {
+	margin: 0;
+	padding: 0.28rem 0.42rem;
+	border: 1px solid rgba(36, 53, 44, 0.14);
+	border-radius: 3px;
+	background: #fff;
+	color: #24352c;
+	font: inherit;
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.download-menu__format:hover:not(:disabled) {
+	background: #1f4f45;
+	border-color: #1f4f45;
+	color: #fff;
+}
+
+.download-menu__format:disabled {
+	opacity: 0.55;
+	cursor: wait;
+}
+
 .download-menu__free {
 	font-size: 0.68rem;
 	font-weight: 650;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	color: #6f8578;
+	white-space: nowrap;
 }
 
 .download-pro-badge {

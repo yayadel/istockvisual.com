@@ -220,7 +220,17 @@ export default function DownloadPanel({
 									aria-selected={isSelected}
 									className={`download-menu__row${isSelected ? ' is-selected' : ''}`}
 								>
-									<span className="download-menu__dims">{dims}</span>
+									<span className="download-menu__meta">
+										<span className="download-menu__dims">{dims}</span>
+										{needsPro ? (
+											<em className="download-pro-badge">
+												<CrownIcon />
+												Pro
+											</em>
+										) : (
+											<span className="download-menu__free">Free</span>
+										)}
+									</span>
 									<span className="download-menu__formats">
 										{DOWNLOAD_FORMATS.map((format) => (
 											<button
@@ -234,14 +244,6 @@ export default function DownloadPanel({
 											</button>
 										))}
 									</span>
-									{needsPro ? (
-										<em className="download-pro-badge">
-											<CrownIcon />
-											Pro
-										</em>
-									) : (
-										<span className="download-menu__free">Free</span>
-									)}
 								</li>
 							);
 						})}
