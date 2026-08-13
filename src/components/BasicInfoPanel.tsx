@@ -3,16 +3,18 @@ import { useState } from 'react';
 type Props = {
 	license?: string;
 	fileType?: string;
-	dimensions?: string;
+	categoryLabel?: string;
+	categoryHref?: string;
 	medium?: string;
 	keyword?: string;
 	keywordHref?: string;
 };
 
 export default function BasicInfoPanel({
-	license = 'Standard',
+	license = 'Free to use — commercial, no attribution required',
 	fileType = '—',
-	dimensions = '—',
+	categoryLabel,
+	categoryHref,
 	medium,
 	keyword,
 	keywordHref,
@@ -40,13 +42,21 @@ export default function BasicInfoPanel({
 							<span>License</span>
 							<span>{license}</span>
 						</li>
+						{categoryLabel && (
+							<li>
+								<span>Category</span>
+								<span>
+									{categoryHref ? (
+										<a href={categoryHref}>{categoryLabel}</a>
+									) : (
+										categoryLabel
+									)}
+								</span>
+							</li>
+						)}
 						<li>
 							<span>Type</span>
 							<span>{fileType}</span>
-						</li>
-						<li>
-							<span>Dimensions</span>
-							<span>{dimensions}</span>
 						</li>
 						{medium && (
 							<li>
