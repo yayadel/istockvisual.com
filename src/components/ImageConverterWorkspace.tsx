@@ -27,6 +27,13 @@ function makeItem(file: File): ConvertItem {
 	};
 }
 
+function statusLabel(item: ConvertItem) {
+	if (item.status === 'queued') return 'Queued';
+	if (item.status === 'converting') return `Converting ${item.progress}%`;
+	if (item.status === 'done') return 'Done';
+	return item.error || 'Error';
+}
+
 export default function ImageConverterWorkspace() {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const itemsRef = useRef<ConvertItem[]>([]);
@@ -177,200 +184,171 @@ export default function ImageConverterWorkspace() {
 	const formats = CONVERT_FORMATS.filter((item) => item.id !== 'avif' || avifOk);
 
 	return (
-		<div className="image-convert-page">
-			<aside className="image-convert-page__privacy" role="note">
-				<p className="image-convert-page__privacy-eyebrow">Local · Private · Free</p>
-				<h2>100% local conversion</h2>
-				<p>
-					Photos are converted in your browser with Canvas. Nothing is uploaded to our
-					servers — no personal data, no stored images.
-				</p>
-			</aside>
-
-			<section className="image-convert-page__layout">
-				<div
-					className="image-convert-page__dropzone"
-					role="button"
-					tabIndex={0}
-					onKeyDown={(event) => {
-						if (event.key === 'Enter' || event.key === ' ') {
-							event.preventDefault();
-							inputRef.current?.click();
-						}
-					}}
-					onClick={() => inputRef.current?.click()}
-					onDragOver={(event) => {
-						event.preventDefault();
-						event.currentTarget.classList.add('is-dragover');
-					}}
-					onDragLeave={(event) => {
-						event.currentTarget.classList.remove('is-dragover');
-					}}
-					onDrop={(event) => {
-						event.preventDefault();
-						event.currentTarget.classList.remove('is-dragover');
-						addFiles(event.dataTransfer.files);
-					}}
-				>
-					<input
-						ref={inputRef}
-						type="file"
-						accept="image/*,.heic,.heif"
-						multiple
-						hidden
-						onChange={(event) => addFiles(event.currentTarget.files)}
-					/>
-					<span className="image-convert-page__dropzone-kicker">Batch ready</span>
-					<span className="image-convert-page__dropzone-title">
-						Drop images to convert
-					</span>
-					<span className="image-convert-page__dropzone-hint">
-						JPG, PNG, WebP, GIF, BMP, HEIC/HEIF. Multi-file drag &amp; drop supported.
-					</span>
-					<span className="image-convert-page__dropzone-btn">Choose files</span>
+		<div className="tools-work">
+			<label
+				className="tools-rail"
+				onDragOver={(event) => {
+					event.preventDefault();
+					event.currentTarget.classList.add('is-dragover');
+				}}
+				onDragLeave={(event) => {
+					event.currentTarget.classList.remove('is-dragover');
+				}}
+				onDrop={(event) => {
+					event.preventDefault();
+					event.currentTarget.classList.remove('is-dragover');
+					addFiles(event.dataTransfer.files);
+				}}
+			>
+				<input
+					ref={inputRef}
+					type="file"
+					accept="image/*,.heic,.heif"
+					multiple
+					hidden
+					onChange={(event) => addFiles(event.currentTarget.files)}
+				/>
+				<div className="tools-rail__text">
+					<strong>Add images to convert</strong>
+					<span>Drop multiple files, or browse. JPG / PNG / WebP / HEIC.</span>
 				</div>
+				<span className="tools-rail__cta">Browse</span>
+			</label>
 
-				<aside className="image-convert-page__settings" aria-label="Conversion settings">
-					<h3>Output settings</h3>
-					<label className="image-convert-page__field">
-						<span>Format</span>
-						<select
-							value={settings.formatId}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									formatId: event.currentTarget.value as ConvertSettings['formatId'],
-								}))
-							}
-						>
-							{formats.map((format) => (
-								<option key={format.id} value={format.id}>
-									{format.label}
-								</option>
-							))}
-						</select>
-					</label>
-					<label className="image-convert-page__field">
-						<span>Quality · {settings.quality}%</span>
+			<section className="tools-controls" aria-label="Output settings">
+				<label className="tools-controls__field">
+					<span>Format</span>
+					<select
+						value={settings.formatId}
+						onChange={(event) =>
+							setSettings((prev) => ({
+								...prev,
+								formatId: event.currentTarget.value as ConvertSettings['formatId'],
+							}))
+						}
+					>
+						{formats.map((format) => (
+							<option key={format.id} value={format.id}>
+								{format.label}
+							</option>
+						))}
+					</select>
+				</label>
+				<label className="tools-controls__field tools-controls__field--grow">
+					<span>Quality · {settings.quality}%</span>
+					<input
+						type="range"
+						min={40}
+						max={100}
+						value={settings.quality}
+						onChange={(event) =>
+							setSettings((prev) => ({
+								...prev,
+								quality: Number(event.currentTarget.value),
+							}))
+						}
+					/>
+				</label>
+				<label className="tools-controls__field tools-controls__field--grow">
+					<span>Scale · {settings.scalePercent}%</span>
+					<input
+						type="range"
+						min={10}
+						max={100}
+						value={settings.scalePercent}
+						onChange={(event) =>
+							setSettings((prev) => ({
+								...prev,
+								scalePercent: Number(event.currentTarget.value),
+							}))
+						}
+					/>
+				</label>
+				<label className="tools-controls__field">
+					<span>Max width</span>
+					<input
+						type="number"
+						min={0}
+						step={64}
+						value={settings.maxWidth}
+						onChange={(event) =>
+							setSettings((prev) => ({
+								...prev,
+								maxWidth: Math.max(0, Number(event.currentTarget.value) || 0),
+							}))
+						}
+					/>
+				</label>
+				{settings.formatId === 'jpeg' && (
+					<label className="tools-controls__field tools-controls__field--color">
+						<span>JPG bg</span>
 						<input
-							type="range"
-							min={40}
-							max={100}
-							value={settings.quality}
+							type="color"
+							value={settings.jpgBackground}
 							onChange={(event) =>
 								setSettings((prev) => ({
 									...prev,
-									quality: Number(event.currentTarget.value),
+									jpgBackground: event.currentTarget.value,
 								}))
 							}
 						/>
 					</label>
-					<label className="image-convert-page__field">
-						<span>Scale · {settings.scalePercent}%</span>
-						<input
-							type="range"
-							min={10}
-							max={100}
-							value={settings.scalePercent}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									scalePercent: Number(event.currentTarget.value),
-								}))
-							}
-						/>
-					</label>
-					<label className="image-convert-page__field">
-						<span>Max width (0 = keep)</span>
-						<input
-							type="number"
-							min={0}
-							step={64}
-							value={settings.maxWidth}
-							onChange={(event) =>
-								setSettings((prev) => ({
-									...prev,
-									maxWidth: Math.max(0, Number(event.currentTarget.value) || 0),
-								}))
-							}
-						/>
-					</label>
-					{settings.formatId === 'jpeg' && (
-						<label className="image-convert-page__field">
-							<span>JPG background</span>
-							<input
-								type="color"
-								value={settings.jpgBackground}
-								onChange={(event) =>
-									setSettings((prev) => ({
-										...prev,
-										jpgBackground: event.currentTarget.value,
-									}))
-								}
-							/>
-						</label>
-					)}
-					<p className="image-convert-page__note">
-						Re-encoding on canvas removes EXIF metadata for privacy.
-					</p>
-					<div className="image-convert-page__actions">
-						<button
-							type="button"
-							className="btn btn--primary"
-							onClick={convertAll}
-							disabled={busy || items.length === 0}
-						>
-							{busy ? 'Converting…' : 'Convert all'}
-						</button>
-						<button
-							type="button"
-							className="btn btn--ghost"
-							onClick={downloadZip}
-							disabled={busy || doneItems.length === 0}
-						>
-							Download ZIP
-						</button>
-						<button
-							type="button"
-							className="btn btn--ghost"
-							onClick={clearAll}
-							disabled={busy || items.length === 0}
-						>
-							Clear
-						</button>
-					</div>
-				</aside>
+				)}
+				<div className="tools-controls__actions">
+					<button
+						type="button"
+						className="btn btn--primary"
+						onClick={convertAll}
+						disabled={busy || items.length === 0}
+					>
+						{busy ? 'Converting…' : 'Convert'}
+					</button>
+					<button
+						type="button"
+						className="btn btn--ghost"
+						onClick={downloadZip}
+						disabled={busy || doneItems.length === 0}
+					>
+						ZIP
+					</button>
+					<button
+						type="button"
+						className="btn btn--ghost"
+						onClick={clearAll}
+						disabled={busy || items.length === 0}
+					>
+						Clear
+					</button>
+				</div>
 			</section>
 
-			{error && <p className="image-convert-page__error">{error}</p>}
+			<p className="tools-work__note">Canvas re-encode strips EXIF. 0 max width keeps original.</p>
+
+			{error && <p className="tools-work__error">{error}</p>}
 
 			{items.length > 0 && (
-				<section className="image-convert-page__list" aria-label="Queued images">
+				<section className="tools-queue" aria-label="Queued images">
 					{items.map((item) => (
-						<article key={item.id} className="image-convert-page__card">
-							<img src={item.previewUrl} alt="" className="image-convert-page__thumb" />
-							<div className="image-convert-page__card-body">
+						<article key={item.id} className="tools-queue__row">
+							<img src={item.previewUrl} alt="" className="tools-queue__thumb" />
+							<div className="tools-queue__meta">
 								<strong title={item.name}>{item.name}</strong>
-								<p>
+								<span>
 									{formatBytes(item.size)}
 									{item.resultSize != null ? ` → ${formatBytes(item.resultSize)}` : ''}
-								</p>
-								<div className="image-convert-page__status">
-									<span className={`image-convert-page__pill is-${item.status}`}>
-										{item.status === 'queued' && 'Queued'}
-										{item.status === 'converting' && `Converting ${item.progress}%`}
-										{item.status === 'done' && 'Done'}
-										{item.status === 'error' && (item.error || 'Error')}
-									</span>
-									{item.status === 'converting' && (
-										<span
-											className="image-convert-page__bar"
-											style={{ ['--p' as string]: `${item.progress}%` }}
-										/>
-									)}
-								</div>
+									{' · '}
+									<em className={`tools-queue__status is-${item.status}`}>
+										{statusLabel(item)}
+									</em>
+								</span>
+								{item.status === 'converting' && (
+									<span
+										className="tools-queue__bar"
+										style={{ ['--p' as string]: `${item.progress}%` }}
+									/>
+								)}
 							</div>
-							<div className="image-convert-page__card-actions">
+							<div className="tools-queue__actions">
 								{item.status === 'done' && item.resultBlob && item.resultName && (
 									<button
 										type="button"
@@ -382,7 +360,7 @@ export default function ImageConverterWorkspace() {
 								)}
 								<button
 									type="button"
-									className="btn btn--ghost"
+									className="tools-queue__remove"
 									onClick={() => removeItem(item.id)}
 									disabled={busy && item.status === 'converting'}
 								>
