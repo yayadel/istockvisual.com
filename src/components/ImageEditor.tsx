@@ -128,6 +128,11 @@ export default function ImageEditor({
 		}));
 	}, [aspectPreset.ratio, natural.h, natural.w]);
 
+	const canvasSize = useMemo(() => {
+		const selected = sizeOptions.find((item) => item.id === sizeId);
+		return selected?.output ?? { width: 1024, height: 768 };
+	}, [sizeId, sizeOptions]);
+
 	const keepCircleStyle = useMemo(() => {
 		const { rx, ry } = keepCircleNormRadii(keepCircle, canvasSize.width, canvasSize.height);
 		return {
