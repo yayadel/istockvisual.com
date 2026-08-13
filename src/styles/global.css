@@ -2598,9 +2598,42 @@ body.image-editor-modal-open {
 
 .image-editor-modal--page .image-editor-modal__dialog {
 	width: 100%;
-	height: min(82dvh, 920px);
+	height: auto;
 	max-height: none;
+	overflow: visible;
+	grid-template-rows: auto auto auto;
 	box-shadow: none;
+}
+
+.image-editor-modal--page .image-editor-modal__controls {
+	max-height: none;
+	overflow: visible;
+}
+
+.image-editor-modal--page .image-editor-modal__body {
+	overflow: visible;
+	height: auto;
+	min-height: 0;
+}
+
+.image-editor-modal--page .image-editor-modal__workspace {
+	height: auto;
+	min-height: 0;
+	overflow: visible;
+	align-items: start;
+	grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+}
+
+.image-editor-modal--page .image-editor-modal__stage-wrap {
+	height: min(62vh, 640px);
+	min-height: 420px;
+	align-self: stretch;
+}
+
+.image-editor-modal--page .image-editor-modal__panel {
+	height: auto;
+	min-height: 0;
+	overflow: visible;
 }
 
 .image-editor-modal__backdrop {
