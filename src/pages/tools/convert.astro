@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ImageConverterWorkspace from '../../components/ImageConverterWorkspace';
+---
+
+<BaseLayout
+	title="Image Convert — Free Local Format Converter"
+	description="Convert JPG, PNG, WebP, HEIC and more entirely in your browser. Free, private, no uploads."
+>
+	<section class="image-convert-hero" aria-labelledby="image-convert-title">
+		<div class="image-convert-hero__inner">
+			<p class="image-convert-hero__eyebrow">iStockVisual · Tool</p>
+			<h1 id="image-convert-title">Image Convert</h1>
+			<p class="image-convert-hero__lede">
+				Batch convert formats, resize, and compress — fully on-device with Canvas.
+			</p>
+			<ul class="image-convert-hero__trust">
+				<li>
+					<strong>Free</strong>
+					<span>No account required</span>
+				</li>
+				<li>
+					<strong>Private</strong>
+					<span>Files never leave your device</span>
+				</li>
+				<li>
+					<strong>Local</strong>
+					<span>Zero server processing cost</span>
+				</li>
+			</ul>
+		</div>
+	</section>
+
+	<ImageConverterWorkspace client:load />
+</BaseLayout>
