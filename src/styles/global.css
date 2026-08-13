@@ -2044,23 +2044,20 @@ body.download-auth-modal-open {
 .asset-preview__footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 0.65rem;
+	gap: 0;
 	width: 100%;
-	padding: 0.75rem;
-	border-top: 1px solid var(--line);
-	background: #fff;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background: transparent;
 	box-sizing: border-box;
-}
-
-[data-theme='dark'] .asset-preview__footer {
-	background: var(--panel-bg);
 }
 
 .asset-preview__edit {
 	width: 100%;
 	min-width: 0;
-	padding: 0.95rem 1rem;
-	border-radius: 3px;
+	padding: 1rem 1rem;
+	border-radius: 0;
 	font-size: 0.95rem;
 	font-weight: 700;
 	transform: none;
@@ -2075,29 +2072,37 @@ body.download-auth-modal-open {
 
 .asset-preview .asset-preview__edit.btn--primary {
 	background: #1f4f45;
-	border-color: #1f4f45;
+	border: 0;
+	border-radius: 0;
 	color: #fff;
 }
 
 .asset-preview .asset-preview__edit.btn--primary:hover {
 	background: #173d36;
-	border-color: #173d36;
+}
+
+.asset-preview .asset-preview__edit.btn--primary + .asset-preview__edit.btn--primary {
+	border-left: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 [data-theme='dark'] .asset-preview .asset-preview__edit.btn--primary {
 	background: #2a6b5c;
-	border-color: #2a6b5c;
+	border-color: transparent;
 	color: #fff;
 }
 
 [data-theme='dark'] .asset-preview .asset-preview__edit.btn--primary:hover {
 	background: #348574;
-	border-color: #348574;
 }
 
 @media (max-width: 560px) {
 	.asset-preview__footer {
 		grid-template-columns: 1fr;
+	}
+
+	.asset-preview .asset-preview__edit.btn--primary + .asset-preview__edit.btn--primary {
+		border-left: 0;
+		border-top: 1px solid rgba(255, 255, 255, 0.14);
 	}
 }
 
