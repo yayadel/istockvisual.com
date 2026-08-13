@@ -142,13 +142,6 @@ export const GET: APIRoute = async (context) => {
 	const finish = async (bytes: Uint8Array, headers: Record<string, string> = {}) =>
 		jpegDownload(bytes, filename, headers);
 
-	if (size && asset.r2ObjectKey && env.MEDIA) {
-		const variant = await env.MEDIA.get(variantObjectKey(asset.r2ObjectKey, size));
-		if (variant) {
-			return finish(new Uint8Array(await variant.arrayBuffer()));
-		}
-	}
-
 	const original = await readOriginalBytes(context, asset.r2ObjectKey || '', asset.previewUrl);
 	if (original instanceof Response) return original;
 
@@ -184,13 +177,8 @@ export const GET: APIRoute = async (context) => {
 		}
 	}
 
-	if (size) {
-		return new Response(
-			JSON.stringify({
-				error: 'This size is still being prepared. Try 500 or 1K, or wait a moment.',
-			}),
-			{ status: 409, headers: { 'Content-Type': 'application/json' } },
-		);
+	if (size === '2k' || size === '4k' || size === '8k') {
+		return finish(original.bytes, { 'X-Master-Size': '4k' });
 	}
 
 	// Original / unspecified size: Pro only
