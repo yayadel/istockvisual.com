@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { isFreeDownloadSize } from '../lib/download-sizes';
 import {
 	DEFAULT_ADJUST,
-	EDITOR_SIZE_PRESETS,
+	DEFAULT_DOWNLOAD_SIZE,
+	DOWNLOAD_SIZES,
+	EDITOR_ASPECT_PRESETS,
 	applyAdjustToImageData,
+	aspectPreviewBox,
 	canvasFromImage,
 	clamp,
 	containSize,
 	cssFilterFromAdjust,
 	expandWithEdgeFill,
-	resolveCanvasSize,
+	resolveEditorCanvasSize,
 	type AdjustValues,
+	type DownloadSizeId,
 } from '../lib/image-editor-ops';
 
 type ToolId = 'adjust' | 'transform' | 'remove-bg' | 'expand';
@@ -21,6 +26,8 @@ type Props = {
 	imageUrl: string;
 	title: string;
 	onClose: () => void;
+	loggedIn?: boolean;
+	isPro?: boolean;
 };
 
 const DEFAULT_CROP: CropRect = { x: 0, y: 0, w: 1, h: 1 };
