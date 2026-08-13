@@ -252,9 +252,7 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 			readString(parsed, ['assetUsageTips', 'Asset Functionality & Usage Tips']) || '',
 		colorPalette: normalizePalette(parsed.colorPalette),
 		tags: normalizeTags(normalizeStringArray(parsed.tags)),
-		relatedSearchQueries: normalizeStringArray(
-			parsed.relatedSearchQueries ?? parsed['Related Search Queries'],
-		),
+		relatedSearchQueries: [],
 		contentCategories,
 		// Legacy field; topical categories live in contentCategories (DB: depictedElements).
 		depictedElements: contentCategories,

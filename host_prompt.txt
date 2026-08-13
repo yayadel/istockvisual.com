@@ -38,4 +38,6 @@ Content Category Selection: Set contentCategories in the JSON output to exactly 
 
 Language: All output must be strictly in English.
 
+Do not output Related Search Queries or a relatedSearchQueries field.
+
 Topic Keyword: [Insert topic keyword here]

@@ -336,7 +336,7 @@ export async function importGeneratedAsset(
 			usageTips: meta.assetUsageTips,
 			colorPalette: meta.colorPalette,
 			tags: meta.tags,
-			relatedQueries: meta.relatedSearchQueries,
+			relatedQueries: meta.relatedSearchQueries || [],
 			depictedElements: meta.depictedElements,
 			medium: meta.medium,
 			r2ObjectKey,

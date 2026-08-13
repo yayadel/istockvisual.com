@@ -293,7 +293,9 @@ def main() -> None:
 	payload = meta.model_dump()
 	# contentCategories is the topical category field (exactly 1 from /categories).
 	# depictedElements is unused; tags already cover depicted objects.
+	# relatedSearchQueries is no longer generated.
 	payload["depictedElements"] = []
+	payload["relatedSearchQueries"] = []
 	payload["contentCategories"] = (
 		normalize_content_categories(payload.get("contentCategories"))
 		or payload.get("contentCategories")
