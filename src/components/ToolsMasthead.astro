@@ -9,21 +9,29 @@ interface Props {
 const { title, lede, privacy, active } = Astro.props;
 
 const links = [
-	{ id: 'image', href: '/tools/image', label: 'Edit' },
-	{ id: 'convert', href: '/tools/convert', label: 'Convert' },
-	{ id: 'vectorize', href: '/tools/vectorize', label: 'Vector' },
-	{ id: 'social', href: '/tools/social', label: 'Social' },
-	{ id: 'watermark', href: '/tools/watermark', label: 'Watermark' },
-	{ id: 'palette', href: '/tools/palette', label: 'Palette' },
+	{ id: 'image', href: '/tools/image', label: 'Image Tool', hint: 'Adjust · Crop · BG' },
+	{ id: 'convert', href: '/tools/convert', label: 'Image Convert', hint: 'Format · Batch' },
+	{ id: 'vectorize', href: '/tools/vectorize', label: 'Image Vectorizer', hint: 'Bitmap → SVG' },
+	{ id: 'social', href: '/tools/social', label: 'Social Resizer', hint: 'Platform sizes' },
+	{ id: 'watermark', href: '/tools/watermark', label: 'Batch Watermark', hint: 'Text · Logo' },
+	{ id: 'palette', href: '/tools/palette', label: 'Palette Generator', hint: 'Extract colors' },
 ] as const;
 ---
 
 <header class="tools-masthead">
 	<nav class="tools-masthead__switch" aria-label="Tools">
 		{
-			links.map((link) => (
-				<a href={link.href} aria-current={active === link.id ? 'page' : undefined}>
-					{link.label}
+			links.map((link, index) => (
+				<a
+					class:list={['tools-masthead__tab', active === link.id && 'is-active']}
+					href={link.href}
+					aria-current={active === link.id ? 'page' : undefined}
+				>
+					<span class="tools-masthead__tab-index">{String(index + 1).padStart(2, '0')}</span>
+					<span class="tools-masthead__tab-copy">
+						<strong>{link.label}</strong>
+						<em>{link.hint}</em>
+					</span>
 				</a>
 			))
 		}
