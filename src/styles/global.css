@@ -1353,7 +1353,8 @@ body.upload-modal-open {
 .asset-card__pro {
 	position: absolute;
 	left: 0.55rem;
-	bottom: 0.55rem;
+	top: 0.55rem;
+	bottom: auto;
 	z-index: 1;
 	padding: 0.12rem 0.4rem;
 	border-radius: 999px;
@@ -2921,6 +2922,7 @@ body.download-auth-modal-open {
 	margin: 0 0 8px;
 	overflow: hidden;
 	break-inside: avoid;
+	border-radius: 14px;
 	background: #d8d8d8;
 	color: inherit;
 }
