@@ -40,7 +40,7 @@ export const GET: APIRoute = async (context) => {
 		const headers = new Headers();
 		preview.writeHttpMetadata(headers);
 		headers.set('etag', preview.httpEtag);
-		headers.set('Content-Type', 'image/webp');
+		headers.set('Content-Type', 'image/avif');
 		headers.set('Cache-Control', 'public, max-age=86400');
 		return new Response(preview.body, { headers });
 	}

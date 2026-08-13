@@ -64,6 +64,12 @@ export function variantObjectKey(originalKey: string, sizeId: string) {
 export function previewObjectKey(originalKey: string) {
 	const dot = originalKey.lastIndexOf('.');
 	const base = dot >= 0 ? originalKey.slice(0, dot) : originalKey;
+	return `${base}-preview.avif`;
+}
+
+export function legacyPreviewObjectKey(originalKey: string) {
+	const dot = originalKey.lastIndexOf('.');
+	const base = dot >= 0 ? originalKey.slice(0, dot) : originalKey;
 	return `${base}-preview.webp`;
 }
 

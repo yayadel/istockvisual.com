@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { previewObjectKey, STORED_VARIANT_IDS, variantObjectKey } from '../../../lib/download-sizes';
+import { legacyPreviewObjectKey, previewObjectKey, STORED_VARIANT_IDS, variantObjectKey } from '../../../lib/download-sizes';
 import {
 	getGeneratedAssetById,
 	updateGeneratedAssetImageMeta,

@@ -2,7 +2,7 @@ import sharp from 'sharp';
 
 export const MASTER_LONG_EDGE = 4096;
 
-/** Listing / detail display WEBP. Not used for paid downloads. */
+/** Listing / detail display AVIF. Not used for paid downloads. */
 export const PREVIEW_LONG_EDGE = 1280;
 
 export async function buildJpegVariant(input, longEdge, quality = 86, mode = 'inside') {
