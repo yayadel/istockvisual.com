@@ -60,7 +60,7 @@ export default function AssetPreviewPanel({
 					</span>
 				</button>
 				<div className="asset-preview__share">
-					<ShareBar title={title} url={shareUrl} compact />
+					<ShareBar title={title} url={shareUrl} compact inlineChannels />
 				</div>
 			</div>
 			{editing ? (

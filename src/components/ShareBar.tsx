@@ -51,7 +51,7 @@ function XIcon() {
 	);
 }
 
-export default function ShareBar({ title, url, compact = true }: Props) {
+export default function ShareBar({ title, url, compact = true, inlineChannels = false }: Props) {
 	const [copied, setCopied] = useState(false);
 	const [pageUrl, setPageUrl] = useState(url || '');
 	const [canNativeShare, setCanNativeShare] = useState(false);
