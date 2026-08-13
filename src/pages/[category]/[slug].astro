@@ -10,6 +10,12 @@ import { getCategory, isCategorySlug } from '../../config/categories';
 import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
 import { resolveContentCategories, contentCategoryPath } from '../../lib/content-categories';
 import { searchPath } from '../../lib/paths';
+import {
+	absoluteUrl,
+	assetJsonLd,
+	assetSearchDescription,
+	assetSearchTitle,
+} from '../../lib/seo';
 import { env } from 'cloudflare:workers';
 
 const { category: categorySlug, slug } = Astro.params;
