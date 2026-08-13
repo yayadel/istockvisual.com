@@ -3632,12 +3632,34 @@ body.image-editor-modal-open {
 	cursor: not-allowed;
 }
 
+.image-editor-modal__stage--expand {
+	outline: 2px solid #c4f04b;
+	outline-offset: -2px;
+}
+
 .image-editor-modal__expand-guide {
 	position: absolute;
 	z-index: 2;
-	border: 1.5px dashed rgba(255, 255, 255, 0.85);
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+	box-sizing: border-box;
+	border: 2px solid #c4f04b;
+	box-shadow: 0 0 0 9999px rgba(8, 10, 9, 0.52);
 	pointer-events: none;
+}
+
+.image-editor-modal__expand-guide-label {
+	position: absolute;
+	left: 50%;
+	top: -1.45rem;
+	transform: translateX(-50%);
+	padding: 0.12rem 0.45rem;
+	border-radius: 999px;
+	background: #c4f04b;
+	color: #13200f;
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	white-space: nowrap;
 }
 
 .image-editor-modal__expand-meta {

@@ -761,10 +761,14 @@ export default function ImageEditor({
 		const working = workingRef.current;
 		if (!working) return;
 
+		const originW = working.width;
+		const originH = working.height;
+		setExpandOrigin({ w: originW, h: originH });
+
 		const scale = 1 + expandPct / 100;
-		const targetW = Math.max(1, Math.round(working.width * scale));
-		const targetH = Math.max(1, Math.round(working.height * scale));
-		if (targetW === working.width && targetH === working.height) {
+		const targetW = Math.max(1, Math.round(originW * scale));
+		const targetH = Math.max(1, Math.round(originH * scale));
+		if (targetW === originW && targetH === originH) {
 			setStatus('Choose an expand amount above 0% first.');
 			return;
 		}
@@ -789,8 +793,8 @@ export default function ImageEditor({
 			// Build the filled canvas first so progress isn't wasted on a failed result.
 			const expanded = expandWithEdgeFill(
 				working,
-				working.width,
-				working.height,
+				originW,
+				originH,
 				targetW,
 				targetH,
 			);
@@ -814,7 +818,7 @@ export default function ImageEditor({
 			setCrop(DEFAULT_CROP);
 			setPendingCommit(true);
 			setStatus(
-				`Expanded +${expandPct}% to ${targetW}×${targetH}. Click Apply changes to keep editing with other tools.`,
+				`Expanded +${expandPct}% to ${targetW}×${targetH}. The lime box is the original; outside is the added area. Click Apply changes to keep editing.`,
 			);
 		} catch (error) {
 			console.error(error);
@@ -983,7 +987,15 @@ export default function ImageEditor({
 									key={item.id}
 									type="button"
 									className={`image-editor-modal__tool${tool === item.id ? ' is-active' : ''}`}
-									onClick={() => setTool(item.id)}
+									onClick={() => {
+										setTool(item.id);
+										if (item.id === 'expand' && !pendingCommit) {
+											const working = workingRef.current;
+											if (working) {
+												setExpandOrigin({ w: working.width, h: working.height });
+											}
+										}
+									}}
 									disabled={Boolean(busy)}
 								>
 									<span>{item.label}</span>
