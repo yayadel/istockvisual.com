@@ -222,6 +222,25 @@ const toolsActive = path.startsWith('/tools/');
 		});
 	}
 
+	function activateToolsPanel(menu, id) {
+		if (!menu || !id) return;
+		menu.querySelectorAll('[data-tools-panel]').forEach(function (panel) {
+			var on = panel.getAttribute('data-tools-panel') === id;
+			panel.hidden = !on;
+			panel.classList.toggle('is-active', on);
+		});
+		menu.querySelectorAll('[data-tools-item]').forEach(function (item) {
+			item.classList.toggle('is-active', item.getAttribute('data-tools-item') === id);
+		});
+	}
+
+	function defaultToolsId(menu) {
+		var current = menu.querySelector('[data-tools-item][aria-current="page"]');
+		if (current) return current.getAttribute('data-tools-item');
+		var first = menu.querySelector('[data-tools-item]');
+		return first ? first.getAttribute('data-tools-item') : 'image';
+	}
+
 	document.addEventListener('click', function (event) {
 		var target = event.target;
 		if (!(target instanceof Element)) return;
@@ -238,6 +257,9 @@ const toolsActive = path.startsWith('/tools/');
 				menu.hidden = false;
 				trigger.setAttribute('aria-expanded', 'true');
 				root.classList.add('is-open');
+				if (menu.classList.contains('nav__tools-mega')) {
+					activateToolsPanel(menu, defaultToolsId(menu));
+				}
 			}
 			return;
 		}
@@ -245,6 +267,26 @@ const toolsActive = path.startsWith('/tools/');
 		if (!target.closest('[data-nav-dropdown]')) {
 			closeAllNavDropdowns();
 		}
+	});
+
+	document.addEventListener('pointerover', function (event) {
+		var target = event.target;
+		if (!(target instanceof Element)) return;
+		var item = target.closest('[data-tools-item]');
+		if (!item) return;
+		var menu = item.closest('.nav__tools-mega');
+		if (!menu || menu.hidden) return;
+		activateToolsPanel(menu, item.getAttribute('data-tools-item'));
+	});
+
+	document.addEventListener('focusin', function (event) {
+		var target = event.target;
+		if (!(target instanceof Element)) return;
+		var item = target.closest('[data-tools-item]');
+		if (!item) return;
+		var menu = item.closest('.nav__tools-mega');
+		if (!menu || menu.hidden) return;
+		activateToolsPanel(menu, item.getAttribute('data-tools-item'));
 	});
 
 	document.addEventListener('keydown', function (event) {
