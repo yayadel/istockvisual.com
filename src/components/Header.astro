@@ -29,7 +29,20 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 <header class="site-header">
 	<div class="site-header__inner">
 		<a class="brand" href="/">iStock<span>Visual</span></a>
-		<nav class="nav" aria-label="Primary">
+		<button
+			class="nav-toggle"
+			type="button"
+			aria-label="Open menu"
+			aria-expanded="false"
+			aria-controls="site-nav"
+			data-nav-toggle
+		>
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+		<div class="nav-backdrop" hidden data-nav-backdrop></div>
+		<nav class="nav" id="site-nav" aria-label="Primary">
 			{
 				CATEGORIES.map((category) => (
 					<a
