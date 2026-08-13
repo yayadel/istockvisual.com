@@ -7,7 +7,7 @@ import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
 import { remainingFullSizeDownloads } from '../../lib/download-quota';
-import { searchPath, tagPath } from '../../lib/paths';
+import { searchPath } from '../../lib/paths';
 import { env } from 'cloudflare:workers';
 
 const { category: categorySlug, slug } = Astro.params;
@@ -103,7 +103,12 @@ const similar = findSimilarAssets(
 						<li><span>Medium</span><span>{asset.medium}</span></li>
 					)}
 					{asset.keyword && (
-						<li><span>Keyword</span><span>{asset.keyword}</span></li>
+						<li>
+							<span>Keyword</span>
+							<span>
+								<a href={searchPath(asset.keyword)}>{asset.keyword}</a>
+							</span>
+						</li>
 					)}
 				</ul>
 				<ul class="download-rules">
@@ -143,20 +148,6 @@ const similar = findSimilarAssets(
 								)
 							}
 							{
-								asset.depictedElements && asset.depictedElements.length > 0 && (
-									<article class="info-card info-card--wide">
-										<h2>Depicted elements</h2>
-										<ul class="element-pills">
-											{asset.depictedElements.map((item) => (
-												<li>
-													<a href={tagPath(item)}>{item}</a>
-												</li>
-											))}
-										</ul>
-									</article>
-								)
-							}
-							{
 								asset.imagePrompt && (
 									<article class="info-card info-card--wide">
 										<h2>Image generation prompt</h2>
@@ -170,36 +161,18 @@ const similar = findSimilarAssets(
 			}
 
 			{
-				(tags.length > 0 || (asset.relatedQueries && asset.relatedQueries.length > 0)) && (
+				tags.length > 0 && (
 					<section class="detail__discover">
-						{
-							tags.length > 0 && (
-								<div class="chip-block">
-									<h2>Keywords</h2>
-									<ul class="chip-cloud">
-										{tags.map((tag) => (
-											<li>
-												<a href={tagPath(tag)}>{tag}</a>
-											</li>
-										))}
-									</ul>
-								</div>
-							)
-						}
-						{
-							asset.relatedQueries && asset.relatedQueries.length > 0 && (
-								<div class="chip-block">
-									<h2>Categories</h2>
-									<ul class="chip-cloud">
-										{asset.relatedQueries.map((query) => (
-											<li>
-												<a href={searchPath(query)}>{query}</a>
-											</li>
-										))}
-									</ul>
-								</div>
-							)
-						}
+						<div class="chip-block">
+							<h2>Tags</h2>
+							<ul class="chip-cloud">
+								{tags.map((tag) => (
+									<li>
+										<a href={searchPath(tag)}>{tag}</a>
+									</li>
+								))}
+							</ul>
+						</div>
 					</section>
 				)
 			}
