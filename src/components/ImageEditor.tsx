@@ -198,22 +198,20 @@ export default function ImageEditor({
 	}, [canvasSize, expandSettled, expandTarget, natural.h, natural.w, tool]);
 
 	/** Original bounds inside the expanded frame (preview only). */
+	const expandPreviewing = tool === 'expand' && !expandSettled;
 	const expandGuideStyle = useMemo(() => {
-		if (tool !== 'expand' || expandSettled || expandOrigin.w <= 0 || expandOrigin.h <= 0) {
+		if (!expandPreviewing) return null;
+		const baseW = expandOrigin.w > 0 ? expandOrigin.w : natural.w;
+		const baseH = expandOrigin.h > 0 ? expandOrigin.h : natural.h;
+		if (baseW <= 0 || baseH <= 0 || stageSize.width <= 0 || stageSize.height <= 0) {
 			return null;
 		}
-		if (stageSize.width <= 0 || stageSize.height <= 0) return null;
-		const fit = containSize(
-			expandOrigin.w,
-			expandOrigin.h,
-			stageSize.width,
-			stageSize.height,
-		);
+		const fit = containSize(baseW, baseH, stageSize.width, stageSize.height);
 		const hasMargin =
-			fit.x > 0.75 ||
-			fit.y > 0.75 ||
-			fit.w < stageSize.width - 1.5 ||
-			fit.h < stageSize.height - 1.5;
+			fit.x > 0.5 ||
+			fit.y > 0.5 ||
+			fit.w < stageSize.width - 1 ||
+			fit.h < stageSize.height - 1;
 		if (!hasMargin) return null;
 		return {
 			left: `${(fit.x / stageSize.width) * 100}%`,
@@ -224,10 +222,11 @@ export default function ImageEditor({
 	}, [
 		expandOrigin.h,
 		expandOrigin.w,
-		expandSettled,
+		expandPreviewing,
+		natural.h,
+		natural.w,
 		stageSize.height,
 		stageSize.width,
-		tool,
 	]);
 
 	const keepCircleStyle = useMemo(() => {
