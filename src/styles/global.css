@@ -2587,6 +2587,22 @@ body.image-editor-modal-open {
 	pointer-events: auto;
 }
 
+.image-editor-modal--page {
+	position: relative;
+	inset: auto;
+	z-index: 1;
+	display: block;
+	padding: 0;
+	min-height: 0;
+}
+
+.image-editor-modal--page .image-editor-modal__dialog {
+	width: 100%;
+	height: min(82dvh, 920px);
+	max-height: none;
+	box-shadow: none;
+}
+
 .image-editor-modal__backdrop {
 	position: absolute;
 	inset: 0;
