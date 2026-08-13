@@ -759,33 +759,28 @@ export default function ImageEditor({
 				onMouseDown={isPage ? undefined : stop}
 				onClick={isPage ? undefined : stop}
 			>
+			{!isPage ? (
 				<header className="image-editor-modal__header">
 					<div>
-						{!isPage && (
-							<>
-								<p className="image-editor-modal__eyebrow">Client-side editor</p>
-								<h2 id="image-editor-title">{title}</h2>
-							</>
-						)}
-						{isPage && (
-							<h2 id="image-editor-title" className="visually-hidden">
-								{title}
-							</h2>
-						)}
+						<p className="image-editor-modal__eyebrow">Client-side editor</p>
+						<h2 id="image-editor-title">{title}</h2>
 					</div>
 					<div className="image-editor-modal__header-actions">
-						{!isPage && (
-							<button
-								className="btn btn--ghost"
-								type="button"
-								onClick={() => onCloseRef.current()}
-								disabled={Boolean(busy)}
-							>
-								Close
-							</button>
-						)}
+						<button
+							className="btn btn--ghost"
+							type="button"
+							onClick={() => onCloseRef.current()}
+							disabled={Boolean(busy)}
+						>
+							Close
+						</button>
 					</div>
 				</header>
+			) : (
+				<h2 id="image-editor-title" className="visually-hidden">
+					{title}
+				</h2>
+			)}
 
 				<section className="image-editor-modal__controls" aria-label="Editor tools">
 					{!isPage && (
