@@ -111,8 +111,6 @@ export default function ImageEditor({
 		return resolveEditorCanvasSize(sizeId, aspectPreset.ratio, natural.w, natural.h);
 	}, [aspectPreset.ratio, natural, sizeId]);
 
-	const stageAspect = canvasSize.width / Math.max(canvasSize.height, 1);
-
 	const rebuildFramePreview = useCallback(() => {
 		const working = workingRef.current;
 		if (!working) return;
