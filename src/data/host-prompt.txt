@@ -8,11 +8,9 @@ Asset Functionality & Usage Tips
 
 Color Palette (including HEX color codes)
 
-Tags
+Tags (REQUIRED: output **40 or more** tags. Merge into this single list: topic keywords, category/subject labels, and depicted objects/elements such as cup, male, cat, desk, mountain, etc. Do NOT output separate keywords, categories, or depicted-elements fields.)
 
 Related Search Queries
-
-Depicted Objects/Elements (e.g., cup, male, cat, etc.)
 
 Image Page Title
 
@@ -33,6 +31,8 @@ Avoid "AI Look": Ensure the aesthetic avoids looking synthetic, over-processed, 
 Style Selection: Choose the most suitable medium (Photograph, Illustration, or 3D Graphic) based on the topic. The asset is intended for my stock asset website for users to download and remix/recreate, so it must be practical and high quality.
 
 Anatomy & Physics: Avoid unnatural proportions, distorted limbs/hands, or physical errors common in AI generation.
+
+Tag Coverage: Tags must include the topic keyword (or close variants), useful category/subject terms, and concrete depicted elements visible or implied in the scene. Provide at least 40 unique English tags; prefer short, searchable phrases.
 
 Language: All output must be strictly in English.
 

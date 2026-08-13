@@ -218,9 +218,8 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 		relatedSearchQueries: normalizeStringArray(
 			parsed.relatedSearchQueries ?? parsed['Related Search Queries'],
 		),
-		depictedElements: normalizeStringArray(
-			parsed.depictedElements ?? parsed['Depicted Objects/Elements'],
-		),
+		// Keywords / categories / depicted elements are merged into tags (40+).
+		depictedElements: [],
 		imagePageTitle,
 		pageShortDescription,
 		medium: readString(parsed, ['medium', 'Medium']) || 'Photograph',

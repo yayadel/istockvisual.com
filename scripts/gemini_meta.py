@@ -166,6 +166,8 @@ def main() -> None:
 
 	meta = generate_meta(args.keyword)
 	payload = meta.model_dump()
+	# Depicted elements / categories / keyword labels are merged into tags (40+).
+	payload["depictedElements"] = []
 	text = json.dumps(payload, ensure_ascii=False, indent=2)
 	if args.out:
 		out_path = Path(args.out)
