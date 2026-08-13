@@ -3902,8 +3902,10 @@ body.image-editor-modal-open {
 .tools-work {
 	display: grid;
 	gap: 1.15rem;
+	width: 100%;
 	max-width: 100%;
 	min-width: 0;
+	overflow-x: clip;
 }
 
 .tools-page__boot {
