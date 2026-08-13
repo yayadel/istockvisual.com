@@ -184,7 +184,7 @@ export default function DownloadPanel({
 						disabled={busy}
 						onClick={() => downloadSize(selected)}
 					>
-						{busy ? 'Downloading…' : 'Download'}
+						Download
 						<span className="download-split__size">{selectedHint}</span>
 					</button>
 					<button
