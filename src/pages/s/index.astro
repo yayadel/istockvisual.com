@@ -20,7 +20,7 @@ if (q) {
 
 const categoryParam = Astro.url.searchParams.get('category') || 'all';
 const mode = Astro.url.searchParams.get('mode') || '';
-const uploadName = Astro.url.searchParams.get('name') || 'uploaded image';
+const uploadName = Astro.url.searchParams.get('name') || 'your image';
 const queryColors = parseVisualSearchColors(Astro.url.searchParams.get('c'));
 const isVisual = mode === 'visual';
 

@@ -139,17 +139,18 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				var img = new Image();
 				img.onload = function () {
 					var canvas = document.createElement('canvas');
-					var size = 48;
-					canvas.width = size;
-					canvas.height = size;
+					var sample = 48;
+					var thumbSize = 160;
+					canvas.width = sample;
+					canvas.height = sample;
 					var ctx = canvas.getContext('2d');
 					if (!ctx) {
 						URL.revokeObjectURL(url);
 						reject(new Error('Canvas unavailable'));
 						return;
 					}
-					ctx.drawImage(img, 0, 0, size, size);
-					var data = ctx.getImageData(0, 0, size, size).data;
+					ctx.drawImage(img, 0, 0, sample, sample);
+					var data = ctx.getImageData(0, 0, sample, sample).data;
 					var buckets = {};
 					for (var i = 0; i < data.length; i += 4) {
 						if (data[i + 3] < 128) continue;
