@@ -173,6 +173,9 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 								})
 								.join('');
 						});
+					canvas.width = thumbSize;
+					canvas.height = thumbSize;
+					ctx.drawImage(img, 0, 0, thumbSize, thumbSize);
 					var thumb = canvas.toDataURL('image/jpeg', 0.72);
 					URL.revokeObjectURL(url);
 					resolve({ hexes: hexes, thumb: thumb });
