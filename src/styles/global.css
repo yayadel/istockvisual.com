@@ -3735,8 +3735,8 @@ body.image-editor-modal-open {
 .tools-masthead__switch {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.15rem 1.1rem;
-	font-size: 0.78rem;
+	gap: 0.35rem 0.95rem;
+	font-size: 0.74rem;
 	font-weight: 600;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
