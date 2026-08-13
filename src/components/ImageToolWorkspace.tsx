@@ -8,7 +8,7 @@ type Props = {
 
 const EXAMPLE_IMAGE = {
 	url: '/demo/studio-orb.jpg',
-	title: 'Example Image',
+	title: 'Example',
 } as const;
 
 function fileTitle(file: File) {
@@ -80,71 +80,49 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 		setIsExample(false);
 	}, []);
 
-	const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		loadFile(event.currentTarget.files?.[0]);
-	};
-
-	const onDrop = (event: React.DragEvent<HTMLLabelElement>) => {
-		event.preventDefault();
-		event.currentTarget.classList.remove('is-dragover');
-		loadFile(event.dataTransfer.files?.[0]);
-	};
-
 	return (
-		<div className="image-tool-page">
-			<section className="image-tool-page__upload" aria-label="Upload image">
-				<label
-					className="image-tool-page__dropzone"
-					onDragOver={(event) => {
-						event.preventDefault();
-						event.currentTarget.classList.add('is-dragover');
-					}}
-					onDragLeave={(event) => {
-						event.currentTarget.classList.remove('is-dragover');
-					}}
-					onDrop={onDrop}
-				>
-					<input
-						ref={inputRef}
-						type="file"
-						accept="image/*"
-						hidden
-						onChange={onInputChange}
-					/>
-					<span className="image-tool-page__dropzone-kicker">Start here</span>
-					<span className="image-tool-page__dropzone-title">
-						{isExample ? 'Drop your photo' : 'Swap in another photo'}
-					</span>
-					<span className="image-tool-page__dropzone-hint">
-						PNG, JPG, or WebP. Editing stays on this device.
-					</span>
-					<span className="image-tool-page__dropzone-btn">Choose image</span>
-				</label>
-			</section>
+		<div className="tools-work">
+			<label
+				className="tools-rail"
+				onDragOver={(event) => {
+					event.preventDefault();
+					event.currentTarget.classList.add('is-dragover');
+				}}
+				onDragLeave={(event) => {
+					event.currentTarget.classList.remove('is-dragover');
+				}}
+				onDrop={(event) => {
+					event.preventDefault();
+					event.currentTarget.classList.remove('is-dragover');
+					loadFile(event.dataTransfer.files?.[0]);
+				}}
+			>
+				<input
+					ref={inputRef}
+					type="file"
+					accept="image/*"
+					hidden
+					onChange={(event) => loadFile(event.currentTarget.files?.[0])}
+				/>
+				<div className="tools-rail__text">
+					<strong>{isExample ? 'Open your image' : 'Replace image'}</strong>
+					<span>Drop a file here, or browse. PNG / JPG / WebP.</span>
+				</div>
+				<span className="tools-rail__cta">Browse</span>
+			</label>
 
-			{error && <p className="image-tool-page__error">{error}</p>}
+			{error && <p className="tools-work__error">{error}</p>}
 
-			<section className="image-tool-page__studio" ref={editorWrapRef} aria-label="Editor">
-				<div className="image-tool-page__studio-bar">
-					<div>
-						<p className="image-tool-page__studio-kicker">Workspace</p>
-						<h2>{isExample ? 'Try the example' : 'Your edit session'}</h2>
-					</div>
-					{isExample ? (
-						<p className="image-tool-page__example-badge">
-							Demo file · replace anytime above
-						</p>
-					) : (
-						<button
-							type="button"
-							className="image-tool-page__reset-example"
-							onClick={resetToExample}
-						>
-							Back to example
+			<section className="tools-stage" ref={editorWrapRef} aria-label="Editor">
+				<div className="tools-stage__meta">
+					<span>{isExample ? 'Showing example' : title}</span>
+					{isExample ? null : (
+						<button type="button" className="tools-stage__link" onClick={resetToExample}>
+							Use example again
 						</button>
 					)}
 				</div>
-				<div className="image-tool-page__studio-frame">
+				<div className="tools-stage__frame">
 					<ImageEditor
 						key={imageUrl}
 						variant="page"

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolsMasthead from '../../components/ToolsMasthead.astro';
 import ImageConverterApp from '../../components/ImageConverterApp';
 ---
 
@@ -7,51 +8,20 @@ import ImageConverterApp from '../../components/ImageConverterApp';
 	title="Image Convert — Free Local Format Converter"
 	description="Convert JPG, PNG, WebP, HEIC and more entirely in your browser. Free, private, no uploads."
 >
-	<section class="image-convert-hero" aria-labelledby="image-convert-title">
-		<div class="image-convert-hero__inner">
-			<p class="image-convert-hero__eyebrow">iStockVisual · Tool</p>
-			<h1 id="image-convert-title">Image Convert</h1>
-			<p class="image-convert-hero__lede">
-				Batch convert formats, resize, and compress — fully on-device with Canvas.
-			</p>
-			<ul class="image-convert-hero__trust">
-				<li>
-					<strong>Free</strong>
-					<span>No account required</span>
-				</li>
-				<li>
-					<strong>Private</strong>
-					<span>Files never leave your device</span>
-				</li>
-				<li>
-					<strong>Local</strong>
-					<span>Zero server processing cost</span>
-				</li>
-			</ul>
-		</div>
-	</section>
+	<div class="tools-page">
+		<ToolsMasthead
+			active="convert"
+			title="Image Convert"
+			lede="Batch convert formats, resize, and compress without leaving this tab."
+			privacy="Free to use. Conversion stays local. Files are never uploaded to our servers."
+		/>
 
-	<!-- client:only avoids hydration wipe if the island JS hits a browser-only edge case -->
-	<ImageConverterApp client:only="react">
-		<div class="image-convert-page image-convert-page--boot">
-			<aside class="image-convert-page__privacy" role="note">
-				<p class="image-convert-page__privacy-eyebrow">Local · Private · Free</p>
-				<h2>100% local conversion</h2>
-				<p>Loading converter…</p>
-			</aside>
-			<div class="image-convert-page__layout">
-				<div class="image-convert-page__dropzone is-loading" aria-hidden="true">
-					<span class="image-convert-page__dropzone-kicker">Batch ready</span>
-					<span class="image-convert-page__dropzone-title">Preparing converter</span>
-					<span class="image-convert-page__dropzone-hint">
-						JPG, PNG, WebP, GIF, BMP, HEIC/HEIF. Multi-file drag &amp; drop supported.
-					</span>
+		<ImageConverterApp client:only="react">
+			<div class="tools-page__boot" aria-hidden="true">
+				<div class="tools-rail">
+					<p class="tools-rail__copy">Loading converter…</p>
 				</div>
-				<aside class="image-convert-page__settings" aria-hidden="true">
-					<h3>Output settings</h3>
-					<p class="image-convert-page__note">Starting local engine…</p>
-				</aside>
 			</div>
-		</div>
-	</ImageConverterApp>
+		</ImageConverterApp>
+	</div>
 </BaseLayout>
