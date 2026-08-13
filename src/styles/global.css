@@ -3777,3 +3777,29 @@ body.image-editor-modal-open {
 	color: var(--danger, #b42318);
 	font-size: 0.9rem;
 }
+
+.image-tool-page__example-badge {
+	margin: 0 0 0.65rem;
+	padding: 0.55rem 0.75rem;
+	border: 1px solid rgba(28, 36, 32, 0.1);
+	border-radius: 4px;
+	background: rgba(196, 240, 75, 0.12);
+	font-size: 0.86rem;
+	line-height: 1.4;
+	color: var(--text-muted, #6b756f);
+}
+
+.image-tool-page__example-badge strong {
+	color: var(--text, #1c2420);
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+[data-theme='dark'] .image-tool-page__example-badge {
+	border-color: rgba(238, 243, 239, 0.12);
+	background: rgba(196, 240, 75, 0.08);
+}
+
+[data-theme='dark'] .image-tool-page__example-badge strong {
+	color: #f2f7f3;
+}
