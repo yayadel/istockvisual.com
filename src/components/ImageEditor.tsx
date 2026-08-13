@@ -303,7 +303,8 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 			frameCtx.putImageData(applyAdjustToImageData(imageData, adjust), 0, 0);
 		}
 
-		if (tool === 'transform' || sizeId !== 'original') {
+		const needsCrop = crop.x > 0.001 || crop.y > 0.001 || crop.w < 0.999 || crop.h < 0.999;
+		if (needsCrop) {
 			const sx = Math.round(crop.x * targetW);
 			const sy = Math.round(crop.y * targetH);
 			const sw = Math.max(1, Math.round(crop.w * targetW));
@@ -318,17 +319,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 		}
 
 		return frame;
-	}, [
-		adjust,
-		canvasSize,
-		crop,
-		fineRotation,
-		flipX,
-		flipY,
-		rotation,
-		sizeId,
-		tool,
-	]);
+	}, [adjust, canvasSize, crop, fineRotation, flipX, flipY, rotation]);
 
 	const handleDownload = useCallback(() => {
 		const canvas = buildExportCanvas();
