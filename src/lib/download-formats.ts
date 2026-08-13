@@ -53,6 +53,40 @@ async function drawBlobToCanvas(source: Blob): Promise<HTMLCanvasElement> {
 	return canvas;
 }
 
+/** Scale a raster blob to a download size in the browser (4K master → 2K / 4K / 8K). */
+export async function scaleDownloadBlob(
+	source: Blob,
+	sizeId: DownloadSizeId,
+	sourceWidth: number,
+	sourceHeight: number,
+): Promise<Blob> {
+	const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
+	if (!size) return source;
+
+	const target = outputSizeForDownload(sourceWidth, sourceHeight, size);
+	const bitmap = await createImageBitmap(source);
+	const alreadyFits =
+		Math.abs(bitmap.width - target.width) <= 1 && Math.abs(bitmap.height - target.height) <= 1;
+	if (alreadyFits) {
+		bitmap.close();
+		return source;
+	}
+
+	const canvas = document.createElement('canvas');
+	canvas.width = target.width;
+	canvas.height = target.height;
+	const ctx = canvas.getContext('2d');
+	if (!ctx) {
+		bitmap.close();
+		throw new Error('Canvas unavailable');
+	}
+	ctx.imageSmoothingEnabled = true;
+	ctx.imageSmoothingQuality = 'high';
+	ctx.drawImage(bitmap, 0, 0, target.width, target.height);
+	bitmap.close();
+	return canvasToBlob(canvas, 'image/jpeg', 0.92);
+}
+
 /** Convert a downloaded raster blob into JPG / PNG / WEBP / SVG in the browser. */
 export async function convertDownloadBlob(
 	source: Blob,

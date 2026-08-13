@@ -3,10 +3,12 @@ import {
 	DOWNLOAD_FORMATS,
 	convertDownloadBlob,
 	downloadFileLabel,
+	scaleDownloadBlob,
 	type DownloadFormat,
 } from '../lib/download-formats';
 import {
 	DOWNLOAD_SIZES,
+	fetchSizeForDownload,
 	isFreeDownloadSize,
 	outputSizeForDownload,
 	type DownloadSizeId,
@@ -81,15 +83,8 @@ export default function DownloadPanel({
 	const anyModalOpen = authModalOpen || plansModalOpen;
 
 	useEffect(() => {
-		if (!previewUrl) return;
-		const image = new Image();
-		image.onload = () => {
-			if (image.naturalWidth && image.naturalHeight) {
-				setNatural({ width: image.naturalWidth, height: image.naturalHeight });
-			}
-		};
-		image.src = previewUrl;
-	}, [previewUrl]);
+		setNatural({ width: sourceWidth, height: sourceHeight });
+	}, [sourceHeight, sourceWidth]);
 
 	useEffect(() => {
 		if (!anyModalOpen) return;

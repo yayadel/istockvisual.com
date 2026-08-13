@@ -62,3 +62,8 @@ export function variantObjectKey(originalKey: string, sizeId: string) {
 export function isDownloadSizeId(value: string | null | undefined): value is DownloadSizeId {
 	return DOWNLOAD_SIZES.some((size) => size.id === value);
 }
+
+/** Free sizes stay server-resized so 4K is not sent to unpaid clients. */
+export function fetchSizeForDownload(sizeId: DownloadSizeId): DownloadSizeId {
+	return isFreeDownloadSize(sizeId) ? sizeId : MASTER_DOWNLOAD_SIZE;
+}
