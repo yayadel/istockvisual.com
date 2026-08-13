@@ -3025,6 +3025,18 @@ body.download-auth-modal-open {
 	color: #e8eee9;
 }
 
+[data-theme='dark'] .asset-preview__share .share-bar__toggle {
+	background: transparent;
+	border-color: rgba(238, 243, 239, 0.12);
+	color: rgba(232, 238, 233, 0.82);
+}
+
+[data-theme='dark'] .asset-preview__share .share-bar__toggle:hover,
+[data-theme='dark'] .asset-preview__share .share-bar.is-open .share-bar__toggle {
+	background: rgba(255, 255, 255, 0.06);
+	color: #e8eee9;
+}
+
 @media (max-width: 560px) {
 	.asset-preview__footer {
 		grid-template-columns: 1fr;
