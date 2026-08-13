@@ -33,10 +33,10 @@ type Props = {
 const DEFAULT_CROP: CropRect = { x: 0, y: 0, w: 1, h: 1 };
 
 const TOOLS: { id: ToolId; label: string; hint: string }[] = [
-	{ id: 'adjust', label: 'Adjust', hint: 'Brightness, contrast, saturation — Canvas, no model' },
-	{ id: 'transform', label: 'Crop & Flip', hint: 'Crop, rotate, flip' },
-	{ id: 'remove-bg', label: 'Remove BG', hint: 'On-device AI (~30MB first load)' },
-	{ id: 'expand', label: 'Expand', hint: 'Edge fill outpaint — no server' },
+	{ id: 'adjust', label: 'Adjust', hint: 'Color & light' },
+	{ id: 'transform', label: 'Crop & Flip', hint: 'Aspect, crop, rotate' },
+	{ id: 'remove-bg', label: 'Remove BG', hint: 'On-device AI' },
+	{ id: 'expand', label: 'Expand', hint: 'Edge fill' },
 ];
 
 function fitCropToAspect(crop: CropRect, ratio: number | null): CropRect {
@@ -59,6 +59,10 @@ function fitCropToAspect(crop: CropRect, ratio: number | null): CropRect {
 	return next;
 }
 
+function cloneCanvas(source: HTMLCanvasElement): HTMLCanvasElement {
+	return canvasFromImage(source, source.width, source.height);
+}
+
 export default function ImageEditor({
 	imageUrl,
 	title,
@@ -67,8 +71,8 @@ export default function ImageEditor({
 	isPro = false,
 }: Props) {
 	const stageRef = useRef<HTMLDivElement>(null);
-	const sourceRef = useRef<HTMLImageElement | null>(null);
 	const workingRef = useRef<HTMLCanvasElement | null>(null);
+	const originalRef = useRef<HTMLCanvasElement | null>(null);
 	const onCloseRef = useRef(onClose);
 	onCloseRef.current = onClose;
 	const previewUrlRef = useRef(imageUrl);
@@ -132,6 +136,12 @@ export default function ImageEditor({
 		[revokeIfBlob],
 	);
 
+	const restoreOriginalWorking = useCallback(() => {
+		const original = originalRef.current;
+		if (!original) return;
+		setWorkingFromCanvas(cloneCanvas(original));
+	}, [setWorkingFromCanvas]);
+
 	useEffect(() => {
 		document.body.classList.add('image-editor-modal-open');
 		const onKey = (event: KeyboardEvent) => {
@@ -150,8 +160,8 @@ export default function ImageEditor({
 		img.crossOrigin = 'anonymous';
 		img.onload = () => {
 			if (cancelled) return;
-			sourceRef.current = img;
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
+			originalRef.current = cloneCanvas(canvas);
 			workingRef.current = canvas;
 			setNatural({ w: img.naturalWidth, h: img.naturalHeight });
 			setPreviewUrl(imageUrl);
@@ -261,7 +271,31 @@ export default function ImageEditor({
 		}
 	};
 
-	const resetAdjust = () => setAdjust(DEFAULT_ADJUST);
+	const resetAdjust = () => {
+		setAdjust(DEFAULT_ADJUST);
+		setStatus('Adjust reset.');
+	};
+
+	const resetTransform = () => {
+		setRotation(0);
+		setFineRotation(0);
+		setFlipX(false);
+		setFlipY(false);
+		setAspectId('free');
+		setCrop(DEFAULT_CROP);
+		setStatus('Crop & Flip reset.');
+	};
+
+	const resetRemoveBg = () => {
+		restoreOriginalWorking();
+		setStatus('Background removal reset to original.');
+	};
+
+	const resetExpand = () => {
+		restoreOriginalWorking();
+		setCrop(DEFAULT_CROP);
+		setStatus('Expand reset to original.');
+	};
 
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -407,7 +441,6 @@ export default function ImageEditor({
 			onMouseDown={stop}
 			onClick={stop}
 		>
-			{/* Backdrop does not close — avoid losing edits on mis-clicks. */}
 			<div className="image-editor-modal__backdrop" aria-hidden="true" />
 			<div
 				className="image-editor-modal__dialog"
@@ -431,18 +464,10 @@ export default function ImageEditor({
 						>
 							Close
 						</button>
-						<button
-							className="btn btn--primary"
-							type="button"
-							onClick={handleDownload}
-							disabled={!ready || Boolean(busy)}
-						>
-							Download
-						</button>
 					</div>
 				</header>
 
-				<section className="image-editor-modal__controls" aria-label="Size and aspect">
+				<section className="image-editor-modal__controls" aria-label="Size and tools">
 					<div className="image-editor-modal__row">
 						<span className="image-editor-modal__row-label">Size</span>
 						<div className="image-editor-modal__size-list">
@@ -452,7 +477,7 @@ export default function ImageEditor({
 									<button
 										key={size.id}
 										type="button"
-										className={`image-editor-modal__size${sizeId === size.id ? ' is-active' : ''}${needsPro ? ' is-pro' : ''}`}
+										className={`image-editor-modal__size${sizeId === size.id ? ' is-active' : ''}`}
 										onClick={() => selectSize(size.id)}
 										disabled={Boolean(busy)}
 									>
@@ -476,50 +501,56 @@ export default function ImageEditor({
 							<a href="/price">Go Pro</a>
 						</p>
 					)}
-					<div className="image-editor-modal__row image-editor-modal__row--aspects">
-						<span className="image-editor-modal__row-label">Aspect</span>
-						<div className="image-editor-modal__aspect-list">
-							{EDITOR_ASPECT_PRESETS.map((preset) => {
-								const box = aspectPreviewBox(preset.ratio);
-								return (
-									<button
-										key={preset.id}
-										type="button"
-										className={`image-editor-modal__aspect${aspectId === preset.id ? ' is-active' : ''}`}
-										onClick={() => selectAspect(preset.id)}
-										disabled={Boolean(busy)}
-										title={preset.label}
-									>
-										<span className="image-editor-modal__aspect-icon" aria-hidden="true">
-											<span
-												className="image-editor-modal__aspect-shape"
-												style={{ width: box.width, height: box.height }}
-											/>
-										</span>
-										<span className="image-editor-modal__aspect-label">{preset.label}</span>
-									</button>
-								);
-							})}
-						</div>
+
+					<div className="image-editor-modal__row image-editor-modal__row--tools">
+						<span className="image-editor-modal__row-label">Tools</span>
+						<nav className="image-editor-modal__tools" aria-label="Edit tools">
+							{TOOLS.map((item) => (
+								<button
+									key={item.id}
+									type="button"
+									className={`image-editor-modal__tool${tool === item.id ? ' is-active' : ''}`}
+									onClick={() => setTool(item.id)}
+									disabled={Boolean(busy)}
+								>
+									<span>{item.label}</span>
+									<small>{item.hint}</small>
+								</button>
+							))}
+						</nav>
 					</div>
+
+					{tool === 'transform' && (
+						<div className="image-editor-modal__row image-editor-modal__row--aspects">
+							<span className="image-editor-modal__row-label">Aspect</span>
+							<div className="image-editor-modal__aspect-list">
+								{EDITOR_ASPECT_PRESETS.map((preset) => {
+									const box = aspectPreviewBox(preset.ratio);
+									return (
+										<button
+											key={preset.id}
+											type="button"
+											className={`image-editor-modal__aspect${aspectId === preset.id ? ' is-active' : ''}`}
+											onClick={() => selectAspect(preset.id)}
+											disabled={Boolean(busy)}
+											title={preset.label}
+										>
+											<span className="image-editor-modal__aspect-icon" aria-hidden="true">
+												<span
+													className="image-editor-modal__aspect-shape"
+													style={{ width: box.width, height: box.height }}
+												/>
+											</span>
+											<span className="image-editor-modal__aspect-label">{preset.label}</span>
+										</button>
+									);
+								})}
+							</div>
+						</div>
+					)}
 				</section>
 
 				<div className="image-editor-modal__body">
-					<nav className="image-editor-modal__tools" aria-label="Edit tools">
-						{TOOLS.map((item) => (
-							<button
-								key={item.id}
-								type="button"
-								className={`image-editor-modal__tool${tool === item.id ? ' is-active' : ''}`}
-								onClick={() => setTool(item.id)}
-								disabled={Boolean(busy)}
-							>
-								<span>{item.label}</span>
-								<small>{item.hint}</small>
-							</button>
-						))}
-					</nav>
-
 					<div className="image-editor-modal__workspace">
 						<div className="image-editor-modal__stage-wrap">
 							<div
@@ -612,15 +643,15 @@ export default function ImageEditor({
 										<span>{adjust.saturation}</span>
 									</label>
 									<button className="btn btn--ghost" type="button" onClick={resetAdjust}>
-										Reset adjust
+										Reset
 									</button>
 								</>
 							)}
 
 							{tool === 'transform' && (
 								<>
-									<h3>Crop & transform</h3>
-									<p>Drag the crop box. Export uses the selected region.</p>
+									<h3>Crop & Flip</h3>
+									<p>Pick an aspect above, then drag the crop box. Rotate or flip as needed.</p>
 									<div className="image-editor-modal__action-row">
 										<button
 											className="btn btn--ghost"
@@ -655,6 +686,9 @@ export default function ImageEditor({
 										/>
 										<span>{fineRotation}°</span>
 									</label>
+									<button className="btn btn--ghost" type="button" onClick={resetTransform}>
+										Reset
+									</button>
 								</>
 							)}
 
@@ -673,6 +707,9 @@ export default function ImageEditor({
 									>
 										Remove background
 									</button>
+									<button className="btn btn--ghost" type="button" onClick={resetRemoveBg}>
+										Reset
+									</button>
 								</>
 							)}
 
@@ -681,8 +718,7 @@ export default function ImageEditor({
 									<h3>Expand canvas</h3>
 									<p>
 										Fills new margins with blurred edge extension. Choose a larger Size above,
-										then run Expand. (AI inpainting can be added later as an optional ONNX
-										model.)
+										then run Expand.
 									</p>
 									<button
 										className="btn btn--primary"
@@ -692,10 +728,22 @@ export default function ImageEditor({
 									>
 										Expand to {canvasSize.width}×{canvasSize.height}
 									</button>
+									<button className="btn btn--ghost" type="button" onClick={resetExpand}>
+										Reset
+									</button>
 								</>
 							)}
 
 							{status && <p className="image-editor-modal__status">{status}</p>}
+
+							<button
+								className="btn btn--primary image-editor-modal__download"
+								type="button"
+								onClick={handleDownload}
+								disabled={!ready || Boolean(busy)}
+							>
+								Download edited · {canvasSize.width}×{canvasSize.height}
+							</button>
 						</aside>
 					</div>
 				</div>

@@ -2773,11 +2773,25 @@ body.image-editor-modal-open {
 	padding: 0.85rem 1rem 1rem;
 }
 
+.image-editor-modal__row--tools {
+	align-items: stretch;
+}
+
+.image-editor-modal__row--tools .image-editor-modal__tools {
+	flex: 1 1 auto;
+	margin: 0;
+}
+
 .image-editor-modal__tools {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: 0.45rem;
-	margin-bottom: 0.75rem;
+	width: 100%;
+}
+
+.image-editor-modal__download {
+	width: 100%;
+	margin-top: 0.35rem;
 }
 
 .image-editor-modal__tool {
