@@ -3575,8 +3575,23 @@ body.image-editor-modal-open {
 	flex: 0 0 auto;
 }
 
-.image-editor-modal__expand-custom:focus-within {
-	border-color: rgba(28, 36, 32, 0.45);
+.image-editor-modal__expand-custom:focus-within,
+.image-editor-modal__expand-custom.is-active {
+	border-color: transparent;
+	background: var(--ie-active);
+	color: #fff;
+}
+
+.image-editor-modal__expand-custom.is-active .image-editor-modal__expand-custom-prefix,
+.image-editor-modal__expand-custom.is-active .image-editor-modal__expand-custom-suffix,
+.image-editor-modal__expand-custom:focus-within .image-editor-modal__expand-custom-prefix,
+.image-editor-modal__expand-custom:focus-within .image-editor-modal__expand-custom-suffix {
+	color: rgba(255, 255, 255, 0.72);
+}
+
+.image-editor-modal__expand-custom.is-active input::placeholder,
+.image-editor-modal__expand-custom:focus-within input::placeholder {
+	color: rgba(255, 255, 255, 0.45);
 }
 
 .image-editor-modal__expand-custom-prefix,

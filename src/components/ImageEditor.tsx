@@ -540,8 +540,11 @@ export default function ImageEditor({
 			setStatus('Enter a number between 1 and 200.');
 			return;
 		}
-		applyExpandPercent(parsed, { fromCustom: true });
-		setExpandCustomDraft(String(Math.round(clamp(parsed, 1, 200))));
+		const next = Math.round(clamp(parsed, 1, 200));
+		applyExpandPercent(next, { fromCustom: true });
+		setExpandCustomDraft(
+			(EXPAND_PERCENTS as readonly number[]).includes(next) ? '' : String(next),
+		);
 	}, [applyExpandPercent, expandCustomDraft, expandPct]);
 
 	const applyAdjustChanges = useCallback(() => {
