@@ -2614,6 +2614,22 @@ body.image-editor-modal-open {
 	min-width: 0;
 }
 
+.image-editor-modal--page .image-editor-modal__row,
+.image-editor-modal--page .image-editor-modal__row--aspects,
+.image-editor-modal--page .image-editor-modal__row--presets,
+.image-editor-modal--page .image-editor-modal__row--tools {
+	min-width: 0;
+	max-width: 100%;
+}
+
+.image-editor-modal--page .image-editor-modal__aspect-list,
+.image-editor-modal--page .image-editor-modal__preset-list {
+	flex: 1 1 0;
+	width: 0;
+	min-width: 0;
+	max-width: 100%;
+}
+
 .image-editor-modal--page .image-editor-modal__body {
 	overflow: visible;
 	height: auto;
