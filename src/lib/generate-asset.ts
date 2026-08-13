@@ -166,12 +166,11 @@ function assetSearchText(asset: AssetDetail): string {
 		.toLowerCase();
 }
 
-/** Tag page: match keywords and depicted elements. */
+/** Tag page: match against unified image tags only. */
 export function filterAssetsByTag(assets: AssetDetail[], tagSlug: string): AssetDetail[] {
 	return assets.filter((asset) => {
 		const tags = asset.tags || [];
-		const elements = asset.depictedElements || [];
-		return [...tags, ...elements].some((value) => tagMatches(value, tagSlug));
+		return tags.some((value) => tagMatches(value, tagSlug));
 	});
 }
 
@@ -179,15 +178,14 @@ function tokenSet(values?: string[]): Set<string> {
 	return new Set((values || []).map((value) => toPathSlug(value)).filter(Boolean));
 }
 
-/** Detail page: rank other assets by shared tags, elements, keyword, and category. */
+/** Detail page: rank other assets by shared tags, keyword, and category. */
 export function findSimilarAssets(
 	assets: AssetDetail[],
 	current: AssetDetail,
 	limit = 18,
 ): AssetDetail[] {
 	const currentId = current._id;
-	const tags = tokenSet([...(current.tags || []), ...(current.depictedElements || [])]);
-	const queries = tokenSet(current.relatedQueries);
+	const tags = tokenSet(current.tags);
 	const keyword = toPathSlug(current.keyword || '');
 
 	const scored = assets
@@ -196,11 +194,8 @@ export function findSimilarAssets(
 			let score = 0;
 			if (keyword && toPathSlug(asset.keyword || '') === keyword) score += 8;
 			if (asset.category === current.category) score += 1;
-			for (const value of [...(asset.tags || []), ...(asset.depictedElements || [])]) {
+			for (const value of asset.tags || []) {
 				if (tags.has(toPathSlug(value))) score += 3;
-			}
-			for (const value of asset.relatedQueries || []) {
-				if (queries.has(toPathSlug(value))) score += 2;
 			}
 			return { asset, score };
 		})

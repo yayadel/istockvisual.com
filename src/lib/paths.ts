@@ -1,4 +1,4 @@
-/** Clean URL helpers for tag archives (/t/) and search results (/s/). */
+/** Clean URL helpers for search results (/s/). Tag archives (/t/) redirect to /s/. */
 
 export function toPathSlug(value: string): string {
 	return value
