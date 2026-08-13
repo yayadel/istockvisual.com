@@ -398,35 +398,52 @@ export default function ImageEditor({
 			setReady(true);
 		};
 
+		const loadBlob = async (url: string, credentials: RequestCredentials) => {
+			const response = await fetch(url, { mode: 'cors', credentials });
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			const blob = await response.blob();
+			if (cancelled) return;
+			objectUrl = URL.createObjectURL(blob);
+			const img = new Image();
+			await new Promise<void>((resolve, reject) => {
+				img.onload = () => resolve();
+				img.onerror = () => reject(new Error('decode failed'));
+				img.src = objectUrl!;
+			});
+			if (cancelled) return;
+			paintFromImage(img, objectUrl);
+			objectUrl = null;
+		};
+
 		const load = async () => {
 			try {
-				const response = await fetch(imageUrl, { mode: 'cors', credentials: 'omit' });
-				if (!response.ok) throw new Error(`HTTP ${response.status}`);
-				const blob = await response.blob();
-				if (cancelled) return;
-				objectUrl = URL.createObjectURL(blob);
-				const img = new Image();
-				await new Promise<void>((resolve, reject) => {
-					img.onload = () => resolve();
-					img.onerror = () => reject(new Error('decode failed'));
-					img.src = objectUrl!;
-				});
-				if (cancelled) return;
-				paintFromImage(img, objectUrl);
-				objectUrl = null;
+				const credentials = editorSourceUrl.startsWith('/api/download/') ? 'include' : 'omit';
+				await loadBlob(editorSourceUrl, credentials);
 			} catch {
-				const img = new Image();
-				img.crossOrigin = 'anonymous';
-				img.onload = () => {
-					if (cancelled) return;
-					paintFromImage(img, imageUrl);
-				};
-				img.onerror = () => {
-					if (cancelled) return;
-					setStatus('Failed to load image for editing.');
-					setReady(true);
-				};
-				img.src = imageUrl;
+				if (assetId && isPro && editorSourceUrl.includes('size=4k')) {
+					try {
+						await loadBlob(`/api/download/${assetId}?size=1k`, 'omit');
+						return;
+					} catch {
+						/* fall through to imageUrl */
+					}
+				}
+				try {
+					await loadBlob(imageUrl, 'omit');
+				} catch {
+					const img = new Image();
+					img.crossOrigin = 'anonymous';
+					img.onload = () => {
+						if (cancelled) return;
+						paintFromImage(img, imageUrl);
+					};
+					img.onerror = () => {
+						if (cancelled) return;
+						setStatus('Failed to load image for editing.');
+						setReady(true);
+					};
+					img.src = imageUrl;
+				}
 			}
 		};
 
@@ -435,7 +452,7 @@ export default function ImageEditor({
 			cancelled = true;
 			if (objectUrl) URL.revokeObjectURL(objectUrl);
 		};
-	}, [imageUrl, revokeIfBlob]);
+	}, [assetId, editorSourceUrl, imageUrl, isPro, revokeIfBlob]);
 
 	useEffect(() => {
 		return () => {

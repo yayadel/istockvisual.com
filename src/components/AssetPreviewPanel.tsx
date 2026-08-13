@@ -21,6 +21,7 @@ export default function AssetPreviewPanel({
 	shareUrl,
 	loggedIn = false,
 	isPro = false,
+	assetId,
 }: Props) {
 	const [editing, setEditing] = useState(false);
 	const closeEditor = useCallback(() => setEditing(false), []);
