@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AssetPreviewPanel from '../../components/AssetPreviewPanel';
 import ColorPalette from '../../components/ColorPalette';
+import BasicInfoPanel from '../../components/BasicInfoPanel';
 import DownloadPanel from '../../components/DownloadPanel';
 import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
@@ -30,6 +31,8 @@ const similar = findSimilarAssets(
 	asset,
 	18,
 );
+const dimensions =
+	asset.width && asset.height ? `${asset.width} × ${asset.height}` : '—';
 ---
 
 <BaseLayout
@@ -81,38 +84,17 @@ const similar = findSimilarAssets(
 						</div>
 					</DownloadPanel>
 					<a class="btn btn--ghost" href="/tools/ai-edit">Open in AI Edit</a>
+					<BasicInfoPanel
+						client:load
+						license={asset.license || 'Standard'}
+						fileType={asset.fileType || '—'}
+						dimensions={dimensions}
+						medium={asset.medium}
+						keyword={asset.keyword}
+						keywordHref={asset.keyword ? searchPath(asset.keyword) : undefined}
+					/>
 				</aside>
 			</div>
-
-			<section class="detail__basics">
-				<h2>Basic information</h2>
-				<ul class="meta-list">
-					<li><span>License</span><span>{asset.license || 'Standard'}</span></li>
-					<li><span>Type</span><span>{asset.fileType || '—'}</span></li>
-					<li>
-						<span>Dimensions</span>
-						<span>
-							{asset.width && asset.height ? `${asset.width} × ${asset.height}` : '—'}
-						</span>
-					</li>
-					{asset.medium && (
-						<li><span>Medium</span><span>{asset.medium}</span></li>
-					)}
-					{asset.keyword && (
-						<li>
-							<span>Keyword</span>
-							<span>
-								<a href={searchPath(asset.keyword)}>{asset.keyword}</a>
-							</span>
-						</li>
-					)}
-				</ul>
-				<ul class="download-rules">
-					<li>500 and 1K: free download, no login required. Default is 1K.</li>
-					<li>2K / 4K / 8K: requires a registered Pro membership.</li>
-					<li>Pro: unlimited high-resolution downloads.</li>
-				</ul>
-			</section>
 
 			{
 				isGenerated && (
