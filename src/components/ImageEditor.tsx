@@ -367,21 +367,34 @@ export default function ImageEditor({
 	const handleRemoveBackground = useCallback(async () => {
 		const working = workingRef.current;
 		if (!working) return;
-		setBusy('Processing 0%…');
+		let lastPct = 0;
+		const setProgress = (pct: number, label = 'Processing') => {
+			const next = Math.max(lastPct, Math.min(99, Math.round(pct)));
+			lastPct = next;
+			setBusy(`${label} ${next}%…`);
+		};
+		setProgress(0);
 		setStatus(null);
 		try {
 			const { removeBackground, preload } = await import('@imgly/background-removal');
+			// Progress from imgly only covers asset download; inference has no callback.
+			// Map download → 0–80%, then hold ~90% while cutting out the subject.
 			const config = {
 				model: 'isnet_fp16' as const,
 				fetchArgs: { cache: 'force-cache' as RequestCache },
 				progress: (_key: string, current: number, total: number) => {
-					const pct = total > 0 ? Math.min(99, Math.round((current / total) * 100)) : 0;
-					setBusy(`Processing ${pct}%…`);
+					if (total <= 0) return;
+					setProgress((current / total) * 80);
 				},
 			};
 			await preload(config);
-			setBusy('Processing 99%…');
-			const blob = await removeBackground(working.toDataURL('image/png'), config);
+			setProgress(90, 'Removing background');
+			const blob = await removeBackground(working.toDataURL('image/png'), {
+				...config,
+				// Avoid download progress resetting UI to 0% during inference.
+				progress: undefined,
+			});
+			setProgress(99, 'Removing background');
 			const img = new Image();
 			const url = URL.createObjectURL(blob);
 			await new Promise<void>((resolve, reject) => {
