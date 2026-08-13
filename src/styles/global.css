@@ -2030,6 +2030,10 @@ body.upload-modal-open {
 	height: 14px;
 }
 
+.share-bar__channel:hover {
+	opacity: 0.85;
+}
+
 .share-bar__toggle {
 	display: inline-flex;
 	align-items: center;
