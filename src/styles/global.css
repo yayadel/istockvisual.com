@@ -2985,6 +2985,10 @@ body.download-auth-modal-open {
 	border-radius: var(--radius);
 }
 
+[data-theme='dark'] .color-palette__chip {
+	border-color: rgba(238, 243, 239, 0.12);
+}
+
 .color-palette__meta {
 	display: grid;
 	gap: 0.2rem;
