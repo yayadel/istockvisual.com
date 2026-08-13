@@ -106,10 +106,14 @@ export default function ImageEditor({
 		[aspectId],
 	);
 
-	const canvasSize = useMemo(() => {
-		if (!natural.w || !natural.h) return { width: 1024, height: 768 };
-		return resolveEditorCanvasSize(sizeId, aspectPreset.ratio, natural.w, natural.h);
-	}, [aspectPreset.ratio, natural, sizeId]);
+	const sizeOptions = useMemo(() => {
+		const sourceW = natural.w || 1536;
+		const sourceH = natural.h || 1024;
+		return DOWNLOAD_SIZES.map((size) => ({
+			...size,
+			output: resolveEditorCanvasSize(size.id, aspectPreset.ratio, sourceW, sourceH),
+		}));
+	}, [aspectPreset.ratio, natural.h, natural.w]);
 
 	const rebuildFramePreview = useCallback(() => {
 		const working = workingRef.current;
