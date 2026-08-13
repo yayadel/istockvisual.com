@@ -1030,7 +1030,6 @@ body.upload-modal-open {
 }
 
 .download-panel {
-	position: relative;
 	display: grid;
 	gap: 0.7rem;
 	margin: 0 0 0.75rem;
@@ -1042,6 +1041,10 @@ body.upload-modal-open {
 	font-weight: 700;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
+}
+
+.download-split-wrap {
+	position: relative;
 }
 
 .download-split {
@@ -1104,7 +1107,7 @@ body.upload-modal-open {
 .download-menu {
 	position: absolute;
 	z-index: 20;
-	top: calc(100% - 0.15rem);
+	top: calc(100% + 0.35rem);
 	left: 0;
 	right: 0;
 	margin: 0;

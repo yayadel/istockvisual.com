@@ -177,58 +177,59 @@ export default function DownloadPanel({
 		<div className="download-panel" ref={rootRef}>
 			<p className="download-panel__label">Download</p>
 
-			<div className={`download-split${menuOpen ? ' is-open' : ''}`}>
-				<button
-					type="button"
-					className="download-split__main"
-					disabled={busy}
-					onClick={() => downloadSize(selected)}
-				>
-					{busy ? 'Downloading…' : 'Download'}
-					<span className="download-split__size">{selectedSize.label}</span>
-				</button>
-				<button
-					type="button"
-					className="download-split__toggle"
-					disabled={busy}
-					aria-expanded={menuOpen}
-					aria-haspopup="listbox"
-					aria-label="Choose download size"
-					onClick={() => setMenuOpen((open) => !open)}
-				>
-					<ChevronIcon />
-				</button>
+			<div className="download-split-wrap">
+				<div className={`download-split${menuOpen ? ' is-open' : ''}`}>
+					<button
+						type="button"
+						className="download-split__main"
+						disabled={busy}
+						onClick={() => downloadSize(selected)}
+					>
+						{busy ? 'Downloading…' : 'Download'}
+						<span className="download-split__size">{selectedSize.label}</span>
+					</button>
+					<button
+						type="button"
+						className="download-split__toggle"
+						disabled={busy}
+						aria-expanded={menuOpen}
+						aria-haspopup="listbox"
+						aria-label="Choose download size"
+						onClick={() => setMenuOpen((open) => !open)}
+					>
+						<ChevronIcon />
+					</button>
+				</div>
+
+				{menuOpen && (
+					<ul className="download-menu" role="listbox" aria-label="Download sizes">
+						{sizes.map((size) => {
+							const hint = `${size.output.width} × ${size.output.height}`;
+							const needsPro = !isFreeDownloadSize(size.id);
+							return (
+								<li key={size.id} role="option" aria-selected={selected === size.id}>
+									<button
+										type="button"
+										className={`download-menu__item${selected === size.id ? ' is-selected' : ''}`}
+										onClick={() => onSelectSize(size.id)}
+									>
+										<span className="download-menu__label">
+											{size.label}
+											{needsPro && (
+												<em className="download-pro-badge">
+													<CrownIcon />
+													Pro
+												</em>
+											)}
+										</span>
+										<span className="download-menu__dims">{hint}</span>
+									</button>
+								</li>
+							);
+						})}
+					</ul>
+				)}
 			</div>
-
-			{menuOpen && (
-				<ul className="download-menu" role="listbox" aria-label="Download sizes">
-					{sizes.map((size) => {
-						const hint = `${size.output.width} × ${size.output.height}`;
-						const needsPro = !isFreeDownloadSize(size.id);
-						return (
-							<li key={size.id} role="option" aria-selected={selected === size.id}>
-								<button
-									type="button"
-									className={`download-menu__item${selected === size.id ? ' is-selected' : ''}`}
-									onClick={() => onSelectSize(size.id)}
-								>
-									<span className="download-menu__label">
-										{size.label}
-										{needsPro && (
-											<em className="download-pro-badge">
-												<CrownIcon />
-												Pro
-											</em>
-										)}
-									</span>
-									<span className="download-menu__dims">{hint}</span>
-								</button>
-							</li>
-						);
-					})}
-				</ul>
-			)}
-
 			{busy && (
 				<p className="download-panel__hint" aria-live="polite">
 					Downloading {title}…
