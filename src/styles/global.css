@@ -2573,10 +2573,16 @@ body.download-auth-modal-open {
 	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
+[data-theme='dark'] .download-menu__row {
+	border-bottom-color: rgba(238, 243, 239, 0.08);
+}
+
+[data-theme='dark'] .download-menu__row--pro-start {
+	border-top-color: rgba(238, 243, 239, 0.16);
+}
+
 [data-theme='dark'] .download-menu__item:hover,
-[data-theme='dark'] .download-menu__item.is-selected,
-[data-theme='dark'] .download-menu__row:hover,
-[data-theme='dark'] .download-menu__row.is-selected {
+[data-theme='dark'] .download-menu__row:hover {
 	background: rgba(196, 240, 75, 0.08);
 }
 
