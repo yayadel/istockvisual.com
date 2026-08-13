@@ -203,6 +203,66 @@ textarea {
 	color: #c4f04b;
 }
 
+.nav__dropdown {
+	position: relative;
+}
+
+.nav__dropdown-trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.nav__dropdown-trigger:hover,
+.nav__dropdown-trigger[aria-current='page'],
+.nav__dropdown.is-open .nav__dropdown-trigger {
+	color: #ffffff;
+}
+
+.nav__dropdown-caret {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 5px solid currentColor;
+	opacity: 0.75;
+}
+
+.nav__dropdown-menu {
+	position: absolute;
+	top: calc(100% + 0.55rem);
+	left: 0;
+	z-index: 50;
+	min-width: 10.5rem;
+	padding: 0.35rem;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 4px;
+	background: #141414;
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.nav__dropdown-menu a {
+	display: block;
+	padding: 0.55rem 0.7rem;
+	border-radius: 3px;
+	color: rgba(255, 255, 255, 0.82);
+	white-space: nowrap;
+}
+
+.nav__dropdown-menu a:hover,
+.nav__dropdown-menu a[aria-current='page'] {
+	background: rgba(255, 255, 255, 0.08);
+	color: #ffffff;
+}
+
 .nav__spacer {
 	width: 1px;
 	height: 1.1rem;

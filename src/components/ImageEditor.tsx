@@ -1116,7 +1116,9 @@ export default function ImageEditor({
 					</div>
 				</div>
 			</div>
-		</div>,
-		document.body,
+		</div>
 	);
+
+	if (isPage) return editor;
+	return createPortal(editor, document.body);
 }
