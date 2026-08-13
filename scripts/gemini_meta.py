@@ -18,7 +18,19 @@ from pydantic import BaseModel, Field
 ROOT = Path(__file__).resolve().parents[1]
 DEV_VARS = ROOT / ".dev.vars"
 HOST_PROMPT = ROOT / "host_prompt.txt"
-PLACEHOLDER = "[Insert topic keyword here]"
+CATEGORIES_FILE = ROOT / "categories"
+KEYWORD_PLACEHOLDER = "[Insert topic keyword here]"
+CATEGORIES_PLACEHOLDER = "[Insert allowed content categories here]"
+
+
+def load_content_categories() -> list[str]:
+	raw = CATEGORIES_FILE.read_text(encoding="utf-8").strip()
+	return [item.strip() for item in raw.split(",") if item.strip()]
+
+
+CONTENT_CATEGORIES = load_content_categories()
+CONTENT_CATEGORY_LOOKUP = {item.lower(): item for item in CONTENT_CATEGORIES}
+CONTENT_CATEGORIES_CSV = ", ".join(CONTENT_CATEGORIES)
 
 
 class ColorSwatch(BaseModel):
@@ -44,14 +56,10 @@ class AssetMeta(BaseModel):
 		min_length=1,
 		max_length=3,
 		description=(
-			"1 to 3 exact labels matching what the image depicts (not loose word links). "
-			"Gaming mouse/peripherals = Technology, never Sports. Sports = physical athletics only. "
-			"Allowed: Business, Finance, Technology, AI, People, "
-			"Workplace, Lifestyle, Landscapes, Nature, Plants, Animals, Cityscapes, "
-			"Architecture, Interior, Food, Beverage, Coffee, Education, Culture, "
-			"Medical, Health, Sports, Advertising, E-commerce, Web, Vectors, "
-			"Illustrations, Photography, Aerial, 3D Assets, Backgrounds, Textures, "
-			"Abstract, Conceptual, Sustainability, Mood"
+			"REQUIRED: 1 to 3 exact labels from the allowed content-category list, "
+			"matching what the image depicts (visible subject/scene). "
+			"Gaming mouse/peripherals = Technology (never Sports). "
+			f"Allowed labels only: {CONTENT_CATEGORIES_CSV}"
 		),
 	)
 	relatedSearchQueries: List[str] = Field(description="Related search queries")
@@ -94,9 +102,15 @@ def apply_proxy(dev_vars: dict[str, str]) -> None:
 
 def build_prompt(keyword: str) -> str:
 	template = HOST_PROMPT.read_text(encoding="utf-8")
-	if PLACEHOLDER not in template:
-		raise SystemExit("host_prompt.txt missing placeholder")
-	return template.replace(PLACEHOLDER, keyword.strip())
+	if KEYWORD_PLACEHOLDER not in template:
+		raise SystemExit("host_prompt.txt missing keyword placeholder")
+	if CATEGORIES_PLACEHOLDER not in template:
+		raise SystemExit("host_prompt.txt missing content-categories placeholder")
+	return (
+		template.replace(CATEGORIES_PLACEHOLDER, CONTENT_CATEGORIES_CSV).replace(
+			KEYWORD_PLACEHOLDER, keyword.strip()
+		)
+	)
 
 
 def extract_json(text: str) -> str:
@@ -109,6 +123,86 @@ def extract_json(text: str) -> str:
 	if start >= 0 and end > start:
 		return trimmed[start : end + 1]
 	return trimmed
+
+
+def normalize_content_categories(values: list[str] | None) -> list[str]:
+	out: list[str] = []
+	seen: set[str] = set()
+	for value in values or []:
+		if not isinstance(value, str):
+			continue
+		matched = CONTENT_CATEGORY_LOOKUP.get(value.strip().lower())
+		if not matched:
+			continue
+		key = matched.lower()
+		if key in seen:
+			continue
+		seen.add(key)
+		out.append(matched)
+		if len(out) >= 3:
+			break
+	return out
+
+
+def fallback_content_categories(title: str, keyword: str) -> list[str]:
+	"""Conservative keyword hits when the model omits/invalidates categories."""
+	text = f"{title} {keyword}".lower()
+	aliases: dict[str, list[str]] = {
+		"Technology": [
+			"tech",
+			"digital",
+			"hardware",
+			"software",
+			"computer",
+			"device",
+			"wireless",
+			"mouse",
+			"keyboard",
+			"headset",
+			"laptop",
+			"gaming",
+			"peripheral",
+		],
+		"AI": ["artificial intelligence", "machine learning", "neural", " llm"],
+		"Coffee": ["coffee", "espresso", "latte", "cafe"],
+		"Food": ["food", "meal", "cuisine", "restaurant"],
+		"Nature": ["nature", "forest", "outdoor", "wilderness"],
+		"Landscapes": ["landscape", "mountain", "valley", "scenic"],
+		"Architecture": ["architecture", "building", "roof", "facade"],
+		"Interior": ["interior", "room", "furniture", "indoor"],
+		"Medical": ["medical", "hospital", "clinic", "doctor"],
+		"Health": ["health", "wellness", "fitness"],
+		"Sports": ["athlete", "soccer", "basketball", "tennis", "stadium"],
+		"Advertising": ["advertising", "marketing", "campaign", "brand"],
+		"E-commerce": ["e-commerce", "ecommerce", "shopping", "retail", "product"],
+		"Photography": ["photo", "photograph", "studio"],
+		"Business": ["business", "corporate", "office", "startup"],
+		"Finance": ["finance", "bank", "invest", "currency"],
+		"People": ["people", "person", "portrait", "crowd"],
+		"Workplace": ["workplace", "desk", "meeting"],
+	}
+	scored: list[tuple[str, int]] = []
+	for label in CONTENT_CATEGORIES:
+		score = 0
+		if re.search(rf"(?<![a-z0-9]){re.escape(label.lower())}(?![a-z0-9])", text):
+			score += 12
+		for alias in aliases.get(label, []):
+			if re.search(rf"(?<![a-z0-9]){re.escape(alias.lower())}(?![a-z0-9])", text):
+				score += 6
+		if score:
+			scored.append((label, score))
+	scored.sort(key=lambda item: (-item[1], item[0]))
+	return [label for label, _ in scored[:3]]
+
+
+def ensure_content_categories(meta: AssetMeta, keyword: str) -> AssetMeta:
+	cats = normalize_content_categories(meta.contentCategories)
+	if not cats:
+		cats = fallback_content_categories(meta.imagePageTitle or "", keyword)
+	if not cats:
+		cats = ["Photography"] if "photo" in (meta.medium or "").lower() else ["Advertising"]
+	meta.contentCategories = cats[:3]
+	return meta
 
 
 def generate_meta(keyword: str) -> AssetMeta:
@@ -162,11 +256,13 @@ def generate_meta(keyword: str) -> AssetMeta:
 		raise SystemExit("Gemini returned empty output")
 
 	try:
-		return AssetMeta.model_validate_json(extract_json(raw))
+		meta = AssetMeta.model_validate_json(extract_json(raw))
 	except Exception:
 		# Fallback if schema validation fails but JSON is close
 		data = json.loads(extract_json(raw))
-		return AssetMeta.model_validate(data)
+		meta = AssetMeta.model_validate(data)
+
+	return ensure_content_categories(meta, keyword)
 
 
 def main() -> None:
@@ -180,15 +276,23 @@ def main() -> None:
 
 	meta = generate_meta(args.keyword)
 	payload = meta.model_dump()
-	# Topical categories are contentCategories (1–3 from fixed list).
+	# contentCategories is the topical category field (1–3 from /categories).
 	# depictedElements is unused; tags already cover depicted objects.
 	payload["depictedElements"] = []
+	payload["contentCategories"] = normalize_content_categories(
+		payload.get("contentCategories")
+	) or payload.get("contentCategories") or []
+
 	text = json.dumps(payload, ensure_ascii=False, indent=2)
 	if args.out:
 		out_path = Path(args.out)
 		out_path.parent.mkdir(parents=True, exist_ok=True)
 		out_path.write_text(text + "\n", encoding="utf-8")
 		print(str(out_path), file=sys.stderr)
+		print(
+			f"contentCategories: {json.dumps(payload.get('contentCategories'), ensure_ascii=False)}",
+			file=sys.stderr,
+		)
 	print(text)
 
 

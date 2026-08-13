@@ -105,6 +105,28 @@ if (!meta?.imagePrompt) {
 	process.exit(1);
 }
 
+const categoriesPath = path.join(root, 'categories');
+const allowed = fs
+	.readFileSync(categoriesPath, 'utf8')
+	.split(',')
+	.map((item) => item.trim())
+	.filter(Boolean);
+const allowedMap = new Map(allowed.map((item) => [item.toLowerCase(), item]));
+const contentCategories = [];
+for (const value of meta.contentCategories || []) {
+	const matched = allowedMap.get(String(value || '').trim().toLowerCase());
+	if (!matched || contentCategories.includes(matched)) continue;
+	contentCategories.push(matched);
+	if (contentCategories.length >= 3) break;
+}
+if (contentCategories.length === 0) {
+	console.error('Gemini JSON missing valid contentCategories (1–3 from /categories)');
+	process.exit(1);
+}
+meta.contentCategories = contentCategories;
+meta.depictedElements = [];
+fs.writeFileSync(metaPath, `${JSON.stringify(meta, null, 2)}\n`, 'utf8');
+
 const relativeMeta = path.relative(root, metaPath).replaceAll('\\', '/');
 console.log(
 	JSON.stringify(
