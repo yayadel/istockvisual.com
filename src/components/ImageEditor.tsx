@@ -1512,7 +1512,7 @@ export default function ImageEditor({
 								<>
 									<h3>Expand canvas</h3>
 									<p>Canvas expand is included with Pro — it grows the frame and fills new margins.</p>
-									<a className="btn btn--primary" href={loggedIn ? '/pricing' : '/login'}>
+									<a className="btn btn--primary" href={loggedIn ? '/account' : '/login'}>
 										{loggedIn ? 'Upgrade to Pro' : 'Sign in'}
 									</a>
 								</>

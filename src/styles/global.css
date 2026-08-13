@@ -3393,9 +3393,20 @@ body.image-editor-modal-open {
 
 .image-editor-modal__tool span {
 	flex: 0 1 auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
 	font-size: 0.84rem;
 	font-weight: 650;
 	white-space: nowrap;
+}
+
+.image-editor-modal__tool.is-locked {
+	opacity: 0.72;
+}
+
+.image-editor-modal__tool.is-locked small {
+	color: #b45309;
 }
 
 .image-editor-modal__tool small {
