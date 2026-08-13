@@ -2,6 +2,9 @@ import sharp from 'sharp';
 
 export const MASTER_LONG_EDGE = 4096;
 
+/** Listing / detail display JPEG. ~100KB, not used for paid downloads. */
+export const PREVIEW_LONG_EDGE = 1024;
+
 export async function buildJpegVariant(input, longEdge, quality = 86, mode = 'inside') {
 	const resize =
 		mode === 'width'

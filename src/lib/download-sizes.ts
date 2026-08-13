@@ -3,6 +3,8 @@ export const FREE_DOWNLOAD_WIDTH = 500;
 /** Only this size is stored in R2. Other download sizes are drawn in the browser. */
 export const MASTER_DOWNLOAD_SIZE = '4k' as const;
 export const MASTER_LONG_EDGE = 4096;
+export const PREVIEW_SIZE_ID = 'preview';
+export const PREVIEW_LONG_EDGE = 1024;
 
 export const DOWNLOAD_SIZES = [
 	{ id: '500', label: '500', longEdge: 500, free: true, fit: 'width' },
