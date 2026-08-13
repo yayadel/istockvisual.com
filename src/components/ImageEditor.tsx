@@ -1153,8 +1153,8 @@ export default function ImageEditor({
 
 								{tool === 'expand' && ready && expandTarget && (
 									<p className="image-editor-modal__expand-meta">
-										{pendingCommit
-											? `Canvas ${natural.w}×${natural.h} · Original ${expandOrigin.w}×${expandOrigin.h} · +${expandPct}% added`
+										{expandSettled
+											? `${natural.w}×${natural.h}`
 											: `${expandOrigin.w || natural.w}×${expandOrigin.h || natural.h} → ${expandTarget.width}×${expandTarget.height} · +${expandPct}%`}
 									</p>
 								)}
