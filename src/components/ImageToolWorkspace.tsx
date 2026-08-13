@@ -92,63 +92,77 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 
 	return (
 		<div className="image-tool-page">
-			<aside className="image-tool-page__privacy" role="note">
-				<p className="image-tool-page__privacy-eyebrow">Free · Private · Local</p>
-				<h2>This image tool is completely free</h2>
-				<p>
-					Everything runs in your browser. We do <strong>not</strong> store your personal
-					information, and we do <strong>not</strong> upload or keep the images you edit —
-					files stay on your device.
-				</p>
-			</aside>
-
-			<label
-				className="image-tool-page__dropzone"
-				onDragOver={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.add('is-dragover');
-				}}
-				onDragLeave={(event) => {
-					event.currentTarget.classList.remove('is-dragover');
-				}}
-				onDrop={onDrop}
-			>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*"
-					hidden
-					onChange={onInputChange}
-				/>
-				<span className="image-tool-page__dropzone-title">
-					{isExample ? 'Upload your image' : 'Replace image'}
-				</span>
-				<span className="image-tool-page__dropzone-hint">
-					Drag &amp; drop, or click to choose a file. Try the example editor below first —
-					Adjust, Crop &amp; Flip, Remove BG, and Expand all run on-device.
-				</span>
-				<span className="btn btn--primary image-tool-page__dropzone-btn">Choose image</span>
-			</label>
+			<section className="image-tool-page__upload" aria-label="Upload image">
+				<label
+					className="image-tool-page__dropzone"
+					onDragOver={(event) => {
+						event.preventDefault();
+						event.currentTarget.classList.add('is-dragover');
+					}}
+					onDragLeave={(event) => {
+						event.currentTarget.classList.remove('is-dragover');
+					}}
+					onDrop={onDrop}
+				>
+					<input
+						ref={inputRef}
+						type="file"
+						accept="image/*"
+						hidden
+						onChange={onInputChange}
+					/>
+					<span className="image-tool-page__dropzone-kicker">Start here</span>
+					<span className="image-tool-page__dropzone-title">
+						{isExample ? 'Drop your photo' : 'Swap in another photo'}
+					</span>
+					<span className="image-tool-page__dropzone-hint">
+						PNG, JPG, or WebP. Editing stays on this device.
+					</span>
+					<span className="image-tool-page__dropzone-btn">Choose image</span>
+				</label>
+				<ul className="image-tool-page__features" aria-label="Included tools">
+					<li>Adjust</li>
+					<li>Crop &amp; Flip</li>
+					<li>Remove BG</li>
+					<li>Expand</li>
+				</ul>
+			</section>
 
 			{error && <p className="image-tool-page__error">{error}</p>}
 
-			<div className="image-tool-page__editor" ref={editorWrapRef}>
-				{isExample && (
-					<p className="image-tool-page__example-badge">
-						Showing <strong>Example</strong> image — upload yours above anytime.
-					</p>
-				)}
-				<ImageEditor
-					key={imageUrl}
-					variant="page"
-					imageUrl={imageUrl}
-					title={title}
-					onClose={resetToExample}
-					loggedIn={loggedIn}
-					isPro={isPro}
-					allSizesFree
-				/>
-			</div>
+			<section className="image-tool-page__studio" ref={editorWrapRef} aria-label="Editor">
+				<div className="image-tool-page__studio-bar">
+					<div>
+						<p className="image-tool-page__studio-kicker">Workspace</p>
+						<h2>{isExample ? 'Try the example' : 'Your edit session'}</h2>
+					</div>
+					{isExample ? (
+						<p className="image-tool-page__example-badge">
+							Demo file · replace anytime above
+						</p>
+					) : (
+						<button
+							type="button"
+							className="image-tool-page__reset-example"
+							onClick={resetToExample}
+						>
+							Back to example
+						</button>
+					)}
+				</div>
+				<div className="image-tool-page__studio-frame">
+					<ImageEditor
+						key={imageUrl}
+						variant="page"
+						imageUrl={imageUrl}
+						title={title}
+						onClose={resetToExample}
+						loggedIn={loggedIn}
+						isPro={isPro}
+						allSizesFree
+					/>
+				</div>
+			</section>
 		</div>
 	);
 }
