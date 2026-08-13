@@ -300,6 +300,23 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 
 <script>
 	var navCloseTimer = null;
+	var navQuery = window.matchMedia('(max-width: 960px)');
+
+	function isMobileNav() {
+		return navQuery.matches;
+	}
+
+	function setMobileNavOpen(open) {
+		var toggle = document.querySelector('[data-nav-toggle]');
+		var backdrop = document.querySelector('[data-nav-backdrop]');
+		document.body.classList.toggle('nav-open', open);
+		if (toggle) {
+			toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+			toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+		}
+		if (backdrop) backdrop.hidden = !open;
+		if (!open) closeAllNavDropdowns();
+	}
 
 	function closeAllNavDropdowns(except) {
 		document.querySelectorAll('[data-nav-dropdown]').forEach(function (root) {
@@ -382,9 +399,11 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 
 	document.querySelectorAll('[data-nav-dropdown]').forEach(function (root) {
 		root.addEventListener('pointerenter', function () {
+			if (isMobileNav()) return;
 			openNavDropdown(root);
 		});
 		root.addEventListener('pointerleave', function () {
+			if (isMobileNav()) return;
 			scheduleCloseNavDropdown(root);
 		});
 	});
@@ -392,6 +411,17 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 	document.addEventListener('click', function (event) {
 		var target = event.target;
 		if (!(target instanceof Element)) return;
+
+		if (target.closest('[data-nav-toggle]')) {
+			event.preventDefault();
+			setMobileNavOpen(!document.body.classList.contains('nav-open'));
+			return;
+		}
+
+		if (target.closest('[data-nav-backdrop]')) {
+			setMobileNavOpen(false);
+			return;
+		}
 
 		var trigger = target.closest('[data-nav-dropdown-trigger]');
 		if (trigger) {
@@ -407,7 +437,7 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 			return;
 		}
 
-		if (!target.closest('[data-nav-dropdown]')) {
+		if (!target.closest('[data-nav-dropdown]') && !isMobileNav()) {
 			closeAllNavDropdowns();
 		}
 	});
