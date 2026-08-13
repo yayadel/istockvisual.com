@@ -431,14 +431,73 @@ export default function ImageEditor({
 	const resetRemoveBg = () => {
 		restoreOriginalWorking();
 		setKeepCircle(DEFAULT_KEEP_CIRCLE);
-		setStatus('Background removal reset to original.');
+		setStatus('Background removal reset to last applied image.');
 	};
 
 	const resetExpand = () => {
 		restoreOriginalWorking();
 		setCrop(DEFAULT_CROP);
-		setStatus('Expand reset to original.');
+		setStatus('Expand reset to last applied image.');
 	};
+
+	const applyAdjustChanges = useCallback(() => {
+		const working = workingRef.current;
+		if (!working) return;
+		if (!hasAdjustChanges(adjust)) {
+			setStatus('No color adjustments to apply.');
+			return;
+		}
+		const baked = bakeAdjustToCanvas(working, adjust);
+		setWorkingFromCanvas(baked);
+		originalRef.current = cloneCanvas(baked);
+		setAdjust(DEFAULT_ADJUST);
+		setPendingCommit(false);
+		setStatus('Adjust applied. Continue with another tool or download.');
+	}, [adjust, setWorkingFromCanvas]);
+
+	const applyTransformChanges = useCallback(() => {
+		const working = workingRef.current;
+		if (!working) return;
+		const transform = { rotation, fineRotation, flipX, flipY, crop };
+		if (!hasTransformChanges(transform)) {
+			setStatus('No crop or flip changes to apply.');
+			return;
+		}
+		const baked = bakeTransformToCanvas(
+			working,
+			transform,
+			canvasSize.width,
+			canvasSize.height,
+		);
+		setWorkingFromCanvas(baked);
+		originalRef.current = cloneCanvas(baked);
+		setRotation(0);
+		setFineRotation(0);
+		setFlipX(false);
+		setFlipY(false);
+		setAspectId('free');
+		setCrop(DEFAULT_CROP);
+		setPendingCommit(false);
+		setStatus('Crop & Flip applied. Continue with another tool or download.');
+	}, [canvasSize.height, canvasSize.width, crop, fineRotation, flipX, flipY, rotation, setWorkingFromCanvas]);
+
+	const applyRemoveBgChanges = useCallback(() => {
+		if (!pendingCommit) {
+			setStatus('Run Remove background first, then apply.');
+			return;
+		}
+		commitBaseline();
+		setStatus('Background removal applied. Continue with another tool or download.');
+	}, [commitBaseline, pendingCommit]);
+
+	const applyExpandChanges = useCallback(() => {
+		if (!pendingCommit) {
+			setStatus('Run Expand first, then apply.');
+			return;
+		}
+		commitBaseline();
+		setStatus('Expand applied. Continue with another tool or download.');
+	}, [commitBaseline, pendingCommit]);
 
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
