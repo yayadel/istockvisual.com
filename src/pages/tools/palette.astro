@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolsMasthead from '../../components/ToolsMasthead.astro';
+import PaletteApp from '../../components/PaletteApp';
+---
+
+<BaseLayout
+	title="Palette Generator — Extract Colors from Images"
+	description="Extract dominant colors with median cut, copy HEX/RGB/HSL, export CSS or Tailwind, and share a palette card."
+>
+	<div class="tools-page">
+		<ToolsMasthead
+			active="palette"
+			title="Palette Generator"
+			lede="Pull a usable color system from any photo — swatches, eyedropper, CSS and Tailwind export."
+			privacy="Free to use. Extraction is local. We don’t store images or color data."
+		/>
+		<PaletteApp client:only="react">
+			<div class="tools-page__boot" aria-hidden="true">
+				<div class="tools-rail">
+					<p class="tools-rail__copy">Loading palette tool…</p>
+				</div>
+			</div>
+		</PaletteApp>
+	</div>
+</BaseLayout>

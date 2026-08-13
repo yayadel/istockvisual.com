@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolsMasthead from '../../components/ToolsMasthead.astro';
+import SocialResizerApp from '../../components/SocialResizerApp';
+---
+
+<BaseLayout
+	title="Social Resizer — Multi-Platform Image Sizes"
+	description="Batch resize images for Xiaohongshu, WeChat, Douyin, banners, and avatars. Cover crop or blur-pad — all local."
+>
+	<div class="tools-page">
+		<ToolsMasthead
+			active="social"
+			title="Social Resizer"
+			lede="One batch, five platform frames — crop with focus or pad with a blurred backdrop."
+			privacy="Free to use. Resizing stays in the browser. Nothing is uploaded."
+		/>
+		<SocialResizerApp client:only="react">
+			<div class="tools-page__boot" aria-hidden="true">
+				<div class="tools-rail">
+					<p class="tools-rail__copy">Loading resizer…</p>
+				</div>
+			</div>
+		</SocialResizerApp>
+	</div>
+</BaseLayout>

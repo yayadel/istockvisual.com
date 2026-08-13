@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolsMasthead from '../../components/ToolsMasthead.astro';
+import VectorizerApp from '../../components/VectorizerApp';
+---
+
+<BaseLayout
+	title="Image Vectorizer — Bitmap to SVG"
+	description="Convert bitmaps to SVG vectors in your browser. Free, private, local color quantization and path tracing."
+>
+	<div class="tools-page">
+		<ToolsMasthead
+			active="vectorize"
+			title="Image Vectorizer"
+			lede="Trace bitmaps into SVG paths with color control, blur, and a before/after slider."
+			privacy="Free to use. Tracing runs on your device. Uploads are never stored."
+		/>
+		<VectorizerApp client:only="react">
+			<div class="tools-page__boot" aria-hidden="true">
+				<div class="tools-rail">
+					<p class="tools-rail__copy">Loading vectorizer…</p>
+				</div>
+			</div>
+		</VectorizerApp>
+	</div>
+</BaseLayout>

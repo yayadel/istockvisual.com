@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolsMasthead from '../../components/ToolsMasthead.astro';
+import WatermarkApp from '../../components/WatermarkApp';
+---
+
+<BaseLayout
+	title="Batch Watermark — Text & Logo"
+	description="Apply responsive text or logo watermarks in bulk. Nine-point placement or diagonal tile — all on-device."
+>
+	<div class="tools-page">
+		<ToolsMasthead
+			active="watermark"
+			title="Batch Watermark"
+			lede="Text or logo marks that scale with each photo’s longest edge — consistent from thumbnails to 4K."
+			privacy="Free to use. Compositing is local. Files never leave this tab."
+		/>
+		<WatermarkApp client:only="react">
+			<div class="tools-page__boot" aria-hidden="true">
+				<div class="tools-rail">
+					<p class="tools-rail__copy">Loading watermark tool…</p>
+				</div>
+			</div>
+		</WatermarkApp>
+	</div>
+</BaseLayout>
