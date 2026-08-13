@@ -45,11 +45,47 @@ const similar = findSimilarAssets(
 	asset,
 	18,
 );
+
+const origin = Astro.url.origin;
+const pagePath = `/${category.slug}/${asset.slug}`;
+const pageUrl = absoluteUrl(pagePath, origin);
+const seoTitle = assetSearchTitle(asset.title);
+const seoDescription = assetSearchDescription({
+	title: asset.title,
+	shortDescription: asset.shortDescription,
+	description: asset.description,
+	category: category.slug,
+});
+const ogImage = asset.previewUrl ? absoluteUrl(asset.previewUrl, origin) : undefined;
+const jsonLd = assetJsonLd({
+	origin,
+	pagePath,
+	title: asset.title,
+	seoTitle,
+	seoDescription,
+	imageUrl: ogImage,
+	width: asset.width,
+	height: asset.height,
+	fileType: asset.fileType,
+	tags,
+	publishedAt: asset.publishedAt,
+	categorySlug: category.slug,
+	categoryLabel: category.label,
+	contentCategories,
+});
 ---
 
 <BaseLayout
-	title={asset.title}
-	description={asset.shortDescription || asset.description || `${asset.title} on iStockVisual`}
+	title={seoTitle}
+	description={seoDescription}
+	exactTitle
+	canonicalUrl={pageUrl}
+	ogType="article"
+	ogImage={ogImage}
+	ogImageAlt={asset.title}
+	ogImageWidth={asset.width}
+	ogImageHeight={asset.height}
+	jsonLd={jsonLd}
 >
 	<article class="detail">
 		<div class="detail__shell">
