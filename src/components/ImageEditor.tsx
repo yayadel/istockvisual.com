@@ -402,7 +402,7 @@ export default function ImageEditor({
 	}, [canvasSize.height, canvasSize.width, keepDragging, pointerToNorm]);
 
 	const selectSize = (next: DownloadSizeId) => {
-		if (!isFreeDownloadSize(next)) {
+		if (!allSizesFree && !isFreeDownloadSize(next)) {
 			if (!loggedIn) {
 				setSizeGateMessage('Sign in and upgrade to Pro for 2K / 4K / 8K.');
 				return;
@@ -686,7 +686,7 @@ export default function ImageEditor({
 	}, [adjust, canvasSize, crop, fineRotation, flipX, flipY, rotation]);
 
 	const handleDownload = useCallback(() => {
-		if (!isFreeDownloadSize(sizeId)) {
+		if (!allSizesFree && !isFreeDownloadSize(sizeId)) {
 			if (!loggedIn) {
 				setSizeGateMessage('Sign in and upgrade to Pro for 2K / 4K / 8K.');
 				return;
@@ -707,7 +707,7 @@ export default function ImageEditor({
 			link.click();
 			URL.revokeObjectURL(url);
 		}, 'image/png');
-	}, [buildExportCanvas, isPro, loggedIn, sizeId, title]);
+	}, [allSizesFree, buildExportCanvas, isPro, loggedIn, sizeId, title]);
 
 	const stop = (event: React.SyntheticEvent) => {
 		event.stopPropagation();
