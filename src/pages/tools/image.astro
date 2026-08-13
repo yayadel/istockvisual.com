@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolsMasthead from '../../components/ToolsMasthead.astro';
 import ImageToolWorkspace from '../../components/ImageToolWorkspace';
 
 const user = Astro.locals.user;
@@ -9,37 +10,17 @@ const user = Astro.locals.user;
 	title="Image Tool — Free Browser Photo Editor"
 	description="Free on-device image editor: adjust, crop, remove background, and expand. No uploads stored. No personal data kept."
 >
-	<section class="image-tool-hero" aria-labelledby="image-tool-title">
-		<div class="image-tool-hero__media" aria-hidden="true">
-			<img src="/demo/studio-orb.jpg" alt="" />
-		</div>
-		<div class="image-tool-hero__veil" aria-hidden="true"></div>
-		<div class="image-tool-hero__content">
-			<p class="image-tool-hero__eyebrow">iStockVisual · Tool</p>
-			<h1 id="image-tool-title">Image Tool</h1>
-			<p class="image-tool-hero__lede">
-				Edit any photo in your browser — adjust, crop, remove background, expand.
-			</p>
-			<ul class="image-tool-hero__trust">
-				<li>
-					<strong>Free</strong>
-					<span>Every size, every tool</span>
-				</li>
-				<li>
-					<strong>Private</strong>
-					<span>No personal data kept</span>
-				</li>
-				<li>
-					<strong>Local</strong>
-					<span>Images never leave your device</span>
-				</li>
-			</ul>
-		</div>
-	</section>
-
-	<ImageToolWorkspace
-		client:load
-		loggedIn={Boolean(user)}
-		isPro={user?.plan === 'pro'}
-	/>
+	<div class="tools-page">
+		<ToolsMasthead
+			active="image"
+			title="Image Tool"
+			lede="Adjust, crop, remove background, and expand — right in the browser."
+			privacy="Free to use. Runs on your device. We don’t store uploads or personal data."
+		/>
+		<ImageToolWorkspace
+			client:load
+			loggedIn={Boolean(user)}
+			isPro={user?.plan === 'pro'}
+		/>
+	</div>
 </BaseLayout>

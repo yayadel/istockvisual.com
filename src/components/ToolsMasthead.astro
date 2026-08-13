@@ -1,0 +1,20 @@
+---
+interface Props {
+	title: string;
+	lede: string;
+	privacy: string;
+	active: 'image' | 'convert';
+}
+
+const { title, lede, privacy, active } = Astro.props;
+---
+
+<header class="tools-masthead">
+	<nav class="tools-masthead__switch" aria-label="Tools">
+		<a href="/tools/image" aria-current={active === 'image' ? 'page' : undefined}>Edit</a>
+		<a href="/tools/convert" aria-current={active === 'convert' ? 'page' : undefined}>Convert</a>
+	</nav>
+	<h1 class="tools-masthead__title">{title}</h1>
+	<p class="tools-masthead__lede">{lede}</p>
+	<p class="tools-masthead__privacy">{privacy}</p>
+</header>
