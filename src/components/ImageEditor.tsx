@@ -5,6 +5,7 @@ import {
 	ADJUST_SLIDERS,
 	DEFAULT_ADJUST,
 	DEFAULT_DOWNLOAD_SIZE,
+	DEFAULT_KEEP_CIRCLE,
 	DOWNLOAD_SIZES,
 	EDITOR_ASPECT_PRESETS,
 	applyAdjustToImageData,
@@ -15,9 +16,13 @@ import {
 	cssFilterFromAdjust,
 	expandWithEdgeFill,
 	hasAdjustChanges,
+	keepCircleNormRadii,
+	keepForegroundTouchingCircle,
+	mapKeepCircleToSource,
 	resolveEditorCanvasSize,
 	type AdjustValues,
 	type DownloadSizeId,
+	type KeepCircle,
 } from '../lib/image-editor-ops';
 
 type ToolId = 'adjust' | 'transform' | 'remove-bg' | 'expand';
