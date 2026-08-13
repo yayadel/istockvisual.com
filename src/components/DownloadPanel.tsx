@@ -214,10 +214,7 @@ export default function DownloadPanel({
 										className={`download-menu__item${selected === size.id ? ' is-selected' : ''}`}
 										onClick={() => onSelectSize(size.id)}
 									>
-										<span className="download-menu__dims-block">
-											<strong className="download-menu__dims">{dims}</strong>
-											<span className="download-menu__tier">{size.label}</span>
-										</span>
+										<span className="download-menu__dims">{dims}</span>
 										{needsPro ? (
 											<em className="download-pro-badge">
 												<CrownIcon />
@@ -229,8 +226,7 @@ export default function DownloadPanel({
 									</button>
 								</li>
 							);
-						})}
-					</ul>
+						})}					</ul>
 				)}
 			</div>			{busy && (
 				<p className="download-panel__hint" aria-live="polite">

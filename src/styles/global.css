@@ -1140,26 +1140,12 @@ body.upload-modal-open {
 	background: rgba(20, 24, 20, 0.05);
 }
 
-.download-menu__dims-block {
-	display: grid;
-	gap: 0.12rem;
-	min-width: 0;
-}
-
 .download-menu__dims {
 	font-size: 0.95rem;
 	font-weight: 700;
 	letter-spacing: 0.01em;
 	color: var(--text);
 	white-space: nowrap;
-}
-
-.download-menu__tier {
-	font-size: 0.72rem;
-	font-weight: 600;
-	color: var(--text-muted);
-	letter-spacing: 0.03em;
-	text-transform: uppercase;
 }
 
 .download-menu__free {
