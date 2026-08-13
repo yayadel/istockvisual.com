@@ -41,7 +41,6 @@ export const LONG_PLANS: PricingPlan[] = [
 		featured: true,
 		badge: 'Launch · Most Popular',
 		highlight: '⚡ Limited to First 500 Members',
-		note: `Fair Use Policy: ${FAIR_USE_POLICY}`,
 	},
 	{
 		id: 'year',
