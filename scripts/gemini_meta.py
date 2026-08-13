@@ -33,9 +33,14 @@ class AssetMeta(BaseModel):
 	)
 	assetUsageTips: str = Field(description="English usage tips for designers/marketers")
 	colorPalette: List[ColorSwatch] = Field(description="Palette with HEX codes")
-	tags: List[str] = Field(description="Search tags")
+	tags: List[str] = Field(
+		min_length=40,
+		description=(
+			"At least 40 unique English tags merging topic keywords, "
+			"category/subject labels, and depicted objects/elements"
+		),
+	)
 	relatedSearchQueries: List[str] = Field(description="Related search queries")
-	depictedElements: List[str] = Field(description="Depicted objects/elements")
 	imagePageTitle: str = Field(
 		description="Title-case English title containing the topic keyword"
 	)
