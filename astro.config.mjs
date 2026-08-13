@@ -8,6 +8,7 @@ export default defineConfig({
 	site: 'https://istockvisual.com',
 	server: {
 		port: 4325,
+		host: true,
 	},
 	output: 'server',
 	adapter: cloudflare({
