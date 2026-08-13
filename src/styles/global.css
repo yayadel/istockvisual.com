@@ -4807,11 +4807,18 @@ body.image-editor-modal-open {
 .tools-focus {
 	display: grid;
 	gap: 0.55rem;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 }
 
 .tools-focus-board {
 	position: relative;
-	justify-self: start;
+	justify-self: stretch;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	overflow: hidden;
 	border: 1px solid var(--line);
 	background: var(--bg-elevated);
 	cursor: crosshair;
@@ -4821,14 +4828,41 @@ body.image-editor-modal-open {
 
 .tools-focus-board__canvas {
 	display: block;
+	width: 100%;
 	max-width: 100%;
 	height: auto;
+	min-width: 0;
 	vertical-align: top;
 }
 
 .tools-focus-board__canvas--framed {
 	border: 1px solid var(--line);
+	width: 100%;
 	max-width: min(100%, 560px);
+}
+
+.tools-palette {
+	display: grid;
+	gap: 1rem;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.tools-palette__media {
+	position: relative;
+	border: 1px solid var(--line);
+	background: var(--bg-elevated);
+	overflow: hidden;
+	max-width: 100%;
+}
+
+.tools-palette__media img {
+	width: 100%;
+	max-width: 100%;
+	max-height: 420px;
+	object-fit: contain;
+	margin-inline: auto;
 }
 
 .tools-focus-board__pin {
