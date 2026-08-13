@@ -1302,34 +1302,31 @@ body.upload-modal-open {
 }
 
 @media (min-width: 760px) {
-	.search-bar__visual {
+	.search-bar--hero {
+		grid-template-columns: auto minmax(0, 1fr) auto auto;
+	}
+
+	.search-bar--hero .search-bar__visual {
+		width: auto;
 		padding: 0 0.95rem;
 		gap: 0.45rem;
 		justify-content: flex-start;
 	}
 
-	.search-bar__visual-text {
+	.search-bar--hero .search-bar__visual-text {
 		display: inline;
 	}
-}
 
-@media (max-width: 759px) {
-	.search-bar__visual,
-	.search-bar__submit {
-		width: 3.25rem;
-		padding: 0;
-		gap: 0;
-		justify-content: center;
-	}
-
-	.search-bar__visual-text {
-		display: none;
+	.search-bar--hero .search-bar__submit {
+		width: auto;
+		padding: 0 1rem;
 	}
 }
 
 @media (max-width: 720px) {
-	.search-bar {
-		grid-template-columns: auto 1fr auto auto;
+	.search-bar,
+	.search-bar--hero {
+		grid-template-columns: minmax(0, 1fr) 3.25rem 3.25rem;
 	}
 
 	.search-bar__filter {
