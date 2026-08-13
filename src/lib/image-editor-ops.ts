@@ -183,6 +183,84 @@ export function hasAdjustChanges(adjust: AdjustValues): boolean {
 	);
 }
 
+export type TransformState = {
+	rotation: number;
+	fineRotation: number;
+	flipX: boolean;
+	flipY: boolean;
+	crop: { x: number; y: number; w: number; h: number };
+};
+
+export function hasTransformChanges(transform: TransformState): boolean {
+	const { rotation, fineRotation, flipX, flipY, crop } = transform;
+	return (
+		rotation !== 0 ||
+		fineRotation !== 0 ||
+		flipX ||
+		flipY ||
+		crop.x > 0.001 ||
+		crop.y > 0.001 ||
+		crop.w < 0.999 ||
+		crop.h < 0.999
+	);
+}
+
+/** Bake color/light adjustments into pixel data (same size). */
+export function bakeAdjustToCanvas(
+	source: HTMLCanvasElement,
+	adjust: AdjustValues,
+): HTMLCanvasElement {
+	const out = canvasFromImage(source, source.width, source.height);
+	if (!hasAdjustChanges(adjust)) return out;
+	const ctx = out.getContext('2d');
+	if (!ctx) return out;
+	const imageData = ctx.getImageData(0, 0, out.width, out.height);
+	ctx.putImageData(applyAdjustToImageData(imageData, adjust), 0, 0);
+	return out;
+}
+
+/**
+ * Bake rotate / flip / crop into a new canvas.
+ * Uses `frameW`×`frameH` as the composition frame (same model as export preview).
+ */
+export function bakeTransformToCanvas(
+	source: HTMLCanvasElement,
+	transform: TransformState,
+	frameW: number,
+	frameH: number,
+): HTMLCanvasElement {
+	const { rotation, fineRotation, flipX, flipY, crop } = transform;
+	const frame = document.createElement('canvas');
+	frame.width = Math.max(1, Math.round(frameW));
+	frame.height = Math.max(1, Math.round(frameH));
+	const frameCtx = frame.getContext('2d');
+	if (!frameCtx) return canvasFromImage(source, source.width, source.height);
+
+	const fit = containSize(source.width, source.height, frame.width, frame.height);
+	frameCtx.save();
+	frameCtx.translate(frame.width / 2, frame.height / 2);
+	frameCtx.rotate(((rotation + fineRotation) * Math.PI) / 180);
+	frameCtx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+	frameCtx.drawImage(source, -fit.w / 2, -fit.h / 2, fit.w, fit.h);
+	frameCtx.restore();
+
+	const needsCrop = crop.x > 0.001 || crop.y > 0.001 || crop.w < 0.999 || crop.h < 0.999;
+	if (!needsCrop) return frame;
+
+	const sx = Math.round(crop.x * frame.width);
+	const sy = Math.round(crop.y * frame.height);
+	const sw = Math.max(1, Math.round(crop.w * frame.width));
+	const sh = Math.max(1, Math.round(crop.h * frame.height));
+	const out = document.createElement('canvas');
+	out.width = sw;
+	out.height = sh;
+	const outCtx = out.getContext('2d');
+	if (!outCtx) return frame;
+	outCtx.drawImage(frame, sx, sy, sw, sh, 0, 0, sw, sh);
+	return out;
+}
+
+
 function hueRotateRgb(r: number, g: number, b: number, degrees: number) {
 	const rad = (degrees * Math.PI) / 180;
 	const cos = Math.cos(rad);
