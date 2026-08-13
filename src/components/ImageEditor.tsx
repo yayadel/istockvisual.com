@@ -1170,7 +1170,7 @@ export default function ImageEditor({
 						</div>
 					)}
 
-					{tool === 'expand' && (
+					{tool === 'expand' && canUseExpand && (
 						<div className="image-editor-modal__row image-editor-modal__row--expand">
 							<span className="image-editor-modal__row-label">Expand</span>
 							<div className="image-editor-modal__expand-list" role="group" aria-label="Expand amount">
