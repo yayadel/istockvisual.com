@@ -37,3 +37,7 @@ export async function masterJpegInfo(input) {
 		height: meta.height || MASTER_LONG_EDGE,
 	};
 }
+
+export async function buildPreviewJpeg(input) {
+	return buildJpegVariant(input, PREVIEW_LONG_EDGE, 82, 'inside');
+}

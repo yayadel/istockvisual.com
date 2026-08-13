@@ -61,6 +61,10 @@ export function variantObjectKey(originalKey: string, sizeId: string) {
 	return `${base}-${sizeId}.jpg`;
 }
 
+export function previewObjectKey(originalKey: string) {
+	return variantObjectKey(originalKey, PREVIEW_SIZE_ID);
+}
+
 export function isDownloadSizeId(value: string | null | undefined): value is DownloadSizeId {
 	return DOWNLOAD_SIZES.some((size) => size.id === value);
 }
