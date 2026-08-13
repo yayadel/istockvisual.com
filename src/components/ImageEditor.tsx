@@ -464,6 +464,7 @@ export default function ImageEditor({
 		setWorkingFromCanvas(baked);
 		originalRef.current = cloneCanvas(baked);
 		setAdjust(DEFAULT_ADJUST);
+		setAdjustPresetId('original');
 		setPendingCommit(false);
 		setStatus('Adjust applied. Continue with another tool or download.');
 	}, [adjust, setWorkingFromCanvas]);
