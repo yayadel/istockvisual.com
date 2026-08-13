@@ -4661,6 +4661,9 @@ body.image-editor-modal-open {
 .tools-compare {
 	display: grid;
 	gap: 0.55rem;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 }
 
 .tools-compare__stage {
@@ -4670,6 +4673,8 @@ body.image-editor-modal-open {
 	background: var(--bg-elevated);
 	aspect-ratio: 16 / 10;
 	min-height: 240px;
+	width: 100%;
+	max-width: 100%;
 }
 
 .tools-compare__layer,
