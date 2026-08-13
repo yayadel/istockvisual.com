@@ -689,6 +689,15 @@ export default function ImageEditor({
 	}, [commitBaseline, pendingCommit]);
 
 	const applyExpandChanges = useCallback(async () => {
+		if (!canUseExpand) {
+			setSizeGateMessage(
+				loggedIn
+					? 'Expand is a Pro feature. Upgrade to unlock canvas expand.'
+					: 'Sign in and upgrade to Pro to use Expand.',
+			);
+			setStatus(null);
+			return;
+		}
 		const working = workingRef.current;
 		if (!working) {
 			setStatus('Image not ready yet.');
@@ -755,7 +764,7 @@ export default function ImageEditor({
 			window.clearInterval(tickId);
 			setBusy(null);
 		}
-	}, [expandPct, setWorkingFromCanvas]);
+	}, [canUseExpand, expandPct, loggedIn, setWorkingFromCanvas]);
 
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
