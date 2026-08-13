@@ -3919,6 +3919,8 @@ body.image-editor-modal-open {
 	align-items: center;
 	gap: 1.1rem 1.25rem;
 	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 	min-height: 148px;
 	padding: 0.85rem 1rem 0.85rem 0.85rem;
 	border: 1px solid var(--line);
@@ -4044,6 +4046,10 @@ body.image-editor-modal-open {
 .tools-panel {
 	border: 1px solid var(--line);
 	background: var(--bg);
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	overflow: hidden;
 }
 
 .tools-panel__head {
@@ -4055,6 +4061,7 @@ body.image-editor-modal-open {
 	padding: 0.95rem 1rem;
 	border-bottom: 1px solid var(--line);
 	background: rgba(20, 24, 20, 0.02);
+	min-width: 0;
 }
 
 [data-theme='dark'] .tools-panel__head {
