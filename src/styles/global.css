@@ -3240,6 +3240,7 @@ body.image-editor-modal-open {
 .image-editor-modal__size,
 .image-editor-modal__aspect,
 .image-editor-modal__preset,
+.image-editor-modal__expand-pct,
 .image-editor-modal__tool {
 	border: 1px solid var(--ie-line);
 	border-radius: 3px;
