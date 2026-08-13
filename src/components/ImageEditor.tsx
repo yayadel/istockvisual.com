@@ -56,6 +56,9 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 	const stageRef = useRef<HTMLDivElement>(null);
 	const sourceRef = useRef<HTMLImageElement | null>(null);
 	const workingRef = useRef<HTMLCanvasElement | null>(null);
+	const onCloseRef = useRef(onClose);
+	onCloseRef.current = onClose;
+	const previewUrlRef = useRef(imageUrl);
 
 	const [ready, setReady] = useState(false);
 	const [previewUrl, setPreviewUrl] = useState(imageUrl);
@@ -76,6 +79,8 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 		| { kind: 'resize'; handle: string; startX: number; startY: number; origin: CropRect }
 	>(null);
 
+	previewUrlRef.current = previewUrl;
+
 	const sizePreset = useMemo(
 		() => EDITOR_SIZE_PRESETS.find((item) => item.id === sizeId) ?? EDITOR_SIZE_PRESETS[0],
 		[sizeId],
@@ -86,7 +91,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 		return resolveCanvasSize(sizePreset, natural.w, natural.h);
 	}, [natural, sizePreset]);
 
-	const stageAspect = canvasSize.width / canvasSize.height;
+	const stageAspect = canvasSize.width / Math.max(canvasSize.height, 1);
 
 	const previewTransform = useMemo(() => {
 		const radians = rotation + fineRotation;
@@ -115,19 +120,21 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 	useEffect(() => {
 		document.body.classList.add('image-editor-modal-open');
 		const onKey = (event: KeyboardEvent) => {
-			if (event.key === 'Escape' && !busy) onClose();
+			if (event.key === 'Escape' && !busy) onCloseRef.current();
 		};
 		window.addEventListener('keydown', onKey);
 		return () => {
 			document.body.classList.remove('image-editor-modal-open');
 			window.removeEventListener('keydown', onKey);
 		};
-	}, [busy, onClose]);
+	}, [busy]);
 
 	useEffect(() => {
+		let cancelled = false;
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
 		img.onload = () => {
+			if (cancelled) return;
 			sourceRef.current = img;
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			workingRef.current = canvas;
@@ -136,16 +143,21 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 			setReady(true);
 		};
 		img.onerror = () => {
+			if (cancelled) return;
 			setStatus('Failed to load image for editing.');
 			setReady(true);
 		};
 		img.src = imageUrl;
 		return () => {
-			revokeIfBlob(previewUrl);
+			cancelled = true;
 		};
-		// only on mount / imageUrl change
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [imageUrl]);
+
+	useEffect(() => {
+		return () => {
+			revokeIfBlob(previewUrlRef.current);
+		};
+	}, [revokeIfBlob]);
 
 	const pointerToNorm = useCallback((clientX: number, clientY: number) => {
 		const stage = stageRef.current;
@@ -212,6 +224,12 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 	}, [dragging, pointerToNorm, sizePreset.ratio]);
 
 	const resetAdjust = () => setAdjust(DEFAULT_ADJUST);
+
+	const updateAdjust =
+		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
+			const value = Number(event.currentTarget.value);
+			setAdjust((prev) => ({ ...prev, [key]: value }));
+		};
 
 	const handleRemoveBackground = useCallback(async () => {
 		const working = workingRef.current;
@@ -290,13 +308,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 		frameCtx.translate(targetW / 2, targetH / 2);
 		frameCtx.rotate(((rotation + fineRotation) * Math.PI) / 180);
 		frameCtx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
-		frameCtx.drawImage(
-			working,
-			-fit.w / 2,
-			-fit.h / 2,
-			fit.w,
-			fit.h,
-		);
+		frameCtx.drawImage(working, -fit.w / 2, -fit.h / 2, fit.w, fit.h);
 		frameCtx.restore();
 
 		if (adjust.brightness || adjust.contrast || adjust.saturation) {
@@ -336,14 +348,26 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 		}, 'image/png');
 	}, [buildExportCanvas, title]);
 
+	const stop = (event: React.SyntheticEvent) => {
+		event.stopPropagation();
+	};
+
 	return createPortal(
-		<div className="image-editor-modal" role="presentation">
-			<div className="image-editor-modal__backdrop" onClick={() => !busy && onClose()} />
+		<div
+			className="image-editor-modal"
+			role="presentation"
+			onMouseDown={stop}
+			onClick={stop}
+		>
+			{/* Backdrop does not close — avoid losing edits on mis-clicks. */}
+			<div className="image-editor-modal__backdrop" aria-hidden="true" />
 			<div
 				className="image-editor-modal__dialog"
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="image-editor-title"
+				onMouseDown={stop}
+				onClick={stop}
 			>
 				<header className="image-editor-modal__header">
 					<div>
@@ -351,10 +375,20 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 						<h2 id="image-editor-title">{title}</h2>
 					</div>
 					<div className="image-editor-modal__header-actions">
-						<button className="btn btn--ghost" type="button" onClick={onClose} disabled={Boolean(busy)}>
+						<button
+							className="btn btn--ghost"
+							type="button"
+							onClick={() => onCloseRef.current()}
+							disabled={Boolean(busy)}
+						>
 							Close
 						</button>
-						<button className="btn btn--primary" type="button" onClick={handleDownload} disabled={!ready || Boolean(busy)}>
+						<button
+							className="btn btn--primary"
+							type="button"
+							onClick={handleDownload}
+							disabled={!ready || Boolean(busy)}
+						>
 							Download
 						</button>
 					</div>
@@ -401,7 +435,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 							<div
 								className="image-editor-modal__stage"
 								ref={stageRef}
-								style={{ aspectRatio: `${stageAspect}` }}
+								style={{ aspectRatio: String(stageAspect) }}
 							>
 								{ready ? (
 									<div
@@ -461,12 +495,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 											min={-50}
 											max={50}
 											value={adjust.brightness}
-											onInput={(event) =>
-												setAdjust((prev) => ({
-													...prev,
-													brightness: Number(event.currentTarget.value),
-												}))
-											}
+											onChange={updateAdjust('brightness')}
 										/>
 										<span>{adjust.brightness}</span>
 									</label>
@@ -477,12 +506,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 											min={-50}
 											max={50}
 											value={adjust.contrast}
-											onInput={(event) =>
-												setAdjust((prev) => ({
-													...prev,
-													contrast: Number(event.currentTarget.value),
-												}))
-											}
+											onChange={updateAdjust('contrast')}
 										/>
 										<span>{adjust.contrast}</span>
 									</label>
@@ -493,12 +517,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 											min={-50}
 											max={50}
 											value={adjust.saturation}
-											onInput={(event) =>
-												setAdjust((prev) => ({
-													...prev,
-													saturation: Number(event.currentTarget.value),
-												}))
-											}
+											onChange={updateAdjust('saturation')}
 										/>
 										<span>{adjust.saturation}</span>
 									</label>
@@ -542,7 +561,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 											min={-45}
 											max={45}
 											value={fineRotation}
-											onInput={(event) => setFineRotation(Number(event.currentTarget.value))}
+											onChange={(event) => setFineRotation(Number(event.currentTarget.value))}
 										/>
 										<span>{fineRotation}°</span>
 									</label>

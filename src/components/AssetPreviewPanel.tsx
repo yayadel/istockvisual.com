@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import ImageEditor from './ImageEditor';
 
 type Props = {
@@ -13,6 +13,12 @@ export default function AssetPreviewPanel({
 	aiEditHref = '/tools/ai-edit',
 }: Props) {
 	const [editing, setEditing] = useState(false);
+	const closeEditor = useCallback(() => setEditing(false), []);
+	const openEditor = useCallback((event: React.MouseEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
+		setEditing(true);
+	}, []);
 
 	return (
 		<div className="asset-preview">
@@ -28,20 +34,16 @@ export default function AssetPreviewPanel({
 				/>
 			</div>
 			<div className="asset-preview__footer">
-				<button
-					className="asset-preview__action"
-					type="button"
-					onClick={() => setEditing(true)}
-				>
+				<button className="asset-preview__action" type="button" onClick={openEditor}>
 					Edit image
 				</button>
 				<a className="asset-preview__action asset-preview__action--secondary" href={aiEditHref}>
 					Open in AI Edit
 				</a>
 			</div>
-			{editing && (
-				<ImageEditor imageUrl={imageUrl} title={title} onClose={() => setEditing(false)} />
-			)}
+			{editing ? (
+				<ImageEditor imageUrl={imageUrl} title={title} onClose={closeEditor} />
+			) : null}
 		</div>
 	);
 }
