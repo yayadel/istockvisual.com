@@ -2958,6 +2958,22 @@ body.download-auth-modal-open {
 	padding-bottom: 0.35rem;
 }
 
+.detail-heading__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.05rem;
+	height: 1.05rem;
+	flex: 0 0 auto;
+	color: inherit;
+}
+
+.detail-heading__icon svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
 .story-block h2 {
 	display: inline-flex;
 	align-items: center;
