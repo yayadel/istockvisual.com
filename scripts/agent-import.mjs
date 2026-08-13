@@ -43,4 +43,29 @@ if (!res.ok) {
 	process.exit(1);
 }
 
+const assetId = data.asset?.id;
+if (assetId) {
+	console.log('Building WEBP display preview…');
+	const preview = await buildPreviewWebp(imageBuffer);
+	const previewRes = await fetch(`${baseUrl}/api/generate/variants`, {
+		method: 'POST',
+		headers: {
+			'x-generate-secret': secret,
+			Origin: baseUrl,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			assetId,
+			sizeId: 'preview',
+			imageBase64: preview.toString('base64'),
+		}),
+	});
+	const previewData = await previewRes.json();
+	if (!previewRes.ok) {
+		console.error('Preview failed:', previewData.error || previewRes.status);
+	} else {
+		console.log(`  preview: ${preview.length} bytes → ${previewData.key}`);
+	}
+}
+
 console.log(JSON.stringify(data, null, 2));
