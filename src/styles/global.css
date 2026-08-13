@@ -879,6 +879,49 @@ body.upload-modal-open {
 	margin: 0 0 0.45rem;
 }
 
+.detail__breadcrumb {
+	margin: 0 0 0.55rem;
+}
+
+.detail__breadcrumb ol {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.35rem 0.15rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.82rem;
+	line-height: 1.35;
+	color: var(--text-muted);
+}
+
+.detail__breadcrumb li {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.detail__breadcrumb li:not(:last-child)::after {
+	content: '/';
+	color: rgba(95, 109, 100, 0.55);
+	font-weight: 400;
+}
+
+.detail__breadcrumb a {
+	color: var(--text-muted);
+	text-decoration: none;
+}
+
+.detail__breadcrumb a:hover {
+	color: var(--text);
+}
+
+.detail__breadcrumb li:last-child a {
+	color: #3f5a4c;
+	font-weight: 600;
+}
+
 .detail__title-row {
 	display: flex;
 	align-items: center;
