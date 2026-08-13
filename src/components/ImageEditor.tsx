@@ -541,7 +541,23 @@ export default function ImageEditor({
 				fetchArgs: { cache: 'force-cache' as RequestCache },
 			};
 			await preload(config);
-			const blob = await removeBackground(working.toDataURL('image/png'), config);
+
+			// Map the on-screen circle onto the working image, then matte a focus
+			// crop around that mark so the selected location actually drives cutout.
+			const mapped = mapKeepCircleToSource(
+				keepCircle,
+				working.width,
+				working.height,
+				canvasSize.width,
+				canvasSize.height,
+			);
+			const { crop, offsetX, offsetY } = extractKeepFocusCrop(
+				working,
+				mapped.cx,
+				mapped.cy,
+				mapped.r,
+			);
+			const blob = await removeBackground(crop.toDataURL('image/png'), config);
 			const img = new Image();
 			const url = URL.createObjectURL(blob);
 			await new Promise<void>((resolve, reject) => {
@@ -549,24 +565,25 @@ export default function ImageEditor({
 				img.onerror = () => reject(new Error('Failed to decode result'));
 				img.src = url;
 			});
-			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
+			const cutout = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			URL.revokeObjectURL(url);
 
-			// Full-image cutout, then keep only the subject touching the circle.
-			const mapped = mapKeepCircleToSource(
-				keepCircle,
-				canvas.width,
-				canvas.height,
-				canvasSize.width,
-				canvasSize.height,
+			const canvas = compositeCropToCanvas(
+				working.width,
+				working.height,
+				cutout,
+				offsetX,
+				offsetY,
+				cutout.width,
+				cutout.height,
 			);
 			const kept = keepForegroundTouchingCircle(canvas, mapped.cx, mapped.cy, mapped.r);
 			setWorkingFromCanvas(canvas);
 			setPendingCommit(true);
 			setStatus(
 				kept
-					? 'Background removed. Click Apply changes to keep editing with other tools.'
-					: 'Background removed, but no subject was found near the circle. Apply or reset.',
+					? 'Background removed for the marked subject. Click Apply changes to continue.'
+					: 'Background removed near the circle, but no clear subject overlap was found.',
 			);
 		} catch (error) {
 			console.error(error);
