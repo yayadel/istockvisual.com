@@ -170,6 +170,37 @@ export default function ImageEditor({
 		return selected?.output ?? { width: 1024, height: 768 };
 	}, [aspectPreset.ratio, natural.h, natural.w, sizeId, sizeOptions, variant]);
 
+	const expandTarget = useMemo(() => {
+		if (natural.w <= 0 || natural.h <= 0) return null;
+		const scale = 1 + expandPct / 100;
+		return {
+			width: Math.max(1, Math.round(natural.w * scale)),
+			height: Math.max(1, Math.round(natural.h * scale)),
+		};
+	}, [expandPct, natural.h, natural.w]);
+
+	/** Stage frame: expand preview uses % target; after expand, show the filled pixels. */
+	const stageSize = useMemo(() => {
+		if (tool === 'expand') {
+			if (pendingCommit && natural.w > 0) {
+				return { width: natural.w, height: natural.h };
+			}
+			if (expandTarget) return expandTarget;
+		}
+		return canvasSize;
+	}, [canvasSize, expandTarget, natural.h, natural.w, pendingCommit, tool]);
+
+	const expandGuideStyle = useMemo(() => {
+		if (tool !== 'expand' || pendingCommit || !expandTarget || natural.w <= 0) return null;
+		const fit = containSize(natural.w, natural.h, expandTarget.width, expandTarget.height);
+		return {
+			left: `${(fit.x / expandTarget.width) * 100}%`,
+			top: `${(fit.y / expandTarget.height) * 100}%`,
+			width: `${(fit.w / expandTarget.width) * 100}%`,
+			height: `${(fit.h / expandTarget.height) * 100}%`,
+		};
+	}, [expandTarget, natural.h, natural.w, pendingCommit, tool]);
+
 	const keepCircleStyle = useMemo(() => {
 		const { rx, ry } = keepCircleNormRadii(keepCircle, canvasSize.width, canvasSize.height);
 		return {
@@ -183,7 +214,7 @@ export default function ImageEditor({
 	const rebuildFramePreview = useCallback(() => {
 		const working = workingRef.current;
 		if (!working) return;
-		const { width, height } = canvasSize;
+		const { width, height } = stageSize;
 		const frame = document.createElement('canvas');
 		frame.width = Math.max(1, width);
 		frame.height = Math.max(1, height);
@@ -223,7 +254,7 @@ export default function ImageEditor({
 			);
 		}
 		setFrameUrl(frame.toDataURL('image/png'));
-	}, [adjust.highlights, adjust.shadows, adjust.temperature, adjust.tint, canvasSize]);
+	}, [adjust.highlights, adjust.shadows, adjust.temperature, adjust.tint, stageSize]);
 
 	useEffect(() => {
 		if (!ready) return;
