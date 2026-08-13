@@ -1536,16 +1536,16 @@ body.upload-modal-open {
 	background-image:
 		repeating-linear-gradient(
 			0deg,
-			transparent 0 13px,
-			rgba(255, 255, 255, 0.22) 13px 14px
+			transparent 0 42px,
+			rgba(255, 255, 255, 0.1) 42px 43px
 		),
 		repeating-linear-gradient(
 			90deg,
-			transparent 0 13px,
-			rgba(0, 0, 0, 0.14) 13px 14px
+			transparent 0 42px,
+			rgba(0, 0, 0, 0.06) 42px 43px
 		);
-	mix-blend-mode: overlay;
-	opacity: 0.85;
+	mix-blend-mode: soft-light;
+	opacity: 0.45;
 }
 
 .wm-protected::after {
