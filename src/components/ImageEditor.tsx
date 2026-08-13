@@ -641,7 +641,7 @@ export default function ImageEditor({
 							{tool === 'adjust' && (
 								<>
 									<h3>Color & light</h3>
-									<p>Runs in your browser via Canvas — no upload, no server GPU.</p>
+									<p>Tune brightness, contrast, and saturation.</p>
 									<label className="image-editor-modal__slider">
 										<span>Brightness</span>
 										<input
@@ -728,13 +728,9 @@ export default function ImageEditor({
 							{tool === 'remove-bg' && (
 								<>
 									<h3>Remove background</h3>
-									<p>
-										Runs entirely in your browser — no server upload. Resources are cached
-										locally after the first load.
-									</p>
 									<p className="image-editor-modal__tip">
-										First use on this site needs to load on-device resources and may feel
-										slow. After that, remove background should be much faster.
+										First use on this site needs to load resources and may feel slow. After
+										that, remove background should be much faster.
 									</p>
 									<button
 										className="btn btn--primary"
@@ -754,8 +750,7 @@ export default function ImageEditor({
 								<>
 									<h3>Expand canvas</h3>
 									<p>
-										Fills new margins with blurred edge extension. Choose a larger Size above,
-										then run Expand.
+										Choose a larger Size above, then expand the image to fill the new frame.
 									</p>
 									<button
 										className="btn btn--primary"
