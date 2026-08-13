@@ -5,6 +5,7 @@ import ColorPalette from '../../components/ColorPalette';
 import PromptBlock from '../../components/PromptBlock';
 import BasicInfoPanel from '../../components/BasicInfoPanel';
 import DownloadPanel from '../../components/DownloadPanel';
+import DetailSectionIcon from '../../components/DetailSectionIcon';
 import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
@@ -110,12 +111,6 @@ const jsonLd = assetJsonLd({
 				</nav>
 				<div class="detail__title-row">
 					<h1>{asset.title}</h1>
-					<ShareBar
-						client:load
-						compact
-						title={asset.title}
-						url={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
-					/>
 				</div>
 				{asset.shortDescription && (
 					<p class="detail__lead">{asset.shortDescription}</p>

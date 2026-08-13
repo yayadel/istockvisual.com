@@ -2146,13 +2146,6 @@ body.upload-modal-open {
 	background: rgba(238, 243, 239, 0.12);
 }
 
-@media (max-width: 960px) {
-	.detail__title-row astro-island:has(.share-bar),
-	.detail__title-row .share-bar {
-		display: none;
-	}
-}
-
 @media (max-width: 640px) {
 	.detail__title-row {
 		flex-wrap: wrap;
@@ -3186,10 +3179,57 @@ body.download-auth-modal-open {
 }
 
 .color-palette__chip {
+	position: relative;
 	display: block;
+	overflow: hidden;
 	height: 4.75rem;
 	border: 1px solid rgba(20, 24, 20, 0.08);
 	border-radius: var(--radius);
+}
+
+.color-palette__chip::after {
+	content: '';
+	position: absolute;
+	top: -40%;
+	left: -70%;
+	width: 42%;
+	height: 180%;
+	background: linear-gradient(
+		115deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.08) 38%,
+		rgba(255, 255, 255, 0.72) 50%,
+		rgba(255, 255, 255, 0.08) 62%,
+		transparent 100%
+	);
+	transform: translateX(0) rotate(18deg);
+	opacity: 0;
+	pointer-events: none;
+	mix-blend-mode: overlay;
+}
+
+.color-palette__pan:hover .color-palette__chip::after,
+.color-palette__pan:focus-visible .color-palette__chip::after {
+	animation: palette-shine 0.7s ease;
+}
+
+@keyframes palette-shine {
+	0% {
+		opacity: 1;
+		transform: translateX(0) rotate(18deg);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateX(340%) rotate(18deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.color-palette__pan:hover .color-palette__chip::after,
+	.color-palette__pan:focus-visible .color-palette__chip::after {
+		animation: none;
+	}
 }
 
 [data-theme='dark'] .color-palette__chip {

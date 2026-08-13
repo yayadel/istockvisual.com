@@ -1,4 +1,5 @@
 import { DOWNLOAD_FORMATS } from '../lib/download-formats';
+import DetailSectionIcon from './DetailSectionIcon';
 
 type CategoryLink = {
 	label: string;
