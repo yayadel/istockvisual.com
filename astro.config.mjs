@@ -21,6 +21,10 @@ export default defineConfig({
 	vite: {
 		ssr: {
 			noExternal: ['jpeg-js', 'fast-png'],
+			external: ['@imgly/background-removal', 'onnxruntime-web'],
+		},
+		optimizeDeps: {
+			exclude: ['@imgly/background-removal', 'onnxruntime-web'],
 		},
 	},
 });
