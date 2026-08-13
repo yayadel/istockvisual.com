@@ -90,6 +90,7 @@ export default function ImageEditor({
 	const [flipX, setFlipX] = useState(false);
 	const [flipY, setFlipY] = useState(false);
 	const [crop, setCrop] = useState<CropRect>(DEFAULT_CROP);
+	const [frameUrl, setFrameUrl] = useState<string | null>(null);
 	const [busy, setBusy] = useState<string | null>(null);
 	const [status, setStatus] = useState<string | null>(null);
 	const [dragging, setDragging] = useState<
