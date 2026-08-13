@@ -10,7 +10,7 @@ Color Palette (including HEX color codes)
 
 Tags (REQUIRED: output **40 or more** tags. Merge into this single list: topic keywords, subject labels, and depicted objects/elements such as cup, male, cat, desk, mountain, etc. Do NOT output separate keywords or depicted-elements fields.)
 
-Content Categories (REQUIRED field name in JSON: contentCategories — an array of **1 to 3** strings. Choose labels that match what the image will actually depict — the visible subject/scene — not loose word associations. Example: a wireless gaming mouse → ["Technology","Advertising"] or ["Technology","E-commerce"], NEVER ["Sports"]. Sports is only for physical athletics. You MUST copy labels EXACTLY from this allowed list (comma-separated): [Insert allowed content categories here]. Do not invent new category names. Do not leave contentCategories empty.)
+Content Categories (REQUIRED field name in JSON: contentCategories — an array with **exactly 1** string. Choose the single best label for what the image will actually depict — the visible subject/scene, not loose word associations. Example: a wireless gaming mouse → ["Technology"], NEVER ["Sports"]. Sports is only for physical athletics. You MUST copy the label EXACTLY from this allowed list (comma-separated): [Insert allowed content categories here]. Do not invent new category names. Do not leave contentCategories empty. Do not return more than one label.)
 
 Related Search Queries
 
