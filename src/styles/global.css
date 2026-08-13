@@ -2643,9 +2643,37 @@ body.image-editor-modal-open {
 .image-editor-modal__aspect-list,
 .image-editor-modal__preset-list {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	gap: 0.35rem;
 	flex: 1 1 auto;
+	min-width: 0;
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding-bottom: 0.1rem;
+	scrollbar-width: thin;
+}
+
+.image-editor-modal__row--aspects,
+.image-editor-modal__row--presets {
+	flex-wrap: nowrap;
+	align-items: center;
+}
+
+.image-editor-modal__row--aspects .image-editor-modal__row-label,
+.image-editor-modal__row--presets .image-editor-modal__row-label {
+	margin-top: 0;
+	align-self: center;
+}
+
+/* Keep Size on one line with its options too */
+.image-editor-modal__controls > .image-editor-modal__row:first-child {
+	flex-wrap: nowrap;
+	align-items: center;
+}
+
+.image-editor-modal__controls > .image-editor-modal__row:first-child .image-editor-modal__row-label {
+	margin-top: 0;
+	align-self: center;
 }
 
 .image-editor-modal__size,
