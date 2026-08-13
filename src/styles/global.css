@@ -3562,6 +3562,7 @@ body.download-auth-modal-open {
 .asset-preview__action.btn.asset-preview__action--edit {
 	flex-direction: column;
 	gap: 0.18rem;
+	height: 100%;
 	min-height: 3.15rem;
 	padding: 0.5rem 0.9rem 0.55rem;
 	background: #1f4f45;
