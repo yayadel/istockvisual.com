@@ -226,11 +226,7 @@ export default function DownloadPanel({
 							);
 						})}					</ul>
 				)}
-			</div>			{busy && (
-				<p className="download-panel__hint" aria-live="polite">
-					Downloading {title}…
-				</p>
-			)}
+			</div>
 			{error && <p className="download-panel__error">{error}</p>}
 
 			{authModalOpen && (
