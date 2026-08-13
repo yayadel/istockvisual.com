@@ -729,8 +729,12 @@ export default function ImageEditor({
 								<>
 									<h3>Remove background</h3>
 									<p>
-										Uses <code>@imgly/background-removal</code> (WASM + ONNX) entirely in your
-										browser. First run downloads ~30MB model into cache.
+										Runs entirely in your browser — no server upload. Resources are cached
+										locally after the first load.
+									</p>
+									<p className="image-editor-modal__tip">
+										First use on this site needs to load on-device resources and may feel
+										slow. After that, remove background should be much faster.
 									</p>
 									<button
 										className="btn btn--primary"
