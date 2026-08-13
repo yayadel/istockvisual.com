@@ -227,7 +227,7 @@ export default function ImageEditor({
 			}
 			next.x = clamp(next.x, 0, 1 - next.w);
 			next.y = clamp(next.y, 0, 1 - next.h);
-			setCrop(fitCropToAspect(next, sizePreset.ratio));
+			setCrop(fitCropToAspect(next, aspectPreset.ratio));
 		};
 		const onUp = () => setDragging(null);
 		window.addEventListener('pointermove', onMove);
@@ -236,7 +236,30 @@ export default function ImageEditor({
 			window.removeEventListener('pointermove', onMove);
 			window.removeEventListener('pointerup', onUp);
 		};
-	}, [dragging, pointerToNorm, sizePreset.ratio]);
+	}, [aspectPreset.ratio, dragging, pointerToNorm]);
+
+	const selectSize = (next: DownloadSizeId) => {
+		if (!isFreeDownloadSize(next)) {
+			if (!loggedIn) {
+				setSizeGateMessage('Sign in and upgrade to Pro for 2K / 4K / 8K.');
+				return;
+			}
+			if (!isPro) {
+				setSizeGateMessage('Pro required for 2K / 4K / 8K. Free sizes: 500 and 1K.');
+				return;
+			}
+		}
+		setSizeGateMessage(null);
+		setSizeId(next);
+	};
+
+	const selectAspect = (id: string) => {
+		const preset = EDITOR_ASPECT_PRESETS.find((item) => item.id === id);
+		setAspectId(id);
+		if (preset) {
+			setCrop((current) => fitCropToAspect(current, preset.ratio));
+		}
+	};
 
 	const resetAdjust = () => setAdjust(DEFAULT_ADJUST);
 

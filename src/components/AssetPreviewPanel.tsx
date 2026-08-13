@@ -5,12 +5,16 @@ type Props = {
 	imageUrl: string;
 	title: string;
 	aiEditHref?: string;
+	loggedIn?: boolean;
+	isPro?: boolean;
 };
 
 export default function AssetPreviewPanel({
 	imageUrl,
 	title,
 	aiEditHref = '/tools/ai-edit',
+	loggedIn = false,
+	isPro = false,
 }: Props) {
 	const [editing, setEditing] = useState(false);
 	const closeEditor = useCallback(() => setEditing(false), []);
@@ -42,7 +46,13 @@ export default function AssetPreviewPanel({
 				</a>
 			</div>
 			{editing ? (
-				<ImageEditor imageUrl={imageUrl} title={title} onClose={closeEditor} />
+				<ImageEditor
+					imageUrl={imageUrl}
+					title={title}
+					onClose={closeEditor}
+					loggedIn={loggedIn}
+					isPro={isPro}
+				/>
 			) : null}
 		</div>
 	);

@@ -85,6 +85,8 @@ const similar = findSimilarAssets(
 								imageUrl={asset.previewUrl}
 								title={asset.title}
 								aiEditHref="/tools/ai-edit"
+								loggedIn={Boolean(user)}
+								isPro={user?.plan === 'pro'}
 							/>
 						) : (
 							<div class="empty">No preview available</div>
