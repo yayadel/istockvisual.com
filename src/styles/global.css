@@ -2952,7 +2952,7 @@ body.image-editor-modal-open {
 
 .image-editor-modal__slider {
 	display: grid;
-	grid-template-columns: 5.2rem 1fr 2.4rem;
+	grid-template-columns: 5.8rem 1fr 2.6rem;
 	align-items: center;
 	gap: 0.5rem;
 	font-size: 0.82rem;

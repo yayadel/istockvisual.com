@@ -673,40 +673,20 @@ export default function ImageEditor({
 							{tool === 'adjust' && (
 								<>
 									<h3>Color & light</h3>
-									<p>Tune brightness, contrast, and saturation.</p>
-									<label className="image-editor-modal__slider">
-										<span>Brightness</span>
-										<input
-											type="range"
-											min={-50}
-											max={50}
-											value={adjust.brightness}
-											onChange={updateAdjust('brightness')}
-										/>
-										<span>{adjust.brightness}</span>
-									</label>
-									<label className="image-editor-modal__slider">
-										<span>Contrast</span>
-										<input
-											type="range"
-											min={-50}
-											max={50}
-											value={adjust.contrast}
-											onChange={updateAdjust('contrast')}
-										/>
-										<span>{adjust.contrast}</span>
-									</label>
-									<label className="image-editor-modal__slider">
-										<span>Saturation</span>
-										<input
-											type="range"
-											min={-50}
-											max={50}
-											value={adjust.saturation}
-											onChange={updateAdjust('saturation')}
-										/>
-										<span>{adjust.saturation}</span>
-									</label>
+									<p>Fine-tune exposure, color, and tone.</p>
+									{ADJUST_SLIDERS.map((item) => (
+										<label key={item.key} className="image-editor-modal__slider">
+											<span>{item.label}</span>
+											<input
+												type="range"
+												min={item.min}
+												max={item.max}
+												value={adjust[item.key]}
+												onChange={updateAdjust(item.key)}
+											/>
+											<span>{adjust[item.key]}</span>
+										</label>
+									))}
 									<button className="btn btn--ghost" type="button" onClick={resetAdjust}>
 										Reset
 									</button>
