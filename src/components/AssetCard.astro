@@ -6,18 +6,8 @@ interface Props {
 	index?: number;
 }
 
-const TILES = [
-	'landscape',
-	'tall',
-	'square',
-	'short',
-	'portrait',
-	'wide',
-	'tall',
-	'landscape',
-	'square',
-	'portrait',
-] as const;
+/** Height-only variety. No column-span tiles, so the mosaic never leaves holes. */
+const TILES = ['landscape', 'tall', 'square', 'short', 'portrait', 'tall', 'landscape', 'square'] as const;
 
 const { asset, index = 0 } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
