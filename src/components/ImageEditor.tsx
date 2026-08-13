@@ -59,7 +59,13 @@ function fitCropToAspect(crop: CropRect, ratio: number | null): CropRect {
 	return next;
 }
 
-export default function ImageEditor({ imageUrl, title, onClose }: Props) {
+export default function ImageEditor({
+	imageUrl,
+	title,
+	onClose,
+	loggedIn = false,
+	isPro = false,
+}: Props) {
 	const stageRef = useRef<HTMLDivElement>(null);
 	const sourceRef = useRef<HTMLImageElement | null>(null);
 	const workingRef = useRef<HTMLCanvasElement | null>(null);
@@ -70,7 +76,9 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 	const [ready, setReady] = useState(false);
 	const [previewUrl, setPreviewUrl] = useState(imageUrl);
 	const [natural, setNatural] = useState({ w: 0, h: 0 });
-	const [sizeId, setSizeId] = useState('original');
+	const [sizeId, setSizeId] = useState<DownloadSizeId>(DEFAULT_DOWNLOAD_SIZE);
+	const [aspectId, setAspectId] = useState('free');
+	const [sizeGateMessage, setSizeGateMessage] = useState<string | null>(null);
 	const [tool, setTool] = useState<ToolId>('adjust');
 	const [adjust, setAdjust] = useState<AdjustValues>(DEFAULT_ADJUST);
 	const [rotation, setRotation] = useState(0);
@@ -88,15 +96,15 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 
 	previewUrlRef.current = previewUrl;
 
-	const sizePreset = useMemo(
-		() => EDITOR_SIZE_PRESETS.find((item) => item.id === sizeId) ?? EDITOR_SIZE_PRESETS[0],
-		[sizeId],
+	const aspectPreset = useMemo(
+		() => EDITOR_ASPECT_PRESETS.find((item) => item.id === aspectId) ?? EDITOR_ASPECT_PRESETS[0]!,
+		[aspectId],
 	);
 
 	const canvasSize = useMemo(() => {
-		if (!natural.w || !natural.h) return { width: 1200, height: 900 };
-		return resolveCanvasSize(sizePreset, natural.w, natural.h);
-	}, [natural, sizePreset]);
+		if (!natural.w || !natural.h) return { width: 1024, height: 768 };
+		return resolveEditorCanvasSize(sizeId, aspectPreset.ratio, natural.w, natural.h);
+	}, [aspectPreset.ratio, natural, sizeId]);
 
 	const stageAspect = canvasSize.width / Math.max(canvasSize.height, 1);
 
