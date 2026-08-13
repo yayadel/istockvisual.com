@@ -1036,12 +1036,12 @@ export default function ImageEditor({
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-edited-${canvas.width}x${canvas.height}.png`;
+			link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-edited-${exportCanvas.width}x${exportCanvas.height}.png`;
 			link.click();
 			URL.revokeObjectURL(url);
-			setStatus(`Downloaded ${canvas.width}×${canvas.height}.`);
+			setStatus(`Downloaded ${exportCanvas.width}×${exportCanvas.height}.`);
 		}, 'image/png');
-	}, [allSizesFree, buildExportCanvas, isPro, loggedIn, sizeId, title]);
+	}, [allSizesFree, assetId, buildExportCanvas, isPro, loggedIn, sizeId, title]);
 
 	const stop = (event: React.SyntheticEvent) => {
 		event.stopPropagation();
