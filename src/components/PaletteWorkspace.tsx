@@ -160,92 +160,83 @@ export default function PaletteWorkspace() {
 
 	return (
 		<div className="tools-work">
-			<label
-				className="tools-rail"
-				onDragOver={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.add('is-dragover');
-				}}
-				onDragLeave={(event) => {
-					event.currentTarget.classList.remove('is-dragover');
-				}}
-				onDrop={(event) => {
-					event.preventDefault();
-					event.currentTarget.classList.remove('is-dragover');
-					void loadFile(event.dataTransfer.files?.[0]);
-				}}
-			>
-				<input
-					ref={inputRef}
-					type="file"
-					accept="image/*"
-					hidden
-					onChange={(event) => void loadFile(event.currentTarget.files?.[0])}
-				/>
-				<div className="tools-rail__text">
-					<strong>{sourceUrl ? 'Replace image' : 'Open an image'}</strong>
-					<span>Median-cut palette, local only. Click a swatch to copy.</span>
-				</div>
-				<span className="tools-rail__cta">Browse</span>
-			</label>
+			<ToolsDropzone
+				inputRef={inputRef}
+				title={sourceUrl ? 'Replace source image' : 'Drop an image to extract colors'}
+				hint="Median-cut palette, local only. Click a swatch to copy HEX, RGB, or HSL."
+				cta="Browse files"
+				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
+				sampleLabel={sourceUrl ? 'Source' : 'Palette sample'}
+				formats={['JPG', 'PNG', 'WebP']}
+				onFiles={(files) => void loadFile(files?.[0])}
+			/>
 
-			<section className="tools-controls" aria-label="Palette options">
-				<label className="tools-controls__field">
-					<span>Colors</span>
-					<select
-						value={colorCount}
-						onChange={(event) => setColorCount(Number(event.currentTarget.value))}
-					>
-						{[5, 6, 7, 8].map((n) => (
-							<option key={n} value={n}>
-								{n}
-							</option>
-						))}
-					</select>
-				</label>
-				<label className="tools-controls__field">
-					<span>Copy as</span>
-					<select
-						value={copyFormat}
-						onChange={(event) => setCopyFormat(event.currentTarget.value as CopyFormat)}
-					>
-						<option value="hex">HEX</option>
-						<option value="rgb">RGB</option>
-						<option value="hsl">HSL</option>
-					</select>
-				</label>
-				<div className="tools-controls__actions">
-					{eyeDropperOk && (
-						<button type="button" className="btn btn--ghost" onClick={pickEyeDropper} disabled={!image}>
-							Eyedropper
+			<ToolsPanel
+				title="Palette options"
+				note="Export as CSS variables, Tailwind snippet, or a shareable color card."
+				sampleSrc={sourceUrl || '/demo/studio-orb.jpg'}
+				sampleCaption={colors[0] ? colors[0].hex : 'Awaiting extract'}
+				actions={
+					<div className="tools-panel__actions">
+						{eyeDropperOk && (
+							<button type="button" className="btn btn--ghost" onClick={pickEyeDropper} disabled={!image}>
+								Eyedropper
+							</button>
+						)}
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={() => void copySnippet('css')}
+							disabled={!colors.length}
+						>
+							Copy CSS vars
 						</button>
-					)}
-					<button
-						type="button"
-						className="btn btn--ghost"
-						onClick={() => void copySnippet('css')}
-						disabled={!colors.length}
-					>
-						CSS vars
-					</button>
-					<button
-						type="button"
-						className="btn btn--ghost"
-						onClick={() => void copySnippet('tailwind')}
-						disabled={!colors.length}
-					>
-						Tailwind
-					</button>
-					<button
-						type="button"
-						className="btn btn--primary"
-						onClick={exportShare}
-						disabled={busy || !colors.length || !image}
-					>
-						Share image
-					</button>
+						<button
+							type="button"
+							className="btn btn--ghost"
+							onClick={() => void copySnippet('tailwind')}
+							disabled={!colors.length}
+						>
+							Copy Tailwind
+						</button>
+						<button
+							type="button"
+							className="btn btn--primary"
+							onClick={exportShare}
+							disabled={busy || !colors.length || !image}
+						>
+							Export share image
+						</button>
+					</div>
+				}
+			>
+				<div className="tools-controls tools-controls--stacked">
+					<label className="tools-controls__field">
+						<span>Colors</span>
+						<select
+							value={colorCount}
+							onChange={(event) => setColorCount(Number(event.currentTarget.value))}
+						>
+							{[5, 6, 7, 8].map((n) => (
+								<option key={n} value={n}>
+									{n}
+								</option>
+							))}
+						</select>
+					</label>
+					<label className="tools-controls__field">
+						<span>Copy as</span>
+						<select
+							value={copyFormat}
+							onChange={(event) => setCopyFormat(event.currentTarget.value as CopyFormat)}
+						>
+							<option value="hex">HEX</option>
+							<option value="rgb">RGB</option>
+							<option value="hsl">HSL</option>
+						</select>
+					</label>
 				</div>
-			</section>
+			</ToolsPanel>
 
 			{error && <p className="tools-work__error">{error}</p>}
 			{toast && <p className="tools-toast" role="status">{toast}</p>}
