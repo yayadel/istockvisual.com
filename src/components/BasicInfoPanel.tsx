@@ -34,7 +34,10 @@ export default function BasicInfoPanel({
 
 	return (
 		<section className="basic-info-panel is-open" aria-label="Basic information">
-			<h2 className="basic-info-panel__title">Basic information</h2>
+			<h2 className="basic-info-panel__title">
+				<DetailSectionIcon name="info" />
+				<span>Basic information</span>
+			</h2>
 			<div className="basic-info-panel__body">
 				<ul className="meta-list">
 					<li>

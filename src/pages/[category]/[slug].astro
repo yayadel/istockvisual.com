@@ -192,7 +192,7 @@ const jsonLd = assetJsonLd({
 									{asset.creationDescription && (
 										<article class="story-block">
 											<h2>
-												<span class="story-block__emoji" aria-hidden="true">✨</span>
+												<DetailSectionIcon name="spark" />
 												<span>Creation description</span>
 											</h2>
 											<p>{asset.creationDescription}</p>
@@ -201,7 +201,7 @@ const jsonLd = assetJsonLd({
 									{asset.usageTips && (
 										<article class="story-block">
 											<h2>
-												<span class="story-block__emoji" aria-hidden="true">💡</span>
+												<DetailSectionIcon name="tip" />
 												<span>Usage tips</span>
 											</h2>
 											<p>{asset.usageTips}</p>
@@ -214,7 +214,7 @@ const jsonLd = assetJsonLd({
 							asset.colorPalette && asset.colorPalette.length > 0 && (
 								<article class="story-block story-block--palette">
 									<h2>
-										<span class="story-block__emoji" aria-hidden="true">🎨</span>
+										<DetailSectionIcon name="palette" />
 										<span>Color palette</span>
 									</h2>
 									<ColorPalette client:load swatches={asset.colorPalette} />
@@ -225,7 +225,7 @@ const jsonLd = assetJsonLd({
 							asset.imagePrompt && (
 								<article class="story-block story-block--prompt">
 									<h2>
-										<span class="story-block__emoji" aria-hidden="true">🪄</span>
+										<DetailSectionIcon name="prompt" />
 										<span>Image generation prompt</span>
 									</h2>
 									<PromptBlock client:load prompt={asset.imagePrompt} />
