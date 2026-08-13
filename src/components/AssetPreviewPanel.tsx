@@ -63,6 +63,7 @@ export default function AssetPreviewPanel({
 					onClose={closeEditor}
 					loggedIn={loggedIn}
 					isPro={isPro}
+					assetId={assetId}
 				/>
 			) : null}
 		</div>
