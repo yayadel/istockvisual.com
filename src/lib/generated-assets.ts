@@ -1,9 +1,16 @@
 import type { CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
 import { normalizeTags } from './asset-types';
-import { resolveContentCategories } from './content-categories';
+import {
+	CONTENT_CATEGORY_PAGES,
+	normalizeContentCategories,
+	resolveContentCategories,
+	type ContentCategory,
+} from './content-categories';
 
 export { resolveContentCategories } from './content-categories';
+
+export type ContentCategoryCount = ContentCategory & { count: number };
 
 function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[] {
 	if (!value) return fallback;
