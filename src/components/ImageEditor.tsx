@@ -649,18 +649,79 @@ export default function ImageEditor({
 		setStatus('Background removal applied. Continue with another tool or download.');
 	}, [commitBaseline, pendingCommit]);
 
-	const applyExpandChanges = useCallback(() => {
-		if (!pendingCommit) {
-			setStatus('Run Expand first, then apply.');
+	const applyExpandChanges = useCallback(async () => {
+		const working = workingRef.current;
+		if (!working) return;
+
+		const originW = working.width;
+		const originH = working.height;
+		setExpandOrigin({ w: originW, h: originH });
+
+		const scale = 1 + expandPct / 100;
+		const targetW = Math.max(1, Math.round(originW * scale));
+		const targetH = Math.max(1, Math.round(originH * scale));
+		if (targetW === originW && targetH === originH) {
+			setStatus('Choose an expand amount above 0% first.');
 			return;
 		}
-		commitBaseline();
-		const working = workingRef.current;
-		if (working) {
-			setExpandOrigin({ w: working.width, h: working.height });
+
+		const VISUAL_MS = 1_200;
+		const startedAt = performance.now();
+		let stopped = false;
+		let displayPct = 0;
+		setBusy('Filling 0%…');
+		setStatus(null);
+		const tickId = window.setInterval(() => {
+			if (stopped) return;
+			const elapsed = performance.now() - startedAt;
+			const next = Math.min(95, (elapsed / VISUAL_MS) * 95);
+			const rounded = Math.floor(next);
+			if (rounded <= displayPct) return;
+			displayPct = rounded;
+			setBusy(`Filling ${displayPct}%…`);
+		}, 50);
+
+		try {
+			const expanded = expandWithEdgeFill(
+				working,
+				originW,
+				originH,
+				targetW,
+				targetH,
+			);
+
+			const remaining = Math.max(0, VISUAL_MS - (performance.now() - startedAt));
+			if (remaining > 0) {
+				await new Promise<void>((resolve) => {
+					window.setTimeout(resolve, remaining);
+				});
+			}
+
+			stopped = true;
+			window.clearInterval(tickId);
+			setBusy('Filling 100%…');
+			setWorkingFromCanvas(expanded);
+			try {
+				setFrameUrl(expanded.toDataURL('image/png'));
+			} catch {
+				/* previewUrl covers display */
+			}
+			originalRef.current = cloneCanvas(expanded);
+			setExpandOrigin({ w: expanded.width, h: expanded.height });
+			setCrop(DEFAULT_CROP);
+			setPendingCommit(false);
+			setStatus(
+				`Expanded +${expandPct}% to ${targetW}×${targetH} with edge fill (blur + mirror, no AI).`,
+			);
+		} catch (error) {
+			console.error(error);
+			setStatus('Expand failed. Please try again.');
+		} finally {
+			stopped = true;
+			window.clearInterval(tickId);
+			setBusy(null);
 		}
-		setStatus('Expand applied. Continue with another tool or download.');
-	}, [commitBaseline, pendingCommit]);
+	}, [expandPct, setWorkingFromCanvas]);
 
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1123,7 +1184,7 @@ export default function ImageEditor({
 					<div className="image-editor-modal__workspace">
 						<div className="image-editor-modal__stage-wrap">
 							<div
-								className="image-editor-modal__stage"
+								className={`image-editor-modal__stage${tool === 'expand' ? ' image-editor-modal__stage--expand' : ''}`}
 								ref={stageRef}
 								style={
 									{
@@ -1152,14 +1213,16 @@ export default function ImageEditor({
 										className="image-editor-modal__expand-guide"
 										style={expandGuideStyle}
 										aria-hidden="true"
-									/>
+									>
+										<span className="image-editor-modal__expand-guide-label">Original</span>
+									</div>
 								)}
 
 								{tool === 'expand' && ready && expandTarget && (
 									<p className="image-editor-modal__expand-meta">
 										{pendingCommit
-											? `${natural.w}×${natural.h}`
-											: `${natural.w}×${natural.h} → ${expandTarget.width}×${expandTarget.height} · +${expandPct}%`}
+											? `Canvas ${natural.w}×${natural.h} · Original ${expandOrigin.w}×${expandOrigin.h} · +${expandPct}% added`
+											: `${expandOrigin.w || natural.w}×${expandOrigin.h || natural.h} → ${expandTarget.width}×${expandTarget.height} · +${expandPct}%`}
 									</p>
 								)}
 
@@ -1358,13 +1421,13 @@ export default function ImageEditor({
 								<>
 									<h3>Expand canvas</h3>
 									<p>
-										Pick how much to grow the frame. The preview keeps the original centered;
-										confirm to fill the new margins.
+										Pick how much to grow the frame. The dimmed outer ring is the added area;
+										the lime box is the original photo. Confirm fills the new margins.
 									</p>
 									{expandTarget && (
 										<p className="image-editor-modal__expand-dims">
 											{pendingCommit
-												? `Result ${natural.w}×${natural.h}`
+												? `Result ${natural.w}×${natural.h} (was ${expandOrigin.w}×${expandOrigin.h})`
 												: `Target ${expandTarget.width}×${expandTarget.height} (+${expandPct}%)`}
 										</p>
 									)}
