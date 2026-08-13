@@ -176,8 +176,6 @@ export default function DownloadPanel({
 
 	return (
 		<div className="download-panel" ref={rootRef}>
-			<p className="download-panel__label">Download</p>
-
 			<div className="download-split-wrap">
 				<div className={`download-split${menuOpen ? ' is-open' : ''}`}>
 					<button
