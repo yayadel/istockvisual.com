@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
 	title: string;
@@ -7,11 +7,16 @@ type Props = {
 
 export default function ShareBar({ title, url }: Props) {
 	const [copied, setCopied] = useState(false);
-	const shareUrl =
-		url || (typeof window !== 'undefined' ? window.location.href : '');
+	const [pageUrl, setPageUrl] = useState(url || '');
+	const [canNativeShare, setCanNativeShare] = useState(false);
+
+	useEffect(() => {
+		if (!url) setPageUrl(window.location.href);
+		setCanNativeShare(typeof navigator.share === 'function');
+	}, [url]);
 
 	async function copyLink() {
-		if (!shareUrl) return;
+		const shareUrl = pageUrl || window.location.href;
 		try {
 			await navigator.clipboard.writeText(shareUrl);
 			setCopied(true);
@@ -22,21 +27,22 @@ export default function ShareBar({ title, url }: Props) {
 	}
 
 	async function nativeShare() {
-		if (!shareUrl || typeof navigator === 'undefined' || !navigator.share) {
-			await copyLink();
-			return;
+		const shareUrl = pageUrl || window.location.href;
+		if (typeof navigator.share === 'function') {
+			try {
+				await navigator.share({ title, url: shareUrl, text: title });
+				return;
+			} catch {
+				// cancelled
+				return;
+			}
 		}
-		try {
-			await navigator.share({ title, url: shareUrl, text: title });
-		} catch {
-			// user cancelled or share failed — ignore
-		}
+		await copyLink();
 	}
 
+	const shareUrl = pageUrl || url || '';
 	const encodedUrl = encodeURIComponent(shareUrl);
 	const encodedTitle = encodeURIComponent(title);
-	const canNativeShare =
-		typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
 	return (
 		<section className="share-bar" aria-label="Share">
@@ -54,15 +60,20 @@ export default function ShareBar({ title, url }: Props) {
 				)}
 				<a
 					className="share-bar__btn"
-					href={`https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
+					href={shareUrl ? `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` : undefined}
 					target="_blank"
 					rel="noopener noreferrer"
+					aria-disabled={!shareUrl}
 				>
 					X
 				</a>
 				<a
 					className="share-bar__btn"
-					href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
+					href={
+						shareUrl
+							? `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
+							: undefined
+					}
 					target="_blank"
 					rel="noopener noreferrer"
 				>
@@ -70,7 +81,9 @@ export default function ShareBar({ title, url }: Props) {
 				</a>
 				<a
 					className="share-bar__btn"
-					href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+					href={
+						shareUrl ? `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` : undefined
+					}
 					target="_blank"
 					rel="noopener noreferrer"
 				>
