@@ -937,6 +937,32 @@ export default function ImageEditor({
 							</div>
 						</div>
 					)}
+
+					{tool === 'expand' && (
+						<div className="image-editor-modal__row image-editor-modal__row--expand">
+							<span className="image-editor-modal__row-label">Expand</span>
+							<div className="image-editor-modal__expand-list" role="group" aria-label="Expand amount">
+								{EXPAND_PERCENTS.map((pct) => (
+									<button
+										key={pct}
+										type="button"
+										className={`image-editor-modal__expand-pct${expandPct === pct ? ' is-active' : ''}`}
+										onClick={() => {
+											if (pendingCommit) {
+												restoreOriginalWorking();
+												setCrop(DEFAULT_CROP);
+											}
+											setExpandPct(pct);
+											setStatus(null);
+										}}
+										disabled={Boolean(busy)}
+									>
+										+{pct}%
+									</button>
+								))}
+							</div>
+						</div>
+					)}
 				</section>
 
 				<div className="image-editor-modal__body">
