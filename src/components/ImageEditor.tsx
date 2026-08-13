@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { createPortal } from 'react-dom';
 import { isFreeDownloadSize } from '../lib/download-sizes';
 import {
+	ADJUST_SLIDERS,
 	DEFAULT_ADJUST,
 	DEFAULT_DOWNLOAD_SIZE,
 	DOWNLOAD_SIZES,
@@ -13,6 +14,7 @@ import {
 	containSize,
 	cssFilterFromAdjust,
 	expandWithEdgeFill,
+	hasAdjustChanges,
 	resolveEditorCanvasSize,
 	type AdjustValues,
 	type DownloadSizeId,
