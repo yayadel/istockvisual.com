@@ -68,12 +68,18 @@ export async function generateMetaWithGeminiNode({
 	if (!keyword) throw new Error('keyword is required');
 
 	const proxy = applyProxyIfConfigured(devVars);
+	const categoriesCsv =
+		devVars.CONTENT_CATEGORIES_CSV ||
+		(fs.existsSync(path.join(root, 'categories'))
+			? fs
+					.readFileSync(path.join(root, 'categories'), 'utf8')
+					.split(',')
+					.map((item) => item.trim())
+					.filter(Boolean)
+					.join(', ')
+			: '');
 	const hostPrompt = hostPromptTemplate
-		.replace(
-			'[Insert allowed content categories here]',
-			devVars.CONTENT_CATEGORIES_CSV ||
-				'[Business, Finance, Technology, … see /categories]',
-		)
+		.replace('[Insert allowed content categories here]', categoriesCsv)
 		.replace('[Insert topic keyword here]', keyword.trim());
 	const prompt = `${hostPrompt}\n\n${jsonInstruction}`;
 	const endpointBase = (baseUrl || 'https://generativelanguage.googleapis.com').replace(/\/$/, '');
