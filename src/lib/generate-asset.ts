@@ -10,7 +10,7 @@ import {
 	type AssetDetail,
 	type GeneratedAssetMeta,
 } from './asset-types';
-import { resolveContentCategories } from './content-categories';
+import { resolveContentCategories, assetMatchesContentCategory } from './content-categories';
 import { buildHostPrompt, JSON_OUTPUT_INSTRUCTION } from './host-prompt';
 import {
 	getGeneratedAssetById,
