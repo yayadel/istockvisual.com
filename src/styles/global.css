@@ -1174,8 +1174,25 @@ body.upload-modal-open {
 }
 
 .basic-info-panel__body .meta-list li {
+	align-items: flex-start;
 	padding-top: 0.15rem;
 	padding-bottom: 0.55rem;
+}
+
+.basic-info-panel__body .meta-list li > span:first-child {
+	flex: 0 0 auto;
+	padding-top: 0.05rem;
+}
+
+.basic-info-panel__body .meta-list li > span:last-child {
+	flex: 1 1 auto;
+	min-width: 0;
+	text-align: right;
+	line-height: 1.4;
+}
+
+.basic-info-panel__body .meta-list__links {
+	text-align: right;
 }
 
 .basic-info-panel__body .meta-list li:last-child {
