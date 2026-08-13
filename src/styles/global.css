@@ -3188,7 +3188,8 @@ body.image-editor-modal-open {
 
 .image-editor-modal__size-list,
 .image-editor-modal__aspect-list,
-.image-editor-modal__preset-list {
+.image-editor-modal__preset-list,
+.image-editor-modal__expand-list {
 	display: flex;
 	flex-wrap: nowrap;
 	gap: 0.35rem;
