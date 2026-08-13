@@ -548,6 +548,10 @@ export default function ImageEditor({
 
 	const resetExpand = () => {
 		restoreOriginalWorking();
+		const original = originalRef.current;
+		if (original) {
+			setExpandOrigin({ w: original.width, h: original.height });
+		}
 		setCrop(DEFAULT_CROP);
 		setStatus('Expand reset to last applied image.');
 	};
@@ -558,6 +562,15 @@ export default function ImageEditor({
 			if (pendingCommit) {
 				restoreOriginalWorking();
 				setCrop(DEFAULT_CROP);
+				const original = originalRef.current;
+				if (original) {
+					setExpandOrigin({ w: original.width, h: original.height });
+				}
+			} else {
+				const working = workingRef.current;
+				if (working) {
+					setExpandOrigin({ w: working.width, h: working.height });
+				}
 			}
 			setExpandPct(next);
 			if (!options?.fromCustom) setExpandCustomDraft('');
@@ -642,6 +655,10 @@ export default function ImageEditor({
 			return;
 		}
 		commitBaseline();
+		const working = workingRef.current;
+		if (working) {
+			setExpandOrigin({ w: working.width, h: working.height });
+		}
 		setStatus('Expand applied. Continue with another tool or download.');
 	}, [commitBaseline, pendingCommit]);
 
