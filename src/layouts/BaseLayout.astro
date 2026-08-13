@@ -33,7 +33,8 @@ const {
 	robots = 'index, follow, max-image-preview:large',
 } = Astro.props;
 
-const pageTitle = exactTitle || title === 'iStockVisual' ? title : `${title} · iStockVisual`;
+const pageTitle =
+	exactTitle || title === 'iStockVisual' ? title : `${title} · iStockVisual`;
 const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.url.origin).href;
 const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 ---
