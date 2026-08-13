@@ -407,6 +407,7 @@ export default function ImageEditor({
 
 	const resetRemoveBg = () => {
 		restoreOriginalWorking();
+		setKeepCircle(DEFAULT_KEEP_CIRCLE);
 		setStatus('Background removal reset to original.');
 	};
 
