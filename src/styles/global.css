@@ -3085,10 +3085,6 @@ body.image-editor-modal-open {
 	.image-editor-modal__workspace {
 		grid-template-columns: 1fr;
 	}
-
-	.image-editor-modal__stage {
-		max-height: 42vh;
-	}
 }
 
 .meta-list {
