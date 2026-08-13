@@ -3467,7 +3467,7 @@ body.download-auth-modal-open {
 	transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.asset-preview__action:hover,
+.asset-preview__action.btn:hover,
 .asset-preview__share .share-bar__toggle:hover,
 .asset-preview__share .share-bar.is-open .share-bar__toggle {
 	background: var(--ghost-bg);
@@ -3507,7 +3507,7 @@ body.download-auth-modal-open {
 	color: var(--text);
 }
 
-[data-theme='dark'] .asset-preview__action:hover,
+[data-theme='dark'] .asset-preview__action.btn:hover,
 [data-theme='dark'] .asset-preview__share .share-bar__toggle:hover,
 [data-theme='dark'] .asset-preview__share .share-bar.is-open .share-bar__toggle {
 	background: var(--ghost-bg);
