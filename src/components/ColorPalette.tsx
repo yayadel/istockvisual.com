@@ -2,24 +2,6 @@ import { useState, type CSSProperties } from 'react';
 
 type Swatch = { name: string; hex: string };
 
-function contrastInk(hex: string): 'light' | 'dark' {
-	const value = hex.replace('#', '').trim();
-	const normalized =
-		value.length === 3
-			? value
-					.split('')
-					.map((char) => char + char)
-					.join('')
-			: value;
-	if (normalized.length !== 6) return 'dark';
-	const r = Number.parseInt(normalized.slice(0, 2), 16);
-	const g = Number.parseInt(normalized.slice(2, 4), 16);
-	const b = Number.parseInt(normalized.slice(4, 6), 16);
-	if ([r, g, b].some((channel) => Number.isNaN(channel))) return 'dark';
-	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-	return luminance > 0.62 ? 'dark' : 'light';
-}
-
 export default function ColorPalette({ swatches }: { swatches: Swatch[] }) {
 	const [copied, setCopied] = useState<string | null>(null);
 
