@@ -1896,12 +1896,26 @@ body.download-auth-modal-open {
 }
 
 [data-theme='dark'] .download-menu__item:hover,
-[data-theme='dark'] .download-menu__item.is-selected {
+[data-theme='dark'] .download-menu__item.is-selected,
+[data-theme='dark'] .download-menu__row:hover,
+[data-theme='dark'] .download-menu__row.is-selected {
 	background: rgba(196, 240, 75, 0.08);
 }
 
 [data-theme='dark'] .download-menu__dims {
 	color: #eef3ef;
+}
+
+[data-theme='dark'] .download-menu__format {
+	background: #1a231e;
+	border-color: rgba(238, 243, 239, 0.14);
+	color: #eef3ef;
+}
+
+[data-theme='dark'] .download-menu__format:hover:not(:disabled) {
+	background: #2a6b5c;
+	border-color: #2a6b5c;
+	color: #fff;
 }
 
 [data-theme='dark'] .detail__info .btn--ghost,
