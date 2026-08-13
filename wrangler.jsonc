@@ -3,7 +3,7 @@
 	"compatibility_date": "2026-08-11",
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"name": "istockvisual",
-	"main": "@astrojs/cloudflare/entrypoints/server",
+	"main": "./src/cloudflare-entry.ts",
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
