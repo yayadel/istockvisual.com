@@ -105,6 +105,17 @@ export function isKnownContentCategory(value: string): boolean {
 	return CATEGORY_SET.has(value.trim().toLowerCase());
 }
 
+/** Resolve 1–3 vocabulary categories from stored JSON or title fallback. */
+export function resolveContentCategories(input: {
+	stored?: string[] | null;
+	title?: string;
+	keyword?: string;
+}): string[] {
+	const fromStored = normalizeContentCategories(input.stored);
+	if (fromStored.length > 0) return fromStored;
+	return pickContentCategoriesFromTitle(input.title || '', input.keyword || '');
+}
+
 export function contentCategoriesPromptList(): string {
 	return CONTENT_CATEGORIES.join(', ');
 }
