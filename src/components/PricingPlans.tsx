@@ -30,7 +30,7 @@ const LONG_PLANS: Plan[] = [
 		name: 'Lifetime Access',
 		price: '$59.99',
 		period: 'Pay once',
-		rate: 'Pay once, download forever',
+		rate: '★ Pay once, download forever',
 		cta: 'Get Lifetime Access',
 		href: '/signup?plan=lifetime',
 		featured: true,
