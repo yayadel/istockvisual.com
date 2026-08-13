@@ -63,7 +63,7 @@ const assets = isVisual ? rankAssetsByPalette(scoped, queryColors) : scoped;
 		</div>
 	</div>
 
-	{isVisual && <VisualSearchQuery client:load colors={queryColors} />}
+	{isVisual && <VisualSearchQuery client:load colors={queryColors} previewUrl={previewUrl} />}
 
 	<AssetGrid
 		assets={assets}
