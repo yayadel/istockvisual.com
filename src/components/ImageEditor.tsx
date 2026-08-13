@@ -901,6 +901,14 @@ export default function ImageEditor({
 									<button className="btn btn--ghost" type="button" onClick={resetAdjust}>
 										Reset all
 									</button>
+									<button
+										className="btn btn--primary"
+										type="button"
+										onClick={applyAdjustChanges}
+										disabled={!ready || Boolean(busy) || !hasAdjustChanges(adjust)}
+									>
+										Apply changes
+									</button>
 								</>
 							)}
 
@@ -945,6 +953,24 @@ export default function ImageEditor({
 									<button className="btn btn--ghost" type="button" onClick={resetTransform}>
 										Reset
 									</button>
+									<button
+										className="btn btn--primary"
+										type="button"
+										onClick={applyTransformChanges}
+										disabled={
+											!ready ||
+											Boolean(busy) ||
+											!hasTransformChanges({
+												rotation,
+												fineRotation,
+												flipX,
+												flipY,
+												crop,
+											})
+										}
+									>
+										Apply changes
+									</button>
 								</>
 							)}
 
@@ -967,6 +993,14 @@ export default function ImageEditor({
 									>
 										Remove background
 									</button>
+									<button
+										className="btn btn--primary"
+										type="button"
+										onClick={applyRemoveBgChanges}
+										disabled={!ready || Boolean(busy) || !pendingCommit}
+									>
+										Apply changes
+									</button>
 									<button className="btn btn--ghost" type="button" onClick={resetRemoveBg}>
 										Reset
 									</button>
@@ -986,6 +1020,14 @@ export default function ImageEditor({
 										disabled={Boolean(busy) || !ready}
 									>
 										Expand to {canvasSize.width}×{canvasSize.height}
+									</button>
+									<button
+										className="btn btn--primary"
+										type="button"
+										onClick={applyExpandChanges}
+										disabled={!ready || Boolean(busy) || !pendingCommit}
+									>
+										Apply changes
 									</button>
 									<button className="btn btn--ghost" type="button" onClick={resetExpand}>
 										Reset
