@@ -120,7 +120,7 @@ const similar = findSimilarAssets(
 								</article>
 							)}
 							{asset.colorPalette && asset.colorPalette.length > 0 && (
-								<article class="info-card info-card--wide">
+								<article class="info-card info-card--wide info-card--palette">
 									<h2>Color palette</h2>
 									<ColorPalette client:load swatches={asset.colorPalette} />
 								</article>
