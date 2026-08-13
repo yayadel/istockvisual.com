@@ -86,6 +86,8 @@ export default function ImageEditor({
 	onClose,
 	loggedIn = false,
 	isPro = false,
+	variant = 'modal',
+	allSizesFree = false,
 }: Props) {
 	const stageRef = useRef<HTMLDivElement>(null);
 	const workingRef = useRef<HTMLCanvasElement | null>(null);
@@ -246,6 +248,7 @@ export default function ImageEditor({
 	}, [setWorkingFromCanvas]);
 
 	useEffect(() => {
+		if (variant !== 'modal') return;
 		document.body.classList.add('image-editor-modal-open');
 		const onKey = (event: KeyboardEvent) => {
 			if (event.key === 'Escape' && !busy) onCloseRef.current();
@@ -255,7 +258,7 @@ export default function ImageEditor({
 			document.body.classList.remove('image-editor-modal-open');
 			window.removeEventListener('keydown', onKey);
 		};
-	}, [busy]);
+	}, [busy, variant]);
 
 	useEffect(() => {
 		let cancelled = false;
