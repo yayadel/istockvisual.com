@@ -115,7 +115,7 @@ const similar = findSimilarAssets(
 						fileType={asset.fileType || '—'}
 						categories={contentCategories.map((label) => ({
 							label,
-							href: searchPath(label),
+							href: contentCategoryPath(label),
 						}))}
 					/>
 					{

@@ -68,7 +68,7 @@ export type AssetDetail = {
 	usageTips?: string;
 	colorPalette?: ColorSwatch[];
 	relatedQueries?: string[];
-	/** 1–3 topical categories from the fixed vocabulary. */
+	/** Exactly 1 topical category from the fixed vocabulary. */
 	contentCategories?: string[];
 	depictedElements?: string[];
 	medium?: string;
