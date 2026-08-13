@@ -554,7 +554,7 @@ export default function ImageEditor({
 							<span className="image-editor-modal__row-label">Aspect</span>
 							<div className="image-editor-modal__aspect-list">
 								{EDITOR_ASPECT_PRESETS.map((preset) => {
-									const box = aspectPreviewBox(preset.ratio);
+									const box = aspectPreviewBox(preset.ratio, 18);
 									return (
 										<button
 											key={preset.id}
