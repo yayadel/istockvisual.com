@@ -111,6 +111,16 @@ export function stemFromFileName(name: string): string {
 	return name.replace(/\.[^.]+$/, '') || 'image';
 }
 
+export const EXAMPLE_IMAGE_URL = '/demo/studio-orb.jpg';
+
+/** Fetch the shared demo asset as a File (for seeding tool queues). */
+export async function fetchExampleImageFile(fileName = 'example.jpg'): Promise<File> {
+	const response = await fetch(EXAMPLE_IMAGE_URL);
+	if (!response.ok) throw new Error('Failed to load example image');
+	const blob = await response.blob();
+	return new File([blob], fileName, { type: blob.type || 'image/jpeg' });
+}
+
 export function relativeLuminance(r: number, g: number, b: number): number {
 	const lin = [r, g, b].map((channel) => {
 		const c = channel / 255;

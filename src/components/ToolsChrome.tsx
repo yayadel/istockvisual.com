@@ -13,7 +13,7 @@ type ToolsDropzoneProps = {
 	onFiles: (files: FileList | null) => void;
 };
 
-const DEFAULT_SAMPLE = '/demo/studio-orb.jpg';
+export const TOOLS_SAMPLE_SRC = '/demo/studio-orb.jpg';
 
 export function ToolsDropzone({
 	title,
@@ -21,7 +21,7 @@ export function ToolsDropzone({
 	cta = 'Browse files',
 	accept = 'image/*',
 	multiple = false,
-	sampleSrc = DEFAULT_SAMPLE,
+	sampleSrc = TOOLS_SAMPLE_SRC,
 	sampleLabel = 'Sample',
 	formats = ['JPG', 'PNG', 'WebP'],
 	inputRef,
@@ -75,6 +75,8 @@ type ToolsPanelProps = {
 	note?: string;
 	sampleSrc?: string;
 	sampleCaption?: string;
+	/** Live preview node (canvas etc.). Replaces the static sample image when set. */
+	sample?: ReactNode;
 	children: ReactNode;
 	actions?: ReactNode;
 	/** When true, sample column is hidden and body spans full width (e.g. live editor). */
@@ -84,8 +86,9 @@ type ToolsPanelProps = {
 export function ToolsPanel({
 	title,
 	note,
-	sampleSrc = DEFAULT_SAMPLE,
-	sampleCaption = 'Example preview',
+	sampleSrc = TOOLS_SAMPLE_SRC,
+	sampleCaption = 'Live example',
+	sample,
 	children,
 	actions,
 	flush = false,
@@ -100,12 +103,13 @@ export function ToolsPanel({
 				{actions ? <div className="tools-panel__head-actions">{actions}</div> : null}
 			</header>
 			<div className="tools-panel__layout">
-				{!flush && (
-					<figure className="tools-panel__sample">
-						<img src={sampleSrc} alt="" />
-						<figcaption>{sampleCaption}</figcaption>
-					</figure>
-				)}
+				{!flush &&
+					(sample ?? (
+						<figure className="tools-panel__sample">
+							<img src={sampleSrc} alt="" />
+							<figcaption>{sampleCaption}</figcaption>
+						</figure>
+					))}
 				<div className="tools-panel__body">{children}</div>
 			</div>
 		</section>
