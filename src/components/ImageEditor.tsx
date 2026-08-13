@@ -778,38 +778,42 @@ export default function ImageEditor({
 					</div>
 				</header>
 
-				<section className="image-editor-modal__controls" aria-label="Size and tools">
-					<div className="image-editor-modal__row">
-						<span className="image-editor-modal__row-label">Size</span>
-						<div className="image-editor-modal__size-list">
-							{sizeOptions.map((size) => {
-								const needsPro = !allSizesFree && !isFreeDownloadSize(size.id);
-								const dims = `${size.output.width}×${size.output.height}`;
-								return (
-									<button
-										key={size.id}
-										type="button"
-										className={`image-editor-modal__size${sizeId === size.id ? ' is-active' : ''}`}
-										onClick={() => selectSize(size.id)}
-										disabled={Boolean(busy)}
-										title={dims}
-									>
-										<span className="image-editor-modal__size-name">{dims}</span>
-										{needsPro ? (
-											<em className="download-tier download-tier--pro">Pro</em>
-										) : (
-											<span className="download-tier download-tier--free">Free</span>
-										)}
-									</button>
-								);
-							})}
-						</div>
-					</div>
-					{sizeGateMessage && (
-						<p className="image-editor-modal__gate">
-							{sizeGateMessage}{' '}
-							<a href="/price">Go Pro</a>
-						</p>
+				<section className="image-editor-modal__controls" aria-label="Editor tools">
+					{!isPage && (
+						<>
+							<div className="image-editor-modal__row">
+								<span className="image-editor-modal__row-label">Size</span>
+								<div className="image-editor-modal__size-list">
+									{sizeOptions.map((size) => {
+										const needsPro = !allSizesFree && !isFreeDownloadSize(size.id);
+										const dims = `${size.output.width}×${size.output.height}`;
+										return (
+											<button
+												key={size.id}
+												type="button"
+												className={`image-editor-modal__size${sizeId === size.id ? ' is-active' : ''}`}
+												onClick={() => selectSize(size.id)}
+												disabled={Boolean(busy)}
+												title={dims}
+											>
+												<span className="image-editor-modal__size-name">{dims}</span>
+												{needsPro ? (
+													<em className="download-tier download-tier--pro">Pro</em>
+												) : (
+													<span className="download-tier download-tier--free">Free</span>
+												)}
+											</button>
+										);
+									})}
+								</div>
+							</div>
+							{sizeGateMessage && (
+								<p className="image-editor-modal__gate">
+									{sizeGateMessage}{' '}
+									<a href="/price">Go Pro</a>
+								</p>
+							)}
+						</>
 					)}
 
 					<div className="image-editor-modal__row image-editor-modal__row--tools">
@@ -1103,7 +1107,9 @@ export default function ImageEditor({
 								<>
 									<h3>Expand canvas</h3>
 									<p>
-										Choose a larger Size above, then expand the image to fill the new frame.
+										{isPage
+											? 'Widen the canvas around the current image with edge fill.'
+											: 'Choose a larger Size above, then expand the image to fill the new frame.'}
 									</p>
 									<button
 										className="btn btn--primary"
@@ -1111,7 +1117,12 @@ export default function ImageEditor({
 										onClick={handleExpand}
 										disabled={Boolean(busy) || !ready}
 									>
-										Expand to {canvasSize.width}×{canvasSize.height}
+										{isPage &&
+										natural.w > 0 &&
+										canvasSize.width === natural.w &&
+										canvasSize.height === natural.h
+											? `Expand to ${Math.round(natural.w * 1.25)}×${Math.round(natural.h * 1.25)}`
+											: `Expand to ${canvasSize.width}×${canvasSize.height}`}
 									</button>
 									<button
 										className="btn btn--primary"
