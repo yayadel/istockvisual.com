@@ -2541,7 +2541,8 @@ body.image-editor-modal-open {
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
 	width: min(100%, 1280px);
-	height: min(100%, 920px);
+	height: min(100dvh - 1.5rem, 920px);
+	max-height: calc(100dvh - 1.5rem);
 	background: #f7f8f7;
 	border: 1px solid rgba(20, 24, 20, 0.12);
 	border-radius: 6px;
