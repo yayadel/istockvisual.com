@@ -40,7 +40,6 @@ export const LONG_PLANS: PricingPlan[] = [
 		href: '/signup?plan=lifetime',
 		featured: true,
 		badge: 'Launch · Most Popular',
-		highlight: '⚡ Limited to First 500 Members',
 	},
 	{
 		id: 'year',
