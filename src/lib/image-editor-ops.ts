@@ -312,3 +312,123 @@ export function cssFilterFromAdjust(adjust: AdjustValues): string {
 	if (hue) parts.push(`hue-rotate(${hue}deg)`);
 	return parts.join(' ');
 }
+
+/** Normalized keep-circle for Remove BG. `r` is radius / min(frameW, frameH). */
+export type KeepCircle = { cx: number; cy: number; r: number };
+
+export const DEFAULT_KEEP_CIRCLE: KeepCircle = { cx: 0.5, cy: 0.5, r: 0.28 };
+
+/** Ellipse radii in normalized stage coords so the overlay reads as a true circle. */
+export function keepCircleNormRadii(
+	circle: KeepCircle,
+	frameW: number,
+	frameH: number,
+): { rx: number; ry: number } {
+	const minSide = Math.max(1, Math.min(frameW, frameH));
+	return {
+		rx: (circle.r * minSide) / frameW,
+		ry: (circle.r * minSide) / frameH,
+	};
+}
+
+/**
+ * Crop the working image to the keep-circle (plus padding) so remove-bg
+ * focuses on the user-chosen subject instead of guessing.
+ */
+export function extractKeepCircleCrop(
+	source: HTMLCanvasElement,
+	circle: KeepCircle,
+	frameW: number,
+	frameH: number,
+	padding = 0.18,
+): {
+	crop: HTMLCanvasElement;
+	offsetX: number;
+	offsetY: number;
+	localCx: number;
+	localCy: number;
+	localR: number;
+} {
+	const fit = containSize(source.width, source.height, frameW, frameH);
+	const scale = fit.w / Math.max(1, source.width);
+	const minSide = Math.max(1, Math.min(frameW, frameH));
+	const frameCx = circle.cx * frameW;
+	const frameCy = circle.cy * frameH;
+	const frameR = circle.r * minSide;
+
+	const srcCx = (frameCx - fit.x) / scale;
+	const srcCy = (frameCy - fit.y) / scale;
+	const srcR = frameR / scale;
+	const pad = srcR * padding;
+
+	const x0 = Math.floor(clamp(srcCx - srcR - pad, 0, source.width));
+	const y0 = Math.floor(clamp(srcCy - srcR - pad, 0, source.height));
+	const x1 = Math.ceil(clamp(srcCx + srcR + pad, 0, source.width));
+	const y1 = Math.ceil(clamp(srcCy + srcR + pad, 0, source.height));
+	const cropW = Math.max(1, x1 - x0);
+	const cropH = Math.max(1, y1 - y0);
+
+	const crop = document.createElement('canvas');
+	crop.width = cropW;
+	crop.height = cropH;
+	const ctx = crop.getContext('2d');
+	if (ctx) ctx.drawImage(source, x0, y0, cropW, cropH, 0, 0, cropW, cropH);
+
+	return {
+		crop,
+		offsetX: x0,
+		offsetY: y0,
+		localCx: srcCx - x0,
+		localCy: srcCy - y0,
+		localR: srcR,
+	};
+}
+
+/** Soft-gate alpha outside the keep circle so leftover crop corners stay transparent. */
+export function applyKeepCircleAlphaGate(
+	canvas: HTMLCanvasElement,
+	localCx: number,
+	localCy: number,
+	localR: number,
+	softExtra = 0.35,
+): void {
+	const ctx = canvas.getContext('2d');
+	if (!ctx) return;
+	const { width, height } = canvas;
+	const image = ctx.getImageData(0, 0, width, height);
+	const px = image.data;
+	const hard = Math.max(1, localR);
+	const soft = hard * (1 + softExtra);
+	for (let y = 0; y < height; y += 1) {
+		for (let x = 0; x < width; x += 1) {
+			const i = (y * width + x) * 4;
+			const d = Math.hypot(x + 0.5 - localCx, y + 0.5 - localCy);
+			if (d <= hard) continue;
+			if (d >= soft) {
+				px[i + 3] = 0;
+				continue;
+			}
+			const t = 1 - (d - hard) / (soft - hard);
+			px[i + 3] = Math.round((px[i + 3] ?? 0) * t);
+		}
+	}
+	ctx.putImageData(image, 0, 0);
+}
+
+/** Paste a cropped subject onto a full-size transparent canvas. */
+export function compositeCropToCanvas(
+	fullW: number,
+	fullH: number,
+	crop: CanvasImageSource,
+	offsetX: number,
+	offsetY: number,
+	cropW: number,
+	cropH: number,
+): HTMLCanvasElement {
+	const out = document.createElement('canvas');
+	out.width = Math.max(1, fullW);
+	out.height = Math.max(1, fullH);
+	const ctx = out.getContext('2d');
+	if (ctx) ctx.drawImage(crop, 0, 0, cropW, cropH, offsetX, offsetY, cropW, cropH);
+	return out;
+}
