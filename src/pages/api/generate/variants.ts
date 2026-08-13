@@ -94,10 +94,10 @@ export const POST: APIRoute = async (context) => {
 			});
 		}
 
-		if (body.sizeId && body.sizeId !== '4k') {
+		if (body.sizeId && body.sizeId !== '4k' && body.sizeId !== 'preview') {
 			return new Response(
 				JSON.stringify({
-					error: 'Only a 4K master is stored. Other sizes are drawn in the browser.',
+					error: 'Only a 4K master and a WEBP display preview are stored.',
 				}),
 				{ status: 400, headers: { 'Content-Type': 'application/json' } },
 			);
@@ -112,6 +112,16 @@ export const POST: APIRoute = async (context) => {
 		}
 
 		const bytes = decodeBase64Image(body.imageBase64);
+
+		if (body.sizeId === 'preview') {
+			const key = previewObjectKey(asset.r2ObjectKey);
+			await env.MEDIA.put(key, bytes, {
+				httpMetadata: { contentType: 'image/webp' },
+			});
+			return new Response(JSON.stringify({ ok: true, key, bytes: bytes.byteLength }), {
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
 		await env.MEDIA.put(asset.r2ObjectKey, bytes, {
 			httpMetadata: { contentType: 'image/jpeg' },
 		});

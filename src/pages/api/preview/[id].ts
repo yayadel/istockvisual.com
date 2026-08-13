@@ -2,10 +2,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { previewObjectKey } from '../../../lib/download-sizes';
 import { getGeneratedAssetById } from '../../../lib/generated-assets';
-import { resizeImageToLongEdgeJpeg } from '../../../lib/resize-jpeg';
 import { getAssetById } from '../../../lib/sanity';
-
-const PREVIEW_LONG_EDGE = 1024;
 
 export const GET: APIRoute = async (context) => {
 	const id = context.params.id;
@@ -38,14 +35,14 @@ export const GET: APIRoute = async (context) => {
 	}
 
 	const previewKey = previewObjectKey(r2ObjectKey);
-	const cached = await bucket.get(previewKey);
-	if (cached) {
+	const preview = await bucket.get(previewKey);
+	if (preview) {
 		const headers = new Headers();
-		cached.writeHttpMetadata(headers);
-		headers.set('etag', cached.httpEtag);
-		headers.set('Content-Type', 'image/jpeg');
+		preview.writeHttpMetadata(headers);
+		headers.set('etag', preview.httpEtag);
+		headers.set('Content-Type', 'image/webp');
 		headers.set('Cache-Control', 'public, max-age=86400');
-		return new Response(cached.body, { headers });
+		return new Response(preview.body, { headers });
 	}
 
 	const object = await bucket.get(r2ObjectKey);
@@ -53,24 +50,10 @@ export const GET: APIRoute = async (context) => {
 		return new Response('Preview not found in R2', { status: 404 });
 	}
 
-	const master = new Uint8Array(await object.arrayBuffer());
-	try {
-		const resized = resizeImageToLongEdgeJpeg(master, PREVIEW_LONG_EDGE, 82);
-		await bucket.put(previewKey, resized.bytes, {
-			httpMetadata: { contentType: 'image/jpeg' },
-		});
-		return new Response(resized.bytes, {
-			headers: {
-				'Content-Type': 'image/jpeg',
-				'Cache-Control': 'public, max-age=86400',
-			},
-		});
-	} catch {
-		return new Response(master, {
-			headers: {
-				'Content-Type': fileType,
-				'Cache-Control': 'public, max-age=86400',
-			},
-		});
-	}
+	const headers = new Headers();
+	object.writeHttpMetadata(headers);
+	headers.set('etag', object.httpEtag);
+	headers.set('Content-Type', fileType);
+	headers.set('Cache-Control', 'public, max-age=3600');
+	return new Response(object.body, { headers });
 };

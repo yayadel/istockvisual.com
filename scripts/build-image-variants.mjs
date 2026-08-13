@@ -38,6 +38,15 @@ export async function masterJpegInfo(input) {
 	};
 }
 
-export async function buildPreviewJpeg(input) {
-	return buildJpegVariant(input, PREVIEW_LONG_EDGE, 82, 'inside');
+export async function buildPreviewWebp(input) {
+	return sharp(input, { failOn: 'none' })
+		.resize({
+			width: PREVIEW_LONG_EDGE,
+			height: PREVIEW_LONG_EDGE,
+			fit: 'inside',
+			withoutEnlargement: false,
+			kernel: 'lanczos3',
+		})
+		.webp({ quality: 78, effort: 4 })
+		.toBuffer();
 }
