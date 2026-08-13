@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ImageConverterWorkspace from '../../components/ImageConverterWorkspace';
+import ImageConverterApp from '../../components/ImageConverterApp';
 ---
 
 <BaseLayout
@@ -31,5 +31,27 @@ import ImageConverterWorkspace from '../../components/ImageConverterWorkspace';
 		</div>
 	</section>
 
-	<ImageConverterWorkspace client:load />
+	<!-- client:only avoids hydration wipe if the island JS hits a browser-only edge case -->
+	<ImageConverterApp client:only="react">
+		<div class="image-convert-page image-convert-page--boot">
+			<aside class="image-convert-page__privacy" role="note">
+				<p class="image-convert-page__privacy-eyebrow">Local · Private · Free</p>
+				<h2>100% local conversion</h2>
+				<p>Loading converter…</p>
+			</aside>
+			<div class="image-convert-page__layout">
+				<div class="image-convert-page__dropzone is-loading" aria-hidden="true">
+					<span class="image-convert-page__dropzone-kicker">Batch ready</span>
+					<span class="image-convert-page__dropzone-title">Preparing converter</span>
+					<span class="image-convert-page__dropzone-hint">
+						JPG, PNG, WebP, GIF, BMP, HEIC/HEIF. Multi-file drag &amp; drop supported.
+					</span>
+				</div>
+				<aside class="image-convert-page__settings" aria-hidden="true">
+					<h3>Output settings</h3>
+					<p class="image-convert-page__note">Starting local engine…</p>
+				</aside>
+			</div>
+		</div>
+	</ImageConverterApp>
 </BaseLayout>
