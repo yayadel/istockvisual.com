@@ -120,6 +120,8 @@ export default function ImageEditor({
 	const [pendingCommit, setPendingCommit] = useState(false);
 	const [expandPct, setExpandPct] = useState(20);
 	const [expandCustomDraft, setExpandCustomDraft] = useState('');
+	/** Image size before the current expand — used to draw the “original vs added” guide. */
+	const [expandOrigin, setExpandOrigin] = useState({ w: 0, h: 0 });
 	const [dragging, setDragging] = useState<
 		| null
 		| { kind: 'move'; startX: number; startY: number; origin: CropRect }
