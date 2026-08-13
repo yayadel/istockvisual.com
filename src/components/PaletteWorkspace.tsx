@@ -10,6 +10,7 @@ import {
 	type PaletteColor,
 } from '../lib/palette-extract';
 import { downloadBlob, isLikelyImageFile, loadImageFromFile } from '../lib/tools-shared';
+import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
 
 type CopyFormat = 'hex' | 'rgb' | 'hsl';
 
