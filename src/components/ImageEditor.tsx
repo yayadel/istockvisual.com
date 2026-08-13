@@ -951,6 +951,7 @@ export default function ImageEditor({
 											if (pendingCommit) {
 												restoreOriginalWorking();
 												setCrop(DEFAULT_CROP);
+												setPendingCommit(false);
 											}
 											setExpandPct(pct);
 											setStatus(null);
