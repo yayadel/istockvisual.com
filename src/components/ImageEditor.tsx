@@ -22,7 +22,7 @@ type Props = {
 	onClose: () => void;
 };
 
-const DEFAULT_CROP: CropRect = { x: 0.05, y: 0.05, w: 0.9, h: 0.9 };
+const DEFAULT_CROP: CropRect = { x: 0, y: 0, w: 1, h: 1 };
 
 const TOOLS: { id: ToolId; label: string; hint: string }[] = [
 	{ id: 'adjust', label: 'Adjust', hint: 'Brightness, contrast, saturation — Canvas, no model' },
