@@ -989,7 +989,14 @@ export default function ImageEditor({
 										+{pct}%
 									</button>
 								))}
-								<label className="image-editor-modal__expand-custom">
+								<label
+									className={`image-editor-modal__expand-custom${
+										expandCustomDraft !== '' ||
+										!(EXPAND_PERCENTS as readonly number[]).includes(expandPct)
+											? ' is-active'
+											: ''
+									}`}
+								>
 									<span className="visually-hidden">Custom expand percent</span>
 									<span className="image-editor-modal__expand-custom-prefix" aria-hidden="true">
 										+
@@ -1003,9 +1010,7 @@ export default function ImageEditor({
 										value={
 											expandCustomDraft !== ''
 												? expandCustomDraft
-												: EXPAND_PERCENTS.includes(
-															expandPct as (typeof EXPAND_PERCENTS)[number],
-													  )
+												: (EXPAND_PERCENTS as readonly number[]).includes(expandPct)
 													? ''
 													: String(expandPct)
 										}
