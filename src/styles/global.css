@@ -1535,16 +1535,20 @@ body.download-auth-modal-open {
 }
 
 [data-theme='dark'] .detail__info .btn--ghost,
-[data-theme='dark'] .basic-info-panel__toggle,
+[data-theme='dark'] .basic-info-panel,
+[data-theme='dark'] .basic-info-panel__title,
 [data-theme='dark'] .basic-info-panel__body {
 	background: #18201c;
 	border-color: rgba(238, 243, 239, 0.12);
 	color: #eef3ef;
 }
 
-[data-theme='dark'] .detail__info .btn--ghost:hover,
-[data-theme='dark'] .basic-info-panel__toggle:hover {
+[data-theme='dark'] .detail__info .btn--ghost:hover {
 	background: #1e2923;
+}
+
+[data-theme='dark'] .basic-info-panel__title {
+	background: #1a231e;
 }
 
 .detail__info .meta-list {
