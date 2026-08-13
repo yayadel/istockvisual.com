@@ -3518,8 +3518,7 @@ body.download-auth-modal-open {
 }
 
 .asset-preview__action.btn,
-.asset-preview__action.btn--ghost,
-.asset-preview__share .share-bar__toggle {
+.asset-preview__action.btn--ghost {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -3545,9 +3544,7 @@ body.download-auth-modal-open {
 	transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.asset-preview__action.btn:not(.asset-preview__action--edit):hover,
-.asset-preview__share .share-bar__toggle:hover,
-.asset-preview__share .share-bar.is-open .share-bar__toggle {
+.asset-preview__action.btn:not(.asset-preview__action--edit):hover {
 	background: var(--ghost-bg);
 	border-color: rgba(20, 24, 20, 0.18);
 	color: var(--text);
