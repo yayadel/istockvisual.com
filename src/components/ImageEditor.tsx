@@ -186,20 +186,22 @@ export default function ImageEditor({
 		};
 	}, [expandOrigin.h, expandOrigin.w, expandPct, natural.h, natural.w]);
 
-	/** Stage frame: expand preview uses % target; after expand, show the filled pixels. */
+	/** Stage frame: while previewing, show enlarged canvas with original centered smaller. */
 	const stageSize = useMemo(() => {
-		if (tool === 'expand') {
-			if (pendingCommit && natural.w > 0) {
-				return { width: natural.w, height: natural.h };
-			}
-			if (expandTarget) return expandTarget;
+		if (tool === 'expand' && !expandSettled && expandTarget) {
+			return expandTarget;
+		}
+		if (tool === 'expand' && natural.w > 0) {
+			return { width: natural.w, height: natural.h };
 		}
 		return canvasSize;
-	}, [canvasSize, expandTarget, natural.h, natural.w, pendingCommit, tool]);
+	}, [canvasSize, expandSettled, expandTarget, natural.h, natural.w, tool]);
 
-	/** Always show original bounds inside the expanded frame (before and after fill). */
+	/** Original bounds inside the expanded frame (preview only). */
 	const expandGuideStyle = useMemo(() => {
-		if (tool !== 'expand' || expandOrigin.w <= 0 || expandOrigin.h <= 0) return null;
+		if (tool !== 'expand' || expandSettled || expandOrigin.w <= 0 || expandOrigin.h <= 0) {
+			return null;
+		}
 		if (stageSize.width <= 0 || stageSize.height <= 0) return null;
 		const fit = containSize(
 			expandOrigin.w,
@@ -219,7 +221,14 @@ export default function ImageEditor({
 			width: `${(fit.w / stageSize.width) * 100}%`,
 			height: `${(fit.h / stageSize.height) * 100}%`,
 		};
-	}, [expandOrigin.h, expandOrigin.w, stageSize.height, stageSize.width, tool]);
+	}, [
+		expandOrigin.h,
+		expandOrigin.w,
+		expandSettled,
+		stageSize.height,
+		stageSize.width,
+		tool,
+	]);
 
 	const keepCircleStyle = useMemo(() => {
 		const { rx, ry } = keepCircleNormRadii(keepCircle, canvasSize.width, canvasSize.height);
