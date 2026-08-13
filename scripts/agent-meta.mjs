@@ -116,6 +116,7 @@ console.log(
 			keyword,
 			metaPath: relativeMeta,
 			imagePageTitle: meta.imagePageTitle,
+			contentCategories: meta.contentCategories,
 			imagePrompt: meta.imagePrompt,
 			next: [
 				'Generate ONE image from imagePrompt (do not batch).',
