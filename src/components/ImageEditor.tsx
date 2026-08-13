@@ -515,6 +515,7 @@ export default function ImageEditor({
 	const updateAdjust =
 		(key: keyof AdjustValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
 			const value = Number(event.currentTarget.value);
+			setAdjustPresetId('custom');
 			setAdjust((prev) => ({ ...prev, [key]: value }));
 		};
 
@@ -788,6 +789,26 @@ export default function ImageEditor({
 							))}
 						</nav>
 					</div>
+
+					{tool === 'adjust' && (
+						<div className="image-editor-modal__row image-editor-modal__row--presets">
+							<span className="image-editor-modal__row-label">Presets</span>
+							<div className="image-editor-modal__preset-list">
+								{EDITOR_ADJUST_PRESETS.map((preset) => (
+									<button
+										key={preset.id}
+										type="button"
+										className={`image-editor-modal__preset${adjustPresetId === preset.id ? ' is-active' : ''}`}
+										onClick={() => selectAdjustPreset(preset.id)}
+										disabled={Boolean(busy)}
+										title={preset.label}
+									>
+										{preset.label}
+									</button>
+								))}
+							</div>
+						</div>
+					)}
 
 					{tool === 'transform' && (
 						<div className="image-editor-modal__row image-editor-modal__row--aspects">
