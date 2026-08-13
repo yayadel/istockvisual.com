@@ -162,6 +162,21 @@ export async function insertGeneratedAsset(
 	return rowToRecord(row);
 }
 
+export async function updateGeneratedAssetImageMeta(
+	db: D1Database,
+	id: string,
+	input: { width: number; height: number; fileType?: string },
+): Promise<void> {
+	await db
+		.prepare(
+			`UPDATE generated_asset
+			 SET width = ?, height = ?, fileType = COALESCE(?, fileType)
+			 WHERE id = ?`,
+		)
+		.bind(input.width, input.height, input.fileType ?? null, id)
+		.run();
+}
+
 export async function listGeneratedAssetsByKeywordId(
 	db: D1Database,
 	keywordId: number,

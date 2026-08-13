@@ -1,12 +1,6 @@
 import sharp from 'sharp';
 
-export const VARIANT_SIZES = [
-	{ id: '500', longEdge: 500 },
-	{ id: '1k', longEdge: 1024 },
-	{ id: '2k', longEdge: 2048 },
-	{ id: '4k', longEdge: 4096 },
-	{ id: '8k', longEdge: 8192 },
-];
+export const MASTER_LONG_EDGE = 4096;
 
 export async function buildJpegVariant(input, longEdge, quality = 86, mode = 'inside') {
 	const resize =
@@ -26,12 +20,17 @@ export async function buildJpegVariant(input, longEdge, quality = 86, mode = 'in
 		.toBuffer();
 }
 
-export async function buildAllJpegVariants(input) {
-	const variants = {};
-	for (const size of VARIANT_SIZES) {
-		const quality = size.id === '8k' ? 82 : size.id === '4k' ? 84 : 86;
-		const mode = size.id === '500' ? 'width' : 'inside';
-		variants[size.id] = await buildJpegVariant(input, size.longEdge, quality, mode);
-	}
-	return variants;
+/** Single stored file: 4K JPEG. Other sizes are drawn in the browser. */
+export async function buildMasterJpeg(input) {
+	return buildJpegVariant(input, MASTER_LONG_EDGE, 84, 'inside');
+}
+
+export async function masterJpegInfo(input) {
+	const buffer = await buildMasterJpeg(input);
+	const meta = await sharp(buffer).metadata();
+	return {
+		buffer,
+		width: meta.width || MASTER_LONG_EDGE,
+		height: meta.height || MASTER_LONG_EDGE,
+	};
 }

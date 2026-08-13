@@ -6,7 +6,6 @@ import {
 	isDownloadSizeId,
 	isFreeDownloadSize,
 	sizeFileLabel,
-	variantObjectKey,
 } from '../../../lib/download-sizes';
 import { resolveAssetById } from '../../../lib/generate-asset';
 import { contentDisposition } from '../../../lib/r2';

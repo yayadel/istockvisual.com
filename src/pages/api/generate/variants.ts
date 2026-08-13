@@ -1,12 +1,17 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { isDownloadSizeId, variantObjectKey } from '../../../lib/download-sizes';
-import { getGeneratedAssetById } from '../../../lib/generated-assets';
+import { STORED_VARIANT_IDS, variantObjectKey } from '../../../lib/download-sizes';
+import {
+	getGeneratedAssetById,
+	updateGeneratedAssetImageMeta,
+} from '../../../lib/generated-assets';
 
 type VariantBody = {
 	assetId: string;
-	sizeId: string;
+	sizeId?: string;
 	imageBase64: string;
+	width?: number;
+	height?: number;
 };
 
 function decodeBase64Image(value: string): Uint8Array {
@@ -19,11 +24,16 @@ function decodeBase64Image(value: string): Uint8Array {
 	return bytes;
 }
 
-export const POST: APIRoute = async (context) => {
-	const secret =
+function generateSecret() {
+	return (
 		env.GENERATE_API_SECRET ||
 		import.meta.env.GENERATE_API_SECRET ||
-		(import.meta.env.DEV ? 'dev-generate-secret' : '');
+		(import.meta.env.DEV ? 'dev-generate-secret' : '')
+	);
+}
+
+export const POST: APIRoute = async (context) => {
+	const secret = generateSecret();
 	const provided = context.request.headers.get('x-generate-secret');
 	if (!secret || provided !== secret) {
 		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -41,11 +51,20 @@ export const POST: APIRoute = async (context) => {
 
 	try {
 		const body = (await context.request.json()) as VariantBody;
-		if (!body?.assetId || !isDownloadSizeId(body.sizeId) || !body.imageBase64) {
-			return new Response(JSON.stringify({ error: 'assetId, sizeId, and imageBase64 are required' }), {
+		if (!body?.assetId || !body.imageBase64) {
+			return new Response(JSON.stringify({ error: 'assetId and imageBase64 are required' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' },
 			});
+		}
+
+		if (body.sizeId && body.sizeId !== '4k') {
+			return new Response(
+				JSON.stringify({
+					error: 'Only a 4K master is stored. Other sizes are drawn in the browser.',
+				}),
+				{ status: 400, headers: { 'Content-Type': 'application/json' } },
+			);
 		}
 
 		const asset = await getGeneratedAssetById(env.DB, body.assetId);
@@ -56,17 +75,39 @@ export const POST: APIRoute = async (context) => {
 			});
 		}
 
-		const key = variantObjectKey(asset.r2ObjectKey, body.sizeId);
 		const bytes = decodeBase64Image(body.imageBase64);
-		await env.MEDIA.put(key, bytes, {
+		await env.MEDIA.put(asset.r2ObjectKey, bytes, {
 			httpMetadata: { contentType: 'image/jpeg' },
 		});
 
-		return new Response(JSON.stringify({ ok: true, key, bytes: bytes.byteLength }), {
-			headers: { 'Content-Type': 'application/json' },
-		});
+		if (body.width && body.height) {
+			await updateGeneratedAssetImageMeta(env.DB, asset.id, {
+				width: body.width,
+				height: body.height,
+				fileType: 'image/jpeg',
+			});
+		}
+
+		const deleted: string[] = [];
+		for (const sizeId of STORED_VARIANT_IDS) {
+			const key = variantObjectKey(asset.r2ObjectKey, sizeId);
+			await env.MEDIA.delete(key);
+			deleted.push(key);
+		}
+
+		return new Response(
+			JSON.stringify({
+				ok: true,
+				key: asset.r2ObjectKey,
+				bytes: bytes.byteLength,
+				width: body.width,
+				height: body.height,
+				deleted,
+			}),
+			{ headers: { 'Content-Type': 'application/json' } },
+		);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Variant upload failed';
+		const message = error instanceof Error ? error.message : 'Master upload failed';
 		return new Response(JSON.stringify({ error: message }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
