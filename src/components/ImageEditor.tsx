@@ -637,7 +637,16 @@ export default function ImageEditor({
 	const handleExpand = useCallback(() => {
 		const working = workingRef.current;
 		if (!working) return;
-		const { width, height } = canvasSize;
+		let { width, height } = canvasSize;
+		// Page tool has no Size row — grow ~25% past the current image when needed.
+		if (
+			variant === 'page' &&
+			width === working.width &&
+			height === working.height
+		) {
+			width = Math.max(1, Math.round(working.width * 1.25));
+			height = Math.max(1, Math.round(working.height * 1.25));
+		}
 		if (width === working.width && height === working.height) {
 			setStatus('Canvas already matches the selected size. Pick a larger size preset first.');
 			return;
@@ -660,7 +669,7 @@ export default function ImageEditor({
 		} finally {
 			setBusy(null);
 		}
-	}, [canvasSize, setWorkingFromCanvas]);
+	}, [canvasSize, setWorkingFromCanvas, variant]);
 
 	const buildExportCanvas = useCallback(() => {
 		const working = workingRef.current;
