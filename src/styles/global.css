@@ -2024,8 +2024,10 @@ body.upload-modal-open {
 	background: rgba(20, 24, 20, 0.06);
 }
 
-.share-bar__channel:hover {
-	opacity: 0.85;
+.share-bar__channel .share-bar__icon--x svg,
+.share-bar__channel .share-bar__icon--muted svg {
+	width: 14px;
+	height: 14px;
 }
 
 .share-bar__toggle {
