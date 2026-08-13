@@ -2615,16 +2615,28 @@ body.image-editor-modal-open {
 .image-editor-modal__row {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.5rem 0.7rem;
+	align-items: flex-start;
+	gap: 0.55rem 0.85rem;
 }
 
 .image-editor-modal__row-label {
-	flex: 0 0 auto;
-	min-width: 3rem;
-	font-size: 0.78rem;
-	font-weight: 600;
-	color: var(--ie-muted);
+	flex: 0 0 4.75rem;
+	width: 4.75rem;
+	min-width: 4.75rem;
+	margin-top: 0.2rem;
+	padding: 0.2rem 0 0.2rem 0.65rem;
+	border-left: 2.5px solid var(--ie-ink);
+	font-size: 0.68rem;
+	font-weight: 750;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	line-height: 1.25;
+	color: var(--ie-ink);
+}
+
+[data-theme='dark'] .image-editor-modal__row-label {
+	border-left-color: var(--accent, #c8e6a8);
+	color: #f2f7f3;
 }
 
 .image-editor-modal__size-list,
