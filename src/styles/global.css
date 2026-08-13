@@ -2318,11 +2318,7 @@ body.upload-modal-open {
 }
 
 [data-theme='dark'] .basic-info-panel__body .meta-list li:last-child {
-	border-bottom-color: rgba(238, 243, 239, 0.12);
-}
-
-[data-theme='dark'] .basic-info-panel__body .download-rules {
-	background: rgba(255, 255, 255, 0.05);
+	border-bottom-color: var(--line);
 }
 
 [data-theme='dark'] .download-rules li::before {
@@ -2841,10 +2837,7 @@ body.download-auth-modal-open {
 	color: #14352d;
 }
 
-[data-theme='dark'] .detail__info .btn--ghost,
-[data-theme='dark'] .basic-info-panel,
-[data-theme='dark'] .basic-info-panel__title,
-[data-theme='dark'] .basic-info-panel__body {
+[data-theme='dark'] .detail__info .btn--ghost {
 	background: #18201c;
 	border-color: rgba(238, 243, 239, 0.12);
 	color: #eef3ef;
@@ -2854,8 +2847,15 @@ body.download-auth-modal-open {
 	background: #1e2923;
 }
 
+[data-theme='dark'] .basic-info-panel,
+[data-theme='dark'] .basic-info-panel__title,
+[data-theme='dark'] .basic-info-panel__body,
+[data-theme='dark'] .basic-info-panel__body .download-rules {
+	background: transparent;
+}
+
 [data-theme='dark'] .basic-info-panel__title {
-	background: #1a231e;
+	color: var(--text-muted);
 }
 
 .detail__info .meta-list {
