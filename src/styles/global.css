@@ -879,6 +879,18 @@ body.upload-modal-open {
 	margin: 0 0 0.45rem;
 }
 
+.detail__title-row {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.detail__title-row h1 {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
 .detail__title h1 {
 	font-family: var(--font-body);
 	font-size: clamp(1.2rem, 2vw, 1.45rem);
