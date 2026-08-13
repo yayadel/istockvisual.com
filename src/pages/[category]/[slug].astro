@@ -162,6 +162,7 @@ const jsonLd = assetJsonLd({
 					</DownloadPanel>
 					<BasicInfoPanel
 						license={asset.license || 'Free to use — commercial OK, attribution required'}
+						licenseHref={LICENSE_PATH}
 						categories={contentCategories.map((label) => ({
 							label,
 							href: contentCategoryPath(label),

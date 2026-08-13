@@ -38,7 +38,9 @@ export default function BasicInfoPanel({
 				<ul className="meta-list">
 					<li>
 						<span>License</span>
-						<span>{license}</span>
+						<span>
+							{licenseHref ? <a href={licenseHref}>{license}</a> : license}
+						</span>
 					</li>
 					{categoryLinks.length > 0 && (
 						<li>
