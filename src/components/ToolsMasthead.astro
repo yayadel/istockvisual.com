@@ -3,16 +3,30 @@ interface Props {
 	title: string;
 	lede: string;
 	privacy: string;
-	active: 'image' | 'convert';
+	active: 'image' | 'convert' | 'vectorize' | 'social' | 'watermark' | 'palette';
 }
 
 const { title, lede, privacy, active } = Astro.props;
+
+const links = [
+	{ id: 'image', href: '/tools/image', label: 'Edit' },
+	{ id: 'convert', href: '/tools/convert', label: 'Convert' },
+	{ id: 'vectorize', href: '/tools/vectorize', label: 'Vector' },
+	{ id: 'social', href: '/tools/social', label: 'Social' },
+	{ id: 'watermark', href: '/tools/watermark', label: 'Watermark' },
+	{ id: 'palette', href: '/tools/palette', label: 'Palette' },
+] as const;
 ---
 
 <header class="tools-masthead">
 	<nav class="tools-masthead__switch" aria-label="Tools">
-		<a href="/tools/image" aria-current={active === 'image' ? 'page' : undefined}>Edit</a>
-		<a href="/tools/convert" aria-current={active === 'convert' ? 'page' : undefined}>Convert</a>
+		{
+			links.map((link) => (
+				<a href={link.href} aria-current={active === link.id ? 'page' : undefined}>
+					{link.label}
+				</a>
+			))
+		}
 	</nav>
 	<h1 class="tools-masthead__title">{title}</h1>
 	<p class="tools-masthead__lede">{lede}</p>

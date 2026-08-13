@@ -29,7 +29,11 @@ export default function PaletteWorkspace() {
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [toast, setToast] = useState<string | null>(null);
-	const eyeDropperOk = typeof window !== 'undefined' && typeof window.EyeDropper === 'function';
+	const [eyeDropperOk, setEyeDropperOk] = useState(false);
+
+	useEffect(() => {
+		setEyeDropperOk(typeof window.EyeDropper === 'function');
+	}, []);
 
 	useEffect(() => {
 		return () => {

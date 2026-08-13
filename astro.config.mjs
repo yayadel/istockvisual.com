@@ -25,7 +25,7 @@ export default defineConfig({
 		},
 		optimizeDeps: {
 			exclude: ['@imgly/background-removal', 'onnxruntime-web', 'heic2any'],
-			include: ['jszip'],
+			include: ['jszip', 'imagetracerjs'],
 		},
 	},
 });
