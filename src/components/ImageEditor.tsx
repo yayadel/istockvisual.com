@@ -336,7 +336,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 		}, 'image/png');
 	}, [buildExportCanvas, title]);
 
-	return (
+	return createPortal(
 		<div className="image-editor-modal" role="presentation">
 			<div className="image-editor-modal__backdrop" onClick={() => !busy && onClose()} />
 			<div
@@ -591,6 +591,7 @@ export default function ImageEditor({ imageUrl, title, onClose }: Props) {
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>,
+		document.body,
 	);
 }
