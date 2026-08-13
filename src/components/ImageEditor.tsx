@@ -174,13 +174,15 @@ export default function ImageEditor({
 	}, [aspectPreset.ratio, natural.h, natural.w, sizeId, sizeOptions, variant]);
 
 	const expandTarget = useMemo(() => {
-		if (natural.w <= 0 || natural.h <= 0) return null;
+		const baseW = expandOrigin.w > 0 ? expandOrigin.w : natural.w;
+		const baseH = expandOrigin.h > 0 ? expandOrigin.h : natural.h;
+		if (baseW <= 0 || baseH <= 0) return null;
 		const scale = 1 + expandPct / 100;
 		return {
-			width: Math.max(1, Math.round(natural.w * scale)),
-			height: Math.max(1, Math.round(natural.h * scale)),
+			width: Math.max(1, Math.round(baseW * scale)),
+			height: Math.max(1, Math.round(baseH * scale)),
 		};
-	}, [expandPct, natural.h, natural.w]);
+	}, [expandOrigin.h, expandOrigin.w, expandPct, natural.h, natural.w]);
 
 	/** Stage frame: expand preview uses % target; after expand, show the filled pixels. */
 	const stageSize = useMemo(() => {
@@ -193,16 +195,29 @@ export default function ImageEditor({
 		return canvasSize;
 	}, [canvasSize, expandTarget, natural.h, natural.w, pendingCommit, tool]);
 
+	/** Always show original bounds inside the expanded frame (before and after fill). */
 	const expandGuideStyle = useMemo(() => {
-		if (tool !== 'expand' || pendingCommit || !expandTarget || natural.w <= 0) return null;
-		const fit = containSize(natural.w, natural.h, expandTarget.width, expandTarget.height);
+		if (tool !== 'expand' || expandOrigin.w <= 0 || expandOrigin.h <= 0) return null;
+		if (stageSize.width <= 0 || stageSize.height <= 0) return null;
+		const fit = containSize(
+			expandOrigin.w,
+			expandOrigin.h,
+			stageSize.width,
+			stageSize.height,
+		);
+		const hasMargin =
+			fit.x > 0.75 ||
+			fit.y > 0.75 ||
+			fit.w < stageSize.width - 1.5 ||
+			fit.h < stageSize.height - 1.5;
+		if (!hasMargin) return null;
 		return {
-			left: `${(fit.x / expandTarget.width) * 100}%`,
-			top: `${(fit.y / expandTarget.height) * 100}%`,
-			width: `${(fit.w / expandTarget.width) * 100}%`,
-			height: `${(fit.h / expandTarget.height) * 100}%`,
+			left: `${(fit.x / stageSize.width) * 100}%`,
+			top: `${(fit.y / stageSize.height) * 100}%`,
+			width: `${(fit.w / stageSize.width) * 100}%`,
+			height: `${(fit.h / stageSize.height) * 100}%`,
 		};
-	}, [expandTarget, natural.h, natural.w, pendingCommit, tool]);
+	}, [expandOrigin.h, expandOrigin.w, stageSize.height, stageSize.width, tool]);
 
 	const keepCircleStyle = useMemo(() => {
 		const { rx, ry } = keepCircleNormRadii(keepCircle, canvasSize.width, canvasSize.height);
@@ -346,6 +361,7 @@ export default function ImageEditor({
 			originalRef.current = cloneCanvas(canvas);
 			workingRef.current = canvas;
 			setNatural({ w: img.naturalWidth, h: img.naturalHeight });
+			setExpandOrigin({ w: img.naturalWidth, h: img.naturalHeight });
 			setPreviewUrl(imageUrl);
 			setReady(true);
 		};
