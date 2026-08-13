@@ -321,7 +321,7 @@ textarea {
 }
 
 .search-strip__inner {
-	width: min(100% - 2rem, 980px);
+	width: min(100% - 2rem, var(--max));
 	margin-inline: auto;
 }
 
