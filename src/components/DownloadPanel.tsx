@@ -235,20 +235,6 @@ export default function DownloadPanel({
 			)}
 			{error && <p className="download-panel__error">{error}</p>}
 
-			<div className="download-pricing">
-				<a className="download-buy download-buy--single" href="/price">
-					<span>Single download</span>
-					<strong>$0.99</strong>
-				</a>
-				<button
-					type="button"
-					className="download-buy download-buy--member"
-					onClick={() => setPlansModalOpen(true)}
-				>
-					<strong>unlimited download & ads free</strong>
-				</button>
-			</div>
-
 			{authModalOpen && (
 				<div className="download-auth-modal" role="presentation">
 					<button
