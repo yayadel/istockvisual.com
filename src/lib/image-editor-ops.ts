@@ -3,6 +3,7 @@
 import {
 	DOWNLOAD_SIZES,
 	DEFAULT_DOWNLOAD_SIZE,
+	isFreeDownloadSize,
 	outputSizeForDownload,
 	type DownloadSizeId,
 } from './download-sizes';

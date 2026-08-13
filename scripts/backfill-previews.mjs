@@ -34,7 +34,7 @@ for (const assetId of assetIds) {
 	}
 
 	const original = Buffer.from(await source.arrayBuffer());
-	const preview = await buildPreviewWebp(original);
+	const preview = await buildPreviewAvif(original);
 	const previewRes = await fetch(`${baseUrl}/api/generate/variants`, {
 		method: 'POST',
 		headers: {

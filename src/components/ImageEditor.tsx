@@ -15,6 +15,7 @@ import {
 	bakeTransformToCanvas,
 	canvasFromImage,
 	clamp,
+	clampFreeEditorOutput,
 	compositeCropToCanvas,
 	containSize,
 	cssFilterFromAdjust,
