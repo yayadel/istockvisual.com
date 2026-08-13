@@ -997,8 +997,8 @@ export default function ImageEditor({
 								<>
 									<h3>Remove background</h3>
 									<p>
-										Drag the circle onto the subject you want to keep. The full image is
-										processed; only that subject stays, other cutouts are cleared.
+										Drag the circle onto the subject you want to keep, then remove
+										background. Cutout follows your mark (not the whole scene guess).
 									</p>
 									<p className="image-editor-modal__tip">
 										First use on this site needs to load resources and may feel slow. After
