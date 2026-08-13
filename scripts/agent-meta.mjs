@@ -117,13 +117,13 @@ for (const value of meta.contentCategories || []) {
 	const matched = allowedMap.get(String(value || '').trim().toLowerCase());
 	if (!matched || contentCategories.includes(matched)) continue;
 	contentCategories.push(matched);
-	if (contentCategories.length >= 3) break;
+	if (contentCategories.length >= 1) break;
 }
 if (contentCategories.length === 0) {
-	console.error('Gemini JSON missing valid contentCategories (1–3 from /categories)');
+	console.error('Gemini JSON missing valid contentCategories (exactly 1 from /categories)');
 	process.exit(1);
 }
-meta.contentCategories = contentCategories;
+meta.contentCategories = contentCategories.slice(0, 1);
 meta.depictedElements = [];
 fs.writeFileSync(metaPath, `${JSON.stringify(meta, null, 2)}\n`, 'utf8');
 
