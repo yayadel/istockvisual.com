@@ -4754,6 +4754,9 @@ body.image-editor-modal-open {
 	display: grid;
 	grid-template-columns: repeat(5, minmax(0, 1fr));
 	gap: 0.55rem;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 }
 
 .tools-preset {
@@ -4766,16 +4769,21 @@ body.image-editor-modal-open {
 	text-align: left;
 	cursor: pointer;
 	font: inherit;
+	min-width: 0;
 }
 
 .tools-preset strong {
 	font-size: 0.88rem;
 	font-weight: 650;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .tools-preset span {
 	font-size: 0.72rem;
 	color: var(--text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .tools-preset:hover,
