@@ -30,7 +30,7 @@ const ALIASES: Record<string, string[]> = {
 	culture: ['art', 'museum', 'heritage', 'tradition'],
 	medical: ['hospital', 'clinic', 'doctor', 'surgery'],
 	health: ['wellness', 'fitness', 'nutrition', 'care'],
-	sports: ['sport', 'athlete', 'game', 'training', 'esports', 'gaming', 'mouse', 'tackle'],
+	sports: ['sport', 'athlete', 'game', 'training', 'esports', 'gaming', 'tackle'],
 	advertising: ['marketing', 'campaign', 'brand', 'promo'],
 	'e-commerce': ['ecommerce', 'shopping', 'retail', 'product', 'cart'],
 	web: ['website', 'ui', 'interface', 'browser'],
