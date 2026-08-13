@@ -2922,7 +2922,7 @@ body.download-auth-modal-open {
 	margin: 0 0 8px;
 	overflow: hidden;
 	break-inside: avoid;
-	border-radius: 14px;
+	border-radius: 0;
 	background: #d8d8d8;
 	color: inherit;
 }
