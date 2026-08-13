@@ -1075,27 +1075,49 @@ export default function ImageEditor({
 					<div className="image-editor-modal__row image-editor-modal__row--tools">
 						<span className="image-editor-modal__row-label">Tools</span>
 						<nav className="image-editor-modal__tools" aria-label="Edit tools">
-							{TOOLS.map((item) => (
+							{TOOLS.map((item) => {
+								const expandLocked = item.id === 'expand' && !canUseExpand;
+								return (
 								<button
 									key={item.id}
 									type="button"
-									className={`image-editor-modal__tool${tool === item.id ? ' is-active' : ''}`}
+									className={`image-editor-modal__tool${tool === item.id ? ' is-active' : ''}${expandLocked ? ' is-locked' : ''}`}
 									onClick={() => {
+										if (expandLocked) {
+											setSizeGateMessage(
+												loggedIn
+													? 'Expand is a Pro feature. Upgrade to unlock canvas expand.'
+													: 'Sign in and upgrade to Pro to use Expand.',
+											);
+											return;
+										}
+										setSizeGateMessage(null);
 										setTool(item.id);
 										if (item.id === 'expand') {
 											const working = workingRef.current;
-											if (working) {
-												setExpandOrigin({ w: working.width, h: working.height });
+											const w = working?.width || natural.w;
+											const h = working?.height || natural.h;
+											if (w > 0 && h > 0) {
+												setExpandOrigin({ w, h });
 											}
 											setExpandSettled(false);
+											setStatus(
+												'Preview: original is centered smaller. Click Apply changes to fill the new margins.',
+											);
 										}
 									}}
 									disabled={Boolean(busy)}
 								>
-									<span>{item.label}</span>
-									<small>{item.hint}</small>
+									<span>
+										{item.label}
+										{expandLocked ? (
+											<em className="download-tier download-tier--pro">Pro</em>
+										) : null}
+									</span>
+									<small>{expandLocked ? 'Pro only' : item.hint}</small>
 								</button>
-							))}
+								);
+							})}
 						</nav>
 					</div>
 
@@ -1457,7 +1479,7 @@ export default function ImageEditor({
 								</>
 							)}
 
-							{tool === 'expand' && (
+							{tool === 'expand' && canUseExpand && (
 								<>
 									<h3>Expand canvas</h3>
 									<p>
@@ -1476,13 +1498,23 @@ export default function ImageEditor({
 										className="btn btn--primary"
 										type="button"
 										onClick={() => void applyExpandChanges()}
-										disabled={!ready || Boolean(busy) || expandSettled}
+										disabled={!ready || Boolean(busy)}
 									>
 										Apply changes · +{expandPct}%
 									</button>
 									<button className="btn btn--ghost" type="button" onClick={resetExpand}>
 										Reset
 									</button>
+								</>
+							)}
+
+							{tool === 'expand' && !canUseExpand && (
+								<>
+									<h3>Expand canvas</h3>
+									<p>Canvas expand is included with Pro — it grows the frame and fills new margins.</p>
+									<a className="btn btn--primary" href={loggedIn ? '/pricing' : '/login'}>
+										{loggedIn ? 'Upgrade to Pro' : 'Sign in'}
+									</a>
 								</>
 							)}
 
