@@ -3500,7 +3500,7 @@ body.download-auth-modal-open {
 	z-index: 50;
 }
 
-[data-theme='dark'] .asset-preview__action,
+[data-theme='dark'] .asset-preview__action.btn,
 [data-theme='dark'] .asset-preview__share .share-bar__toggle {
 	background: transparent;
 	border-color: var(--line);
