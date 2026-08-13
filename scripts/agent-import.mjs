@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { masterJpegInfo } from './build-image-variants.mjs';
+import { buildPreviewJpeg, masterJpegInfo } from './build-image-variants.mjs';
 
 const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
 const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';

@@ -62,7 +62,9 @@ export function variantObjectKey(originalKey: string, sizeId: string) {
 }
 
 export function previewObjectKey(originalKey: string) {
-	return variantObjectKey(originalKey, PREVIEW_SIZE_ID);
+	const dot = originalKey.lastIndexOf('.');
+	const base = dot >= 0 ? originalKey.slice(0, dot) : originalKey;
+	return `${base}-preview.webp`;
 }
 
 export function isDownloadSizeId(value: string | null | undefined): value is DownloadSizeId {

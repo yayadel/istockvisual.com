@@ -63,6 +63,9 @@ export const POST: APIRoute = async (context) => {
 					.map((row) => row.r2ObjectKey)
 					.filter(Boolean),
 			);
+			for (const key of [...keep]) {
+				keep.add(previewObjectKey(key));
+			}
 
 			const deleted: string[] = [];
 			let cursor: string | undefined;
