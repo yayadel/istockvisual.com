@@ -134,8 +134,7 @@ const similar = findSimilarAssets(
 									<p>{asset.usageTips}</p>
 								</article>
 							)}
-							{
-								asset.colorPalette && asset.colorPalette.length > 0 && (
+							{asset.colorPalette && asset.colorPalette.length > 0 && (
 									<article class="info-card info-card--wide">
 										<h2>Color palette</h2>
 										<ColorPalette client:load swatches={asset.colorPalette} />
