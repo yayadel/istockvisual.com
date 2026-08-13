@@ -713,25 +713,29 @@ export default function ImageEditor({
 		event.stopPropagation();
 	};
 
-	return createPortal(
+	const isPage = variant === 'page';
+
+	const editor = (
 		<div
-			className="image-editor-modal"
+			className={`image-editor-modal${isPage ? ' image-editor-modal--page' : ''}`}
 			role="presentation"
-			onMouseDown={stop}
-			onClick={stop}
+			onMouseDown={isPage ? undefined : stop}
+			onClick={isPage ? undefined : stop}
 		>
-			<div className="image-editor-modal__backdrop" aria-hidden="true" />
+			{!isPage && <div className="image-editor-modal__backdrop" aria-hidden="true" />}
 			<div
 				className="image-editor-modal__dialog"
-				role="dialog"
-				aria-modal="true"
+				role={isPage ? 'region' : 'dialog'}
+				aria-modal={isPage ? undefined : true}
 				aria-labelledby="image-editor-title"
-				onMouseDown={stop}
-				onClick={stop}
+				onMouseDown={isPage ? undefined : stop}
+				onClick={isPage ? undefined : stop}
 			>
 				<header className="image-editor-modal__header">
 					<div>
-						<p className="image-editor-modal__eyebrow">Client-side editor</p>
+						<p className="image-editor-modal__eyebrow">
+							{isPage ? 'Free browser editor' : 'Client-side editor'}
+						</p>
 						<h2 id="image-editor-title">{title}</h2>
 					</div>
 					<div className="image-editor-modal__header-actions">
@@ -741,7 +745,7 @@ export default function ImageEditor({
 							onClick={() => onCloseRef.current()}
 							disabled={Boolean(busy)}
 						>
-							Close
+							{isPage ? 'New image' : 'Close'}
 						</button>
 					</div>
 				</header>
@@ -751,7 +755,7 @@ export default function ImageEditor({
 						<span className="image-editor-modal__row-label">Size</span>
 						<div className="image-editor-modal__size-list">
 							{sizeOptions.map((size) => {
-								const needsPro = !isFreeDownloadSize(size.id);
+								const needsPro = !allSizesFree && !isFreeDownloadSize(size.id);
 								const dims = `${size.output.width}×${size.output.height}`;
 								return (
 									<button
