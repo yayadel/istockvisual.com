@@ -982,11 +982,12 @@ export default function ImageEditor({
 									className={`image-editor-modal__tool${tool === item.id ? ' is-active' : ''}`}
 									onClick={() => {
 										setTool(item.id);
-										if (item.id === 'expand' && !pendingCommit) {
+										if (item.id === 'expand') {
 											const working = workingRef.current;
 											if (working) {
 												setExpandOrigin({ w: working.width, h: working.height });
 											}
+											setExpandSettled(false);
 										}
 									}}
 									disabled={Boolean(busy)}
