@@ -49,7 +49,7 @@ export default function AssetPreviewPanel({
 				/>
 			</div>
 			<div className="asset-preview__footer">
-				<button className="asset-preview__action" type="button" onClick={openEditor}>
+				<button className="btn btn--ghost asset-preview__action" type="button" onClick={openEditor}>
 					Edit image
 				</button>
 				<div className="asset-preview__share">

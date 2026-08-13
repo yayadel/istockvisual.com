@@ -222,7 +222,7 @@ const jsonLd = assetJsonLd({
 							asset.imagePrompt && (
 								<article class="story-block story-block--prompt">
 									<h2>Image generation prompt</h2>
-									<p>{asset.imagePrompt}</p>
+									<PromptBlock client:load prompt={asset.imagePrompt} />
 								</article>
 							)
 						}
