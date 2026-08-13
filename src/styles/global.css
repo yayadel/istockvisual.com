@@ -4094,9 +4094,10 @@ body.image-editor-modal-open {
 
 .tools-panel__layout {
 	display: grid;
-	grid-template-columns: 200px minmax(0, 1fr);
+	grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
 	gap: 0;
 	min-width: 0;
+	max-width: 100%;
 }
 
 .tools-panel--flush .tools-panel__layout {
@@ -4108,39 +4109,41 @@ body.image-editor-modal-open {
 	border-right: 1px solid var(--line);
 	background: #101510;
 	min-height: 220px;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
 	display: grid;
-	grid-template-rows: 1fr auto;
+	grid-template-rows: minmax(0, 1fr) auto;
 }
 
-.tools-panel__sample img {
-	width: 100%;
-	height: 100%;
-	min-height: 180px;
-	object-fit: cover;
-}
-
+.tools-panel__sample img,
 .tools-panel__sample canvas {
 	width: 100%;
-	height: 100%;
+	max-width: 100%;
+	height: auto;
+	min-width: 0;
 	min-height: 180px;
+	max-height: 280px;
 	object-fit: cover;
 	display: block;
 }
 
 .tools-panel__sample .tools-focus-board {
 	width: 100%;
-	height: 100%;
+	max-width: 100%;
+	min-width: 0;
 	min-height: 180px;
 	justify-self: stretch;
 	border: 0;
 	background: transparent;
+	overflow: hidden;
 }
 
 .tools-panel__sample .tools-focus-board__canvas {
-	width: 100%;
-	height: 100%;
-	max-width: none;
-	object-fit: cover;
+	width: 100% !important;
+	max-width: 100%;
+	height: auto !important;
+	min-width: 0;
 }
 
 .tools-panel__sample figcaption {
@@ -4154,7 +4157,9 @@ body.image-editor-modal-open {
 
 .tools-panel__body {
 	min-width: 0;
+	max-width: 100%;
 	padding: 1rem;
+	overflow-x: auto;
 }
 
 .tools-controls--stacked {
@@ -4372,7 +4377,11 @@ body.image-editor-modal-open {
 .tools-queue {
 	display: grid;
 	gap: 0;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 	border-top: 1px solid var(--line);
+	overflow-x: clip;
 }
 
 .tools-queue__row {
@@ -4380,9 +4389,13 @@ body.image-editor-modal-open {
 	grid-template-columns: 56px minmax(0, 1fr) auto;
 	gap: 0.85rem;
 	align-items: center;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 	padding: 0.85rem 0;
 	border-bottom: 1px solid var(--line);
 	cursor: pointer;
+	box-sizing: border-box;
 }
 
 .tools-queue__thumb {
@@ -4390,12 +4403,14 @@ body.image-editor-modal-open {
 	height: 56px;
 	object-fit: cover;
 	background: var(--bg-elevated);
+	flex-shrink: 0;
 }
 
 .tools-queue__meta {
 	display: grid;
 	gap: 0.2rem;
 	min-width: 0;
+	overflow: hidden;
 }
 
 .tools-queue__meta strong {
@@ -4407,6 +4422,9 @@ body.image-editor-modal-open {
 }
 
 .tools-queue__meta > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	font-size: 0.8rem;
 	color: var(--text-muted);
 }
@@ -4455,6 +4473,8 @@ body.image-editor-modal-open {
 	gap: 0.45rem;
 	align-items: center;
 	justify-content: flex-end;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .tools-queue__remove {
