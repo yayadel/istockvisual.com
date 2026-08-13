@@ -2149,6 +2149,10 @@ body.upload-modal-open {
 	background: linear-gradient(180deg, #31655a 0%, #245a4f 100%);
 }
 
+.download-split.is-open {
+	border-radius: 6px 6px 0 0;
+}
+
 .download-split:disabled {
 	opacity: 0.7;
 	cursor: wait;
@@ -2157,18 +2161,20 @@ body.upload-modal-open {
 .download-menu {
 	position: absolute;
 	z-index: 20;
-	top: calc(100% + 0.4rem);
+	top: 100%;
 	left: 0;
 	right: 0;
 	margin: 0;
-	padding: 0.4rem;
+	padding: 0.15rem 0;
 	list-style: none;
-	background: #fcfdfb;
+	background: #fff;
 	border: 1px solid rgba(36, 53, 44, 0.12);
-	border-radius: 6px;
+	border-top: 0;
+	border-radius: 0 0 6px 6px;
 	box-shadow:
-		0 12px 28px rgba(31, 54, 44, 0.1),
+		0 14px 28px rgba(31, 54, 44, 0.1),
 		0 2px 6px rgba(31, 54, 44, 0.04);
+	overflow: hidden;
 }
 
 .download-menu__item {
@@ -2180,7 +2186,7 @@ body.upload-modal-open {
 	margin: 0;
 	padding: 0.72rem 0.8rem;
 	border: 0;
-	border-radius: 3px;
+	border-radius: 0;
 	background: transparent;
 	color: var(--text);
 	font: inherit;
@@ -2188,9 +2194,8 @@ body.upload-modal-open {
 	cursor: pointer;
 }
 
-.download-menu__item:hover,
-.download-menu__item.is-selected {
-	background: rgba(31, 79, 69, 0.07);
+.download-menu__item:hover {
+	background: rgba(31, 79, 69, 0.05);
 }
 
 .download-menu__row {
@@ -2198,13 +2203,22 @@ body.upload-modal-open {
 	align-items: center;
 	justify-content: space-between;
 	gap: 0.65rem;
-	padding: 0.55rem 0.55rem;
-	border-radius: 3px;
+	padding: 0.62rem 0.75rem;
+	border-radius: 0;
+	border-bottom: 1px solid rgba(36, 53, 44, 0.08);
+	background: transparent;
 }
 
-.download-menu__row:hover,
-.download-menu__row.is-selected {
-	background: rgba(31, 79, 69, 0.07);
+.download-menu__row:last-child {
+	border-bottom: 0;
+}
+
+.download-menu__row--pro-start {
+	border-top: 1px solid rgba(36, 53, 44, 0.14);
+}
+
+.download-menu__row:hover {
+	background: rgba(31, 79, 69, 0.045);
 }
 
 .download-menu__meta {

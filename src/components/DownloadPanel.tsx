@@ -190,16 +190,18 @@ export default function DownloadPanel({
 
 				{menuOpen && (
 					<ul className="download-menu" role="listbox" aria-label="Download sizes">
-						{sizes.map((size) => {
+						{sizes.map((size, index) => {
 							const dims = `${size.output.width} × ${size.output.height}`;
 							const needsPro = !isFreeDownloadSize(size.id);
+							const prevNeedsPro =
+								index > 0 && !isFreeDownloadSize(sizes[index - 1]?.id);
 							const isSelected = selected === size.id;
 							return (
 								<li
 									key={size.id}
 									role="option"
 									aria-selected={isSelected}
-									className={`download-menu__row${isSelected ? ' is-selected' : ''}`}
+									className={`download-menu__row${needsPro && !prevNeedsPro ? ' download-menu__row--pro-start' : ''}`}
 								>
 									<span className="download-menu__meta">
 										{needsPro ? (
