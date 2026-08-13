@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react';
+
 type IconName = 'info' | 'spark' | 'tip' | 'palette' | 'prompt';
 
-function IconSvg({ children }: { children: React.ReactNode }) {
+function IconSvg({ children }: { children: ReactNode }) {
 	return (
 		<svg
 			viewBox="0 0 24 24"
