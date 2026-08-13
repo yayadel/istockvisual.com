@@ -4905,24 +4905,6 @@ body.image-editor-modal-open {
 	border-color: var(--accent);
 }
 
-.tools-palette {
-	display: grid;
-	gap: 1rem;
-}
-
-.tools-palette__media {
-	position: relative;
-	border: 1px solid var(--line);
-	background: var(--bg-elevated);
-}
-
-.tools-palette__media img {
-	width: 100%;
-	max-height: 420px;
-	object-fit: contain;
-	margin-inline: auto;
-}
-
 .tools-palette__busy {
 	position: absolute;
 	right: 0.75rem;
