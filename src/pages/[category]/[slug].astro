@@ -72,7 +72,6 @@ const similar = findSimilarAssets(
 						sourceHeight={asset.height || 1024}
 						loggedIn={Boolean(user)}
 						isPro={user?.plan === 'pro'}
-						remainingFullDownloads={user ? remainingFullDownloads : 0}
 						loginHref={`/login?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
 						signupHref={`/signup?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
 					>
