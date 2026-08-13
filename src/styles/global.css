@@ -2598,16 +2598,20 @@ body.image-editor-modal-open {
 
 .image-editor-modal--page .image-editor-modal__dialog {
 	width: 100%;
+	max-width: 100%;
 	height: auto;
 	max-height: none;
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
 	grid-template-rows: auto auto auto;
 	box-shadow: none;
 }
 
 .image-editor-modal--page .image-editor-modal__controls {
 	max-height: none;
-	overflow: visible;
+	overflow-x: hidden;
+	overflow-y: visible;
+	min-width: 0;
 }
 
 .image-editor-modal--page .image-editor-modal__body {
