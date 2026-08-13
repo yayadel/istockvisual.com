@@ -2216,27 +2216,31 @@ body.upload-modal-open {
 .basic-info-panel {
 	display: grid;
 	gap: 0;
-	margin-top: 0.15rem;
-	border: 1px solid rgba(36, 53, 44, 0.12);
-	border-radius: 3px;
-	overflow: hidden;
-	background: #fcfdfb;
+	margin-top: 0.85rem;
+	padding-top: 1.15rem;
+	border: 0;
+	border-top: 1px solid var(--line);
+	border-radius: 0;
+	overflow: visible;
+	background: transparent;
 }
 
 .basic-info-panel__title {
 	margin: 0;
-	padding: 0.85rem 1rem;
-	border-bottom: 1px solid rgba(36, 53, 44, 0.12);
-	background: #f7f8f6;
-	color: #24352c;
-	font-size: 0.88rem;
-	font-weight: 600;
+	padding: 0 0 0.85rem;
+	border: 0;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 0.72rem;
+	font-weight: 650;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
 	line-height: 1.3;
 }
 
 .basic-info-panel__body {
-	padding: 0.85rem 1rem 1rem;
-	background: #fcfdfb;
+	padding: 0;
+	background: transparent;
 }
 
 .basic-info-panel__body .meta-list {
@@ -2266,17 +2270,17 @@ body.upload-modal-open {
 }
 
 .basic-info-panel__body .meta-list li:last-child {
-	border-bottom: 1px solid rgba(36, 53, 44, 0.12);
+	border-bottom: 1px solid var(--line);
 	margin-bottom: 0.85rem;
-	padding-bottom: 0.65rem;
+	padding-bottom: 0.75rem;
 }
 
 .basic-info-panel__body .download-rules {
 	margin: 0;
-	padding: 0.7rem 0.8rem;
+	padding: 0;
 	border: 0;
-	border-radius: 3px;
-	background: rgba(36, 53, 44, 0.045);
+	border-radius: 0;
+	background: transparent;
 }
 
 .detail__basics .download-rules {
