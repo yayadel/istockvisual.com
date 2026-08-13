@@ -194,8 +194,17 @@ export default function ImageConverterWorkspace() {
 			</aside>
 
 			<section className="image-convert-page__layout">
-				<label
+				<div
 					className="image-convert-page__dropzone"
+					role="button"
+					tabIndex={0}
+					onKeyDown={(event) => {
+						if (event.key === 'Enter' || event.key === ' ') {
+							event.preventDefault();
+							inputRef.current?.click();
+						}
+					}}
+					onClick={() => inputRef.current?.click()}
 					onDragOver={(event) => {
 						event.preventDefault();
 						event.currentTarget.classList.add('is-dragover');
@@ -203,7 +212,11 @@ export default function ImageConverterWorkspace() {
 					onDragLeave={(event) => {
 						event.currentTarget.classList.remove('is-dragover');
 					}}
-					onDrop={onDrop}
+					onDrop={(event) => {
+						event.preventDefault();
+						event.currentTarget.classList.remove('is-dragover');
+						addFiles(event.dataTransfer.files);
+					}}
 				>
 					<input
 						ref={inputRef}
@@ -221,7 +234,7 @@ export default function ImageConverterWorkspace() {
 						JPG, PNG, WebP, GIF, BMP, HEIC/HEIF. Multi-file drag &amp; drop supported.
 					</span>
 					<span className="image-convert-page__dropzone-btn">Choose files</span>
-				</label>
+				</div>
 
 				<aside className="image-convert-page__settings" aria-label="Conversion settings">
 					<h3>Output settings</h3>
