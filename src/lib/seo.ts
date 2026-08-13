@@ -1,6 +1,12 @@
 import type { CategorySlug } from '../config/categories';
 import { contentCategoryPath } from './content-categories';
 
+export const LICENSE_PATH = '/info/license';
+export const SITE_BRAND = 'iStockVisual.com';
+export const USAGE_TERMS = 'Free for commercial and personal use. Attribution required.';
+export const COPYRIGHT_NOTICE =
+	'Free to use — commercial and personal use allowed, attribution required.';
+
 const DESC_MAX = 160;
 
 export function assetSearchTitle(imageName: string): string {
