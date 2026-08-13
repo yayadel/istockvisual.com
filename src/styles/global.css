@@ -1412,6 +1412,33 @@ body.upload-modal-open {
 .hero .search-bar {
 	margin-top: 0.35rem;
 	text-align: left;
+	background: transparent;
+	border-color: rgba(255, 255, 255, 0.38);
+	color: #ffffff;
+	box-shadow: none;
+}
+
+.hero .search-bar__filter,
+.hero .search-bar__visual,
+.hero .search-bar__submit {
+	border-color: rgba(255, 255, 255, 0.28);
+}
+
+.hero .search-bar__filter-trigger:hover,
+.hero .search-bar__visual:hover,
+.hero .search-bar__submit:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.hero .search-bar__input::placeholder,
+.hero .search-bar__chevron {
+	color: rgba(255, 255, 255, 0.62);
+}
+
+.hero .search-bar__menu {
+	background: var(--bg);
+	border-color: var(--line);
+	color: var(--text);
 }
 
 .cta-row {
