@@ -1,6 +1,6 @@
 import { sizeFileLabel } from './download-sizes';
 
-export const DOWNLOAD_FORMATS = ['jpg', 'png', 'svg'] as const;
+export const DOWNLOAD_FORMATS = ['jpg', 'png', 'webp', 'svg'] as const;
 export type DownloadFormat = (typeof DOWNLOAD_FORMATS)[number];
 
 export function isDownloadFormat(value: string | null | undefined): value is DownloadFormat {
@@ -48,12 +48,15 @@ async function drawBlobToCanvas(source: Blob): Promise<HTMLCanvasElement> {
 	return canvas;
 }
 
-/** Convert a downloaded raster blob into JPG / PNG / SVG in the browser. */
+/** Convert a downloaded raster blob into JPG / PNG / WEBP / SVG in the browser. */
 export async function convertDownloadBlob(
 	source: Blob,
 	format: DownloadFormat,
 ): Promise<Blob> {
 	if (format === 'jpg' && /jpe?g/i.test(source.type || '')) {
+		return source;
+	}
+	if (format === 'webp' && /webp/i.test(source.type || '')) {
 		return source;
 	}
 
@@ -65,6 +68,10 @@ export async function convertDownloadBlob(
 
 	if (format === 'png') {
 		return canvasToBlob(canvas, 'image/png');
+	}
+
+	if (format === 'webp') {
+		return canvasToBlob(canvas, 'image/webp', 0.92);
 	}
 
 	const pngBlob = await canvasToBlob(canvas, 'image/png');
