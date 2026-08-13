@@ -25,14 +25,22 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 
 	useEffect(() => {
 		if (!imageUrl) return;
-		const frame = window.requestAnimationFrame(() => {
+		let cancelled = false;
+		const scrollEditorIntoView = () => {
+			if (cancelled) return;
 			editorWrapRef.current?.scrollIntoView({
 				behavior: 'smooth',
 				block: 'center',
 				inline: 'nearest',
 			});
-		});
-		return () => window.cancelAnimationFrame(frame);
+		};
+		const frame = window.requestAnimationFrame(scrollEditorIntoView);
+		const timer = window.setTimeout(scrollEditorIntoView, 120);
+		return () => {
+			cancelled = true;
+			window.cancelAnimationFrame(frame);
+			window.clearTimeout(timer);
+		};
 	}, [imageUrl]);
 
 	const clearImage = useCallback(() => {
