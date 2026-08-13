@@ -13,6 +13,7 @@ const isHome = path === '/';
 const isAdmin = isAdminUser(user, env);
 const toolsActive = path.startsWith('/tools/');
 const categoriesActive = path === '/c' || path.startsWith('/c/');
+const priceActive = path === '/price';
 const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((item, index) => {
 	const intro = getContentCategoryIntro(item.label);
 	return {
