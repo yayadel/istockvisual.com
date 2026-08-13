@@ -1294,8 +1294,28 @@ body.upload-modal-open {
 }
 
 @media (min-width: 760px) {
+	.search-bar__visual {
+		padding: 0 0.95rem;
+		gap: 0.45rem;
+		justify-content: flex-start;
+	}
+
 	.search-bar__visual-text {
 		display: inline;
+	}
+}
+
+@media (max-width: 759px) {
+	.search-bar__visual,
+	.search-bar__submit {
+		width: 3.25rem;
+		padding: 0;
+		gap: 0;
+		justify-content: center;
+	}
+
+	.search-bar__visual-text {
+		display: none;
 	}
 }
 
