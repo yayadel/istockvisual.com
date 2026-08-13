@@ -211,7 +211,73 @@ def ensure_content_categories(meta: AssetMeta, keyword: str) -> AssetMeta:
 	return meta
 
 
-def generate_meta(keyword: str) -> AssetMeta:
+def usage_to_dict(interaction) -> dict:
+	usage = getattr(interaction, "usage", None) or getattr(interaction, "usage_metadata", None)
+	raw: dict = {}
+	if usage is None:
+		raw = {}
+	elif hasattr(usage, "model_dump"):
+		raw = usage.model_dump(exclude_none=True)
+	elif hasattr(usage, "to_json_dict"):
+		raw = usage.to_json_dict()
+	else:
+		for key in (
+			"total_tokens",
+			"total_input_tokens",
+			"total_output_tokens",
+			"total_thought_tokens",
+			"total_cached_tokens",
+			"total_tool_use_tokens",
+			"prompt_token_count",
+			"candidates_token_count",
+			"thoughts_token_count",
+			"total_token_count",
+			"cached_content_token_count",
+		):
+			value = getattr(usage, key, None)
+			if value is not None:
+				raw[key] = value
+
+	input_tokens = int(raw.get("total_input_tokens") or raw.get("prompt_token_count") or 0)
+	output_tokens = int(raw.get("total_output_tokens") or raw.get("candidates_token_count") or 0)
+	thought_tokens = int(raw.get("total_thought_tokens") or raw.get("thoughts_token_count") or 0)
+	cached_tokens = int(raw.get("total_cached_tokens") or raw.get("cached_content_token_count") or 0)
+	total_tokens = int(raw.get("total_tokens") or raw.get("total_token_count") or 0)
+	if not total_tokens:
+		total_tokens = input_tokens + output_tokens + thought_tokens
+
+	# Paid tier: thinking is billed at the output rate. If the API already folded
+	# thoughts into output, don't double-count.
+	if thought_tokens and output_tokens and total_tokens == input_tokens + output_tokens:
+		billed_output = output_tokens
+	else:
+		billed_output = output_tokens + thought_tokens
+
+	input_usd_per_m = 1.50
+	output_usd_per_m = 7.50
+	cost_usd = (input_tokens / 1_000_000) * input_usd_per_m + (
+		billed_output / 1_000_000
+	) * output_usd_per_m
+
+	return {
+		"raw": raw,
+		"model": "",
+		"inputTokens": input_tokens,
+		"outputTokens": output_tokens,
+		"thoughtTokens": thought_tokens,
+		"cachedTokens": cached_tokens,
+		"billedOutputTokens": billed_output,
+		"totalTokens": total_tokens,
+		"pricing": {
+			"inputUsdPerMillion": input_usd_per_m,
+			"outputUsdPerMillion": output_usd_per_m,
+			"note": "Gemini 3.6 Flash paid tier; thinking billed as output",
+		},
+		"estimatedCostUsd": round(cost_usd, 8),
+	}
+
+
+def generate_meta(keyword: str) -> tuple[AssetMeta, dict]:
 	dev_vars = load_dev_vars()
 	apply_proxy(dev_vars)
 
