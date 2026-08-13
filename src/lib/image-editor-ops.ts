@@ -420,24 +420,69 @@ export function mapKeepCircleToSource(
 	const fit = containSize(sourceW, sourceH, frameW, frameH);
 	const scale = fit.w / Math.max(1, sourceW);
 	const minSide = Math.max(1, Math.min(frameW, frameH));
+	const cx = (circle.cx * frameW - fit.x) / scale;
+	const cy = (circle.cy * frameH - fit.y) / scale;
+	const r = (circle.r * minSide) / scale;
 	return {
-		cx: (circle.cx * frameW - fit.x) / scale,
-		cy: (circle.cy * frameH - fit.y) / scale,
-		r: (circle.r * minSide) / scale,
+		cx: clamp(cx, 0, Math.max(0, sourceW - 1)),
+		cy: clamp(cy, 0, Math.max(0, sourceH - 1)),
+		r: Math.max(8, r),
 	};
 }
 
 /**
- * After full-image remove-bg: keep only the foreground blob(s) that touch the
- * keep-circle. The circle marks which subject to retain — it does not crop.
- * Returns false if no usable foreground was found.
+ * Focus crop around the keep-circle so matting follows the user mark.
+ * Final output is still composited at full size (not clipped to a circle).
+ */
+export function extractKeepFocusCrop(
+	source: HTMLCanvasElement,
+	cx: number,
+	cy: number,
+	r: number,
+	padScale = 2.2,
+): { crop: HTMLCanvasElement; offsetX: number; offsetY: number } {
+	const pad = Math.max(r * padScale, 48);
+	const x0 = Math.floor(clamp(cx - pad, 0, source.width));
+	const y0 = Math.floor(clamp(cy - pad, 0, source.height));
+	const x1 = Math.ceil(clamp(cx + pad, 0, source.width));
+	const y1 = Math.ceil(clamp(cy + pad, 0, source.height));
+	const cropW = Math.max(1, x1 - x0);
+	const cropH = Math.max(1, y1 - y0);
+	const crop = document.createElement('canvas');
+	crop.width = cropW;
+	crop.height = cropH;
+	const ctx = crop.getContext('2d');
+	if (ctx) ctx.drawImage(source, x0, y0, cropW, cropH, 0, 0, cropW, cropH);
+	return { crop, offsetX: x0, offsetY: y0 };
+}
+
+export function compositeCropToCanvas(
+	fullW: number,
+	fullH: number,
+	crop: CanvasImageSource,
+	offsetX: number,
+	offsetY: number,
+	cropW: number,
+	cropH: number,
+): HTMLCanvasElement {
+	const out = document.createElement('canvas');
+	out.width = Math.max(1, fullW);
+	out.height = Math.max(1, fullH);
+	const ctx = out.getContext('2d');
+	if (ctx) ctx.drawImage(crop, 0, 0, cropW, cropH, offsetX, offsetY, cropW, cropH);
+	return out;
+}
+
+/**
+ * Keep only foreground component(s) that overlap the keep-circle.
+ * No “nearest subject anywhere” fallback — that ignored the user’s mark.
  */
 export function keepForegroundTouchingCircle(
 	canvas: HTMLCanvasElement,
 	cx: number,
 	cy: number,
 	r: number,
-	alphaThreshold = 20,
+	alphaThreshold = 40,
 ): boolean {
 	const ctx = canvas.getContext('2d');
 	if (!ctx) return false;
@@ -445,90 +490,70 @@ export function keepForegroundTouchingCircle(
 	const image = ctx.getImageData(0, 0, w, h);
 	const px = image.data;
 	const n = w * h;
-	const keep = new Uint8Array(n);
+	const labels = new Int32Array(n);
+	labels.fill(-1);
 	const isFg = (idx: number) => (px[idx * 4 + 3] ?? 0) >= alphaThreshold;
 
-	const queue: number[] = [];
+	const sizes: number[] = [];
+	const overlaps: number[] = [];
 	const r2 = Math.max(1, r) * Math.max(1, r);
-	const x0 = Math.max(0, Math.floor(cx - r));
-	const x1 = Math.min(w - 1, Math.ceil(cx + r));
-	const y0 = Math.max(0, Math.floor(cy - r));
-	const y1 = Math.min(h - 1, Math.ceil(cy + r));
+	const insideCircle = (x: number, y: number) => {
+		const dx = x + 0.5 - cx;
+		const dy = y + 0.5 - cy;
+		return dx * dx + dy * dy <= r2;
+	};
 
-	for (let y = y0; y <= y1; y += 1) {
-		for (let x = x0; x <= x1; x += 1) {
-			const dx = x + 0.5 - cx;
-			const dy = y + 0.5 - cy;
-			if (dx * dx + dy * dy > r2) continue;
-			const idx = y * w + x;
-			if (!isFg(idx)) continue;
-			keep[idx] = 1;
-			queue.push(idx);
+	let labelCount = 0;
+	const queue: number[] = [];
+	for (let start = 0; start < n; start += 1) {
+		if (!isFg(start) || labels[start] !== -1) continue;
+		const id = labelCount;
+		labelCount += 1;
+		sizes[id] = 0;
+		overlaps[id] = 0;
+		labels[start] = id;
+		queue.length = 0;
+		queue.push(start);
+		let head = 0;
+		while (head < queue.length) {
+			const idx = queue[head]!;
+			head += 1;
+			sizes[id]! += 1;
+			const x = idx % w;
+			const y = (idx / w) | 0;
+			if (insideCircle(x, y)) overlaps[id]! += 1;
+			const tryPush = (nx: number, ny: number) => {
+				if (nx < 0 || ny < 0 || nx >= w || ny >= h) return;
+				const nidx = ny * w + nx;
+				if (labels[nidx] !== -1) return;
+				if (!isFg(nidx)) return;
+				labels[nidx] = id;
+				queue.push(nidx);
+			};
+			tryPush(x - 1, y);
+			tryPush(x + 1, y);
+			tryPush(x, y - 1);
+			tryPush(x, y + 1);
 		}
 	}
 
-	// If the circle missed opaque pixels, seed from the nearest foreground nearby.
-	if (queue.length === 0) {
-		let best = -1;
-		let bestD = Infinity;
-		const searchR = Math.max(r * 2, 24);
-		const sx0 = Math.max(0, Math.floor(cx - searchR));
-		const sx1 = Math.min(w - 1, Math.ceil(cx + searchR));
-		const sy0 = Math.max(0, Math.floor(cy - searchR));
-		const sy1 = Math.min(h - 1, Math.ceil(cy + searchR));
-		for (let y = sy0; y <= sy1; y += 1) {
-			for (let x = sx0; x <= sx1; x += 1) {
-				const idx = y * w + x;
-				if (!isFg(idx)) continue;
-				const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
-				if (d < bestD) {
-					bestD = d;
-					best = idx;
-				}
-			}
-		}
-		if (best < 0) {
-			for (let idx = 0; idx < n; idx += 1) {
-				if (!isFg(idx)) continue;
-				const x = idx % w;
-				const y = (idx / w) | 0;
-				const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
-				if (d < bestD) {
-					bestD = d;
-					best = idx;
-				}
-			}
-		}
-		if (best >= 0) {
-			keep[best] = 1;
-			queue.push(best);
+	if (labelCount === 0) return false;
+
+	let bestId = -1;
+	let bestOverlap = 0;
+	for (let id = 0; id < labelCount; id += 1) {
+		const overlap = overlaps[id] ?? 0;
+		if (overlap > bestOverlap) {
+			bestOverlap = overlap;
+			bestId = id;
 		}
 	}
 
-	if (queue.length === 0) return false;
-
-	let head = 0;
-	while (head < queue.length) {
-		const idx = queue[head]!;
-		head += 1;
-		const x = idx % w;
-		const y = (idx / w) | 0;
-		const tryPush = (nx: number, ny: number) => {
-			if (nx < 0 || ny < 0 || nx >= w || ny >= h) return;
-			const nidx = ny * w + nx;
-			if (keep[nidx]) return;
-			if (!isFg(nidx)) return;
-			keep[nidx] = 1;
-			queue.push(nidx);
-		};
-		tryPush(x - 1, y);
-		tryPush(x + 1, y);
-		tryPush(x, y - 1);
-		tryPush(x, y + 1);
-	}
+	// Require real overlap with the circle — do not pick a distant subject.
+	if (bestId < 0 || bestOverlap <= 0) return false;
 
 	for (let i = 0; i < n; i += 1) {
-		if (!keep[i]) px[i * 4 + 3] = 0;
+		if (labels[i] !== bestId) px[i * 4 + 3] = 0;
 	}
 	ctx.putImageData(image, 0, 0);
 	return true;
