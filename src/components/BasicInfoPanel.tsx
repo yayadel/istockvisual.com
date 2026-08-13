@@ -1,3 +1,5 @@
+import { DOWNLOAD_FORMATS } from '../lib/download-formats';
+
 type CategoryLink = {
 	label: string;
 	href: string;
@@ -5,7 +7,6 @@ type CategoryLink = {
 
 type Props = {
 	license?: string;
-	fileType?: string;
 	/** Topical category (exactly 1) from the fixed vocabulary. */
 	categories?: CategoryLink[];
 	/** @deprecated Prefer categories[] */
@@ -13,9 +14,10 @@ type Props = {
 	categoryHref?: string;
 };
 
+const FORMAT_LABELS = DOWNLOAD_FORMATS.map((format) => format.toUpperCase()).join(', ');
+
 export default function BasicInfoPanel({
 	license = 'Free to use — commercial OK, attribution required',
-	fileType = '—',
 	categories,
 	categoryLabel,
 	categoryHref,
