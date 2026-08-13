@@ -53,7 +53,7 @@ export default function BasicInfoPanel({
 					)}
 					<li>
 						<span>Type</span>
-						<span>{fileType}</span>
+						<span>{FORMAT_LABELS}</span>
 					</li>
 				</ul>
 				<ul className="download-rules" aria-label="Download notes">
