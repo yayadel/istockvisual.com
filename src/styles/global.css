@@ -4007,6 +4007,7 @@ body.image-editor-modal-open {
 	align-items: center;
 	padding: 0.85rem 0;
 	border-bottom: 1px solid var(--line);
+	cursor: pointer;
 }
 
 .tools-queue__thumb {
