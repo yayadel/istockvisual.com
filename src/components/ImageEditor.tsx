@@ -761,9 +761,9 @@ export default function ImageEditor({
 			>
 				<header className="image-editor-modal__header">
 					<div>
-						<p className="image-editor-modal__eyebrow">
-							{isPage ? 'FREE图片编辑器' : 'Client-side editor'}
-						</p>
+						{!isPage && (
+							<p className="image-editor-modal__eyebrow">Client-side editor</p>
+						)}
 						<h2 id="image-editor-title">{title}</h2>
 					</div>
 					<div className="image-editor-modal__header-actions">
