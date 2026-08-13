@@ -127,7 +127,7 @@ export default function PricingPlans() {
 					onClick={() => setTab('long')}
 				>
 					<span>★ Long-Term (Best Value)</span>
-					<em>Lifetime deal</em>
+					<em>Save up to 70%</em>
 				</button>
 				<button
 					type="button"
