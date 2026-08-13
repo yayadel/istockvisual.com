@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import path from 'node:path';
 import { masterJpegInfo } from './build-image-variants.mjs';
 
 const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';

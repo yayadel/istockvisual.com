@@ -62,7 +62,7 @@ export default function DownloadPanel({
 	assetId,
 	title,
 	slug,
-	previewUrl,
+	previewUrl: _previewUrl,
 	sourceWidth = 1536,
 	sourceHeight = 1024,
 	loggedIn,
