@@ -4445,6 +4445,42 @@ body.image-editor-modal-open {
 }
 
 @media (max-width: 720px) {
+	.tools-drop {
+		grid-template-columns: 1fr;
+		justify-items: stretch;
+	}
+
+	.tools-drop__visual {
+		width: 100%;
+		height: 150px;
+	}
+
+	.tools-drop__cta {
+		width: 100%;
+	}
+
+	.tools-panel__layout {
+		grid-template-columns: 1fr;
+	}
+
+	.tools-panel__sample {
+		border-right: 0;
+		border-bottom: 1px solid var(--line);
+		min-height: 160px;
+	}
+
+	.tools-panel__sample img {
+		min-height: 140px;
+	}
+
+	.tools-panel__actions {
+		width: 100%;
+	}
+
+	.tools-panel__actions .btn {
+		flex: 1 1 auto;
+	}
+
 	.tools-rail {
 		align-items: stretch;
 	}
