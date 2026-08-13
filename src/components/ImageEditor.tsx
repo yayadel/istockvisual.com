@@ -595,7 +595,10 @@ export default function ImageEditor({
 			);
 			setWorkingFromCanvas(expanded);
 			setCrop(DEFAULT_CROP);
-			setStatus(`Expanded to ${width}×${height} with edge fill.`);
+			setPendingCommit(true);
+			setStatus(
+				`Expanded to ${width}×${height}. Click Apply changes to keep editing with other tools.`,
+			);
 		} finally {
 			setBusy(null);
 		}
