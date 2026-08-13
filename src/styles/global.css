@@ -2782,7 +2782,7 @@ body.image-editor-modal-open {
 
 .image-editor-modal__workspace {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+	grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
 	gap: 0;
 	min-height: 0;
 	flex: 1 1 auto;
@@ -2802,14 +2802,19 @@ body.image-editor-modal-open {
 	border-right: 1px solid var(--ie-line);
 	border-radius: 0;
 	background: var(--ie-soft);
+	container-type: size;
+	container-name: ie-stage;
 }
 
 .image-editor-modal__stage {
+	--ie-ar: 1;
 	position: relative;
-	width: auto;
-	height: auto;
+	/* Fit entire frame inside the wrap (fixes 1K+ portrait/landscape clipping). */
+	width: min(100cqw, calc(100cqh * var(--ie-ar)));
+	height: min(100cqh, calc(100cqw / var(--ie-ar)));
 	max-width: 100%;
 	max-height: 100%;
+	aspect-ratio: var(--ie-ar);
 	overflow: hidden;
 	background:
 		linear-gradient(45deg, rgba(0, 0, 0, 0.06) 25%, transparent 25%),
@@ -2920,12 +2925,12 @@ body.image-editor-modal-open {
 .image-editor-modal__panel {
 	display: grid;
 	align-content: start;
-	gap: 0.7rem;
+	gap: 0.75rem;
 	min-width: 0;
 	min-height: 0;
 	height: 100%;
 	overflow: auto;
-	padding: 1rem 1.05rem;
+	padding: 1.1rem 1.25rem;
 	border: 0;
 	border-radius: 0;
 	background: transparent;
