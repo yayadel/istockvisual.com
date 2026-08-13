@@ -223,7 +223,10 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 		relatedSearchQueries: normalizeStringArray(
 			parsed.relatedSearchQueries ?? parsed['Related Search Queries'],
 		),
-		// Keywords / categories / depicted elements are merged into tags (40+).
+		contentCategories: normalizeStringArray(
+			parsed.contentCategories ?? parsed['Content Categories'],
+		),
+		// Legacy field; topical categories live in contentCategories.
 		depictedElements: [],
 		imagePageTitle,
 		pageShortDescription,
