@@ -128,10 +128,15 @@ export default function ImageEditor({
 		}));
 	}, [aspectPreset.ratio, natural.h, natural.w]);
 
-	const canvasSize = useMemo(() => {
-		const selected = sizeOptions.find((item) => item.id === sizeId);
-		return selected?.output ?? { width: 1024, height: 768 };
-	}, [sizeId, sizeOptions]);
+	const keepCircleStyle = useMemo(() => {
+		const { rx, ry } = keepCircleNormRadii(keepCircle, canvasSize.width, canvasSize.height);
+		return {
+			left: `${(keepCircle.cx - rx) * 100}%`,
+			top: `${(keepCircle.cy - ry) * 100}%`,
+			width: `${rx * 2 * 100}%`,
+			height: `${ry * 2 * 100}%`,
+		};
+	}, [canvasSize.height, canvasSize.width, keepCircle]);
 
 	const rebuildFramePreview = useCallback(() => {
 		const working = workingRef.current;
@@ -860,6 +865,10 @@ export default function ImageEditor({
 							{tool === 'remove-bg' && (
 								<>
 									<h3>Remove background</h3>
+									<p>
+										Drag the circle onto the subject you want to keep. The full image is
+										processed; only that subject stays, other cutouts are cleared.
+									</p>
 									<p className="image-editor-modal__tip">
 										First use on this site needs to load resources and may feel slow. After
 										that, remove background should be much faster.
