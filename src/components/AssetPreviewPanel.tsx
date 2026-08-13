@@ -4,9 +4,14 @@ import ImageEditor from './ImageEditor';
 type Props = {
 	imageUrl: string;
 	title: string;
+	aiEditHref?: string;
 };
 
-export default function AssetPreviewPanel({ imageUrl, title }: Props) {
+export default function AssetPreviewPanel({
+	imageUrl,
+	title,
+	aiEditHref = '/tools/ai-edit',
+}: Props) {
 	const [editing, setEditing] = useState(false);
 
 	if (editing) {
@@ -35,9 +40,16 @@ export default function AssetPreviewPanel({ imageUrl, title }: Props) {
 				/>
 			</div>
 			<div className="asset-preview__footer">
-				<button className="btn btn--ghost asset-preview__edit" type="button" onClick={() => setEditing(true)}>
+				<button
+					className="btn btn--ghost asset-preview__edit"
+					type="button"
+					onClick={() => setEditing(true)}
+				>
 					Edit image
 				</button>
+				<a className="btn btn--ghost asset-preview__edit" href={aiEditHref}>
+					Open in AI Edit
+				</a>
 			</div>
 		</div>
 	);
