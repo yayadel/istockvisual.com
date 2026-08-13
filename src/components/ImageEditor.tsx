@@ -432,24 +432,66 @@ export default function ImageEditor({
 					</div>
 				</header>
 
-				<section className="image-editor-modal__sizes" aria-label="Output size">
-					<span className="image-editor-modal__sizes-label">Size</span>
-					<div className="image-editor-modal__size-list">
-						{EDITOR_SIZE_PRESETS.map((preset) => (
-							<button
-								key={preset.id}
-								type="button"
-								className={`image-editor-modal__size${sizeId === preset.id ? ' is-active' : ''}`}
-								onClick={() => setSizeId(preset.id)}
-								disabled={Boolean(busy)}
-							>
-								{preset.label}
-							</button>
-						))}
+				<section className="image-editor-modal__controls" aria-label="Size and aspect">
+					<div className="image-editor-modal__row">
+						<span className="image-editor-modal__row-label">Size</span>
+						<div className="image-editor-modal__size-list">
+							{DOWNLOAD_SIZES.map((size) => {
+								const needsPro = !isFreeDownloadSize(size.id);
+								return (
+									<button
+										key={size.id}
+										type="button"
+										className={`image-editor-modal__size${sizeId === size.id ? ' is-active' : ''}${needsPro ? ' is-pro' : ''}`}
+										onClick={() => selectSize(size.id)}
+										disabled={Boolean(busy)}
+									>
+										<span className="image-editor-modal__size-name">{size.label}</span>
+										{needsPro ? (
+											<em className="download-tier download-tier--pro">Pro</em>
+										) : (
+											<span className="download-tier download-tier--free">Free</span>
+										)}
+									</button>
+								);
+							})}
+						</div>
+						<span className="image-editor-modal__size-meta">
+							{canvasSize.width}×{canvasSize.height}px
+						</span>
 					</div>
-					<span className="image-editor-modal__size-meta">
-						{canvasSize.width}×{canvasSize.height}px
-					</span>
+					{sizeGateMessage && (
+						<p className="image-editor-modal__gate">
+							{sizeGateMessage}{' '}
+							<a href="/price">Go Pro</a>
+						</p>
+					)}
+					<div className="image-editor-modal__row image-editor-modal__row--aspects">
+						<span className="image-editor-modal__row-label">Aspect</span>
+						<div className="image-editor-modal__aspect-list">
+							{EDITOR_ASPECT_PRESETS.map((preset) => {
+								const box = aspectPreviewBox(preset.ratio);
+								return (
+									<button
+										key={preset.id}
+										type="button"
+										className={`image-editor-modal__aspect${aspectId === preset.id ? ' is-active' : ''}`}
+										onClick={() => selectAspect(preset.id)}
+										disabled={Boolean(busy)}
+										title={preset.label}
+									>
+										<span className="image-editor-modal__aspect-icon" aria-hidden="true">
+											<span
+												className="image-editor-modal__aspect-shape"
+												style={{ width: box.width, height: box.height }}
+											/>
+										</span>
+										<span className="image-editor-modal__aspect-label">{preset.label}</span>
+									</button>
+								);
+							})}
+						</div>
+					</div>
 				</section>
 
 				<div className="image-editor-modal__body">
