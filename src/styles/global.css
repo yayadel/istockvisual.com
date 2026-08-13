@@ -1501,44 +1501,6 @@ body.upload-modal-open {
 	margin: 0;
 }
 
-.detail__basics .download-rules {
-	margin: 0;
-	padding: 0.75rem 0 0;
-	border-top: 0;
-}
-
-.basic-info-panel__body .meta-list li:last-child {
-	border-bottom: 0;
-	padding-bottom: 0;
-}
-
-.download-rules {
-	list-style: none;
-	padding: 0.9rem 0 0;
-	margin: 1rem 0 0;
-	border-top: 0;
-	display: grid;
-	gap: 0.4rem;
-	font-size: 0.78rem;
-	line-height: 1.45;
-	color: var(--text-muted);
-}
-
-.download-rules li {
-	padding-left: 0.9rem;
-	position: relative;
-}
-
-.download-rules li::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 0.45em;
-	width: 0.35rem;
-	height: 0.35rem;
-	background: var(--text-muted);
-}
-
 body.download-auth-modal-open {
 	overflow: hidden;
 }
