@@ -15,8 +15,8 @@ const { assets, emptyMessage = 'No assets in this category yet.' } = Astro.props
 		<div class="empty">{emptyMessage}</div>
 	) : (
 		<div class="asset-grid">
-			{assets.map((asset) => (
-				<AssetCard asset={asset} />
+			{assets.map((asset, index) => (
+				<AssetCard asset={asset} index={index} />
 			))}
 		</div>
 	)

@@ -3,13 +3,28 @@ import type { AssetDetail } from '../lib/asset-types';
 
 interface Props {
 	asset: AssetDetail;
+	index?: number;
 }
 
-const { asset } = Astro.props;
+const TILES = [
+	'landscape',
+	'tall',
+	'square',
+	'short',
+	'portrait',
+	'wide',
+	'tall',
+	'landscape',
+	'square',
+	'portrait',
+] as const;
+
+const { asset, index = 0 } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
+const tile = TILES[index % TILES.length];
 ---
 
-<a class="asset-card" href={href}>
+<a class={`asset-card asset-card--${tile}`} href={href}>
 	{
 		asset.previewUrl ? (
 			<img
