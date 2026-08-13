@@ -135,20 +135,17 @@ const similar = findSimilarAssets(
 								</article>
 							)}
 							{asset.colorPalette && asset.colorPalette.length > 0 && (
-									<article class="info-card info-card--wide">
-										<h2>Color palette</h2>
-										<ColorPalette client:load swatches={asset.colorPalette} />
-									</article>
-								)
-							}
-							{
-								asset.imagePrompt && (
-									<article class="info-card info-card--wide">
-										<h2>Image generation prompt</h2>
-										<p>{asset.imagePrompt}</p>
-									</article>
-								)
-							}
+								<article class="info-card info-card--wide">
+									<h2>Color palette</h2>
+									<ColorPalette client:load swatches={asset.colorPalette} />
+								</article>
+							)}
+							{asset.imagePrompt && (
+								<article class="info-card info-card--wide">
+									<h2>Image generation prompt</h2>
+									<p>{asset.imagePrompt}</p>
+								</article>
+							)}
 						</div>
 					</section>
 				)

@@ -1323,19 +1323,6 @@ body.upload-modal-open {
 	background: var(--text-muted);
 }
 
-.download-pro-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.28rem;
-	color: var(--text-muted);
-}
-
-.download-pro-icon {
-	display: block;
-	flex-shrink: 0;
-	color: #d4a017;
-}
-
 body.download-auth-modal-open {
 	overflow: hidden;
 }
