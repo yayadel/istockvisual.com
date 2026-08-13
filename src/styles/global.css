@@ -3554,13 +3554,13 @@ body.download-auth-modal-open {
 	color: var(--text);
 }
 
-[data-theme='dark'] .asset-preview__action--edit {
+[data-theme='dark'] .asset-preview__action.btn.asset-preview__action--edit {
 	background: #c4f04b;
 	border-color: #c4f04b;
 	color: #13200f;
 }
 
-[data-theme='dark'] .asset-preview__action--edit:hover {
+[data-theme='dark'] .asset-preview__action.btn.asset-preview__action--edit:hover {
 	background: #b3de3f;
 	border-color: #b3de3f;
 	color: #13200f;
