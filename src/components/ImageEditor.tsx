@@ -793,7 +793,7 @@ export default function ImageEditor({
 									<h3>Color & light</h3>
 									<p>Fine-tune exposure, color, and tone.</p>
 									{ADJUST_SLIDERS.map((item) => (
-										<label key={item.key} className="image-editor-modal__slider">
+										<div key={item.key} className="image-editor-modal__slider">
 											<span>{item.label}</span>
 											<input
 												type="range"
@@ -801,9 +801,26 @@ export default function ImageEditor({
 												max={item.max}
 												value={adjust[item.key]}
 												onChange={updateAdjust(item.key)}
+												aria-label={item.label}
 											/>
-											<span>{adjust[item.key]}</span>
-										</label>
+											<span className="image-editor-modal__slider-value">
+												{adjust[item.key]}
+											</span>
+											<button
+												className="image-editor-modal__slider-reset"
+												type="button"
+												onClick={() =>
+													setAdjust((prev) => ({
+														...prev,
+														[item.key]: DEFAULT_ADJUST[item.key],
+													}))
+												}
+												disabled={adjust[item.key] === DEFAULT_ADJUST[item.key]}
+												title={`Reset ${item.label}`}
+											>
+												Reset
+											</button>
+										</div>
 									))}
 									<button className="btn btn--ghost" type="button" onClick={resetAdjust}>
 										Reset

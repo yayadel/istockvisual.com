@@ -2978,9 +2978,9 @@ body.image-editor-modal-open {
 
 .image-editor-modal__slider {
 	display: grid;
-	grid-template-columns: 5.8rem 1fr 2.6rem;
+	grid-template-columns: 5.2rem 1fr 2.2rem auto;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.4rem;
 	font-size: 0.82rem;
 	color: var(--ie-muted);
 }
@@ -2988,6 +2988,34 @@ body.image-editor-modal-open {
 .image-editor-modal__slider input[type='range'] {
 	width: 100%;
 	accent-color: var(--ie-ink);
+}
+
+.image-editor-modal__slider-value {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.image-editor-modal__slider-reset {
+	margin: 0;
+	padding: 0.18rem 0.4rem;
+	border: 1px solid var(--ie-line, rgba(17, 17, 17, 0.14));
+	border-radius: 4px;
+	background: transparent;
+	color: var(--ie-ink, #111);
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+.image-editor-modal__slider-reset:hover:not(:disabled) {
+	background: rgba(17, 17, 17, 0.06);
+}
+
+.image-editor-modal__slider-reset:disabled {
+	opacity: 0.35;
+	cursor: default;
 }
 
 .image-editor-modal__action-row {
