@@ -1307,7 +1307,7 @@ body.upload-modal-open {
 	overflow: hidden;
 	break-inside: avoid;
 	border: 0;
-	border-radius: 14px;
+	border-radius: 0;
 	background: #e6e6e6;
 	color: inherit;
 	transition: transform 0.2s ease;
