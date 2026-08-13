@@ -3481,7 +3481,7 @@ body.download-auth-modal-open {
 	transform: none;
 }
 
-.asset-preview__action--edit {
+.asset-preview__action.btn.asset-preview__action--edit {
 	flex-direction: column;
 	gap: 0.18rem;
 	min-height: 3.15rem;
@@ -3491,7 +3491,7 @@ body.download-auth-modal-open {
 	color: #fff;
 }
 
-.asset-preview__action--edit:hover {
+.asset-preview__action.btn.asset-preview__action--edit:hover {
 	background: #173d36;
 	border-color: #173d36;
 	color: #fff;
@@ -3540,18 +3540,34 @@ body.download-auth-modal-open {
 	z-index: 50;
 }
 
-[data-theme='dark'] .asset-preview__action.btn,
+[data-theme='dark'] .asset-preview__action.btn:not(.asset-preview__action--edit),
 [data-theme='dark'] .asset-preview__share .share-bar__toggle {
 	background: transparent;
 	border-color: var(--line);
 	color: var(--text);
 }
 
-[data-theme='dark'] .asset-preview__action.btn:hover,
+[data-theme='dark'] .asset-preview__action.btn:not(.asset-preview__action--edit):hover,
 [data-theme='dark'] .asset-preview__share .share-bar__toggle:hover,
 [data-theme='dark'] .asset-preview__share .share-bar.is-open .share-bar__toggle {
 	background: var(--ghost-bg);
 	color: var(--text);
+}
+
+[data-theme='dark'] .asset-preview__action--edit {
+	background: #c4f04b;
+	border-color: #c4f04b;
+	color: #13200f;
+}
+
+[data-theme='dark'] .asset-preview__action--edit:hover {
+	background: #b3de3f;
+	border-color: #b3de3f;
+	color: #13200f;
+}
+
+[data-theme='dark'] .asset-preview__action--edit .asset-preview__action-tools {
+	color: rgba(19, 32, 15, 0.7);
 }
 
 @media (max-width: 560px) {
