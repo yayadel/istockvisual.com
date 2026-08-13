@@ -560,10 +560,11 @@ export default function ImageEditor({
 			);
 			const kept = keepForegroundTouchingCircle(canvas, mapped.cx, mapped.cy, mapped.r);
 			setWorkingFromCanvas(canvas);
+			setPendingCommit(true);
 			setStatus(
 				kept
-					? 'Background removed. Subject inside the circle kept.'
-					: 'Background removed, but no subject was found near the circle.',
+					? 'Background removed. Click Apply changes to keep editing with other tools.'
+					: 'Background removed, but no subject was found near the circle. Apply or reset.',
 			);
 		} catch (error) {
 			console.error(error);
