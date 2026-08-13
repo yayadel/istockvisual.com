@@ -13,9 +13,6 @@ type Props = {
 	/** @deprecated Prefer categories[] */
 	categoryLabel?: string;
 	categoryHref?: string;
-	medium?: string;
-	keyword?: string;
-	keywordHref?: string;
 };
 
 export default function BasicInfoPanel({
@@ -24,9 +21,6 @@ export default function BasicInfoPanel({
 	categories,
 	categoryLabel,
 	categoryHref,
-	medium,
-	keyword,
-	keywordHref,
 }: Props) {
 	const [open, setOpen] = useState(false);
 	const categoryLinks =
@@ -74,20 +68,6 @@ export default function BasicInfoPanel({
 							<span>Type</span>
 							<span>{fileType}</span>
 						</li>
-						{medium && (
-							<li>
-								<span>Medium</span>
-								<span>{medium}</span>
-							</li>
-						)}
-						{keyword && (
-							<li>
-								<span>Keyword</span>
-								<span>
-									{keywordHref ? <a href={keywordHref}>{keyword}</a> : keyword}
-								</span>
-							</li>
-						)}
 					</ul>
 					<ul className="download-rules">
 						<li>500 and 1K: free download, no login required. Default is 1K.</li>
