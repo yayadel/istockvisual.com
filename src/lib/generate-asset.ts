@@ -281,16 +281,26 @@ export async function importGeneratedAsset(
 
 	const keyword = keywordRow.keyword;
 	const keywordId = keywordRow.id;
+	const title = formatAssetTitle(input.meta.imagePageTitle.trim() || keyword);
+	const contentCategories = resolveContentCategories({
+		stored: [
+			...(input.meta.contentCategories || []),
+			...(input.meta.depictedElements || []),
+		],
+		title,
+		keyword,
+	});
 	const meta: GeneratedAssetMeta = {
 		...input.meta,
-		imagePageTitle: formatAssetTitle(input.meta.imagePageTitle.trim() || keyword),
+		imagePageTitle: title,
 		pageShortDescription: formatAcronymsInText(input.meta.pageShortDescription),
 		imageCreationDescription: formatAcronymsInText(input.meta.imageCreationDescription),
+		contentCategories,
+		depictedElements: contentCategories,
 	};
 
 	try {
 		const category = mediumToCategory(meta.medium);
-		const title = meta.imagePageTitle;
 		const slug = await uniqueSlug(env.DB, category, title);
 		const id = `gen-${crypto.randomUUID()}`;
 		const fileType = input.fileType || 'image/jpeg';

@@ -1,5 +1,9 @@
 import type { CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
+import {
+	normalizeContentCategories,
+	pickContentCategoriesFromTitle,
+} from './content-categories';
 
 function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[] {
 	if (!value) return fallback;
@@ -11,14 +15,30 @@ function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[]
 	}
 }
 
+/** Resolve 1–3 vocabulary categories from stored JSON or title fallback. */
+export function resolveContentCategories(input: {
+	stored?: string[] | null;
+	title?: string;
+	keyword?: string;
+}): string[] {
+	const fromStored = normalizeContentCategories(input.stored);
+	if (fromStored.length > 0) return fromStored;
+	return pickContentCategoriesFromTitle(input.title || '', input.keyword || '');
+}
+
 function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
+	const title = String(row.title);
+	const keyword = String(row.keyword ?? '');
+	const stored = parseJsonArray<string>(row.depictedElements as string, []);
+	const contentCategories = resolveContentCategories({ stored, title, keyword });
+
 	return {
 		id: String(row.id),
 		keywordId: row.keywordId == null ? null : Number(row.keywordId),
-		keyword: String(row.keyword ?? ''),
+		keyword,
 		slug: String(row.slug),
 		category: row.category as CategorySlug,
-		title: String(row.title),
+		title,
 		shortDescription: String(row.shortDescription ?? ''),
 		description: String(row.description ?? ''),
 		imagePrompt: String(row.imagePrompt),
@@ -27,7 +47,8 @@ function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 		colorPalette: parseJsonArray(row.colorPalette as string, []),
 		tags: parseJsonArray<string>(row.tags as string, []),
 		relatedSearchQueries: parseJsonArray<string>(row.relatedQueries as string, []),
-		depictedElements: parseJsonArray<string>(row.depictedElements as string, []),
+		contentCategories,
+		depictedElements: contentCategories,
 		medium: String(row.medium ?? ''),
 		r2ObjectKey: String(row.r2ObjectKey ?? ''),
 		fileType: String(row.fileType ?? 'image/jpeg'),
@@ -65,6 +86,7 @@ export function generatedToDetail(record: GeneratedAssetRecord, origin: string):
 		usageTips: record.assetUsageTips,
 		colorPalette: record.colorPalette,
 		relatedQueries: record.relatedSearchQueries,
+		contentCategories: record.contentCategories,
 		depictedElements: record.depictedElements,
 		medium: record.medium,
 	};
