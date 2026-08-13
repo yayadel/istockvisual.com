@@ -183,6 +183,26 @@ export function formatAssetTitle(title: string): string {
 		.join(' ');
 }
 
+/** Tag labels use the same title-case + acronym rules as page titles. */
+export function formatTagLabel(tag: string): string {
+	return formatAssetTitle(tag);
+}
+
+/** Dedupe tags (case-insensitive) and apply title-case / acronym formatting. */
+export function normalizeTags(values: string[] | undefined | null): string[] {
+	const out: string[] = [];
+	const seen = new Set<string>();
+	for (const value of values || []) {
+		const formatted = formatTagLabel(value);
+		if (!formatted) continue;
+		const key = formatted.toLowerCase();
+		if (seen.has(key)) continue;
+		seen.add(key);
+		out.push(formatted);
+	}
+	return out;
+}
+
 /** Uppercase known acronyms inside sentence-case copy without changing other casing. */
 export function formatAcronymsInText(text: string): string {
 	return text.replace(/\b([A-Za-z0-9]+)\b/g, (word) => {

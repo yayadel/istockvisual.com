@@ -4,6 +4,7 @@ import {
 	formatAcronymsInText,
 	formatAssetTitle,
 	mediumToCategory,
+	normalizeTags,
 	randomSlugCode,
 	slugifyTitle,
 	type AssetDetail,

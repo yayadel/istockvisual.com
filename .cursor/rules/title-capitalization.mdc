@@ -3,16 +3,18 @@ description: 素材标题必须用标准 Title Case，缩写全大写
 alwaysApply: true
 ---
 
-# 素材标题大小写（死命令）
+# 素材标题与标签大小写（死命令）
 
-写 `imagePageTitle` / 页面标题时：
+写 `imagePageTitle` / 页面标题，以及 **Tags** 时：
 
 - 使用标准 **English title case**（实词首字母大写）
 - 短介词/冠词保持小写（非首尾）：a, an, the, and, or, of, in, on, at, to, by, with…
-- **缩写/缩略语全大写**：PDF、UAE、KY、DIY、USA、UK、AI、UI、API、GPS、LED、HD、4K 等
+- **缩写/缩略语全大写**：PDF、UAE、KY、DIY、USA、UK、AI、UI、API、GPS、LED、HD、4K、USB、3D 等
 - 单字母代号大写：Z Flashing 中的 **Z**
-- 禁止整句 sentence case 当标题（如 `Orbital quenching pdf process…`）
+- 禁止整句 sentence case 当标题或标签（如 `Orbital quenching pdf process…` / `z flashing`）
 
-正确示例：`Orbital Quenching PDF Process in a Metallurgy Lab`
+正确示例：
+- 标题：`Orbital Quenching PDF Process in a Metallurgy Lab`
+- 标签：`Z Flashing`, `Galvanized Metal`, `PDF Template`
 
 描述字段用 sentence case，但缩写与专有名词仍要正确（PDF、Colorado、Kentucky 等）。

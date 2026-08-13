@@ -1,5 +1,6 @@
 import type { CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
+import { normalizeTags } from './asset-types';
 import { resolveContentCategories } from './content-categories';
 
 export { resolveContentCategories } from './content-categories';
