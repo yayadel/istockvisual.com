@@ -311,6 +311,9 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 		if (menu.classList.contains('nav__tools-mega')) {
 			activateToolsPanel(menu, defaultToolsId(menu));
 		}
+		if (menu.classList.contains('nav__categories-mega')) {
+			activateCategoriesPanel(menu, defaultCategoriesId(menu));
+		}
 	}
 
 	function scheduleCloseNavDropdown(root) {
@@ -339,6 +342,25 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 		if (current) return current.getAttribute('data-tools-item');
 		var first = menu.querySelector('[data-tools-item]');
 		return first ? first.getAttribute('data-tools-item') : 'image';
+	}
+
+	function activateCategoriesPanel(menu, id) {
+		if (!menu || !id) return;
+		menu.querySelectorAll('[data-categories-panel]').forEach(function (panel) {
+			var on = panel.getAttribute('data-categories-panel') === id;
+			panel.hidden = !on;
+			panel.classList.toggle('is-active', on);
+		});
+		menu.querySelectorAll('[data-categories-item]').forEach(function (item) {
+			item.classList.toggle('is-active', item.getAttribute('data-categories-item') === id);
+		});
+	}
+
+	function defaultCategoriesId(menu) {
+		var current = menu.querySelector('[data-categories-item][aria-current="page"]');
+		if (current) return current.getAttribute('data-categories-item');
+		var first = menu.querySelector('[data-categories-item]');
+		return first ? first.getAttribute('data-categories-item') : null;
 	}
 
 	document.querySelectorAll('[data-nav-dropdown]').forEach(function (root) {
@@ -376,21 +398,43 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 	document.addEventListener('pointerover', function (event) {
 		var target = event.target;
 		if (!(target instanceof Element)) return;
-		var item = target.closest('[data-tools-item]');
-		if (!item) return;
-		var menu = item.closest('.nav__tools-mega');
-		if (!menu || menu.hidden) return;
-		activateToolsPanel(menu, item.getAttribute('data-tools-item'));
+
+		var toolsItem = target.closest('[data-tools-item]');
+		if (toolsItem) {
+			var toolsMenu = toolsItem.closest('.nav__tools-mega');
+			if (toolsMenu && !toolsMenu.hidden) {
+				activateToolsPanel(toolsMenu, toolsItem.getAttribute('data-tools-item'));
+			}
+		}
+
+		var catItem = target.closest('[data-categories-item]');
+		if (catItem) {
+			var catMenu = catItem.closest('.nav__categories-mega');
+			if (catMenu && !catMenu.hidden) {
+				activateCategoriesPanel(catMenu, catItem.getAttribute('data-categories-item'));
+			}
+		}
 	});
 
 	document.addEventListener('focusin', function (event) {
 		var target = event.target;
 		if (!(target instanceof Element)) return;
-		var item = target.closest('[data-tools-item]');
-		if (!item) return;
-		var menu = item.closest('.nav__tools-mega');
-		if (!menu || menu.hidden) return;
-		activateToolsPanel(menu, item.getAttribute('data-tools-item'));
+
+		var toolsItem = target.closest('[data-tools-item]');
+		if (toolsItem) {
+			var toolsMenu = toolsItem.closest('.nav__tools-mega');
+			if (toolsMenu && !toolsMenu.hidden) {
+				activateToolsPanel(toolsMenu, toolsItem.getAttribute('data-tools-item'));
+			}
+		}
+
+		var catItem = target.closest('[data-categories-item]');
+		if (catItem) {
+			var catMenu = catItem.closest('.nav__categories-mega');
+			if (catMenu && !catMenu.hidden) {
+				activateCategoriesPanel(catMenu, catItem.getAttribute('data-categories-item'));
+			}
+		}
 	});
 
 	document.addEventListener('keydown', function (event) {
