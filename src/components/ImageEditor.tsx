@@ -254,7 +254,11 @@ export default function ImageEditor({
 				0,
 			);
 		}
-		setFrameUrl(frame.toDataURL('image/png'));
+		try {
+			setFrameUrl(frame.toDataURL('image/png'));
+		} catch {
+			/* keep previous frameUrl / previewUrl */
+		}
 	}, [adjust.highlights, adjust.shadows, adjust.temperature, adjust.tint, stageSize]);
 
 	useEffect(() => {
@@ -720,16 +724,17 @@ export default function ImageEditor({
 
 	const handleExpand = useCallback(async () => {
 		const working = workingRef.current;
-		if (!working || !expandTarget) return;
-		if (
-			expandTarget.width === working.width &&
-			expandTarget.height === working.height
-		) {
+		if (!working) return;
+
+		const scale = 1 + expandPct / 100;
+		const targetW = Math.max(1, Math.round(working.width * scale));
+		const targetH = Math.max(1, Math.round(working.height * scale));
+		if (targetW === working.width && targetH === working.height) {
 			setStatus('Choose an expand amount above 0% first.');
 			return;
 		}
 
-		const VISUAL_MS = 1_100;
+		const VISUAL_MS = 900;
 		const startedAt = performance.now();
 		let stopped = false;
 		let displayPct = 0;
@@ -746,31 +751,45 @@ export default function ImageEditor({
 		}, 50);
 
 		try {
-			await new Promise<void>((resolve) => {
-				window.setTimeout(resolve, VISUAL_MS);
-			});
+			// Build the filled canvas first so progress isn't wasted on a failed result.
 			const expanded = expandWithEdgeFill(
 				working,
 				working.width,
 				working.height,
-				expandTarget.width,
-				expandTarget.height,
+				targetW,
+				targetH,
 			);
+
+			const remaining = Math.max(0, VISUAL_MS - (performance.now() - startedAt));
+			if (remaining > 0) {
+				await new Promise<void>((resolve) => {
+					window.setTimeout(resolve, remaining);
+				});
+			}
+
 			stopped = true;
 			window.clearInterval(tickId);
 			setBusy('Expanding 100%…');
 			setWorkingFromCanvas(expanded);
+			try {
+				setFrameUrl(expanded.toDataURL('image/png'));
+			} catch {
+				/* previewUrl from setWorkingFromCanvas covers display */
+			}
 			setCrop(DEFAULT_CROP);
 			setPendingCommit(true);
 			setStatus(
-				`Expanded +${expandPct}% to ${expandTarget.width}×${expandTarget.height}. Click Apply changes to keep editing with other tools.`,
+				`Expanded +${expandPct}% to ${targetW}×${targetH}. Click Apply changes to keep editing with other tools.`,
 			);
+		} catch (error) {
+			console.error(error);
+			setStatus('Expand failed. Please try again.');
 		} finally {
 			stopped = true;
 			window.clearInterval(tickId);
 			setBusy(null);
 		}
-	}, [expandPct, expandTarget, setWorkingFromCanvas]);
+	}, [expandPct, setWorkingFromCanvas]);
 
 	const buildExportCanvas = useCallback(() => {
 		const working = workingRef.current;
