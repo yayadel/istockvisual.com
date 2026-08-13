@@ -112,72 +112,28 @@ export default function ShareBar({ title, url, compact = true, inlineChannels = 
 			ref={rootRef}
 			aria-label="Share"
 		>
-			<div className="share-bar__face">
-				<button
-					type="button"
-					className="share-bar__toggle"
-					aria-expanded={open}
-					aria-haspopup="menu"
-					onClick={() => setOpen((value) => !value)}
-				>
-					{inlineChannels ? null : <ShareIcon size={18} />}
-					<span>Share</span>
-				</button>
+			<button
+				type="button"
+				className="share-bar__toggle"
+				aria-expanded={open}
+				aria-haspopup="menu"
+				onClick={() => setOpen((value) => !value)}
+			>
+				{inlineChannels ? null : <ShareIcon size={18} />}
+				<span>Share</span>
 				{inlineChannels ? (
-					<span className="share-bar__channels">
-						<a
-							className="share-bar__channel"
-							href={
-								shareUrl ? `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` : undefined
-							}
-							target="_blank"
-							rel="noopener noreferrer"
-							title="Facebook"
-							aria-label="Share on Facebook"
-						>
-							<span className="share-bar__icon share-bar__icon--facebook">f</span>
-						</a>
-						<a
-							className="share-bar__channel"
-							href={
-								shareUrl
-									? `https://www.pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}`
-									: undefined
-							}
-							target="_blank"
-							rel="noopener noreferrer"
-							title="Pinterest"
-							aria-label="Share on Pinterest"
-						>
-							<span className="share-bar__icon share-bar__icon--pinterest">P</span>
-						</a>
-						<a
-							className="share-bar__channel"
-							href={
-								shareUrl ? `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` : undefined
-							}
-							target="_blank"
-							rel="noopener noreferrer"
-							title="X"
-							aria-label="Share on X"
-						>
-							<span className="share-bar__icon share-bar__icon--x">
-								<XIcon />
-							</span>
-						</a>
-						<a
-							className="share-bar__channel"
-							href={mailHref}
-							title="Email"
-							aria-label="Share by email"
-						>
-							<span className="share-bar__icon share-bar__icon--muted">
-								<MailIcon />
-							</span>
-						</a>
+					<span className="share-bar__channels" aria-hidden="true">
+						<span className="share-bar__icon share-bar__icon--facebook">f</span>
+						<span className="share-bar__icon share-bar__icon--pinterest">P</span>
+						<span className="share-bar__icon share-bar__icon--x">
+							<XIcon />
+						</span>
+						<span className="share-bar__icon share-bar__icon--muted">
+							<MailIcon />
+						</span>
 					</span>
 				) : null}
-			</div>
+			</button>
 
 			{open && (
 				<div className="share-bar__menu" role="menu">
