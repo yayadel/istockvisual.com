@@ -38,7 +38,7 @@ const categoryLabel = isCategorySlug(categoryParam)
 
 const pool = await listAllAssets(env.DB, Astro.url.origin, 400);
 if (isVisual) {
-	await purgeVisualSearchUploads(env.MEDIA, false);
+	await purgeExpiredVisualSearchUploads(env.MEDIA);
 }
 const scoped = filterAssetsBySearch(
 	pool,
