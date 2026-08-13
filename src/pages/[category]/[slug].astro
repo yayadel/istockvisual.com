@@ -7,6 +7,7 @@ import DownloadPanel from '../../components/DownloadPanel';
 import SimilarMasonry from '../../components/SimilarMasonry.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/generate-asset';
+import { resolveContentCategories } from '../../lib/content-categories';
 import { searchPath } from '../../lib/paths';
 import { env } from 'cloudflare:workers';
 
@@ -22,6 +23,12 @@ const asset = await resolveAssetBySlug(env.DB, Astro.url.origin, category.slug, 
 if (!asset) {
 	return new Response(null, { status: 404, statusText: 'Not Found' });
 }
+
+const contentCategories = resolveContentCategories({
+	stored: asset.contentCategories || asset.depictedElements,
+	title: asset.title,
+	keyword: asset.keyword,
+});
 
 const user = Astro.locals.user;
 const isGenerated = asset.source === 'generated';

@@ -1,4 +1,8 @@
 import type { CategorySlug } from '../config/categories';
+import {
+	normalizeContentCategories,
+	pickContentCategoriesFromTitle,
+} from './content-categories';
 
 export type ColorSwatch = {
 	name: string;

@@ -178,7 +178,8 @@ def main() -> None:
 
 	meta = generate_meta(args.keyword)
 	payload = meta.model_dump()
-	# Depicted elements / categories / keyword labels are merged into tags (40+).
+	# Topical categories are contentCategories (1–3 from fixed list).
+	# depictedElements is unused; tags already cover depicted objects.
 	payload["depictedElements"] = []
 	text = json.dumps(payload, ensure_ascii=False, indent=2)
 	if args.out:
