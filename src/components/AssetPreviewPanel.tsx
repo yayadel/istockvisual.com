@@ -14,18 +14,6 @@ export default function AssetPreviewPanel({
 }: Props) {
 	const [editing, setEditing] = useState(false);
 
-	if (editing) {
-		return (
-			<div className="asset-preview asset-preview--editing">
-				<ImageEditor
-					imageUrl={imageUrl}
-					title={title}
-					onCancel={() => setEditing(false)}
-				/>
-			</div>
-		);
-	}
-
 	return (
 		<div className="asset-preview">
 			<div
@@ -51,6 +39,9 @@ export default function AssetPreviewPanel({
 					Open in AI Edit
 				</a>
 			</div>
+			{editing && (
+				<ImageEditor imageUrl={imageUrl} title={title} onClose={() => setEditing(false)} />
+			)}
 		</div>
 	);
 }
