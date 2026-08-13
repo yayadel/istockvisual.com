@@ -367,34 +367,38 @@ export default function ImageEditor({
 	const handleRemoveBackground = useCallback(async () => {
 		const working = workingRef.current;
 		if (!working) return;
-		let lastPct = 0;
-		const setProgress = (pct: number, label = 'Processing') => {
-			const next = Math.max(lastPct, Math.min(99, Math.round(pct)));
-			lastPct = next;
-			setBusy(`${label} ${next}%…`);
-		};
-		setProgress(0);
+
+		// Library progress only covers downloads and jumps; drive a linear UI clock instead.
+		const VISUAL_MS = 14_000;
+		const startedAt = performance.now();
+		let stopped = false;
+		let displayPct = 0;
+		setBusy('Processing 0%…');
 		setStatus(null);
+		const tickId = window.setInterval(() => {
+			if (stopped) return;
+			const elapsed = performance.now() - startedAt;
+			let next: number;
+			if (elapsed <= VISUAL_MS) {
+				next = (elapsed / VISUAL_MS) * 95;
+			} else {
+				// Past estimate: crawl slowly toward 99 while work continues.
+				next = 95 + Math.min(4, ((elapsed - VISUAL_MS) / 10_000) * 4);
+			}
+			const rounded = Math.min(99, Math.floor(next));
+			if (rounded <= displayPct) return;
+			displayPct = rounded;
+			setBusy(`Processing ${displayPct}%…`);
+		}, 80);
+
 		try {
 			const { removeBackground, preload } = await import('@imgly/background-removal');
-			// Progress from imgly only covers asset download; inference has no callback.
-			// Map download → 0–80%, then hold ~90% while cutting out the subject.
 			const config = {
 				model: 'isnet_fp16' as const,
 				fetchArgs: { cache: 'force-cache' as RequestCache },
-				progress: (_key: string, current: number, total: number) => {
-					if (total <= 0) return;
-					setProgress((current / total) * 80);
-				},
 			};
 			await preload(config);
-			setProgress(90, 'Removing background');
-			const blob = await removeBackground(working.toDataURL('image/png'), {
-				...config,
-				// Avoid download progress resetting UI to 0% during inference.
-				progress: undefined,
-			});
-			setProgress(99, 'Removing background');
+			const blob = await removeBackground(working.toDataURL('image/png'), config);
 			const img = new Image();
 			const url = URL.createObjectURL(blob);
 			await new Promise<void>((resolve, reject) => {
@@ -404,12 +408,17 @@ export default function ImageEditor({
 			});
 			const canvas = canvasFromImage(img, img.naturalWidth, img.naturalHeight);
 			URL.revokeObjectURL(url);
+			stopped = true;
+			window.clearInterval(tickId);
+			setBusy('Processing 100%…');
 			setWorkingFromCanvas(canvas);
 			setStatus('Background removed. Transparent PNG ready.');
 		} catch (error) {
 			console.error(error);
 			setStatus('Background removal failed. Please try again.');
 		} finally {
+			stopped = true;
+			window.clearInterval(tickId);
 			setBusy(null);
 		}
 	}, [setWorkingFromCanvas]);
