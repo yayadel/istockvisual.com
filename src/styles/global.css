@@ -2426,12 +2426,14 @@ body.upload-modal-open {
 }
 
 @media (max-width: 860px) {
-	.catalog {
+	.catalog,
+	.catalog.is-filters-hidden {
 		grid-template-columns: 1fr;
 		gap: 1.1rem;
 	}
 
-	.catalog-filter {
+	.catalog-filter,
+	.catalog.is-filters-hidden .catalog-filter {
 		position: static;
 		max-height: none;
 		overflow: visible;
@@ -2444,6 +2446,19 @@ body.upload-modal-open {
 		padding: 0.7rem 0.9rem 0.65rem;
 		position: static;
 		background: transparent;
+	}
+
+	.catalog.is-filters-hidden .catalog-filter__head {
+		display:flex;
+	}
+
+	.catalog.is-filters-hidden .catalog-filter__body {
+		display: block;
+	}
+
+	.catalog-filter-rail,
+	.catalog.is-filters-hidden .catalog-filter-rail {
+		display: none;
 	}
 
 	.catalog-filter__fold {
