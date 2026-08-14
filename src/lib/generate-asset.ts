@@ -18,6 +18,7 @@ import {
 	insertGeneratedAsset,
 	listGeneratedAssetsByCategory,
 	listRecentGeneratedAssets,
+	listTopSearchKeywords as listTopSearchKeywordRows,
 	slugExists,
 	generatedToDetail,
 } from './generated-assets';
