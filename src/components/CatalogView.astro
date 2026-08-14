@@ -373,8 +373,6 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 
 	function applyCatalogFold(root, collapsed) {
 		root.classList.toggle('is-filters-hidden', collapsed);
-		const expand = root.querySelector('[data-catalog-expand]');
-		if (expand instanceof HTMLElement) expand.hidden = !collapsed;
 	}
 
 	document.querySelectorAll('[data-catalog]').forEach(function (root) {
@@ -390,11 +388,20 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			} catch (e) {}
 		});
 
-		root.querySelector('[data-catalog-expand]')?.addEventListener('click', function () {
-			applyCatalogFold(root, false);
-			try {
-				localStorage.setItem(STORAGE_KEY, 'open');
-			} catch (e) {}
+		root.querySelectorAll('[data-catalog-expand]').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				applyCatalogFold(root, false);
+				const target = btn.getAttribute('data-filter-target');
+				if (target) {
+					const section = root.querySelector('[data-filter-section="' + CSS.escape(target) + '"]');
+					if (section instanceof HTMLDetailsElement) {
+						section.open = true;
+					}
+				}
+				try {
+					localStorage.setItem(STORAGE_KEY, 'open');
+				} catch (e) {}
+			});
 		});
 
 		const relatedRoot = root.querySelector('[data-related]');
