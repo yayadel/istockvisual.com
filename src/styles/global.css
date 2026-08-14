@@ -1810,20 +1810,16 @@ body.upload-modal-open {
 	margin-bottom: 1.35rem;
 }
 
-.home-cats__grid {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 0.75rem;
-}
-
 .home-cats__card {
 	position: relative;
 	display: block;
+	flex: 0 0 13.75rem;
 	overflow: hidden;
 	aspect-ratio: 16 / 10;
 	border-radius: var(--radius);
 	background: #1a1a1a;
 	color: #fff;
+	scroll-snap-align: start;
 }
 
 .home-cats__card img {
