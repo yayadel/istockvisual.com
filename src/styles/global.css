@@ -2212,6 +2212,14 @@ body.upload-modal-open {
 	font-style: normal;
 }
 
+.home-tools__crop i {
+	position: absolute;
+	width: 14px;
+	height: 14px;
+	border: 2px solid #c4f04b;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
 .home-tools__crop i:nth-child(1) {
 	top: -2px;
 	left: -2px;
