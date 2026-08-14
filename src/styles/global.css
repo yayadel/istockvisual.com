@@ -1240,6 +1240,13 @@ body:has(.detail) .search-strip__inner {
 	transform: translateX(-50%);
 }
 
+.search-bar__visual-tip.is-above::after {
+	bottom: auto;
+	top: 100%;
+	border-bottom-color: transparent;
+	border-top-color: #fff;
+}
+
 .search-bar__visual:hover .search-bar__visual-tip,
 .search-bar__visual:focus-visible .search-bar__visual-tip,
 .search-bar__visual.is-tip-open .search-bar__visual-tip {
