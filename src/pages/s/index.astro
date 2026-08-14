@@ -1,16 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import AssetGrid from '../../components/AssetGrid.astro';
+import CatalogView from '../../components/CatalogView.astro';
 import VisualSearchQuery from '../../components/VisualSearchQuery';
-import { CATEGORIES, isCategorySlug } from '../../config/categories';
 import { env } from 'cloudflare:workers';
+import { applyCatalogFilters, catalogHref, parseCatalogQuery } from '../../lib/catalog';
 import {
-	filterAssetsBySearch,
 	listAllAssets,
 	parseVisualSearchColors,
 	rankAssetsByPalette,
 } from '../../lib/generate-asset';
-import { searchPath } from '../../lib/paths';
 import {
 	isVisualSearchObjectKey,
 	purgeExpiredVisualSearchUploads,
@@ -18,10 +16,10 @@ import {
 
 const q = (Astro.url.searchParams.get('q') || '').trim();
 if (q) {
-	return Astro.redirect(searchPath(q, Astro.url.searchParams.get('category') || 'all'), 301);
+	return Astro.redirect(catalogHref(parseCatalogQuery(Astro.url, { q })), 301);
 }
 
-const categoryParam = Astro.url.searchParams.get('category') || 'all';
+const query = parseCatalogQuery(Astro.url);
 const mode = Astro.url.searchParams.get('mode') || '';
 const uploadName = Astro.url.searchParams.get('name') || 'your image';
 const queryColors = parseVisualSearchColors(Astro.url.searchParams.get('c'));
@@ -32,41 +30,31 @@ const previewUrl =
 		? `/api/visual-search/preview?key=${encodeURIComponent(queryKey)}`
 		: null;
 
-const categoryLabel = isCategorySlug(categoryParam)
-	? CATEGORIES.find((c) => c.slug === categoryParam)?.label
-	: 'All media';
-
-const pool = await listAllAssets(env.DB, Astro.url.origin, 400);
+const pool = await listAllAssets(env.DB, Astro.url.origin, 600);
 if (isVisual) {
 	await purgeExpiredVisualSearchUploads(env.MEDIA);
 }
-const scoped = filterAssetsBySearch(
-	pool,
-	'',
-	isCategorySlug(categoryParam) ? categoryParam : 'all',
-);
+const scoped = applyCatalogFilters(pool, query);
 const assets = isVisual ? rankAssetsByPalette(scoped, queryColors) : scoped;
 ---
 
-<BaseLayout title={isVisual ? 'Visual search' : 'Search'} description="Search photos, illustrations, vectors, and 3D assets.">
-	<div class="section-head">
-		<div>
-			<p class="asset-card__meta">Search</p>
-			<h1>{isVisual ? 'Visual search' : 'Search'}</h1>
-			<p>
-				{
-					isVisual
-						? `Closest palette matches for “${uploadName}”. Matching uses colors read in your browser.`
-						: `Browse ${categoryLabel?.toLowerCase()} or enter a keyword above.`
-				}
-			</p>
-		</div>
-	</div>
-
-	{isVisual && <VisualSearchQuery client:load colors={queryColors} previewUrl={previewUrl} />}
-
-	<AssetGrid
+<BaseLayout
+	title={isVisual ? 'Visual search' : 'Search'}
+	description="Browse stock photos, illustrations, vectors, and 3D by category, type, color, and keyword."
+>
+	{
+		isVisual && (
+			<div class="catalog-visual">
+				<VisualSearchQuery client:load colors={queryColors} previewUrl={previewUrl} />
+			</div>
+		)
+	}
+	<CatalogView
 		assets={assets}
-		emptyMessage={isVisual ? 'No palette matches yet. Try another photo.' : 'No assets matched your search.'}
+		facetPool={pool}
+		query={query}
+		emptyMessage={
+			isVisual ? 'No palette matches yet. Try another photo.' : 'No assets matched these filters.'
+		}
 	/>
 </BaseLayout>
