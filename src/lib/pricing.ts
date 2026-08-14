@@ -97,8 +97,8 @@ export const PRICING_TRUST = [
 		text: 'Safe for client work, websites, and commercial printing.',
 	},
 	{
-		title: '7-Day Money-Back Guarantee',
-		text: "Risk-free purchase. If you're not satisfied, get a full refund.",
+		title: 'Unused-Plan Refund',
+		text: 'Refund if you have not downloaded any images. 1-Month Pro includes a 3-day trial.',
 	},
 	{
 		title: 'No Recurring Fees',

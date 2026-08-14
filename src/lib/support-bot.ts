@@ -44,7 +44,7 @@ const FAQS: Faq[] = [
 	},
 	{
 		keys: ['refund', 'money back', 'cancel', 'guarantee'],
-		answer: `Every paid plan has a 7-day money-back guarantee, including Lifetime. Email ${CONTACT} from your account address within 7 days. Policy: /info/refunds.`,
+		answer: `Refunds are for unused plans only: if you have not downloaded any images after purchase, you can request a refund. Any download voids it. 1-Month Pro has a 3-day trial (unused only). Email ${CONTACT} from your account address. Policy: /info/refunds.`,
 	},
 	{
 		keys: ['account', 'signup', 'login', 'password', 'sign in'],
