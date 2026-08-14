@@ -5171,7 +5171,9 @@ body.download-auth-modal-open {
 }
 
 .asset-preview__edit-hint--in {
-	animation: asset-edit-hint-pop 0.48s cubic-bezier(0.22, 1.35, 0.36, 1) both;
+	animation:
+		asset-edit-hint-pop 0.48s cubic-bezier(0.22, 1.35, 0.36, 1) both,
+		asset-edit-hint-float 2.35s ease-in-out 0.48s infinite;
 }
 
 .asset-preview__edit-hint--out .asset-preview__edit-hint-copy,
