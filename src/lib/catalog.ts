@@ -259,9 +259,7 @@ export function catalogHref(query: CatalogQuery, patch: Partial<CatalogQuery> = 
 	if (next.type !== 'all' && !isCategorySlug(next.type)) next.type = 'all';
 	if (next.color) next.color = normalizeCatalogColor(next.color);
 	if (next.license && !CATALOG_LICENSES.some((item) => item.id === next.license)) next.license = '';
-	if (next.ai && !CATALOG_AI.some((item) => item.id === next.ai)) next.ai = '';
 	if (next.orient && !CATALOG_ORIENTS.some((item) => item.id === next.orient)) next.orient = '';
-	if (next.access && !CATALOG_ACCESS.some((item) => item.id === next.access)) next.access = '';
 	if (next.format && !CATALOG_FORMATS.some((item) => item.id === next.format)) next.format = '';
 	if (!CATALOG_SORTS.some((item) => item.id === next.sort)) next.sort = 'newest';
 

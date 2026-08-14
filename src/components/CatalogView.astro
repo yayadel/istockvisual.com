@@ -113,27 +113,6 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={Boolean(query.license) || undefined}>
-				<summary>License Type <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
-				<div class="catalog-acc__panel">
-					<ul class="catalog-filter__list">
-						{
-							facets.licenses.map((item) => (
-								<li>
-									<a
-										class:list={[query.license === item.id && 'is-active']}
-										href={catalogHref(query, { license: query.license === item.id ? '' : item.id })}
-										aria-current={query.license === item.id ? 'true' : undefined}
-									>
-										<span>{item.label}</span>
-									</a>
-								</li>
-							))
-						}
-					</ul>
-				</div>
-			</details>
-
 			<details class="catalog-acc" open={Boolean(query.orient) || undefined}>
 				<summary>Orientation <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
 				<div class="catalog-acc__panel">
