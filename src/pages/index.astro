@@ -135,7 +135,7 @@ const proPerks = [
 							<div class="home-cats__group" aria-hidden={copy === 1 ? 'true' : undefined}>
 								{marqueeTiles.map((category) => (
 									<a class="home-cats__card" href={category.href} tabindex={copy === 1 ? -1 : undefined}>
-										<img src={category.image} alt="" />
+										<img src={category.image} alt="" draggable="false" />
 										<span class="home-cats__label">{category.label}</span>
 									</a>
 								))}
