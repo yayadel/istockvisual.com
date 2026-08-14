@@ -70,24 +70,18 @@ def usage_to_dict(response, model: str) -> dict:
 	}
 
 
-def message_text(message) -> tuple[str, str, str]:
-	content = getattr(message, "content", None) or ""
-	reasoning = ""
-	for field in ("reasoning", "reasoning_content"):
-		value = getattr(message, field, None)
-		if value:
-			reasoning = str(value)
-			break
-	finish = ""
-	return str(content), reasoning, finish
-
-
 def append_response_log(record: dict) -> Path:
-	log_path = gm.ROOT / ".tmp" / "gemma4-log.jsonl"
-	log_path.parent.mkdir(parents=True, exist_ok=True)
-	with log_path.open("a", encoding="utf-8") as handle:
+	log_dir = gm.ROOT / ".tmp"
+	log_dir.mkdir(parents=True, exist_ok=True)
+	jsonl_path = log_dir / "gemma4-log.jsonl"
+	with jsonl_path.open("a", encoding="utf-8") as handle:
 		handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-	return log_path
+	keyword = str(record.get("keyword") or "keyword")
+	slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in keyword).strip("-")
+	slug = "-".join(part for part in slug.split("-") if part)[:60] or "keyword"
+	pretty_path = log_dir / f"gemma4-{slug}.json"
+	pretty_path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+	return pretty_path
 
 
 def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
@@ -210,6 +204,7 @@ def main() -> None:
 		f"total={usage['totalTokens']} costUSD={usage['estimatedCostUsd']}",
 		file=sys.stderr,
 	)
+	print("log: .tmp/gemma4-log.jsonl", file=sys.stderr)
 	if args.out:
 		out_path = Path(args.out)
 		out_path.parent.mkdir(parents=True, exist_ok=True)
