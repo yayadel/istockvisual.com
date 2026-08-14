@@ -243,7 +243,7 @@ export function parseCatalogQuery(
 			: 'all';
 
 	const topic = hints.topic || (topicParam && getContentCategoryBySlug(topicParam) ? topicParam : '');
-	const color = CATALOG_COLORS.some((item) => item.id === colorParam) ? colorParam : '';
+	const color = normalizeCatalogColor(colorParam);
 
 	return {
 		q: (hints.q || '').trim(),
@@ -283,7 +283,7 @@ export function catalogHref(query: CatalogQuery, patch: Partial<CatalogQuery> = 
 	next.exclude = next.exclude.trim().slice(0, 80);
 	if (next.topic && !getContentCategoryBySlug(next.topic)) next.topic = '';
 	if (next.type !== 'all' && !isCategorySlug(next.type)) next.type = 'all';
-	if (next.color && !CATALOG_COLORS.some((item) => item.id === next.color)) next.color = '';
+	if (next.color) next.color = normalizeCatalogColor(next.color);
 	if (next.license && !CATALOG_LICENSES.some((item) => item.id === next.license)) next.license = '';
 	if (next.ai && !CATALOG_AI.some((item) => item.id === next.ai)) next.ai = '';
 	if (next.orient && !CATALOG_ORIENTS.some((item) => item.id === next.orient)) next.orient = '';
