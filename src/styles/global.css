@@ -2306,6 +2306,11 @@ body.upload-modal-open {
 		padding: 0 0.9rem 0.95rem;
 	}
 
+	.catalog-acc--exclude .catalog-acc__panel,
+	.catalog-acc--sort .catalog-acc__panel {
+		padding: 0.22rem 0.9rem 0.7rem;
+	}
+
 	.catalog .asset-grid {
 		column-count: 2;
 	}
