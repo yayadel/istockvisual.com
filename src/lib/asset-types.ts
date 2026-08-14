@@ -211,7 +211,7 @@ export function normalizeTags(values: string[] | undefined | null): string[] {
 export function formatAcronymsInText(text: string): string {
 	return text.replace(/\b([A-Za-z0-9]+)\b/g, (word) => {
 		const lower = word.toLowerCase();
-		return TITLE_ACRONYMS.has(lower) ? lower.toUpperCase() : word;
+		return TITLE_ACRONYMS.has(lower) || FASHION_SEASON.test(word) ? word.toUpperCase() : word;
 	});
 }
 
