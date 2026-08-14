@@ -2839,16 +2839,12 @@ body.upload-modal-open {
 	-webkit-user-select: none;
 }
 
-.wm-protected::before,
-.wm-protected::after {
+.wm-protected::before {
 	content: '';
 	position: absolute;
 	inset: 0;
 	z-index: 2;
 	pointer-events: none;
-}
-
-.wm-protected::before {
 	background-image:
 		repeating-linear-gradient(
 			0deg,
@@ -2862,10 +2858,6 @@ body.upload-modal-open {
 		);
 	mix-blend-mode: overlay;
 	opacity: 0.7;
-}
-
-.wm-protected::after {
-	display: none;
 }
 
 .wm-protected__fallback,
