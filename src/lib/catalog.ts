@@ -273,7 +273,6 @@ export function applyCatalogFilters(assets: AssetDetail[], query: CatalogQuery):
 	const filtered = assets.filter((asset) => {
 		if (query.type !== 'all' && asset.category !== query.type) return false;
 		if (query.topic && !assetMatchesContentCategory(asset, query.topic)) return false;
-		if (query.tag && !(asset.tags || []).some((value) => tagMatches(value, query.tag))) return false;
 		if (query.color && !assetMatchesColor(asset, query.color)) return false;
 		if (query.orient && assetOrientation(asset) !== query.orient) return false;
 		if (query.exclude && matchesExclude(asset, query.exclude)) return false;
@@ -299,7 +298,6 @@ export type CatalogFacets = {
 	types: { slug: CatalogType; label: string; count: number }[];
 	topics: { slug: string; label: string; count: number }[];
 	colors: { id: string; label: string; hex: string; count: number }[];
-	tags: { slug: string; label: string; count: number }[];
 	orients: { id: CatalogOrient; label: string; count: number }[];
 };
 
@@ -314,7 +312,7 @@ export function catalogFacets(pool: AssetDetail[], query: CatalogQuery, tagLimit
 	const typeBase = applyCatalogFilters(pool, except(query, 'type'));
 	const topicBase = applyCatalogFilters(pool, except(query, 'topic'));
 	const colorBase = applyCatalogFilters(pool, except(query, 'color'));
-	const tagBase = applyCatalogFilters(pool, except(query, 'tag'));
+	const orientBase = applyCatalogFilters(pool, except(query, 'orient'));
 	const orientBase = applyCatalogFilters(pool, except(query, 'orient'));
 
 	const types: CatalogFacets['types'] = [
