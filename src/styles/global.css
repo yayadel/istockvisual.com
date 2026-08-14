@@ -796,11 +796,57 @@ body.nav-open .nav-toggle span:nth-child(3) {
 @media (max-width: 960px) {
 	.site-header__inner {
 		min-height: 3.4rem;
-		gap: 0.75rem;
+		gap: 0.55rem;
+	}
+
+	.brand {
+		flex: 0 1 auto;
+		min-width: 0;
+		font-size: 1.08rem;
+	}
+
+	.header-auth {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.4rem;
+		margin-left: auto;
+		flex: 0 0 auto;
+	}
+
+	.header-auth a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.38rem 0.62rem;
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		border-radius: 2px;
+		color: #ffffff;
+		font-size: 0.78rem;
+		font-weight: 650;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.header-auth__signup {
+		background: #1f7a72;
+		border-color: #1f7a72;
+	}
+
+	.header-auth__signup:hover {
+		background: #19665f;
+		border-color: #19665f;
+	}
+
+	.header-auth__login:hover,
+	.header-auth__account:hover {
+		background: rgba(255, 255, 255, 0.08);
+		color: #ffffff;
 	}
 
 	.nav-toggle {
 		display: inline-flex;
+		margin-left: 0;
 	}
 
 	.nav-backdrop {
