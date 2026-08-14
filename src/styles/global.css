@@ -4299,9 +4299,15 @@ body.image-editor-modal-open {
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
+	min-width: 0;
 	padding: 0.9rem 1.1rem;
 	border-bottom: 1px solid var(--ie-line);
 	background: transparent;
+}
+
+.image-editor-modal__header > div:first-child {
+	min-width: 0;
+	flex: 1 1 auto;
 }
 
 .image-editor-modal__eyebrow {
