@@ -166,10 +166,6 @@ export function assetLicenseKind(asset: AssetDetail): Exclude<CatalogLicense, ''
 	return 'commercial';
 }
 
-export function assetIsAiGenerated(asset: AssetDetail): boolean {
-	return asset.source === 'generated' || Boolean(asset.imagePrompt);
-}
-
 export function assetOrientation(asset: AssetDetail): CatalogOrient {
 	const width = asset.width || 0;
 	const height = asset.height || 0;
