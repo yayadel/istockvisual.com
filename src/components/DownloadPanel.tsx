@@ -63,12 +63,29 @@ function ChevronIcon() {
 
 function DownloadIcon() {
 	return (
-		<svg className="download-split__icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+		<svg className="download-split__icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
 			<path
-				fill="currentColor"
-				d="M10 2.4v9.1l3.1-3.1 1.1 1.1L10 14.8 5.8 9.5l1.1-1.1 3.1 3.1V2.4z"
+				d="M12 3.6v11.2"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="2.2"
+				strokeLinecap="round"
 			/>
-			<path fill="currentColor" d="M3.4 15.4h13.2v1.8H3.4z" />
+			<path
+				d="M7 11.2 12 16.2 17 11.2"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="2.2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+			<path
+				d="M4.6 17.4v1.4A2.2 2.2 0 0 0 6.8 21h10.4a2.2 2.2 0 0 0 2.2-2.2v-1.4"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="2.2"
+				strokeLinecap="round"
+			/>
 		</svg>
 	);
 }
