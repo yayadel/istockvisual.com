@@ -339,6 +339,58 @@ export function catalogFacets(pool: AssetDetail[], query: CatalogQuery): Catalog
 	};
 }
 
+const RELATED_KEYWORD_LIMIT = 50;
+
+function relatedTermBonus(term: string, needle: string) {
+	const lower = term.toLowerCase();
+	if (lower === needle) return -1;
+	let bonus = 1;
+	if (lower.includes(needle)) bonus += 10;
+	if (lower.startsWith(`${needle} `) || lower.endsWith(` ${needle}`)) bonus += 4;
+	if (lower.split(/\s+/).includes(needle)) bonus += 3;
+	return bonus;
+}
+
+/** Related search chips for a query like "car": tags / relatedQueries / keywords from matching assets. */
+export function catalogRelatedKeywords(
+	pool: AssetDetail[],
+	query: string,
+	limit = RELATED_KEYWORD_LIMIT,
+): string[] {
+	const needle = query.trim().toLowerCase();
+	if (!needle) return [];
+
+	const querySlug = toPathSlug(needle);
+	const matched = pool.filter((asset) => assetSearchHay(asset).includes(needle));
+	const source = matched.length ? matched : pool;
+	const scores = new Map<string, { label: string; score: number }>();
+
+	const add = (raw: string | undefined, weight: number) => {
+		if (!raw) return;
+		const label = formatTagLabel(raw);
+		if (!label || label.length > 48) return;
+		const key = label.toLowerCase();
+		if (toPathSlug(key) === querySlug) return;
+		const bonus = relatedTermBonus(label, needle);
+		if (bonus < 0) return;
+		const prev = scores.get(key);
+		const nextScore = weight * bonus;
+		if (prev) prev.score += nextScore;
+		else scores.set(key, { label, score: nextScore });
+	};
+
+	for (const asset of source) {
+		for (const tag of asset.tags || []) add(tag, 3);
+		for (const related of asset.relatedQueries || []) add(related, 5);
+		add(asset.keyword, 4);
+	}
+
+	return [...scores.values()]
+		.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
+		.slice(0, limit)
+		.map((item) => item.label);
+}
+
 export function catalogHeading(query: CatalogQuery) {
 	if (query.q) return query.q;
 	if (query.topic) return getContentCategoryBySlug(query.topic)?.label || query.topic;

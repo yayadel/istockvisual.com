@@ -27,6 +27,7 @@ const { assets, facetPool, query, emptyMessage = 'No assets matched these filter
 const facets = catalogFacets(facetPool, query);
 const heading = catalogHeading(query);
 const chips = catalogChips(query);
+const related = query.q ? catalogRelatedKeywords(facetPool, query.q, 50) : [];
 const intro = query.topic ? getContentCategoryIntro(query.topic) : null;
 const topicLabel =
 	facets.topics.find((item) => item.slug === query.topic)?.label ||
@@ -194,17 +195,60 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 	</aside>
 
 	<div class="catalog-results">
+		{
+			related.length > 0 && (
+				<nav class="catalog-related" data-related aria-label="Related keywords">
+					<button
+						class="catalog-related__arrow catalog-related__arrow--prev"
+						type="button"
+						data-related-prev
+						hidden
+						aria-label="Previous keywords"
+					>
+						<svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+							<path
+								d="M10 3 5 8l5 5"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							></path>
+						</svg>
+					</button>
+					<div class="catalog-related__track" data-related-track>
+						{related.map((term) => (
+							<a href={catalogHref(query, { q: term })}>{term}</a>
+						))}
+					</div>
+					<button
+						class="catalog-related__arrow catalog-related__arrow--next"
+						type="button"
+						data-related-next
+						hidden
+						aria-label="More keywords"
+					>
+						<svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+							<path
+								d="M6 3l5 5-5 5"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							></path>
+						</svg>
+					</button>
+				</nav>
+			)
+		}
 		<header class="catalog-results__head">
-			<div class="catalog-results__kicker">
-				<button class="catalog-filter-show" type="button" data-catalog-expand hidden>
+			<div class="catalog-results__title">
+				<button class="catalog-filter-show" type="button" data-catalog-expand hidden aria-label="Show filters">
 					<svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
 						<path d="M4 7h16M7 12h10M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
 					</svg>
-					Filters
 				</button>
-				<p class="asset-card__meta">Library</p>
+				<h1>{heading}</h1>
 			</div>
-			<h1>{heading}</h1>
 			<p>
 				{intro ? intro.lede : 'Filter by category, type, color, and more.'}
 			</p>
