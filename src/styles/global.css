@@ -1740,6 +1740,10 @@ body.upload-modal-open {
 	margin: 3.25rem auto 0;
 }
 
+.home-tools {
+	padding-bottom: 3.5rem;
+}
+
 .home-cats .section-head,
 .home-featured .section-head,
 .home-tools .section-head {
@@ -1978,10 +1982,12 @@ body.upload-modal-open {
 }
 
 .home-top-search {
-	margin: 3.75rem 0 0;
+	margin: 0;
 	padding: 3.4rem 0 3.2rem;
 	background: #0b0b0b;
 	color: #fff;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .home-top-search h2 {
