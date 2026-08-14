@@ -3072,7 +3072,7 @@ body.upload-modal-open {
 	left: 0.55rem;
 	top: 0.55rem;
 	bottom: auto;
-	z-index: 1;
+	z-index: 3;
 	padding: 0.12rem 0.4rem;
 	border-radius: 999px;
 	background: rgba(20, 20, 20, 0.45);
