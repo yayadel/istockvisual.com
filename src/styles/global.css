@@ -2545,7 +2545,9 @@ body.upload-modal-open {
 	.home-cats__card::after,
 	.home-cats__card:hover::after,
 	.home-tools__card,
-	.home-tools__card:hover {
+	.home-tools__card:hover,
+	.home-tools__card::before,
+	.home-tools__card:hover::before {
 		transform: none;
 		transition: none;
 	}
