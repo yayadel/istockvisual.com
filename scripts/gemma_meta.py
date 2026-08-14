@@ -72,7 +72,47 @@ def usage_to_dict(response, model: str) -> dict:
 
 def coerce_gemma_payload(data: dict) -> dict:
 	"""Map Gemma's near-miss keys onto the Gemini AssetMeta schema."""
+	aliases = {
+		"imagePrompt": (
+			"image_generation_prompt",
+			"image_prompt",
+			"prompt",
+		),
+		"imageCreationDescription": (
+			"image_creation_description",
+			"creation_description",
+			"creationDescription",
+		),
+		"assetUsageTips": (
+			"asset_usage_tips",
+			"asset_functionality_usage_tips",
+			"assetFunctionalityUsageTips",
+			"usageTips",
+			"assetUsageTip",
+			"functionalityUsageTips",
+			"usage_tips",
+			"tips",
+		),
+		"colorPalette": ("color_palette", "palette"),
+		"imagePageTitle": ("image_page_title", "page_title", "title"),
+		"pageShortDescription": (
+			"page_short_description",
+			"short_description",
+			"shortDescription",
+		),
+		"contentCategories": ("content_categories", "categories"),
+		"tags": ("tag_list", "keywords"),
+		"medium": ("media_type", "asset_medium"),
+	}
 	out = dict(data)
+	for dest, keys in aliases.items():
+		if out.get(dest):
+			continue
+		for key in keys:
+			value = out.get(key)
+			if value:
+				out[dest] = value
+				break
 	if not out.get("assetUsageTips"):
 		for key in (
 			"assetFunctionalityUsageTips",
