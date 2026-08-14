@@ -262,8 +262,14 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc catalog-acc--sort" open={query.sort !== 'newest' || undefined}>
-				<summary>Sort By <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class="catalog-acc catalog-acc--sort" open={query.sort !== 'newest' || undefined} data-filter-section="sort">
+				<summary>
+					<span class="catalog-acc__icon" aria-hidden="true">
+						<CatalogFilterIcon name="sort" />
+					</span>
+					<span class="catalog-acc__label">Sort By</span>
+					<span class="catalog-acc__chevron" aria-hidden="true"></span>
+				</summary>
 				<div class="catalog-acc__panel">
 					<ul class="catalog-filter__list">
 						{
