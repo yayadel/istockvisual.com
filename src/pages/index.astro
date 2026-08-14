@@ -208,6 +208,10 @@ const proPerks = [
 	<section class="home-tools" aria-labelledby="home-tools-title">
 		<div class="section-head">
 			<div>
+				<p class="home-kicker home-kicker--on-light">
+					<span class="home-kicker__icon"><HomeMarkIcon name="spark" /></span>
+					In-browser studio
+				</p>
 				<h2 id="home-tools-title">Six Editing Tools, Fast and Free</h2>
 				<p>Files stay on your device. No upload unless you choose visual search.</p>
 			</div>
@@ -216,12 +220,67 @@ const proPerks = [
 		<div class="home-tools__grid">
 			{
 				studioTools.map((tool) => (
-					<a class="home-tools__card" href={tool.href}>
-						<span class="home-tools__glyph">
-							<HomeMarkIcon name={tool.id} />
+					<a class={`home-tools__card home-tools__card--${tool.id}`} href={tool.href}>
+						<span class="home-tools__shot" aria-hidden="true">
+							{tool.id === 'palette' ? (
+								<span class="home-tools__swatches">
+									<i style="background:#c4f04b"></i>
+									<i style="background:#0b0b0b"></i>
+									<i style="background:#4d6b1f"></i>
+									<i style="background:#d9d3c4"></i>
+									<i class="home-tools__swatch-photo">
+										<img src={tool.image} alt="" />
+									</i>
+								</span>
+							) : (
+								<img src={tool.image} alt="" />
+							)}
+							{tool.id === 'image' && (
+								<span class="home-tools__crop">
+									<i></i>
+									<i></i>
+									<i></i>
+									<i></i>
+								</span>
+							)}
+							{tool.id === 'convert' && (
+								<span class="home-tools__formats">
+									<b>JPG</b>
+									<b>PNG</b>
+									<b>WEBP</b>
+								</span>
+							)}
+							{tool.id === 'vectorize' && (
+								<svg class="home-tools__nodes" viewBox="0 0 160 90" aria-hidden="true">
+									<polyline points="18,72 80,18 142,72" fill="none" stroke="currentColor" stroke-width="2"></polyline>
+									<circle cx="18" cy="72" r="5"></circle>
+									<circle cx="80" cy="18" r="5"></circle>
+									<circle cx="142" cy="72" r="5"></circle>
+								</svg>
+							)}
+							{tool.id === 'social' && (
+								<span class="home-tools__frames">
+									<i></i>
+									<i></i>
+									<i></i>
+								</span>
+							)}
+							{tool.id === 'watermark' && <span class="home-tools__stamp">iStockVisual</span>}
 						</span>
-						<h3>{tool.title}</h3>
-						<p>{tool.lede}</p>
+						<span class="home-tools__body">
+							<span class="home-tools__glyph">
+								<HomeMarkIcon name={tool.id} />
+							</span>
+							<span class="home-tools__copy">
+								<h3>{tool.title}</h3>
+								<p>{tool.lede}</p>
+								<span class="home-tools__chips">
+									{tool.chips.map((chip) => (
+										<b>{chip}</b>
+									))}
+								</span>
+							</span>
+						</span>
 					</a>
 				))
 			}
