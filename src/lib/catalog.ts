@@ -520,7 +520,8 @@ export function catalogChips(query: CatalogQuery) {
 		chips.push({ key: 'format', label, href: catalogHref(query, { format: '' }) });
 	}
 	if (query.color) {
-		const label = CATALOG_COLORS.find((item) => item.id === query.color)?.label || query.color;
+		const family = CATALOG_COLORS.find((item) => item.id === query.color);
+		const label = family ? family.label : `#${catalogColorHex(query.color).toUpperCase()}`;
 		chips.push({ key: 'color', label, href: catalogHref(query, { color: '' }) });
 	}
 	if (query.tag) {
