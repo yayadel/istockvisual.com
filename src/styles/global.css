@@ -508,7 +508,8 @@ textarea {
 .nav__tools-mega {
 	position: absolute;
 	top: calc(100% + 0.55rem);
-	right: 0;
+	/* Same rightward offset as Categories — not flush with the Tool label. */
+	right: -5.5rem;
 	left: auto;
 	z-index: 60;
 	display: grid;
