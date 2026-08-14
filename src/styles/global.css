@@ -1513,13 +1513,13 @@ body.upload-modal-open {
 
 .hero {
 	position: relative;
-	min-height: calc(100vh - 3.75rem);
+	min-height: min(72vh, 40rem);
 	display: grid;
 	align-items: center;
 	overflow: visible;
 	margin: 0;
 	width: 100%;
-	padding: 0;
+	padding: 4.5rem 0 3.5rem;
 }
 
 .hero__media {
@@ -1538,9 +1538,9 @@ body.upload-modal-open {
 .hero__content {
 	position: relative;
 	z-index: 2;
-	width: min(100% - 2rem, 920px);
+	width: min(100% - 2rem, 860px);
 	margin: 0 auto;
-	max-width: 920px;
+	max-width: 860px;
 	animation: rise 0.9s ease both;
 	color: var(--hero-text);
 	text-align: center;
@@ -1566,7 +1566,22 @@ body.upload-modal-open {
 	margin: 0 auto 1.5rem;
 	color: var(--hero-text-muted);
 	font-size: 1.05rem;
-	max-width: 36rem;
+	max-width: 38rem;
+}
+
+.hero__popular {
+	margin: 1.15rem 0 0;
+	color: rgba(255, 255, 255, 0.78);
+	font-size: 0.88rem;
+	line-height: 1.7;
+}
+
+.hero__popular a {
+	color: #c4f04b;
+}
+
+.hero__popular a:hover {
+	text-decoration: underline;
 }
 
 .hero .search-bar {

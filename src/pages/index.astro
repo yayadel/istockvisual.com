@@ -3,73 +3,88 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import AssetGrid from '../components/AssetGrid.astro';
 import SearchBar from '../components/SearchBar.astro';
 import HomeMarkIcon from '../components/HomeMarkIcon.astro';
-import { listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
+import { CATEGORIES, type CategorySlug } from '../config/categories';
+import { listCategoryAssets, listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
 import { formatAssetTitle } from '../lib/asset-types';
 import { searchPath } from '../lib/paths';
 import { LIFETIME_PLAN } from '../lib/pricing';
-import { isSanityConfigured } from '../lib/sanity';
 import { env } from 'cloudflare:workers';
 
-const featured = await listFeaturedAssets(env.DB, Astro.url.origin, 8);
+const origin = Astro.url.origin;
+const featured = await listFeaturedAssets(env.DB, origin, 16);
 const topKeywords = await listTopSearchKeywords(env.DB, 16);
-const usingDemo = !isSanityConfigured();
+const heroKeywords = topKeywords.slice(0, 10);
+
+const categoryFallbacks: Record<CategorySlug, string> = {
+	photos: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80',
+	illustrations: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=900&q=80',
+	vectors: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=900&q=80',
+	'3d': 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=900&q=80',
+};
+
+const categoryTiles = await Promise.all(
+	CATEGORIES.map(async (category) => {
+		const [cover] = await listCategoryAssets(env.DB, origin, category.slug, 1);
+		return {
+			slug: category.slug,
+			label: category.label,
+			href: `/${category.slug}`,
+			image: cover?.previewUrl || categoryFallbacks[category.slug],
+		};
+	}),
+);
+
+const columnSize = Math.ceil(topKeywords.length / 4) || 1;
+const popularColumns = [0, 1, 2, 3]
+	.map((index) => topKeywords.slice(index * columnSize, (index + 1) * columnSize))
+	.filter((column) => column.length > 0);
+
+const proVisual = featured[0]?.previewUrl || categoryFallbacks.photos;
 
 const studioTools = [
 	{
 		id: 'image' as const,
-		index: '01',
 		title: 'Image Editor',
 		lede: 'Adjust, crop, remove backgrounds, and expand photos in the browser.',
 		href: '/tools/image',
-		hint: 'Adjust · Crop · Remove BG · Expand',
 	},
 	{
 		id: 'convert' as const,
-		index: '02',
 		title: 'Image Convert',
 		lede: 'Batch convert JPG, PNG, WebP, and HEIC with quality and scale controls.',
 		href: '/tools/convert',
-		hint: 'Format · Quality · Batch ZIP',
 	},
 	{
 		id: 'vectorize' as const,
-		index: '03',
 		title: 'Image Vectorizer',
 		lede: 'Trace bitmaps into clean SVG paths, then copy the code or download the file.',
 		href: '/tools/vectorize',
-		hint: 'Bitmap → SVG · Local trace',
 	},
 	{
 		id: 'social' as const,
-		index: '04',
 		title: 'Social Resizer',
 		lede: 'Fit one batch to Instagram, TikTok, YouTube, Facebook, and LinkedIn.',
 		href: '/tools/social',
-		hint: 'Presets · Focus · ZIP export',
 	},
 	{
 		id: 'watermark' as const,
-		index: '05',
 		title: 'Batch Watermark',
 		lede: 'Stamp text or logo marks that scale with each photo. Tile or nine-point place.',
 		href: '/tools/watermark',
-		hint: 'Text · Logo · Tile pattern',
 	},
 	{
 		id: 'palette' as const,
-		index: '06',
 		title: 'Palette Generator',
 		lede: 'Extract dominant colors. Copy HEX, RGB, or HSL, or export CSS and Tailwind.',
 		href: '/tools/palette',
-		hint: 'Swatches · Eyedropper · Export',
 	},
 ];
 
 const proPerks = [
-	{ icon: 'res' as const, title: '2K · 4K · 8K', text: 'High-resolution files while your plan is active.' },
-	{ icon: 'format' as const, title: 'JPG, PNG, WEBP, SVG', text: 'Export the format your project needs.' },
-	{ icon: 'license' as const, title: 'Commercial license', text: 'Ads, sites, and products. Attribution required.' },
-	{ icon: 'refund' as const, title: '7-day refund', text: 'Not satisfied? Request a full refund.' },
+	{ icon: 'res' as const, title: '2K · 4K · 8K' },
+	{ icon: 'format' as const, title: 'JPG, PNG, WEBP, SVG' },
+	{ icon: 'license' as const, title: 'Commercial license' },
+	{ icon: 'refund' as const, title: '7-day refund' },
 ];
 ---
 
@@ -77,53 +92,92 @@ const proPerks = [
 	<section class="hero" aria-label="Hero">
 		<div class="hero__media" aria-hidden="true"></div>
 		<div class="hero__content">
-			<h1 class="hero__brand">Visuals ready for your next brief</h1>
+			<h1 class="hero__brand">Huge collections of stock photos, illustrations &amp; 3D</h1>
 			<p class="hero__lead">
-				Photos, illustrations, vectors, and 3D packs — curated for campaigns, products, and creative teams.
+				High-quality visuals for campaigns, products, and creative teams — search the library and start downloading.
 			</p>
-			<SearchBar variant="hero" />
+			<SearchBar variant="hero" placeholder="Search photos, illustrations, vectors, and 3D" />
+			{
+				heroKeywords.length > 0 && (
+					<p class="hero__popular">
+						Popular:{' '}
+						{heroKeywords.map((keyword, index) => (
+							<>
+								<a href={searchPath(keyword)}>{formatAssetTitle(keyword)}</a>
+								{index < heroKeywords.length - 1 ? ', ' : ''}
+							</>
+						))}
+					</p>
+				)
+			}
 		</div>
 	</section>
 
-	<section class="home-pro" aria-labelledby="home-pro-title">
-		<span class="home-pro__mark" aria-hidden="true">PRO</span>
-		<span class="home-pro__res" aria-hidden="true">4K</span>
-		<div class="home-pro__copy">
-			<p class="home-kicker">
-				<span class="home-kicker__icon"><HomeMarkIcon name="pro" /></span>
-				iStockVisual Pro
-			</p>
-			<h2 id="home-pro-title">Unlock 2K, 4K, and 8K downloads</h2>
-			<p>
-				Free members keep 500 and 1K previews. Pro unlocks every size and format for commercial work —
-				Lifetime Access from {LIFETIME_PLAN.price}, paid once.
-			</p>
-			<a class="btn home-pro__cta" href="/price">See Pro plans</a>
+	<section class="home-cats" aria-labelledby="home-cats-title">
+		<div class="section-head">
+			<div>
+				<h2 id="home-cats-title">Explore categories</h2>
+				<p>Photos, illustrations, vectors, and 3D — pick a library and start browsing.</p>
+			</div>
 		</div>
-		<ul class="home-pro__perks">
+		<div class="home-cats__grid">
 			{
-				proPerks.map((perk) => (
-					<li>
-						<span class="home-pro__perk-icon">
-							<HomeMarkIcon name={perk.icon} />
-						</span>
-						<div>
-							<strong>{perk.title}</strong>
-							<span>{perk.text}</span>
-						</div>
-					</li>
+				categoryTiles.map((category) => (
+					<a class="home-cats__card" href={category.href}>
+						<img src={category.image} alt="" />
+						<span class="home-cats__label">{category.label}</span>
+					</a>
 				))
 			}
-		</ul>
+		</div>
+	</section>
+
+	<section class="home-featured" aria-labelledby="home-featured-title">
+		<div class="section-head">
+			<div>
+				<h2 id="home-featured-title">Free stock photos</h2>
+				<p>Latest published assets from the library.</p>
+			</div>
+			<a class="btn btn--ghost" href="/photos">View all</a>
+		</div>
+		<AssetGrid assets={featured} />
+	</section>
+
+	<section class="home-bleed home-pro" aria-labelledby="home-pro-title">
+		<div class="home-bleed__inner home-pro__layout">
+			<div class="home-pro__media">
+				<img src={proVisual} alt="" />
+			</div>
+			<div class="home-pro__copy">
+				<p class="home-kicker">
+					<span class="home-kicker__icon"><HomeMarkIcon name="pro" /></span>
+					iStockVisual Pro
+				</p>
+				<h2 id="home-pro-title">Unlock 2K, 4K, and 8K downloads</h2>
+				<p>
+					Free members keep 500 and 1K previews. Pro unlocks every size and format for commercial work —
+					Lifetime Access from {LIFETIME_PLAN.price}, paid once.
+				</p>
+				<ul class="home-pro__perks">
+					{
+						proPerks.map((perk) => (
+							<li>
+								<span class="home-pro__perk-icon">
+									<HomeMarkIcon name={perk.icon} />
+								</span>
+								<strong>{perk.title}</strong>
+							</li>
+						))
+					}
+				</ul>
+				<a class="btn home-pro__cta" href="/price">See Pro plans</a>
+			</div>
+		</div>
 	</section>
 
 	<section class="home-tools" aria-labelledby="home-tools-title">
 		<div class="section-head">
 			<div>
-				<p class="home-kicker home-kicker--on-light">
-					<span class="home-kicker__icon"><HomeMarkIcon name="image" /></span>
-					Studio
-				</p>
 				<h2 id="home-tools-title">Six editing tools, in the browser</h2>
 				<p>Files stay on your device. No upload unless you choose visual search.</p>
 			</div>
@@ -136,10 +190,8 @@ const proPerks = [
 						<span class="home-tools__glyph">
 							<HomeMarkIcon name={tool.id} />
 						</span>
-						<span class="home-tools__index">{tool.index}</span>
 						<h3>{tool.title}</h3>
 						<p>{tool.lede}</p>
-						<span class="home-tools__hint">{tool.hint}</span>
 					</a>
 				))
 			}
@@ -147,89 +199,23 @@ const proPerks = [
 	</section>
 
 	{
-		topKeywords.length > 0 && (
-			<section class="home-top-search" aria-labelledby="home-top-search-title">
-				<span class="home-top-search__mark" aria-hidden="true">
-					<HomeMarkIcon name="search" />
-				</span>
-				<div class="section-head">
-					<div>
-						<p class="home-kicker home-kicker--on-light">
-							<span class="home-kicker__icon">
-								<HomeMarkIcon name="search" />
-							</span>
-							Discover
-						</p>
-						<h2 id="home-top-search-title">Top search</h2>
-						<p>Popular keywords from the library — open any one to see matching results.</p>
+		popularColumns.length > 0 && (
+			<section class="home-bleed home-top-search" aria-labelledby="home-top-search-title">
+				<div class="home-bleed__inner">
+					<h2 id="home-top-search-title">Popular searches</h2>
+					<div class="home-top-search__cols">
+						{popularColumns.map((column) => (
+							<ul>
+								{column.map((keyword) => (
+									<li>
+										<a href={searchPath(keyword)}>{formatAssetTitle(keyword)}</a>
+									</li>
+								))}
+							</ul>
+						))}
 					</div>
 				</div>
-				<ol class="home-top-search__list">
-					{topKeywords.map((keyword) => (
-						<li>
-							<a href={searchPath(keyword)}>
-								<span aria-hidden="true">#</span>
-								{formatAssetTitle(keyword)}
-							</a>
-						</li>
-					))}
-				</ol>
 			</section>
 		)
 	}
-
-	<section class="home-cats" aria-labelledby="home-cats-title">
-		<div class="section-head">
-			<div>
-				<p class="home-kicker home-kicker--on-light">
-					<span class="home-kicker__icon"><HomeMarkIcon name="grid" /></span>
-					Library
-				</p>
-				<h2 id="home-cats-title">Explore categories</h2>
-				<p>Photos, illustrations, vectors, and 3D — pick a library and start browsing.</p>
-			</div>
-		</div>
-		<div class="home-cats__grid">
-			{
-				[
-					{ slug: 'photos', label: 'Photos', icon: 'image' as const, lede: 'Campaign stills, products, and documentary frames.' },
-					{ slug: 'illustrations', label: 'Illustrations', icon: 'illustrations' as const, lede: 'Drawn scenes, concepts, and editorial art.' },
-					{ slug: 'vectors', label: 'Vectors', icon: 'vectorize' as const, lede: 'Clean scalable graphics for print and UI.' },
-					{ slug: '3d', label: '3D', icon: 'cube' as const, lede: 'Renders, packs, and dimensional mockups.' },
-				].map((category) => (
-					<a class="home-cats__card" href={`/${category.slug}`}>
-						<span class="home-cats__glyph">
-							<HomeMarkIcon name={category.icon} />
-						</span>
-						<span class="home-cats__mark" aria-hidden="true">
-							{category.label.slice(0, 2)}
-						</span>
-						<h3>{category.label}</h3>
-						<p>{category.lede}</p>
-					</a>
-				))
-			}
-		</div>
-	</section>
-
-	<section class="home-featured" aria-labelledby="home-featured-title">
-		<div class="section-head">
-			<div>
-				<p class="home-kicker home-kicker--on-light">
-					<span class="home-kicker__icon"><HomeMarkIcon name="spark" /></span>
-					Featured
-				</p>
-				<h2 id="home-featured-title">Featured assets</h2>
-				<p>
-					{
-						usingDemo
-							? 'Showing local demo assets until Sanity project IDs are configured.'
-							: 'Latest published assets from the library.'
-					}
-				</p>
-			</div>
-			<a class="btn btn--ghost" href="/photos">View all</a>
-		</div>
-		<AssetGrid assets={featured} />
-	</section>
 </BaseLayout>
