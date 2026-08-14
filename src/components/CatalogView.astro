@@ -27,6 +27,10 @@ const facets = catalogFacets(facetPool, query);
 const heading = catalogHeading(query);
 const chips = catalogChips(query);
 const intro = query.topic ? getContentCategoryIntro(query.topic) : null;
+const topicLabel =
+	facets.topics.find((item) => item.slug === query.topic)?.label ||
+	getContentCategoryBySlug(query.topic)?.label ||
+	'';
 const clearHref = catalogHref({ ...EMPTY_CATALOG_QUERY, q: query.q });
 const hasFilters = catalogHasFilters({ ...query, q: '' });
 const excludeForm = catalogPathAndParams({ ...query, exclude: '' });
