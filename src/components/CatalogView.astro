@@ -148,7 +148,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class:list={['catalog-acc', 'catalog-acc--exclude', query.exclude && 'is-open-default']} open={Boolean(query.exclude) || undefined}>
+			<details class="catalog-acc catalog-acc--exclude" open={Boolean(query.exclude) || undefined}>
 				<summary>Exclude Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
 				<div class="catalog-acc__panel">
 					<form class="catalog-exclude" method="get" action={excludeForm.pathname}>
@@ -171,7 +171,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={query.sort !== 'newest' || undefined}>
+			<details class="catalog-acc catalog-acc--sort" open={query.sort !== 'newest' || undefined}>
 				<summary>Sort By <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
 				<div class="catalog-acc__panel">
 					<ul class="catalog-filter__list">

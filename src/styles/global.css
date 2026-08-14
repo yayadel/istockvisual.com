@@ -2022,38 +2022,69 @@ body.upload-modal-open {
 }
 
 .catalog-exclude {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	gap: 0.4rem;
+	display: flex;
+	align-items: stretch;
+	min-height: 2.45rem;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	background: var(--input-bg);
+	overflow: hidden;
 }
 
 .catalog-exclude input {
+	flex: 1;
 	min-width: 0;
-	height: 2.1rem;
-	padding: 0 0.6rem;
-	border: 1px solid var(--line);
-	border-radius: 3px;
-	background: var(--input-bg);
+	height: auto;
+	padding: 0 0.75rem;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
 	color: var(--text);
 	font: inherit;
-	font-size: 0.8rem;
+	font-size: 0.82rem;
+}
+
+.catalog-exclude input:focus {
+	outline: none;
 }
 
 .catalog-exclude button {
-	height: 2.1rem;
-	padding: 0 0.7rem;
-	border: 1px solid var(--line);
-	border-radius: 3px;
-	background: var(--ghost-bg);
+	flex: 0 0 auto;
+	height: auto;
+	padding: 0 0.9rem;
+	border: 0;
+	border-left: 1px solid var(--line);
+	border-radius: 0;
+	background: transparent;
 	color: var(--text);
 	font: inherit;
-	font-size: 0.78rem;
+	font-size: 0.8rem;
 	font-weight: 650;
 	cursor: pointer;
 }
 
 .catalog-exclude button:hover {
-	border-color: var(--text);
+	background: var(--ghost-bg);
+	border-color: var(--line);
+}
+
+.catalog-acc--exclude[open] > summary,
+.catalog-acc--sort[open] > summary {
+	padding-bottom: 0.42rem;
+}
+
+.catalog-acc--exclude .catalog-acc__panel,
+.catalog-acc--sort .catalog-acc__panel {
+	padding: 0.22rem 0.1rem 0.7rem;
+}
+
+.catalog-acc--sort .catalog-filter__list {
+	gap: 0.08rem;
+}
+
+.catalog-acc--sort .catalog-filter__list a {
+	min-height: 2.05rem;
+	padding: 0.4rem 0.5rem;
 }
 
 .catalog-related {
