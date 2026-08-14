@@ -516,7 +516,7 @@ export default function DownloadPanel({
 				<li>
 					<a href={LICENSE_PATH}>
 						<CheckIcon />
-						Commercial use
+						Commercial Use
 					</a>
 				</li>
 				<li>
@@ -528,7 +528,7 @@ export default function DownloadPanel({
 						}}
 					>
 						<LinkIcon />
-						Copy attribution
+						Copy Attribution
 					</button>
 				</li>
 			</ul>
