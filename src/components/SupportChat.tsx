@@ -174,7 +174,7 @@ export default function SupportChat({ variant = 'page' }: Props) {
 		<div className={`support-chat${variant === 'widget' ? ' support-chat--widget' : ''}`}>
 			<div className="support-chat__head">
 				<div>
-					<p className="support-chat__eyebrow">Free assistant</p>
+					<p className="support-chat__eyebrow">Site assistant</p>
 					<strong>Ask iStockVisual</strong>
 				</div>
 				{variant === 'widget' && (
