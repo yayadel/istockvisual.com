@@ -146,7 +146,7 @@ export default function AssetPreviewPanel({
 							className={`asset-preview__edit-hint asset-preview__edit-hint--${editHint}`}
 							role="status"
 						>
-							<p className="asset-preview__edit-hint-copy">You can edit this image here</p>
+							<p className="asset-preview__edit-hint-copy">✨ You can edit this image here</p>
 							<span className="asset-preview__edit-hint-arrow" aria-hidden="true" />
 							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
 							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
