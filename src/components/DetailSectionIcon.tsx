@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-type IconName = 'info' | 'spark' | 'tip' | 'palette' | 'prompt';
+type IconName = 'info' | 'spark' | 'tip' | 'palette' | 'prompt' | 'tag';
 
 function IconSvg({ children }: { children: ReactNode }) {
 	return (

@@ -241,11 +241,24 @@ const jsonLd = assetJsonLd({
 				tags.length > 0 && (
 					<section class="detail__discover">
 						<div class="chip-block">
-							<h2>Tags</h2>
+							<header class="chip-block__head">
+								<h2>
+									<DetailSectionIcon name="tag" />
+									<span>Tags</span>
+								</h2>
+								<p class="chip-block__count">
+									<strong>{tags.length}</strong>
+									{tags.length === 1 ? ' keyword' : ' keywords'}
+								</p>
+							</header>
+							<div class="chip-block__rule" aria-hidden="true"></div>
 							<ul class="chip-cloud">
 								{tags.map((tag) => (
 									<li>
-										<a href={searchPath(tag)}>{tag}</a>
+										<a href={searchPath(tag)}>
+											<span class="chip-cloud__hash" aria-hidden="true">#</span>
+											<span>{tag}</span>
+										</a>
 									</li>
 								))}
 							</ul>
