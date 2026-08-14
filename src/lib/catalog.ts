@@ -142,12 +142,6 @@ export function assetMatchesColor(asset: AssetDetail, colorId: string): boolean 
 	});
 }
 
-export function assetLicenseKind(asset: AssetDetail): Exclude<CatalogLicense, ''> {
-	const license = (asset.license || '').toLowerCase();
-	if (license.includes('editorial') || license.includes('demo')) return 'editorial';
-	return 'commercial';
-}
-
 export function assetOrientation(asset: AssetDetail): CatalogOrient {
 	const width = asset.width || 0;
 	const height = asset.height || 0;
