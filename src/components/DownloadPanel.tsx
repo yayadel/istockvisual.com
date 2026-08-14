@@ -28,6 +28,7 @@ type Props = {
 	loginHref: string;
 	signupHref?: string;
 	upgradeHref?: string;
+	pageUrl?: string;
 };
 
 function triggerDownload(blob: Blob, filename: string) {
