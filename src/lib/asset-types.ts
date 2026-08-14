@@ -159,6 +159,7 @@ const TITLE_ACRONYMS = new Set([
 	'gmc',
 	'obs',
 	'oem',
+	'aud',
 ]);
 
 /** Fashion season codes such as SS19, FW20, AW21. */
