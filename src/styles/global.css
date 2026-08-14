@@ -2407,6 +2407,65 @@ body.upload-modal-open {
 	position: relative;
 }
 
+.download-perks {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.2rem 0;
+	margin: 0;
+	padding: 0.1rem 0 0;
+	list-style: none;
+	color: #6b7c88;
+	font-size: 0.72rem;
+	font-weight: 550;
+	line-height: 1.2;
+}
+
+.download-perks li {
+	display: inline-flex;
+	align-items: center;
+}
+
+.download-perks li + li::before {
+	content: '·';
+	margin: 0 0.55rem;
+	opacity: 0.7;
+}
+
+.download-perks a,
+.download-perks button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.download-perks a:hover,
+.download-perks button:hover {
+	color: #1f4f45;
+}
+
+.download-perks svg {
+	flex: 0 0 auto;
+}
+
+[data-theme='dark'] .download-perks {
+	color: var(--text-muted);
+}
+
+[data-theme='dark'] .download-perks a:hover,
+[data-theme='dark'] .download-perks button:hover {
+	color: var(--accent);
+}
+
 .download-split {
 	display: flex;
 	align-items: center;

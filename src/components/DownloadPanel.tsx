@@ -60,6 +60,42 @@ function ChevronIcon() {
 	);
 }
 
+function CheckIcon() {
+	return (
+		<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+			<path
+				d="M3.2 8.2 6.5 11.4 12.8 4.6"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="1.7"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+			/>
+		</svg>
+	);
+}
+
+function LinkIcon() {
+	return (
+		<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+			<path
+				d="M6.4 9.6a2.6 2.6 0 0 1 0-3.7l1.6-1.6a2.6 2.6 0 1 1 3.7 3.7L10.6 9.1"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+			/>
+			<path
+				d="M9.6 6.4a2.6 2.6 0 0 1 0 3.7L8 11.7a2.6 2.6 0 1 1-3.7-3.7l1.1-1.1"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+			/>
+		</svg>
+	);
+}
+
 export default function DownloadPanel({
 	assetId,
 	title,
