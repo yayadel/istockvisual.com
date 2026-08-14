@@ -43,22 +43,10 @@ export const CATALOG_COLORS: CatalogColor[] = [
 	{ id: 'brown', label: 'Brown', hex: '#8b5a2b' },
 ];
 
-export const CATALOG_LICENSES: { id: CatalogLicense; label: string }[] = [
-	{ id: 'commercial', label: 'Commercial' },
-	{ id: 'editorial', label: 'Editorial' },
-];
-
 export const CATALOG_ORIENTS: { id: CatalogOrient; label: string }[] = [
 	{ id: 'landscape', label: 'Landscape' },
 	{ id: 'portrait', label: 'Portrait' },
 	{ id: 'square', label: 'Square' },
-];
-
-export const CATALOG_FORMATS: { id: CatalogFormat; label: string }[] = [
-	{ id: 'jpg', label: 'JPG' },
-	{ id: 'png', label: 'PNG' },
-	{ id: 'webp', label: 'WEBP' },
-	{ id: 'svg', label: 'SVG' },
 ];
 
 export const CATALOG_SORTS: { id: CatalogSort; label: string }[] = [
