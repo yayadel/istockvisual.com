@@ -1744,6 +1744,24 @@ body.upload-modal-open {
 	height: 100%;
 }
 
+.home-kicker--on-light {
+	color: #3f5c00;
+}
+
+.home-kicker--on-light .home-kicker__icon {
+	width: 1.35rem;
+	height: 1.35rem;
+	border-radius: var(--radius);
+	background: #0b0b0b;
+	color: #c4f04b;
+	padding: 0.18rem;
+	box-sizing: border-box;
+}
+
+[data-theme='dark'] .home-kicker--on-light {
+	color: #c4f04b;
+}
+
 .home-cats {
 	position: relative;
 	margin: 1.15rem 0 0;
