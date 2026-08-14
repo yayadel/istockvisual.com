@@ -40,7 +40,7 @@ const popularColumns = [0, 1, 2, 3]
 	.map((index) => topKeywords.slice(index * columnSize, (index + 1) * columnSize))
 	.filter((column) => column.length > 0);
 
-const proVisual = featured[0]?.previewUrl || categoryFallbacks.photos;
+const proVisual = featured[0]?.previewUrl || categoryFallback;
 
 const studioTools = [
 	{
