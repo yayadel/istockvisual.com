@@ -233,6 +233,7 @@ def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
 		"responseId": getattr(response, "id", None),
 		"rawContent": content,
 		"reasoning": reasoning,
+		"thinkingEnabled": False,
 		"parseOk": False,
 		"parseError": None,
 		"parsedMeta": None,
