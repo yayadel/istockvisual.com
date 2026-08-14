@@ -260,17 +260,17 @@ function ShareLoveModal({
 					<span className="share-love__heart">
 						<HeartIcon />
 					</span>
-					<h2 id="share-love-title">Share the Love</h2>
+					<h2 id="share-love-title">Credit this image</h2>
 				</header>
 				<div className="share-love__banner">
 					<GlobeIcon />
 					<div>
-						<strong>100% Free &amp; Public Domain</strong>
-						<p>Help us keep creating free images for everyone!</p>
+						<strong>Free for commercial work</strong>
+						<p>A short credit keeps iStockVisual available to everyone.</p>
 					</div>
 				</div>
 				<label className="share-love__label" htmlFor="share-love-format">
-					Choose your preferred format
+					Choose a credit format
 				</label>
 				<div className="share-love__select" ref={formatRef}>
 					<button
