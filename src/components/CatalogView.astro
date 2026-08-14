@@ -134,27 +134,6 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={Boolean(query.ai) || undefined}>
-				<summary>AI Generated <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
-				<div class="catalog-acc__panel">
-					<ul class="catalog-filter__list">
-						{
-							facets.ai.map((item) => (
-								<li>
-									<a
-										class:list={[query.ai === item.id && 'is-active']}
-										href={catalogHref(query, { ai: query.ai === item.id ? '' : item.id })}
-										aria-current={query.ai === item.id ? 'true' : undefined}
-									>
-										<span>{item.label}</span>
-									</a>
-								</li>
-							))
-						}
-					</ul>
-				</div>
-			</details>
-
 			<details class="catalog-acc" open={Boolean(query.orient) || undefined}>
 				<summary>Orientation <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
 				<div class="catalog-acc__panel">
