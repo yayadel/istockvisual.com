@@ -64,13 +64,22 @@ const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
 
 			<section class="catalog-filter__section">
 				<h2>Type</h2>
+				<a
+					class:list={['catalog-filter__all', query.type === 'all' && 'is-active']}
+					href={catalogHref(query, { type: 'all' })}
+				>
+					<span>All types</span>
+					<em>{facets.types[0]?.count ?? 0}</em>
+				</a>
 				<ul class="catalog-filter__list">
 					{
-						facets.types.map((item) => (
+						facets.types.slice(1).map((item) => (
 							<li>
 								<a
 									class:list={[query.type === item.slug && 'is-active']}
-									href={catalogHref(query, { type: query.type === item.slug ? 'all' : item.slug })}
+									href={catalogHref(query, {
+										type: query.type === item.slug ? 'all' : item.slug,
+									})}
 									aria-current={query.type === item.slug ? 'true' : undefined}
 								>
 									<span>{item.label}</span>
