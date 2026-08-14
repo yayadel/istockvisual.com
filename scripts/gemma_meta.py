@@ -71,8 +71,35 @@ def usage_to_dict(response, model: str) -> dict:
 	}
 
 
+def _norm_key(key: str) -> str:
+	return re.sub(r"[^a-z0-9]", "", str(key).lower())
+
+
+_CANONICAL_KEYS = {
+	"imageprompt": "imagePrompt",
+	"imagegenerationprompt": "imagePrompt",
+	"imagecreationdescription": "imageCreationDescription",
+	"assetusagetips": "assetUsageTips",
+	"assetfunctionalityusagetips": "assetUsageTips",
+	"colorpalette": "colorPalette",
+	"tags": "tags",
+	"imagepagetitle": "imagePageTitle",
+	"pageshortdescription": "pageShortDescription",
+	"contentcategories": "contentCategories",
+	"medium": "medium",
+	"depictedelements": "depictedElements",
+	"relatedsearchqueries": "relatedSearchQueries",
+}
+
+
 def coerce_gemma_payload(data: dict) -> dict:
 	"""Map Gemma's near-miss keys onto the Gemini AssetMeta schema."""
+	normalized: dict = {}
+	for key, value in data.items():
+		canon = _CANONICAL_KEYS.get(_norm_key(key), key)
+		if canon not in normalized or not normalized.get(canon):
+			normalized[canon] = value
+	data = normalized
 	aliases = {
 		"imagePrompt": (
 			"image_generation_prompt",
@@ -127,14 +154,19 @@ def coerce_gemma_payload(data: dict) -> dict:
 			if isinstance(value, str) and value.strip():
 				out["assetUsageTips"] = value.strip()
 				break
+	if not out.get("imagePrompt"):
+		creation = out.get("imageCreationDescription")
+		if isinstance(creation, str) and len(creation.strip()) > 80:
+			out["imagePrompt"] = creation.strip()
 	palette = out.get("colorPalette")
 	if isinstance(palette, list):
 		fixed = []
 		for item in palette:
 			if not isinstance(item, dict):
 				continue
-			name = item.get("name") or item.get("color") or item.get("label") or "Color"
-			hex_value = item.get("hex") or item.get("value") or "#888888"
+			lookup = {_norm_key(k): v for k, v in item.items()}
+			name = lookup.get("name") or lookup.get("color") or lookup.get("label") or "Color"
+			hex_value = lookup.get("hex") or lookup.get("value") or "#888888"
 			fixed.append({"name": str(name), "hex": str(hex_value)})
 		out["colorPalette"] = fixed
 	medium = str(out.get("medium") or "").strip()
