@@ -499,13 +499,27 @@ export default function DownloadPanel({
 					</a>
 				</li>
 				<li>
-					<button type="button" onClick={() => void copyAttribution()}>
+					<button
+						type="button"
+						onClick={() => {
+							setMenuOpen(false);
+							setAttrModalOpen(true);
+						}}
+					>
 						<LinkIcon />
-						{copiedAttr ? 'Copied' : 'Copy attribution'}
+						Copy attribution
 					</button>
 				</li>
 			</ul>
 			{error && <p className="download-panel__error">{error}</p>}
+
+			{attrModalOpen ? (
+				<ShareLoveModal
+					title={title}
+					pageUrl={pageHref || pageUrl || ''}
+					onClose={() => setAttrModalOpen(false)}
+				/>
+			) : null}
 
 			{authModalOpen && (
 				<div className="download-auth-modal" role="presentation">
