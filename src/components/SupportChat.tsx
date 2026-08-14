@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import { SUPPORT_GREETING, SUPPORT_PROMPTS } from '../lib/support-bot';
 
 type ChatItem = { role: 'user' | 'assistant'; content: string };
 
 type Props = {
 	variant?: 'page' | 'widget';
 };
+
+const GREETING =
+	'Hi — I’m the free iStockVisual assistant. Ask about licenses, free vs Pro sizes, plans, refunds, or studio tools. For account-specific billing, email hello@istockvisual.com.';
+
+const PROMPTS = [
+	'Is 1K really free?',
+	'How do I credit an image?',
+	'What does Pro include?',
+	'How do refunds work?',
+];
 
 function linkify(text: string) {
 	const parts = text.split(/(\/[a-z0-9][a-z0-9/_-]*)/gi);
