@@ -1706,10 +1706,6 @@ body.upload-modal-open {
 	gap: 0.5rem;
 	padding: 0.15rem 0 0.7rem;
 	border-bottom: 1px solid var(--line);
-	position: sticky;
-	top: 0;
-	z-index: 1;
-	background: var(--bg);
 }
 
 .catalog-filter__head p {
@@ -1852,10 +1848,7 @@ body.upload-modal-open {
 }
 
 .catalog-filter__list--scroll {
-	max-height: 14.5rem;
-	overflow: auto;
 	padding-right: 0.2rem;
-	scrollbar-width: thin;
 }
 
 .catalog-color {
