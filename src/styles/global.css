@@ -1844,7 +1844,6 @@ body.upload-modal-open {
 	font-weight: 550;
 	letter-spacing: -0.03em;
 	margin: 0.12rem 0 0;
-	text-transform: capitalize;
 }
 
 .catalog-results__head > p {
