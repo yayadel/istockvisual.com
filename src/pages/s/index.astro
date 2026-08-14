@@ -21,8 +21,6 @@ if (q) {
 
 const query = parseCatalogQuery(Astro.url);
 const mode = Astro.url.searchParams.get('mode') || '';
-const uploadName = Astro.url.searchParams.get('name') || 'your image';
-const queryColors = parseVisualSearchColors(Astro.url.searchParams.get('c'));
 const queryKey = Astro.url.searchParams.get('key') || '';
 const isVisual = mode === 'visual';
 const previewUrl =
