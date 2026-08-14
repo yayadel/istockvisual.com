@@ -316,7 +316,7 @@ function ShareLoveModal({
 						<CopySquaresIcon />
 					</button>
 				</div>
-				<p className="share-love__thanks">Thank you for supporting free AI images!</p>
+				<p className="share-love__thanks">Thanks for crediting iStockVisual.</p>
 			</div>
 		</div>
 	);
