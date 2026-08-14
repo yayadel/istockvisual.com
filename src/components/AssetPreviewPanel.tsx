@@ -37,7 +37,6 @@ export default function AssetPreviewPanel({
 }: Props) {
 	const [editing, setEditing] = useState(false);
 	const [editHint, setEditHint] = useState<'in' | 'out' | 'gone'>('in');
-	const [editHintSeconds, setEditHintSeconds] = useState(EDIT_HINT_SECONDS);
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
 	const lensRef = useRef<HTMLDivElement>(null);
@@ -47,18 +46,9 @@ export default function AssetPreviewPanel({
 	}, []);
 
 	useEffect(() => {
-		if (editHint !== 'in') return;
-		const started = Date.now();
-		const tick = window.setInterval(() => {
-			const left = Math.max(0, EDIT_HINT_SECONDS - Math.floor((Date.now() - started) / 1000));
-			setEditHintSeconds(left);
-			if (left <= 0) {
-				window.clearInterval(tick);
-				dismissEditHint();
-			}
-		}, 250);
-		return () => window.clearInterval(tick);
-	}, [dismissEditHint, editHint]);
+		const hide = window.setTimeout(dismissEditHint, EDIT_HINT_MS);
+		return () => window.clearTimeout(hide);
+	}, [dismissEditHint]);
 
 	useEffect(() => {
 		if (editHint !== 'out') return;
@@ -156,10 +146,7 @@ export default function AssetPreviewPanel({
 							className={`asset-preview__edit-hint asset-preview__edit-hint--${editHint}`}
 							role="status"
 						>
-							<p className="asset-preview__edit-hint-copy">
-								✨ You can edit this image for free here
-								<span className="asset-preview__edit-hint-count">{editHintSeconds}</span>
-							</p>
+							<p className="asset-preview__edit-hint-copy">✨ You can edit this image for free here</p>
 							<span className="asset-preview__edit-hint-arrow" aria-hidden="true" />
 							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
 							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
