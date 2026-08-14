@@ -449,7 +449,7 @@ export function catalogFacets(pool: AssetDetail[], query: CatalogQuery, tagLimit
 		})),
 		formats: CATALOG_FORMATS.map((item) => ({
 			...item,
- mar			count: formatBase.filter((asset) => assetFormat(asset) === item.id).length,
+			count: formatBase.filter((asset) => assetFormat(asset) === item.id).length,
 		})),
 	};
 }
