@@ -146,6 +146,14 @@ export async function listFeaturedAssets(
 		.slice(0, limit);
 }
 
+export async function listTopSearchKeywords(
+	db: D1Database | undefined,
+	limit = 16,
+): Promise<string[]> {
+	if (!db) return [];
+	return listTopSearchKeywordRows(db, limit);
+}
+
 export async function listAllAssets(
 	db: D1Database | undefined,
 	origin: string,

@@ -255,6 +255,22 @@ export async function listRecentGeneratedAssets(
 	return (result.results ?? []).map(rowToRecord);
 }
 
+export async function listTopSearchKeywords(db: D1Database, limit = 16): Promise<string[]> {
+	const result = await db
+		.prepare(
+			`SELECT keyword
+			 FROM generated_asset
+			 WHERE keyword IS NOT NULL AND TRIM(keyword) != ''
+			 GROUP BY keyword
+			 ORDER BY MAX(publishedAt) DESC
+			 LIMIT ?`,
+		)
+		.bind(limit)
+		.all<{ keyword: string }>();
+
+	return (result.results ?? []).map((row) => String(row.keyword).trim()).filter(Boolean);
+}
+
 export async function slugExists(
 	db: D1Database,
 	category: CategorySlug,

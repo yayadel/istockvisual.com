@@ -3,12 +3,61 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import AssetGrid from '../components/AssetGrid.astro';
 import SearchBar from '../components/SearchBar.astro';
 import { CATEGORIES } from '../config/categories';
-import { listFeaturedAssets } from '../lib/generate-asset';
+import { listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
+import { formatAssetTitle } from '../lib/asset-types';
+import { searchPath } from '../lib/paths';
+import { LIFETIME_PLAN } from '../lib/pricing';
 import { isSanityConfigured } from '../lib/sanity';
 import { env } from 'cloudflare:workers';
 
 const featured = await listFeaturedAssets(env.DB, Astro.url.origin, 8);
+const topKeywords = await listTopSearchKeywords(env.DB, 16);
 const usingDemo = !isSanityConfigured();
+
+const studioTools = [
+	{
+		index: '01',
+		title: 'Image Editor',
+		lede: 'Adjust, crop, remove backgrounds, and expand photos in the browser.',
+		href: '/tools/image',
+		hint: 'Adjust · Crop · Remove BG · Expand',
+	},
+	{
+		index: '02',
+		title: 'Image Convert',
+		lede: 'Batch convert JPG, PNG, WebP, and HEIC with quality and scale controls.',
+		href: '/tools/convert',
+		hint: 'Format · Quality · Batch ZIP',
+	},
+	{
+		index: '03',
+		title: 'Image Vectorizer',
+		lede: 'Trace bitmaps into clean SVG paths, then copy the code or download the file.',
+		href: '/tools/vectorize',
+		hint: 'Bitmap → SVG · Local trace',
+	},
+	{
+		index: '04',
+		title: 'Social Resizer',
+		lede: 'Fit one batch to Instagram, TikTok, YouTube, Facebook, and LinkedIn.',
+		href: '/tools/social',
+		hint: 'Presets · Focus · ZIP export',
+	},
+	{
+		index: '05',
+		title: 'Batch Watermark',
+		lede: 'Stamp text or logo marks that scale with each photo. Tile or nine-point place.',
+		href: '/tools/watermark',
+		hint: 'Text · Logo · Tile pattern',
+	},
+	{
+		index: '06',
+		title: 'Palette Generator',
+		lede: 'Extract dominant colors. Copy HEX, RGB, or HSL, or export CSS and Tailwind.',
+		href: '/tools/palette',
+		hint: 'Swatches · Eyedropper · Export',
+	},
+];
 ---
 
 <BaseLayout title="iStockVisual" description="Stock photos, illustrations, vectors, and 3D — with AI editing tools.">
@@ -22,6 +71,80 @@ const usingDemo = !isSanityConfigured();
 			<SearchBar variant="hero" />
 		</div>
 	</section>
+
+	<section class="home-pro" aria-labelledby="home-pro-title">
+		<div class="home-pro__copy">
+			<p class="asset-card__meta">iStockVisual Pro</p>
+			<h2 id="home-pro-title">Unlock 2K, 4K, and 8K downloads</h2>
+			<p>
+				Free members keep 500 and 1K previews. Pro unlocks every size and format for commercial work —
+				Lifetime Access from {LIFETIME_PLAN.price}, paid once.
+			</p>
+			<a class="btn" href="/price">See Pro plans</a>
+		</div>
+		<ul class="home-pro__perks">
+			<li>
+				<strong>2K · 4K · 8K</strong>
+				<span>High-resolution files while your plan is active.</span>
+			</li>
+			<li>
+				<strong>JPG, PNG, WEBP, SVG</strong>
+				<span>Export the format your project needs.</span>
+			</li>
+			<li>
+				<strong>Commercial license</strong>
+				<span>Ads, sites, and products. Attribution required.</span>
+			</li>
+			<li>
+				<strong>7-day refund</strong>
+				<span>Not satisfied? Request a full refund.</span>
+			</li>
+		</ul>
+	</section>
+
+	<section class="home-tools" aria-labelledby="home-tools-title">
+		<div class="section-head">
+			<div>
+				<p class="asset-card__meta">Studio</p>
+				<h2 id="home-tools-title">Six editing tools, in the browser</h2>
+				<p>Files stay on your device. No upload unless you choose visual search.</p>
+			</div>
+			<a class="btn btn--ghost" href="/tools/image">Open tools</a>
+		</div>
+		<div class="home-tools__grid">
+			{
+				studioTools.map((tool) => (
+					<a class="home-tools__card" href={tool.href}>
+						<span class="home-tools__index">{tool.index}</span>
+						<h3>{tool.title}</h3>
+						<p>{tool.lede}</p>
+						<span class="home-tools__hint">{tool.hint}</span>
+					</a>
+				))
+			}
+		</div>
+	</section>
+
+	{
+		topKeywords.length > 0 && (
+			<section class="home-top-search" aria-labelledby="home-top-search-title">
+				<div class="section-head">
+					<div>
+						<p class="asset-card__meta">Discover</p>
+						<h2 id="home-top-search-title">Top search</h2>
+						<p>Popular keywords from the library — open any one to see matching results.</p>
+					</div>
+				</div>
+				<ol class="home-top-search__list">
+					{topKeywords.map((keyword) => (
+						<li>
+							<a href={searchPath(keyword)}>{formatAssetTitle(keyword)}</a>
+						</li>
+					))}
+				</ol>
+			</section>
+		)
+	}
 
 	<section>
 		<div class="section-head">
