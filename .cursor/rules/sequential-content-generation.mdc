@@ -14,9 +14,11 @@ alwaysApply: true
 对每一个素材，独立走完整闭环，确认完成后再开始下一个：
 
 1. 认领 **1** 个关键词，并用 **Gemini Interactions API**（`scripts/gemini_meta.py` / `npm run agent:meta`，模型默认 `gemini-3.6-flash` + `google_search`）生成元数据。可选替代：Together **Gemma 4**（`npm run agent:meta:gemma`，模型 `google/gemma-4-31B-it`，需 `TOGETHER_API_KEY`）
-2. 使用返回的 `meta.imagePrompt` **单独**生成该素材图片（一次只调一次图像生成）
+2. 使用返回的 `meta.imagePrompt` **单独**生成该素材图片（一次只调一次图像生成）。保存文件名必须与 `meta.imagePageTitle` 一致（去掉 `<>:"/\|?*` 等非法字符，保留 Title Case；不要用关键词当文件名）
 3. 导入该素材（含尺寸变体等）：`node scripts/agent-import.mjs …`
 4. 确认成功后，再开始下一条
+
+用户从站点下载的文件名同样使用内容标题（`imagePageTitle` / `asset.title`），不要用带随机码的 slug。
 
 N 个素材 = N 轮独立任务，不是一轮里做 N 个。
 

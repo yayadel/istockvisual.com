@@ -325,7 +325,7 @@ function ShareLoveModal({
 export default function DownloadPanel({
 	assetId,
 	title,
-	slug,
+	slug: _slug,
 	previewUrl: _previewUrl,
 	sourceWidth = 1536,
 	sourceHeight = 1024,
@@ -438,7 +438,7 @@ export default function DownloadPanel({
 			const source = await res.blob();
 			const sized = await scaleDownloadBlob(source, sizeId, natural.width, natural.height);
 			const output = await convertDownloadBlob(sized, format);
-			triggerDownload(output, downloadFileLabel(slug, sizeId, format));
+			triggerDownload(output, downloadFileLabel(title, sizeId, format));
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Download failed');
 		} finally {

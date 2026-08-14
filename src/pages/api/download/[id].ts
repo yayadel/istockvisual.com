@@ -6,6 +6,7 @@ import {
 	isDownloadSizeId,
 	isFreeDownloadSize,
 	sizeFileLabel,
+	filenameFromTitle,
 } from '../../../lib/download-sizes';
 import { resolveAssetById } from '../../../lib/generate-asset';
 import { contentDisposition } from '../../../lib/r2';
@@ -201,7 +202,7 @@ export const GET: APIRoute = async (context) => {
 		headers: {
 			'Content-Type': original.contentType || asset.fileType || 'image/jpeg',
 			'Content-Disposition': contentDisposition(
-				asset.r2ObjectKey?.split('/').pop() || `${asset.slug}.jpg`,
+				`${filenameFromTitle(asset.title || asset.slug || 'asset')}.jpg`,
 			),
 			'Cache-Control': 'private, no-store',
 		},
