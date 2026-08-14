@@ -2049,39 +2049,30 @@ body.upload-modal-open {
 		overflow: visible;
 		padding: 0;
 		border: 1px solid var(--line);
-		border-radius: var(--radius);
 		background: var(--panel-bg);
 	}
 
-	.catalog-filter__toggle {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: 0.8rem 1rem;
-		font-weight: 600;
-		color: var(--text);
+	.catalog-filter__head {
+		padding: 0.7rem 0.9rem 0.65rem;
+		position: static;
+		background: transparent;
 	}
 
-	.catalog-filter__toggle em {
-		font-style: normal;
-		font-weight: 400;
-		font-size: 0.8rem;
-		color: var(--text-muted);
-	}
-
-	.catalog-filter__body {
+	.catalog-filter__fold {
 		display: none;
-		padding: 0 1rem 1rem;
-		gap: 1.15rem;
 	}
 
-	.catalog-filter[open] .catalog-filter__body {
-		display: grid;
+	.catalog-acc > summary {
+		padding-inline: 0.9rem;
 	}
 
-	.catalog-filter__list--scroll {
-		max-height: 12rem;
+	.catalog-acc > summary:hover {
+		margin-inline: 0;
+		padding-inline: 0.9rem;
+	}
+
+	.catalog-acc__panel {
+		padding: 0 0.9rem 0.95rem;
 	}
 
 	.catalog .asset-grid {

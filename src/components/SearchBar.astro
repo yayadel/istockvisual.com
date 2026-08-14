@@ -25,6 +25,13 @@ const pathTopic =
 const topic = Astro.url.searchParams.get('topic') || pathTopic;
 const color = Astro.url.searchParams.get('color') || '';
 const tag = Astro.url.searchParams.get('tag') || '';
+const license = Astro.url.searchParams.get('license') || '';
+const ai = Astro.url.searchParams.get('ai') || '';
+const orient = Astro.url.searchParams.get('orient') || '';
+const access = Astro.url.searchParams.get('access') || '';
+const format = Astro.url.searchParams.get('format') || '';
+const exclude = Astro.url.searchParams.get('exclude') || '';
+const sort = Astro.url.searchParams.get('sort') || '';
 
 const options = [
 	{ value: 'all', label: 'All media' },
