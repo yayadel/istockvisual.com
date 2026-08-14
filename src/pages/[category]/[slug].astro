@@ -151,6 +151,7 @@ const jsonLd = assetJsonLd({
 						isPro={user?.plan === 'pro'}
 						loginHref={`/login?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
 						signupHref={`/signup?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
+						pageUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
 					>
 						<div class="download-panel">
 							<p class="download-panel__hint">Loading sizes…</p>
