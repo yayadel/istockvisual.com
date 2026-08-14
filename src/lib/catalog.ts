@@ -152,15 +152,6 @@ export function assetOrientation(asset: AssetDetail): CatalogOrient {
 	return 'square';
 }
 
-export function assetFormat(asset: AssetDetail): CatalogFormat {
-	const value = (asset.fileType || '').toLowerCase();
-	if (value.includes('svg')) return 'svg';
-	if (value.includes('webp')) return 'webp';
-	if (value.includes('png')) return 'png';
-	if (value.includes('jpeg') || value.includes('jpg')) return 'jpg';
-	return '';
-}
-
 function assetSearchHay(asset: AssetDetail): string {
 	return [
 		asset.title,
