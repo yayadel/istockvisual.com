@@ -9,9 +9,7 @@ import { toPathSlug, tagMatches } from './paths';
 
 export type CatalogType = 'all' | CategorySlug;
 export type CatalogLicense = '' | 'commercial' | 'editorial';
-export type CatalogAi = '' | 'yes' | 'no';
 export type CatalogOrient = '' | 'landscape' | 'portrait' | 'square';
-export type CatalogAccess = '' | 'standard' | 'pro';
 export type CatalogFormat = '' | 'jpg' | 'png' | 'webp' | 'svg';
 export type CatalogSort = 'newest' | 'oldest' | 'title';
 
@@ -22,9 +20,7 @@ export type CatalogQuery = {
 	color: string;
 	tag: string;
 	license: CatalogLicense;
-	ai: CatalogAi;
 	orient: CatalogOrient;
-	access: CatalogAccess;
 	format: CatalogFormat;
 	exclude: string;
 	sort: CatalogSort;
