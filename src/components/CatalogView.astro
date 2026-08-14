@@ -42,7 +42,7 @@ const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
 					class:list={['catalog-filter__all', !query.topic && 'is-active']}
 					href={catalogHref(query, { topic: '' })}
 				>
-					All categories
+					<span>All categories</span>
 				</a>
 				<ul class="catalog-filter__list catalog-filter__list--scroll">
 					{
