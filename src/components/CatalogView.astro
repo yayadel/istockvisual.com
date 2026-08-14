@@ -89,7 +89,11 @@ const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
 						facets.colors.map((item) => (
 							<li>
 								<a
-									class:list={['catalog-filter__swatch', query.color === item.id && 'is-active']}
+									class:list={[
+										'catalog-filter__swatch',
+										query.color === item.id && 'is-active',
+										item.id === 'white' && 'is-light',
+									]}
 									href={catalogHref(query, { color: query.color === item.id ? '' : item.id })}
 									title={`${item.label} (${item.count})`}
 									aria-label={`${item.label}, ${item.count} assets`}
