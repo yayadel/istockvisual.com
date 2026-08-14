@@ -1786,6 +1786,7 @@ body.upload-modal-open {
 	z-index: 2;
 	background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.28) 50%, transparent 60%);
 	transform: translateX(-120%);
+	transition: transform 0.7s ease;
 	pointer-events: none;
 }
 
