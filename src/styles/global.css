@@ -4596,8 +4596,9 @@ body.image-editor-modal-open {
 }
 
 .image-editor-modal__row--tools .image-editor-modal__tools {
-	flex: 1 1 auto;
+	flex: 1 1 0;
 	min-width: 0;
+	max-width: 100%;
 	width: auto;
 	margin: 0;
 }
