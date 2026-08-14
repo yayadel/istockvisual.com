@@ -168,7 +168,15 @@ const jsonLd = {
 					faqs.map((item) => (
 						<details>
 							<summary>{item.q}</summary>
-							<p>{item.a}</p>
+							<p>
+								{item.a}
+								{'href' in item && item.href ? (
+									<>
+										{' '}
+										<a href={item.href}>{item.linkLabel}</a>.
+									</>
+								) : null}
+							</p>
 						</details>
 					))
 				}
@@ -504,6 +512,12 @@ const jsonLd = {
 		color: var(--text-muted);
 		line-height: 1.6;
 		max-width: 62ch;
+	}
+
+	.pricing-faq__list a {
+		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 0.16em;
 	}
 
 	@media (max-width: 860px) {
