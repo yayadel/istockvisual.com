@@ -58,6 +58,23 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 
 		<nav class="catalog-filter-rail" data-catalog-rail aria-label="Filter sections">
 			<button
+				class="catalog-filter-rail__btn catalog-filter-rail__btn--open"
+				type="button"
+				data-catalog-expand
+				aria-label="Show filters"
+			>
+				<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.7"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					></path>
+				</svg>
+				<span class="catalog-filter-rail__tip" aria-hidden="true">Show filters</span>
+			</button>
+			<button
 				class:list={['catalog-filter-rail__btn', query.topic && 'is-active']}
 				type="button"
 				data-catalog-expand
