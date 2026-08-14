@@ -46,6 +46,13 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 	{topic ? <input type="hidden" name="topic" value={topic} /> : null}
 	{color ? <input type="hidden" name="color" value={color} /> : null}
 	{tag ? <input type="hidden" name="tag" value={tag} /> : null}
+	{license ? <input type="hidden" name="license" value={license} /> : null}
+	{ai ? <input type="hidden" name="ai" value={ai} /> : null}
+	{orient ? <input type="hidden" name="orient" value={orient} /> : null}
+	{access ? <input type="hidden" name="access" value={access} /> : null}
+	{format ? <input type="hidden" name="format" value={format} /> : null}
+	{exclude ? <input type="hidden" name="exclude" value={exclude} /> : null}
+	{sort ? <input type="hidden" name="sort" value={sort} /> : null}
 
 	<div class="search-bar__filter" data-category-dropdown>
 		<button
