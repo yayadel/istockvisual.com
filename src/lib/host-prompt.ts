@@ -24,7 +24,7 @@ Respond with a single JSON object only (no markdown fences), using exactly these
   "colorPalette": [{"name": "Color name", "hex": "#RRGGBB"}],
   "tags": ["at least 40 title-case tags; acronyms like PDF/USB/AI uppercase"],
   "contentCategories": ["exactly 1 exact label from the allowed category list"],
-  "imagePageTitle": "English title-case title containing the topic keyword (acronyms like PDF/UAE uppercase)",
+  "imagePageTitle": "Natural title-case stock caption of the visible scene; core subject from the keyword, not a stuffed query",
   "pageShortDescription": "English sentence-case short description containing the topic keyword (acronyms/proper nouns correct)",
   "medium": "Photograph | Illustration | 3D Graphic"
 }
