@@ -2035,6 +2035,8 @@ body.upload-modal-open {
 	flex: 1;
 	min-width: 0;
 	height: auto;
+	appearance: none;
+	-webkit-appearance: none;
 	padding: 0 0.75rem;
 	border: 0;
 	border-radius: 0;
