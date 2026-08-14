@@ -1854,6 +1854,64 @@ body.upload-modal-open {
 	margin-bottom: 1.55rem;
 }
 
+.home-section-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex: 0 0 auto;
+	min-height: 2.5rem;
+	padding: 0.45rem 0.95rem 0.45rem 1.05rem;
+	border: 1px solid #0b0b0b;
+	border-radius: var(--radius);
+	background: #0b0b0b;
+	color: #ffffff;
+	font-size: 0.84rem;
+	font-weight: 650;
+	letter-spacing: -0.01em;
+	line-height: 1;
+	text-decoration: none;
+	transition:
+		background 0.18s ease,
+		color 0.18s ease,
+		border-color 0.18s ease,
+		transform 0.18s ease;
+}
+
+.home-section-cta span {
+	color: #c4f04b;
+	font-size: 1.05rem;
+	line-height: 1;
+	transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.home-section-cta:hover {
+	background: #c4f04b;
+	border-color: #c4f04b;
+	color: #13200f;
+	transform: translateY(-1px);
+}
+
+.home-section-cta:hover span {
+	color: #13200f;
+	transform: translateX(3px);
+}
+
+[data-theme='dark'] .home-section-cta {
+	background: #c4f04b;
+	border-color: #c4f04b;
+	color: #13200f;
+}
+
+[data-theme='dark'] .home-section-cta span {
+	color: #13200f;
+}
+
+[data-theme='dark'] .home-section-cta:hover {
+	background: #d4f86a;
+	border-color: #d4f86a;
+	color: #13200f;
+}
+
 .home-cats__card {
 	position: relative;
 	display: block;
