@@ -1675,6 +1675,10 @@ body.upload-modal-open {
 	}
 }
 
+.catalog-visual {
+	margin: 0 0 1.1rem;
+}
+
 .catalog {
 	display: grid;
 	grid-template-columns: 17.5rem minmax(0, 1fr);

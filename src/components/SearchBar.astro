@@ -36,6 +36,9 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 
 <form class:list={['search-bar', `search-bar--${variant}`]} action="/s/" method="get" role="search">
 	<input type="hidden" name="category" value={selected} data-category-input />
+	{topic ? <input type="hidden" name="topic" value={topic} /> : null}
+	{color ? <input type="hidden" name="color" value={color} /> : null}
+	{tag ? <input type="hidden" name="tag" value={tag} /> : null}
 
 	<div class="search-bar__filter" data-category-dropdown>
 		<button
