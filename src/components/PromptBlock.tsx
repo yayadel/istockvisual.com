@@ -117,7 +117,7 @@ export default function PromptBlock({ prompt }: { prompt: string }) {
 				<div className="prompt-block__dock">
 					<span className="prompt-block__model">
 						<SparkIcon />
-						Gemini Image
+						AI Image Model
 					</span>
 					<div className="prompt-block__actions">
 						<button
