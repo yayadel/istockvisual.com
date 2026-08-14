@@ -136,4 +136,41 @@ const { name } = Astro.props;
 			</>
 		)
 	}
+	{
+		name === 'illustrations' && (
+			<>
+				<path d="M4.8 19.2 14.6 9.4"></path>
+				<path d="M13.4 8.2 15.8 10.6"></path>
+				<path d="M16.4 5.2 18.8 7.6 12.2 14.2 9.8 11.8Z"></path>
+				<path d="M4.8 19.2h5.4"></path>
+			</>
+		)
+	}
+	{
+		name === 'cube' && (
+			<>
+				<path d="M12 3.8 20 8.2v7.6L12 20.2 4 15.8V8.2Z"></path>
+				<path d="M12 20.2V12.2"></path>
+				<path d="M4 8.2 12 12.2 20 8.2"></path>
+			</>
+		)
+	}
+	{
+		name === 'spark' && (
+			<>
+				<path d="M12 3.5 13.2 9l5.8 1.2L13.2 11.4 12 16.9l-1.2-5.5L5 10.2 10.8 9 12 3.5Z"></path>
+				<path d="M18.2 14.8 18.7 17l2.2.5-2.2.5-.5 2.2-.5-2.2-2.2-.5 2.2-.5.5-2.2Z"></path>
+			</>
+		)
+	}
+	{
+		name === 'grid' && (
+			<>
+				<rect x="4" y="4" width="7" height="7" rx="1.2"></rect>
+				<rect x="13" y="4" width="7" height="7" rx="1.2"></rect>
+				<rect x="4" y="13" width="7" height="7" rx="1.2"></rect>
+				<rect x="13" y="13" width="7" height="7" rx="1.2"></rect>
+			</>
+		)
+	}
 </svg>

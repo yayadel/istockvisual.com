@@ -179,31 +179,53 @@ const proPerks = [
 		)
 	}
 
-	<section class="home-cats">
+	<section class="home-cats" aria-labelledby="home-cats-title">
 		<div class="section-head">
 			<div>
-				<h2>Explore categories</h2>
+				<p class="home-kicker home-kicker--on-light">
+					<span class="home-kicker__icon"><HomeMarkIcon name="grid" /></span>
+					Library
+				</p>
+				<h2 id="home-cats-title">Explore categories</h2>
 				<p>Photos, illustrations, vectors, and 3D — pick a library and start browsing.</p>
 			</div>
 		</div>
-		<div class="category-pills">
+		<div class="home-cats__grid">
 			{
-				CATEGORIES.map((category) => (
-					<a href={`/${category.slug}`}>{category.label}</a>
+				[
+					{ slug: 'photos', label: 'Photos', icon: 'image' as const, lede: 'Campaign stills, products, and documentary frames.' },
+					{ slug: 'illustrations', label: 'Illustrations', icon: 'illustrations' as const, lede: 'Drawn scenes, concepts, and editorial art.' },
+					{ slug: 'vectors', label: 'Vectors', icon: 'vectorize' as const, lede: 'Clean scalable graphics for print and UI.' },
+					{ slug: '3d', label: '3D', icon: 'cube' as const, lede: 'Renders, packs, and dimensional mockups.' },
+				].map((category) => (
+					<a class="home-cats__card" href={`/${category.slug}`}>
+						<span class="home-cats__glyph">
+							<HomeMarkIcon name={category.icon} />
+						</span>
+						<span class="home-cats__mark" aria-hidden="true">
+							{category.label.slice(0, 2)}
+						</span>
+						<h3>{category.label}</h3>
+						<p>{category.lede}</p>
+					</a>
 				))
 			}
 		</div>
 	</section>
 
-	<section>
+	<section class="home-featured" aria-labelledby="home-featured-title">
 		<div class="section-head">
 			<div>
-				<h2>Featured assets</h2>
+				<p class="home-kicker home-kicker--on-light">
+					<span class="home-kicker__icon"><HomeMarkIcon name="spark" /></span>
+					Featured
+				</p>
+				<h2 id="home-featured-title">Featured assets</h2>
 				<p>
 					{
 						usingDemo
 							? 'Showing local demo assets until Sanity project IDs are configured.'
-							: 'Latest published assets from Sanity.'
+							: 'Latest published assets from the library.'
 					}
 				</p>
 			</div>
