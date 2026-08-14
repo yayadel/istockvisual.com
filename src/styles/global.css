@@ -712,6 +712,21 @@ textarea {
 	background: #19665f;
 }
 
+.nav__signup {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 0.45rem 0.95rem;
+	border-radius: 2px;
+	background: #ffffff;
+	color: #0b0b0b !important;
+	font-weight: 600;
+}
+
+.nav__auth {
+	display: contents;
+}
+
 .theme-toggle {
 	display: inline-flex;
 	align-items: center;
@@ -915,15 +930,44 @@ body.nav-open .nav-toggle span:nth-child(3) {
 	}
 
 	.nav .theme-toggle {
-		margin-top: 1rem;
+		margin-top: auto;
 		align-self: flex-start;
 	}
 
+	.nav__auth {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.55rem;
+		width: 100%;
+		margin-top: 0.9rem;
+	}
+
+	.nav__auth:has(.nav__cta) {
+		grid-template-columns: 1fr;
+	}
+
 	.nav__cta,
-	.nav__signin {
-		margin-top: 0.75rem;
+	.nav__signin,
+	.nav__signup {
+		margin-top: 0;
 		justify-content: center;
 		width: 100%;
+		padding: 0.78rem 0.85rem;
+		border-bottom: 0;
+	}
+
+	.nav__signup {
+		display: inline-flex;
+	}
+
+	.nav__signin {
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		color: #ffffff !important;
+	}
+
+	.nav__signin:hover {
+		background: rgba(255, 255, 255, 0.08);
 	}
 }
 
