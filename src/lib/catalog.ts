@@ -127,24 +127,52 @@ function colorDistance(a: Rgb, b: Rgb) {
 	return (a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2;
 }
 
-export function assetMatchesColor(asset: AssetDetail, colorId: string): boolean {
+export function normalizeCatalogColor(raw: string): string {
+	const value = raw.trim().toLowerCase().replace(/^#/, '');
+	if (CATALOG_COLORS.some((item) => item.id === value)) return value;
+	if (/^[0-9a-f]{6}$/.test(value)) return value;
+	if (/^[0-9a-f]{3}$/.test(value)) {
+		return value
+			.split('')
+			.map((char) => char + char)
+			.join('');
+	}
+	return '';
+}
+
+export function catalogColorHex(colorId: string): string {
 	const family = CATALOG_COLORS.find((item) => item.id === colorId);
-	if (!family) return false;
-	const target = parseHex(family.hex);
-	if (!target) return false;
+	if (family) return family.hex.replace(/^#/, '').toLowerCase();
+	if (/^[0-9a-f]{6}$/i.test(colorId)) return colorId.toLowerCase();
+	return '';
+}
+
+export function assetMatchesColor(asset: AssetDetail, colorId: string): boolean {
 	const palette = asset.colorPalette || [];
 	if (!palette.length) return false;
 
+	const family = CATALOG_COLORS.find((item) => item.id === colorId);
+	if (family) {
+		const target = parseHex(family.hex);
+		if (!target) return false;
+		return palette.some((swatch) => {
+			const rgb = parseHex(swatch.hex);
+			if (!rgb) return false;
+			const lum = luminance(rgb);
+			const sat = saturation(rgb);
+			if (family.id === 'black') return lum < 42 && sat < 0.35;
+			if (family.id === 'white') return lum > 214 && sat < 0.22;
+			if (family.id === 'gray') return sat < 0.14 && lum > 42 && lum < 214;
+			if (family.id === 'brown') return lum < 160 && sat > 0.18 && colorDistance(rgb, target) < 220 ** 2;
+			return colorDistance(rgb, target) < 168 ** 2;
+		});
+	}
+
+	const target = parseHex(colorId);
+	if (!target) return false;
 	return palette.some((swatch) => {
 		const rgb = parseHex(swatch.hex);
-		if (!rgb) return false;
-		const lum = luminance(rgb);
-		const sat = saturation(rgb);
-		if (family.id === 'black') return lum < 42 && sat < 0.35;
-		if (family.id === 'white') return lum > 214 && sat < 0.22;
-		if (family.id === 'gray') return sat < 0.14 && lum > 42 && lum < 214;
-		if (family.id === 'brown') return lum < 160 && sat > 0.18 && colorDistance(rgb, target) < 220 ** 2;
-		return colorDistance(rgb, target) < 168 ** 2;
+		return Boolean(rgb && colorDistance(rgb, target) < 158 ** 2);
 	});
 }
 
