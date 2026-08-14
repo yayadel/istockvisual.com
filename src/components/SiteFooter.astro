@@ -1,11 +1,14 @@
 ---
-import { CATEGORIES } from '../config/categories';
+import { visibleNavCategories } from '../config/categories';
 import { LEGAL_PAGES, LICENSE_PATH } from '../lib/seo';
+import { listPopulatedMediaTypes } from '../lib/generated-assets';
+import { env } from 'cloudflare:workers';
 
 const year = new Date().getFullYear();
+const navCategories = visibleNavCategories(await listPopulatedMediaTypes(env.DB));
 
 const library = [
-	...CATEGORIES.map((category) => ({ href: `/${category.slug}`, label: category.label })),
+	...navCategories.map((category) => ({ href: `/${category.slug}`, label: category.label })),
 	{ href: '/c/', label: 'All Categories' },
 	{ href: '/s/', label: 'Search Library' },
 ];

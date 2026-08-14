@@ -1,6 +1,8 @@
 ---
-import { CATEGORIES } from '../config/categories';
+import { CATEGORIES, visibleNavCategories } from '../config/categories';
 import { fromPathSlug } from '../lib/paths';
+import { listPopulatedMediaTypes } from '../lib/generated-assets';
+import { env } from 'cloudflare:workers';
 
 interface Props {
 	variant?: 'hero' | 'bar';
@@ -30,7 +32,10 @@ const sort = Astro.url.searchParams.get('sort') || '';
 
 const options = [
 	{ value: 'all', label: 'All media' },
-	...CATEGORIES.map((category) => ({ value: category.slug, label: category.label })),
+	...visibleNavCategories(await listPopulatedMediaTypes(env.DB), selected).map((category) => ({
+		value: category.slug,
+		label: category.label,
+	})),
 ];
 
 const selectedLabel = options.find((option) => option.value === selected)?.label ?? 'All media';
