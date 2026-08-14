@@ -2111,6 +2111,11 @@ body.upload-modal-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.home-cats__track,
+	.home-cats:hover .home-cats__track {
+		animation: none;
+	}
+
 	.home-cats__card::after,
 	.home-cats__card:hover::after,
 	.home-tools__card,

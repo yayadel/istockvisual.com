@@ -25,14 +25,24 @@ const topCategories = (
 		: rankedCategories
 ).slice(0, 10);
 
-const categoryTiles = topCategories.map((category) => {
+const categoryTiles = topCategories.flatMap((category) => {
 	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
-	return {
-		label: category.label,
-		href: contentCategoryPath(category.slug),
-		image: cover?.previewUrl || categoryFallback,
-	};
+	if (!cover?.previewUrl) return [];
+	return [
+		{
+			label: category.label,
+			href: contentCategoryPath(category.slug),
+			image: cover.previewUrl,
+		},
+	];
 });
+
+const marqueeTiles = (() => {
+	if (categoryTiles.length === 0) return [];
+	const padded = [...categoryTiles];
+	while (padded.length < 8) padded.push(...categoryTiles);
+	return padded;
+})();
 
 const columnSize = Math.ceil(topKeywords.length / 4) || 1;
 const popularColumns = [0, 1, 2, 3]
