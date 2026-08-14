@@ -1,9 +1,11 @@
-import { useCallback, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
 import ImageEditor from './ImageEditor';
 import ShareBar from './ShareBar';
 
 const LENS_SIZE = 196;
 const LENS_ZOOM = 2.5;
+const EDIT_HINT_MS = 4000;
+const EDIT_HINT_SHATTER_MS = 620;
 
 type Props = {
 	imageUrl: string;
