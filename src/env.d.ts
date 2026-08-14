@@ -8,6 +8,8 @@ type CloudflareEnv = {
 	ADMIN_EMAILS?: string;
 	GEMINI_API_KEY?: string;
 	GEMINI_MODEL?: string;
+	TOGETHER_API_KEY?: string;
+	TOGETHER_MODEL?: string;
 	SANITY_PROJECT_ID?: string;
 	SANITY_DATASET?: string;
 	SANITY_API_TOKEN?: string;
