@@ -308,61 +308,30 @@ function except<K extends keyof CatalogQuery>(query: CatalogQuery, key: K): Cata
 	return { ...query, [key]: '' };
 }
 
-export function catalogFacets(pool: AssetDetail[], query: CatalogQuery, tagLimit = 18): CatalogFacets {
+export function catalogFacets(pool: AssetDetail[], query: CatalogQuery): CatalogFacets {
 	const typeBase = applyCatalogFilters(pool, except(query, 'type'));
 	const topicBase = applyCatalogFilters(pool, except(query, 'topic'));
 	const colorBase = applyCatalogFilters(pool, except(query, 'color'));
 	const orientBase = applyCatalogFilters(pool, except(query, 'orient'));
-	const orientBase = applyCatalogFilters(pool, except(query, 'orient'));
-
-	const types: CatalogFacets['types'] = [
-		{ slug: 'all', label: 'All types', count: typeBase.length },
-		...CATEGORIES.map((item) => ({
-			slug: item.slug,
-			label: item.label,
-			count: typeBase.filter((asset) => asset.category === item.slug).length,
-		})),
-	];
-
-	const topics = CONTENT_CATEGORY_PAGES.map((item) => ({
-		slug: item.slug,
-		label: item.label,
-		count: topicBase.filter((asset) => assetMatchesContentCategory(asset, item.slug)).length,
-	}));
-
-	const colors = CATALOG_COLORS.map((item) => ({
-		...item,
-		count: colorBase.filter((asset) => assetMatchesColor(asset, item.id)).length,
-	}));
-
-	const tagCounts = new Map<string, { label: string; count: number }>();
-	for (const asset of tagBase) {
-		for (const label of asset.tags || []) {
-			const slug = toPathSlug(label);
-			if (!slug) continue;
-			const current = tagCounts.get(slug);
-			if (current) current.count += 1;
-			else tagCounts.set(slug, { label, count: 1 });
-		}
-	}
-
-	const tags = [...tagCounts.entries()]
-		.map(([slug, item]) => ({ slug, label: item.label, count: item.count }))
-		.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
-		.slice(0, tagLimit);
-
-	if (query.tag && !tags.some((item) => item.slug === query.tag)) {
-		const selected = [...tagCounts.entries()].find(([slug]) => slug === query.tag);
-		if (selected) {
-			tags.unshift({ slug: selected[0], label: selected[1].label, count: selected[1].count });
-		}
-	}
 
 	return {
-		types,
-		topics,
-		colors,
-		tags,
+		types: [
+			{ slug: 'all', label: 'All types', count: typeBase.length },
+			...CATEGORIES.map((item) => ({
+				slug: item.slug,
+				label: item.label,
+				count: typeBase.filter((asset) => asset.category === item.slug).length,
+			})),
+		],
+		topics: CONTENT_CATEGORY_PAGES.map((item) => ({
+			slug: item.slug,
+			label: item.label,
+			count: topicBase.filter((asset) => assetMatchesContentCategory(asset, item.slug)).length,
+		})),
+		colors: CATALOG_COLORS.map((item) => ({
+			...item,
+			count: colorBase.filter((asset) => assetMatchesColor(asset, item.id)).length,
+		})),
 		orients: CATALOG_ORIENTS.map((item) => ({
 			...item,
 			count: orientBase.filter((asset) => assetOrientation(asset) === item.id).length,
