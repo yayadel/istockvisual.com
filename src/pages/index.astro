@@ -114,8 +114,11 @@ const proPerks = [
 		</div>
 	</section>
 
-	<section class="home-cats" aria-label="Categories">
-		<div class="home-cats__grid">
+	<section class="home-cats" aria-label="Popular categories">
+		<button class="home-cats__nav home-cats__nav--prev" type="button" aria-label="Previous categories" data-cats-prev>
+			‹
+		</button>
+		<div class="home-cats__scroller" data-cats-scroller>
 			{
 				categoryTiles.map((category) => (
 					<a class="home-cats__card" href={category.href}>
@@ -125,6 +128,9 @@ const proPerks = [
 				))
 			}
 		</div>
+		<button class="home-cats__nav home-cats__nav--next" type="button" aria-label="Next categories" data-cats-next>
+			›
+		</button>
 	</section>
 
 	<section class="home-featured" aria-labelledby="home-featured-title">
