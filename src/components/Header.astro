@@ -29,6 +29,24 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 <header class="site-header">
 	<div class="site-header__inner">
 		<a class="brand" href="/">iStock<span>Visual</span></a>
+		<div class="header-auth">
+			{
+				user ? (
+					<a class="header-auth__account" href="/account">
+						{user.name || 'Account'}
+					</a>
+				) : (
+					<>
+						<a class="header-auth__login" href="/login">
+							Log in
+						</a>
+						<a class="header-auth__signup" href="/signup">
+							Sign up
+						</a>
+					</>
+				)
+			}
+		</div>
 		<button
 			class="nav-toggle"
 			type="button"
