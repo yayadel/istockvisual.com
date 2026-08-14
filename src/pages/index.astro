@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AssetGrid from '../components/AssetGrid.astro';
 import SearchBar from '../components/SearchBar.astro';
+import HomeMarkIcon from '../components/HomeMarkIcon.astro';
 import { CATEGORIES } from '../config/categories';
 import { listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
 import { formatAssetTitle } from '../lib/asset-types';
@@ -16,6 +17,7 @@ const usingDemo = !isSanityConfigured();
 
 const studioTools = [
 	{
+		id: 'image' as const,
 		index: '01',
 		title: 'Image Editor',
 		lede: 'Adjust, crop, remove backgrounds, and expand photos in the browser.',
@@ -23,6 +25,7 @@ const studioTools = [
 		hint: 'Adjust · Crop · Remove BG · Expand',
 	},
 	{
+		id: 'convert' as const,
 		index: '02',
 		title: 'Image Convert',
 		lede: 'Batch convert JPG, PNG, WebP, and HEIC with quality and scale controls.',
@@ -30,6 +33,7 @@ const studioTools = [
 		hint: 'Format · Quality · Batch ZIP',
 	},
 	{
+		id: 'vectorize' as const,
 		index: '03',
 		title: 'Image Vectorizer',
 		lede: 'Trace bitmaps into clean SVG paths, then copy the code or download the file.',
@@ -37,6 +41,7 @@ const studioTools = [
 		hint: 'Bitmap → SVG · Local trace',
 	},
 	{
+		id: 'social' as const,
 		index: '04',
 		title: 'Social Resizer',
 		lede: 'Fit one batch to Instagram, TikTok, YouTube, Facebook, and LinkedIn.',
@@ -44,6 +49,7 @@ const studioTools = [
 		hint: 'Presets · Focus · ZIP export',
 	},
 	{
+		id: 'watermark' as const,
 		index: '05',
 		title: 'Batch Watermark',
 		lede: 'Stamp text or logo marks that scale with each photo. Tile or nine-point place.',
@@ -51,12 +57,20 @@ const studioTools = [
 		hint: 'Text · Logo · Tile pattern',
 	},
 	{
+		id: 'palette' as const,
 		index: '06',
 		title: 'Palette Generator',
 		lede: 'Extract dominant colors. Copy HEX, RGB, or HSL, or export CSS and Tailwind.',
 		href: '/tools/palette',
 		hint: 'Swatches · Eyedropper · Export',
 	},
+];
+
+const proPerks = [
+	{ icon: 'res' as const, title: '2K · 4K · 8K', text: 'High-resolution files while your plan is active.' },
+	{ icon: 'format' as const, title: 'JPG, PNG, WEBP, SVG', text: 'Export the format your project needs.' },
+	{ icon: 'license' as const, title: 'Commercial license', text: 'Ads, sites, and products. Attribution required.' },
+	{ icon: 'refund' as const, title: '7-day refund', text: 'Not satisfied? Request a full refund.' },
 ];
 ---
 
@@ -73,39 +87,44 @@ const studioTools = [
 	</section>
 
 	<section class="home-pro" aria-labelledby="home-pro-title">
+		<span class="home-pro__mark" aria-hidden="true">PRO</span>
+		<span class="home-pro__res" aria-hidden="true">4K</span>
 		<div class="home-pro__copy">
-			<p class="asset-card__meta">iStockVisual Pro</p>
+			<p class="home-kicker">
+				<span class="home-kicker__icon"><HomeMarkIcon name="pro" /></span>
+				iStockVisual Pro
+			</p>
 			<h2 id="home-pro-title">Unlock 2K, 4K, and 8K downloads</h2>
 			<p>
 				Free members keep 500 and 1K previews. Pro unlocks every size and format for commercial work —
 				Lifetime Access from {LIFETIME_PLAN.price}, paid once.
 			</p>
-			<a class="btn" href="/price">See Pro plans</a>
+			<a class="btn home-pro__cta" href="/price">See Pro plans</a>
 		</div>
 		<ul class="home-pro__perks">
-			<li>
-				<strong>2K · 4K · 8K</strong>
-				<span>High-resolution files while your plan is active.</span>
-			</li>
-			<li>
-				<strong>JPG, PNG, WEBP, SVG</strong>
-				<span>Export the format your project needs.</span>
-			</li>
-			<li>
-				<strong>Commercial license</strong>
-				<span>Ads, sites, and products. Attribution required.</span>
-			</li>
-			<li>
-				<strong>7-day refund</strong>
-				<span>Not satisfied? Request a full refund.</span>
-			</li>
+			{
+				proPerks.map((perk) => (
+					<li>
+						<span class="home-pro__perk-icon">
+							<HomeMarkIcon name={perk.icon} />
+						</span>
+						<div>
+							<strong>{perk.title}</strong>
+							<span>{perk.text}</span>
+						</div>
+					</li>
+				))
+			}
 		</ul>
 	</section>
 
 	<section class="home-tools" aria-labelledby="home-tools-title">
 		<div class="section-head">
 			<div>
-				<p class="asset-card__meta">Studio</p>
+				<p class="home-kicker home-kicker--on-light">
+					<span class="home-kicker__icon"><HomeMarkIcon name="image" /></span>
+					Studio
+				</p>
 				<h2 id="home-tools-title">Six editing tools, in the browser</h2>
 				<p>Files stay on your device. No upload unless you choose visual search.</p>
 			</div>
@@ -115,6 +134,9 @@ const studioTools = [
 			{
 				studioTools.map((tool) => (
 					<a class="home-tools__card" href={tool.href}>
+						<span class="home-tools__glyph">
+							<HomeMarkIcon name={tool.id} />
+						</span>
 						<span class="home-tools__index">{tool.index}</span>
 						<h3>{tool.title}</h3>
 						<p>{tool.lede}</p>
@@ -128,9 +150,17 @@ const studioTools = [
 	{
 		topKeywords.length > 0 && (
 			<section class="home-top-search" aria-labelledby="home-top-search-title">
+				<span class="home-top-search__mark" aria-hidden="true">
+					<HomeMarkIcon name="search" />
+				</span>
 				<div class="section-head">
 					<div>
-						<p class="asset-card__meta">Discover</p>
+						<p class="home-kicker home-kicker--on-light">
+							<span class="home-kicker__icon">
+								<HomeMarkIcon name="search" />
+							</span>
+							Discover
+						</p>
 						<h2 id="home-top-search-title">Top search</h2>
 						<p>Popular keywords from the library — open any one to see matching results.</p>
 					</div>
@@ -138,7 +168,10 @@ const studioTools = [
 				<ol class="home-top-search__list">
 					{topKeywords.map((keyword) => (
 						<li>
-							<a href={searchPath(keyword)}>{formatAssetTitle(keyword)}</a>
+							<a href={searchPath(keyword)}>
+								<span aria-hidden="true">#</span>
+								{formatAssetTitle(keyword)}
+							</a>
 						</li>
 					))}
 				</ol>
@@ -146,11 +179,11 @@ const studioTools = [
 		)
 	}
 
-	<section>
+	<section class="home-cats">
 		<div class="section-head">
 			<div>
 				<h2>Explore categories</h2>
-				<p>Frontend-configured catalog — content lives in Sanity, files in R2.</p>
+				<p>Photos, illustrations, vectors, and 3D — pick a library and start browsing.</p>
 			</div>
 		</div>
 		<div class="category-pills">
