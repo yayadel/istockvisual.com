@@ -384,7 +384,7 @@ export function applyCatalogFilters(assets: AssetDetail[], query: CatalogQuery):
 		if (query.topic && !assetMatchesContentCategory(asset, query.topic)) return false;
 		if (query.orient && assetOrientation(asset) !== query.orient) return false;
 		if (query.exclude && matchesExclude(asset, query.exclude)) return false;
-		if (needle && !assetSearchHay(asset).includes(needle)) return false;
+		if (needle && !assetMatchesSearchQuery(asset, needle)) return false;
 		return true;
 	});
 
