@@ -1522,7 +1522,7 @@ body.upload-modal-open {
 	min-height: min(68vh, 36rem);
 	display: grid;
 	align-items: center;
-	overflow: hidden;
+	overflow: visible;
 	margin: 0;
 	width: 100%;
 	padding: 6.5rem 0 5.5rem;
@@ -2117,7 +2117,6 @@ body.upload-modal-open {
 }
 
 @media (max-width: 620px) {
-	.home-cats__grid,
 	.home-tools__grid,
 	.home-pro__perks,
 	.home-top-search__cols {
@@ -2125,7 +2124,7 @@ body.upload-modal-open {
 	}
 
 	.home-cats__card {
-		aspect-ratio: 16 / 10;
+		flex-basis: 11.5rem;
 	}
 
 	.home-top-search__cols ul,
