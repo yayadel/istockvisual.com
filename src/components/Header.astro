@@ -273,17 +273,24 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 			}
 			<div class="nav__spacer" aria-hidden="true"></div>
 			<ThemeToggle />
-			{
-				user ? (
-					<a class="nav__cta" href="/account">
-						{user.name || 'Account'}
-					</a>
-				) : (
-					<a class="nav__signin" href="/login">
-						Sign in
-					</a>
-				)
-			}
+			<div class="nav__auth">
+				{
+					user ? (
+						<a class="nav__cta" href="/account">
+							{user.name || 'Account'}
+						</a>
+					) : (
+						<>
+							<a class="nav__signin" href="/login">
+								Log in
+							</a>
+							<a class="nav__signup" href="/signup">
+								Sign up
+							</a>
+						</>
+					)
+				}
+			</div>
 		</nav>
 	</div>
 </header>
