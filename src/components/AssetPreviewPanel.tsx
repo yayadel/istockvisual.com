@@ -149,7 +149,6 @@ export default function AssetPreviewPanel({
 					width={width}
 					height={height}
 					className="asset-preview__image"
-					crossOrigin="anonymous"
 					fetchPriority="high"
 					decoding="async"
 					draggable={false}
