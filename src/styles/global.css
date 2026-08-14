@@ -747,6 +747,10 @@ textarea {
 	background: rgba(255, 255, 255, 0.06);
 }
 
+.header-auth {
+	display: none;
+}
+
 .nav-toggle {
 	display: none;
 	flex-direction: column;
