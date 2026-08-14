@@ -3064,31 +3064,36 @@ body.download-auth-modal-open {
 
 .share-love__snippet {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) 2.55rem;
+	grid-template-columns: minmax(0, 1fr) 2.7rem;
 	gap: 0.5rem;
-	align-items: stretch;
+	align-items: start;
 	margin-top: 0.7rem;
 }
 
 .share-love__snippet code {
 	display: block;
-	overflow: hidden;
-	padding: 0.78rem 0.85rem;
+	min-height: 5.5rem;
+	max-height: 10rem;
+	overflow: auto;
+	padding: 0.95rem 1rem;
 	border: 1px solid var(--line);
 	border-radius: 8px;
 	background: #fff;
 	color: var(--text);
 	font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
-	font-size: 0.78rem;
-	line-height: 1.4;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+	font-size: 0.84rem;
+	line-height: 1.55;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 
 .share-love__copy {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	width: 2.7rem;
+	height: 2.7rem;
 	margin: 0;
 	padding: 0;
 	border: 1px solid var(--line);
