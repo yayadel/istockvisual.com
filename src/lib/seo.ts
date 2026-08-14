@@ -32,6 +32,10 @@ export function assetSearchTitle(imageName: string): string {
 	return `Free Download ${imageName.trim()} Stock Image`;
 }
 
+export function assetPageHeading(imageName: string): string {
+	return `STOCK IMAGE OF ${imageName.trim()} free download`;
+}
+
 function stockNoun(category: CategorySlug): string {
 	switch (category) {
 		case 'illustrations':
