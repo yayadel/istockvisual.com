@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
+import { imageContentRect, paintAdaptiveWatermark } from '../lib/adaptive-watermark';
 import ImageEditor from './ImageEditor';
 import ShareBar from './ShareBar';
 
