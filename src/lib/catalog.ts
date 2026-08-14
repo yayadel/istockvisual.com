@@ -190,7 +190,6 @@ export function parseCatalogQuery(
 		type,
 		topic,
 		color,
-		tag: tagParam,
 		orient: CATALOG_ORIENTS.some((item) => item.id === orientParam) ? orientParam : '',
 		exclude: excludeParam.slice(0, 80),
 		sort: CATALOG_SORTS.some((item) => item.id === sortParam) ? sortParam : 'newest',
@@ -201,7 +200,6 @@ function appendSharedParams(params: URLSearchParams, query: CatalogQuery) {
 	if (query.type !== 'all') params.set('category', query.type);
 	if (query.topic) params.set('topic', query.topic);
 	if (query.color) params.set('color', query.color);
-	if (query.tag) params.set('tag', query.tag);
 	if (query.orient) params.set('orient', query.orient);
 	if (query.exclude) params.set('exclude', query.exclude);
 	if (query.sort && query.sort !== 'newest') params.set('sort', query.sort);
