@@ -1,5 +1,5 @@
 import { CATEGORIES, isCategorySlug, type CategorySlug } from '../config/categories';
-import type { AssetDetail } from './asset-types';
+import { formatTagLabel, type AssetDetail } from './asset-types';
 import {
 	CONTENT_CATEGORY_PAGES,
 	assetMatchesContentCategory,
