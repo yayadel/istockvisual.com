@@ -372,25 +372,9 @@ export function catalogFacets(pool: AssetDetail[], query: CatalogQuery, tagLimit
 		topics,
 		colors,
 		tags,
-		licenses: CATALOG_LICENSES.map((item) => ({
-			...item,
-			count: licenseBase.filter((asset) => assetLicenseKind(asset) === item.id).length,
-		})),
-		ai: CATALOG_AI.map((item) => ({
-			...item,
-			count: aiBase.filter((asset) => (item.id === 'yes') === assetIsAiGenerated(asset)).length,
-		})),
 		orients: CATALOG_ORIENTS.map((item) => ({
 			...item,
 			count: orientBase.filter((asset) => assetOrientation(asset) === item.id).length,
-		})),
-		access: CATALOG_ACCESS.map((item) => ({
-			...item,
-			count: accessBase.filter((asset) => (item.id === 'pro') === Boolean(asset.isPremium)).length,
-		})),
-		formats: CATALOG_FORMATS.map((item) => ({
-			...item,
-			count: formatBase.filter((asset) => assetFormat(asset) === item.id).length,
 		})),
 	};
 }
@@ -412,25 +396,9 @@ export function catalogChips(query: CatalogQuery) {
 		const label = CATEGORIES.find((item) => item.slug === query.type)?.label || query.type;
 		chips.push({ key: 'type', label, href: catalogHref(query, { type: 'all' }) });
 	}
-	if (query.license) {
-		const label = CATALOG_LICENSES.find((item) => item.id === query.license)?.label || query.license;
-		chips.push({ key: 'license', label, href: catalogHref(query, { license: '' }) });
-	}
-	if (query.ai) {
-		const label = CATALOG_AI.find((item) => item.id === query.ai)?.label || query.ai;
-		chips.push({ key: 'ai', label, href: catalogHref(query, { ai: '' }) });
-	}
 	if (query.orient) {
 		const label = CATALOG_ORIENTS.find((item) => item.id === query.orient)?.label || query.orient;
 		chips.push({ key: 'orient', label, href: catalogHref(query, { orient: '' }) });
-	}
-	if (query.access) {
-		const label = CATALOG_ACCESS.find((item) => item.id === query.access)?.label || query.access;
-		chips.push({ key: 'access', label, href: catalogHref(query, { access: '' }) });
-	}
-	if (query.format) {
-		const label = CATALOG_FORMATS.find((item) => item.id === query.format)?.label || query.format;
-		chips.push({ key: 'format', label, href: catalogHref(query, { format: '' }) });
 	}
 	if (query.color) {
 		const family = CATALOG_COLORS.find((item) => item.id === query.color);
