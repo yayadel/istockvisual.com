@@ -6,6 +6,12 @@ type Props = {
 	variant?: 'page' | 'widget';
 };
 
+type StoredChat = {
+	updatedAt: number;
+	open?: boolean;
+	messages: ChatItem[];
+};
+
 const GREETING =
 	'Hi — I’m the free iStockVisual assistant. Ask about licenses, free vs Pro sizes, plans, refunds, or studio tools. For account-specific billing, email hello@istockvisual.com.';
 
@@ -15,6 +21,60 @@ const PROMPTS = [
 	'What does Pro include?',
 	'How do refunds work?',
 ];
+
+const STORAGE_KEY = 'istockvisual-support-chat';
+const TTL_MS = 12 * 60 * 60 * 1000;
+const MAX_STORED = 40;
+const DEFAULT_MESSAGES: ChatItem[] = [{ role: 'assistant', content: GREETING }];
+
+function isChatItem(value: unknown): value is ChatItem {
+	if (!value || typeof value !== 'object') return false;
+	const item = value as ChatItem;
+	return (
+		(item.role === 'user' || item.role === 'assistant') &&
+		typeof item.content === 'string' &&
+		item.content.trim().length > 0
+	);
+}
+
+function readStore(): StoredChat | null {
+	try {
+		const raw = localStorage.getItem(STORAGE_KEY);
+		if (!raw) return null;
+		const data = JSON.parse(raw) as StoredChat;
+		if (!data?.updatedAt || Date.now() - data.updatedAt > TTL_MS) {
+			localStorage.removeItem(STORAGE_KEY);
+			return null;
+		}
+		const messages = Array.isArray(data.messages)
+			? data.messages.filter(isChatItem).slice(-MAX_STORED)
+			: [];
+		if (!messages.some((item) => item.role === 'user')) {
+			localStorage.removeItem(STORAGE_KEY);
+			return null;
+		}
+		return { updatedAt: data.updatedAt, open: Boolean(data.open), messages };
+	} catch {
+		return null;
+	}
+}
+
+function writeStore(messages: ChatItem[], open: boolean) {
+	try {
+		if (!messages.some((item) => item.role === 'user')) {
+			localStorage.removeItem(STORAGE_KEY);
+			return;
+		}
+		const payload: StoredChat = {
+			updatedAt: Date.now(),
+			open,
+			messages: messages.filter(isChatItem).slice(-MAX_STORED),
+		};
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+	} catch {
+		/* quota / private mode */
+	}
+}
 
 function linkify(text: string) {
 	const parts = text.split(/(\/[a-z0-9][a-z0-9/_-]*)/gi);
@@ -35,10 +95,43 @@ export default function SupportChat({ variant = 'page' }: Props) {
 	const [input, setInput] = useState('');
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState('');
-	const [messages, setMessages] = useState<ChatItem[]>([
-		{ role: 'assistant', content: GREETING },
-	]);
+	const [ready, setReady] = useState(false);
+	const [messages, setMessages] = useState<ChatItem[]>(DEFAULT_MESSAGES);
 	const scrollerRef = useRef<HTMLDivElement>(null);
+	const skipWriteRef = useRef(true);
+
+	useEffect(() => {
+		const stored = readStore();
+		if (stored) {
+			setMessages(stored.messages);
+			if (variant === 'widget') setOpen(stored.open);
+		}
+		setReady(true);
+	}, [variant]);
+
+	useEffect(() => {
+		if (!ready) return;
+		if (skipWriteRef.current) {
+			skipWriteRef.current = false;
+			return;
+		}
+		writeStore(messages, variant === 'page' ? true : open);
+	}, [ready, messages, open, variant]);
+
+	useEffect(() => {
+		function onStorage(event: StorageEvent) {
+			if (event.key !== STORAGE_KEY) return;
+			const stored = readStore();
+			if (stored) {
+				setMessages(stored.messages);
+				if (variant === 'widget') setOpen(stored.open);
+			} else {
+				setMessages(DEFAULT_MESSAGES);
+			}
+		}
+		window.addEventListener('storage', onStorage);
+		return () => window.removeEventListener('storage', onStorage);
+	}, [variant]);
 
 	useEffect(() => {
 		const el = scrollerRef.current;
