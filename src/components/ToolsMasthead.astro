@@ -16,9 +16,41 @@ const links = [
 	{ id: 'watermark', href: '/tools/watermark', label: 'Batch Watermark', hint: 'Text · Logo' },
 	{ id: 'palette', href: '/tools/palette', label: 'Palette Generator', hint: 'Extract colors' },
 ] as const;
+
+const current = links.find((link) => link.id === active) ?? links[0];
+const currentIndex = String(links.findIndex((link) => link.id === active) + 1).padStart(2, '0');
 ---
 
 <header class="tools-masthead">
+	<div class="tools-masthead__picker" data-tools-picker>
+		<p class="tools-masthead__current">
+			<span>{currentIndex}</span>
+			<strong>{current.label}</strong>
+		</p>
+		<details class="tools-masthead__more">
+			<summary>
+				Other tools
+				<span class="tools-masthead__more-caret" aria-hidden="true"></span>
+			</summary>
+			<div class="tools-masthead__menu" role="menu">
+				{
+					links.map((link, index) => (
+						<a
+							href={link.href}
+							role="menuitem"
+							aria-current={active === link.id ? 'page' : undefined}
+						>
+							<span class="tools-masthead__tab-index">{String(index + 1).padStart(2, '0')}</span>
+							<span class="tools-masthead__tab-copy">
+								<strong>{link.label}</strong>
+								<em>{link.hint}</em>
+							</span>
+						</a>
+					))
+				}
+			</div>
+		</details>
+	</div>
 	<nav class="tools-masthead__switch" aria-label="Tools">
 		{
 			links.map((link, index) => (
@@ -42,8 +74,19 @@ const links = [
 </header>
 
 <script>
-	const activeTab = document.querySelector('.tools-masthead__tab.is-active, .tools-masthead__tab[aria-current="page"]');
-	if (activeTab instanceof HTMLElement && window.matchMedia('(max-width: 800px)').matches) {
-		activeTab.scrollIntoView({ inline: 'center', block: 'nearest' });
-	}
+	document.querySelectorAll('[data-tools-picker]').forEach(function (root) {
+		var details = root.querySelector('details');
+		if (!(details instanceof HTMLDetailsElement)) return;
+
+		document.addEventListener('mousedown', function (event) {
+			if (!details.open) return;
+			if (event.target instanceof Node && !details.contains(event.target)) {
+				details.open = false;
+			}
+		});
+
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') details.open = false;
+		});
+	});
 </script>
