@@ -4271,6 +4271,8 @@ body.image-editor-modal-open {
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
 	width: min(100%, 1280px);
+	max-width: 100%;
+	min-width: 0;
 	height: min(100dvh - 1.5rem, 920px);
 	max-height: calc(100dvh - 1.5rem);
 	background: #fff;
