@@ -234,7 +234,7 @@ export function findSimilarAssets(
 	return [...related, ...fallback].slice(0, limit);
 }
 
-/** Search page: full-text across title, description, keyword, tags, related queries. */
+/** Search page: whole-word match on title, source keyword, and tags. */
 export function filterAssetsBySearch(
 	assets: AssetDetail[],
 	query: string,
@@ -244,7 +244,7 @@ export function filterAssetsBySearch(
 	return assets.filter((asset) => {
 		if (category && category !== 'all' && asset.category !== category) return false;
 		if (!needle) return true;
-		return assetSearchText(asset).includes(needle);
+		return assetMatchesSearchQuery(asset, needle);
 	});
 }
 

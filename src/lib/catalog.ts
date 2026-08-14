@@ -373,8 +373,8 @@ function matchesExclude(asset: AssetDetail, exclude: string): boolean {
 		.map((item) => item.trim())
 		.filter(Boolean);
 	if (!terms.length) return false;
-	const hay = assetSearchHay(asset);
-	return terms.some((term) => hay.includes(term));
+	const hay = assetKeywordHay(asset);
+	return terms.some((term) => searchTokens(term).some((token) => hayHasToken(hay, token)));
 }
 
 export function applyCatalogFilters(assets: AssetDetail[], query: CatalogQuery): AssetDetail[] {
