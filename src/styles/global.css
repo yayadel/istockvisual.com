@@ -5443,6 +5443,10 @@ body.image-editor-modal-open {
 	color: var(--text);
 }
 
+.legal-copy h2:first-child {
+	margin-top: 0;
+}
+
 .legal-copy h3 {
 	margin: 0.35rem 0 0;
 	font-size: 0.92rem;
