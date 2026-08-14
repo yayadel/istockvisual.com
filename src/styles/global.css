@@ -1715,6 +1715,7 @@ body.upload-modal-open {
 .home-top-search .section-head,
 .home-cats .section-head,
 .home-featured .section-head {
+	position: relative;
 	margin-top: 0;
 	padding-bottom: 1rem;
 	border-bottom: 1px solid var(--line);
@@ -1731,13 +1732,6 @@ body.upload-modal-open {
 	width: 2.6rem;
 	height: 2px;
 	background: var(--accent);
-}
-
-.home-tools .section-head,
-.home-top-search .section-head,
-.home-cats .section-head,
-.home-featured .section-head {
-	position: relative;
 }
 
 .home-pro,
@@ -2246,6 +2240,17 @@ body.upload-modal-open {
 	.home-pro__perks,
 	.home-cats__grid {
 		grid-template-columns: 1fr;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-tools__card,
+	.home-cats__card,
+	.home-top-search__list a,
+	.home-tools__card:hover,
+	.home-cats__card:hover,
+	.home-top-search__list a:hover {
+		transform: none;
 	}
 }
 
