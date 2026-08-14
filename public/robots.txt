@@ -3,6 +3,3 @@ User-agent: *
 Disallow: /admin
 Disallow: /api/admin
 Disallow: /s/
-Disallow: /s$
-Disallow: /S/
-Disallow: /S$
