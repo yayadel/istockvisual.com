@@ -111,6 +111,81 @@ export function catalogColorHex(colorId: string): string {
 	return '';
 }
 
+function srgbToLinear(channel: number) {
+	const value = channel / 255;
+	return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+}
+
+function rgbToLab(rgb: Rgb) {
+	const r = srgbToLinear(rgb.r);
+	const g = srgbToLinear(rgb.g);
+	const b = srgbToLinear(rgb.b);
+	const x = (r * 0.4124564 + g * 0.3575761 + b * 0.1804375) / 0.95047;
+	const y = r * 0.2126729 + g * 0.7151522 + b * 0.072175;
+	const z = (r * 0.0193339 + g * 0.119192 + b * 0.9503041) / 1.08883;
+	const f = (t: number) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+	const fx = f(x);
+	const fy = f(y);
+	const fz = f(z);
+	return { L: 116 * fy - 16, a: 500 * (fx - fy), b: 200 * (fy - fz) };
+}
+
+function deltaE(a: Rgb, b: Rgb) {
+	const labA = rgbToLab(a);
+	const labB = rgbToLab(b);
+	return Math.sqrt((labA.L - labB.L) ** 2 + (labA.a - labB.a) ** 2 + (labA.b - labB.b) ** 2);
+}
+
+/** Tightest-first bands: exact hex, then progressively looser palette matches. */
+const COLOR_DELTA_STEPS = [0.8, 3, 6, 12, 22, 36, 55, 80];
+
+export function assetBestColorDelta(asset: AssetDetail, colorId: string): number {
+	const targetHex = catalogColorHex(colorId);
+	const target = parseHex(targetHex || colorId);
+	if (!target) return Number.POSITIVE_INFINITY;
+	const palette = asset.colorPalette || [];
+	if (!palette.length) return Number.POSITIVE_INFINITY;
+
+	let best = Number.POSITIVE_INFINITY;
+	for (const swatch of palette) {
+		const hex = (swatch.hex || '').trim().replace(/^#/, '').toLowerCase();
+		if (targetHex && hex === targetHex) return 0;
+		const rgb = parseHex(swatch.hex || '');
+		if (!rgb) continue;
+		const d = deltaE(rgb, target);
+		if (d < best) best = d;
+	}
+	return best;
+}
+
+function colorMatchThreshold(deltas: number[]): number {
+	const finite = deltas.filter((d) => Number.isFinite(d)).sort((a, b) => a - b);
+	if (!finite.length) return -1;
+	for (const step of COLOR_DELTA_STEPS) {
+		if (finite[0] <= step) return step;
+	}
+	const nearest = finite[0];
+	const clusterEnd = finite.findIndex((d) => d > nearest + 10);
+	const count = clusterEnd === -1 ? Math.min(finite.length, 24) : Math.max(clusterEnd, 1);
+	return finite[Math.min(count, 24) - 1];
+}
+
+function catalogSortCompare(a: AssetDetail, b: AssetDetail, sort: CatalogSort) {
+	if (sort === 'oldest') return (a.publishedAt || '').localeCompare(b.publishedAt || '');
+	if (sort === 'title') return a.title.localeCompare(b.title);
+	return (b.publishedAt || '').localeCompare(a.publishedAt || '');
+}
+
+function rankCatalogByColor(assets: AssetDetail[], colorId: string, sort: CatalogSort) {
+	const scored = assets.map((asset) => ({ asset, delta: assetBestColorDelta(asset, colorId) }));
+	const threshold = colorMatchThreshold(scored.map((item) => item.delta));
+	if (threshold < 0) return [];
+	return scored
+		.filter((item) => item.delta <= threshold)
+		.sort((a, b) => a.delta - b.delta || catalogSortCompare(a.asset, b.asset, sort))
+		.map((item) => item.asset);
+}
+
 export function assetMatchesColor(asset: AssetDetail, colorId: string): boolean {
 	const palette = asset.colorPalette || [];
 	if (!palette.length) return false;
