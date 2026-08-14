@@ -1748,16 +1748,34 @@ body.upload-modal-open {
 	position: relative;
 	margin: 1.15rem 0 0;
 	overflow: hidden;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
 .home-cats__viewport {
 	overflow: hidden;
+	cursor: grab;
+	touch-action: none;
+}
+
+.home-cats.is-grabbing .home-cats__viewport {
+	cursor: grabbing;
+}
+
+.home-cats.is-dragging a {
+	pointer-events: none;
 }
 
 .home-cats__track {
 	display: flex;
 	width: max-content;
+	will-change: transform;
 	animation: home-cats-marquee var(--home-cats-duration, 40s) linear infinite;
+}
+
+.home-cats--interactive .home-cats__track,
+.home-cats--interactive:hover .home-cats__track {
+	animation: none;
 }
 
 .home-cats__group {
