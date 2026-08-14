@@ -19,7 +19,7 @@ type Props = {
 const FORMAT_LABELS = DOWNLOAD_FORMATS.map((format) => format.toUpperCase()).join(', ');
 
 export default function BasicInfoPanel({
-	license: _license = 'Free to use — commercial OK, attribution required',
+	license: _license = 'Free to Use — Commercial OK, Attribution Required',
 	licenseHref = '/info/license',
 	categories,
 	categoryLabel,
@@ -33,10 +33,10 @@ export default function BasicInfoPanel({
 				: [];
 
 	return (
-		<section className="basic-info-panel is-open" aria-label="Basic information">
+		<section className="basic-info-panel is-open" aria-label="Basic Information">
 			<h2 className="basic-info-panel__title">
 				<DetailSectionIcon name="info" />
-				<span>Basic information</span>
+				<span>Basic Information</span>
 			</h2>
 			<div className="basic-info-panel__body">
 				<ul className="meta-list">
@@ -45,13 +45,13 @@ export default function BasicInfoPanel({
 						<span>
 							{licenseHref ? (
 								<a className="meta-list__license" href={licenseHref}>
-									<span>Free to use — commercial OK,</span>
-									<span>attribution required</span>
+									<span>Free to Use — Commercial OK</span>
+									<span>Attribution Required</span>
 								</a>
 							) : (
 								<span className="meta-list__license">
-									<span>Free to use — commercial OK,</span>
-									<span>attribution required</span>
+									<span>Free to Use — Commercial OK</span>
+									<span>Attribution Required</span>
 								</span>
 							)}
 						</span>

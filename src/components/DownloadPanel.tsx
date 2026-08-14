@@ -510,7 +510,7 @@ export default function DownloadPanel({
 				<li>
 					<a href={LICENSE_PATH}>
 						<CheckIcon />
-						Free to use
+						Free to Use
 					</a>
 				</li>
 				<li>
