@@ -2852,23 +2852,23 @@ body.upload-modal-open {
 	background-image:
 		repeating-linear-gradient(
 			0deg,
-			transparent 0 36px,
-			rgba(255, 255, 255, 0.22) 36px 37px
+			transparent 0 40px,
+			rgba(255, 255, 255, 0.14) 40px 41px
 		),
 		repeating-linear-gradient(
 			90deg,
-			transparent 0 36px,
-			rgba(0, 0, 0, 0.16) 36px 37px
+			transparent 0 40px,
+			rgba(0, 0, 0, 0.09) 40px 41px
 		);
 	mix-blend-mode: overlay;
-	opacity: 0.75;
+	opacity: 0.55;
 }
 
 .wm-protected::after {
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='140'><text x='50%' y='54%' fill='rgba(0,0,0,0.38)' stroke='none' font-size='23' font-family='Arial,sans-serif' font-weight='800' text-anchor='middle' transform='rotate(-32 111 71)'>iStockVisual</text><text x='50%' y='54%' fill='rgba(255,255,255,0.78)' stroke='rgba(0,0,0,0.4)' stroke-width='1.15' font-size='23' font-family='Arial,sans-serif' font-weight='800' text-anchor='middle' transform='rotate(-32 110 70)'>iStockVisual</text></svg>");
-	background-size: 220px 140px;
-	mix-blend-mode: normal;
-	opacity: 1;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='230' height='145'><text x='50%' y='54%' fill='rgba(255,255,255,0.55)' stroke='rgba(0,0,0,0.28)' stroke-width='0.85' font-size='20' font-family='Arial,sans-serif' font-weight='700' text-anchor='middle' transform='rotate(-32 115 72)'>iStockVisual</text></svg>");
+	background-size: 230px 145px;
+	mix-blend-mode: overlay;
+	opacity: 0.82;
 }
 
 .wm-protected--lock::before,
