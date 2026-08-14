@@ -4330,6 +4330,7 @@ body.image-editor-modal-open {
 .image-editor-modal__header-actions {
 	display: flex;
 	flex-wrap: wrap;
+	flex: 0 0 auto;
 	gap: 0.5rem;
 }
 
