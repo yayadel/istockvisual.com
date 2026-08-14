@@ -333,8 +333,9 @@ export default function DownloadPanel({
 	const anyModalOpen = authModalOpen || plansModalOpen || attrModalOpen;
 
 	useEffect(() => {
-		setNatural({ width: sourceWidth, height: sourceHeight });
-	}, [sourceHeight, sourceWidth]);
+		if (pageUrl) setPageHref(pageUrl);
+		else setPageHref(window.location.href);
+	}, [pageUrl]);
 
 	useEffect(() => {
 		if (!anyModalOpen) return;
