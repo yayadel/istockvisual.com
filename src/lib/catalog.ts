@@ -209,7 +209,6 @@ export function catalogHref(query: CatalogQuery, patch: Partial<CatalogQuery> = 
 	const next: CatalogQuery = { ...query, ...patch };
 	next.q = next.q.trim();
 	next.topic = toPathSlug(next.topic);
-	next.tag = toPathSlug(next.tag);
 	next.exclude = next.exclude.trim().slice(0, 80);
 	if (next.topic && !getContentCategoryBySlug(next.topic)) next.topic = '';
 	if (next.type !== 'all' && !isCategorySlug(next.type)) next.type = 'all';
@@ -252,7 +251,6 @@ export function catalogHasFilters(query: CatalogQuery) {
 			query.type !== 'all' ||
 			query.topic ||
 			query.color ||
-			query.tag ||
 			query.orient ||
 			query.exclude ||
 			query.sort !== 'newest',
