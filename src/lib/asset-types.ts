@@ -155,12 +155,16 @@ const TITLE_ACRONYMS = new Set([
 	'iot',
 	'ev',
 	'suv',
+	'ss19',
 ]);
+
+/** Fashion season codes such as SS19, FW20, AW21. */
+const FASHION_SEASON = /^(ss|fw|aw|pf)\d{2}$/i;
 
 function formatTitleToken(token: string, forceCapitalize: boolean): string {
 	if (!token) return token;
 	const lower = token.toLowerCase();
-	if (TITLE_ACRONYMS.has(lower)) return lower.toUpperCase();
+	if (TITLE_ACRONYMS.has(lower) || FASHION_SEASON.test(token)) return token.toUpperCase();
 	if (!forceCapitalize && TITLE_SMALL_WORDS.has(lower)) return lower;
 	// Single-letter designators (e.g. Z in Z Flashing), not articles like "a"
 	if (/^[a-z]$/i.test(token) && !TITLE_SMALL_WORDS.has(lower)) return token.toUpperCase();
