@@ -1,4 +1,4 @@
-import type { CategorySlug } from '../config/categories';
+import { isCategorySlug, type CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
 import { normalizeTags } from './asset-types';
 import {
