@@ -202,12 +202,3 @@ export async function answerSupportChat(
 		source: 'faq',
 	};
 }
-
-export const SUPPORT_GREETING = `Hi — I’m the free iStockVisual assistant. Ask about licenses, free vs Pro sizes, plans, refunds, or studio tools. For account-specific billing, email ${CONTACT}.`;
-
-export const SUPPORT_PROMPTS = [
-	'Is 1K really free?',
-	'How do I credit an image?',
-	'What does Pro include?',
-	'How do refunds work?',
-];
