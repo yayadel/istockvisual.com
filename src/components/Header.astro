@@ -63,7 +63,7 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 		<div class="nav-backdrop" hidden data-nav-backdrop></div>
 		<nav class="nav" id="site-nav" aria-label="Primary">
 			{
-				CATEGORIES.map((category) => (
+				navCategories.map((category) => (
 					<a
 						href={`/${category.slug}`}
 						aria-current={path.startsWith(`/${category.slug}`) ? 'page' : undefined}

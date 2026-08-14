@@ -187,7 +187,10 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 					</a>
 					<ul class="catalog-filter__list">
 						{
-							facets.types.slice(1).map((item) => (
+							facets.types
+								.slice(1)
+								.filter((item) => item.count > 0 || query.type === item.slug)
+								.map((item) => (
 								<li>
 									<a
 										class:list={[query.type === item.slug && 'is-active']}
