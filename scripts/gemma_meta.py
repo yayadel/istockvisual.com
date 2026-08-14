@@ -70,7 +70,48 @@ def usage_to_dict(response, model: str) -> dict:
 	}
 
 
-def append_response_log(record: dict) -> Path:
+def coerce_gemma_payload(data: dict) -> dict:
+	"""Map Gemma's near-miss keys onto the Gemini AssetMeta schema."""
+	out = dict(data)
+	if not out.get("assetUsageTips"):
+		for key in (
+			"assetFunctionalityUsageTips",
+			"usageTips",
+			"assetUsageTip",
+			"functionalityUsageTips",
+			"tips",
+		):
+			value = out.get(key)
+			if isinstance(value, str) and value.strip():
+				out["assetUsageTips"] = value.strip()
+				break
+	palette = out.get("colorPalette")
+	if isinstance(palette, list):
+		fixed = []
+		for item in palette:
+			if not isinstance(item, dict):
+				continue
+			name = item.get("name") or item.get("color") or item.get("label") or "Color"
+			hex_value = item.get("hex") or item.get("value") or "#888888"
+			fixed.append({"name": str(name), "hex": str(hex_value)})
+		out["colorPalette"] = fixed
+	medium = str(out.get("medium") or "").strip()
+	lower = medium.lower()
+	if lower in {"photograph", "photo", "photography"}:
+		out["medium"] = "Photograph"
+	elif "illustrat" in lower or lower == "vector":
+		out["medium"] = "Illustration"
+	elif "3d" in lower:
+		out["medium"] = "3D Graphic"
+	elif not medium:
+		prompt = str(out.get("imagePrompt") or "").lower()
+		if "illustrat" in prompt or "vector" in prompt:
+			out["medium"] = "Illustration"
+		elif "3d" in prompt:
+			out["medium"] = "3D Graphic"
+		else:
+			out["medium"] = "Photograph"
+	return out
 	log_dir = gm.ROOT / ".tmp"
 	log_dir.mkdir(parents=True, exist_ok=True)
 	jsonl_path = log_dir / "gemma4-log.jsonl"
