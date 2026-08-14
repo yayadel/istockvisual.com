@@ -348,25 +348,18 @@ export function applyCatalogFilters(assets: AssetDetail[], query: CatalogQuery):
 	const filtered = assets.filter((asset) => {
 		if (query.type !== 'all' && asset.category !== query.type) return false;
 		if (query.topic && !assetMatchesContentCategory(asset, query.topic)) return false;
-		if (query.color && !assetMatchesColor(asset, query.color)) return false;
 		if (query.orient && assetOrientation(asset) !== query.orient) return false;
 		if (query.exclude && matchesExclude(asset, query.exclude)) return false;
 		if (needle && !assetSearchHay(asset).includes(needle)) return false;
 		return true;
 	});
 
+	if (query.color) return rankCatalogByColor(filtered, query.color, query.sort);
 	return sortCatalogAssets(filtered, query.sort);
 }
 
 export function sortCatalogAssets(assets: AssetDetail[], sort: CatalogSort): AssetDetail[] {
-	const copy = [...assets];
-	if (sort === 'oldest') {
-		return copy.sort((a, b) => (a.publishedAt || '').localeCompare(b.publishedAt || ''));
-	}
-	if (sort === 'title') {
-		return copy.sort((a, b) => a.title.localeCompare(b.title));
-	}
-	return copy.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''));
+	return [...assets].sort((a, b) => catalogSortCompare(a, b, sort));
 }
 
 export type CatalogFacets = {
