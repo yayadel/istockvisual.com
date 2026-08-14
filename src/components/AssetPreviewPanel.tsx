@@ -35,9 +35,26 @@ export default function AssetPreviewPanel({
 	assetId,
 }: Props) {
 	const [editing, setEditing] = useState(false);
+	const [wmAdaptive, setWmAdaptive] = useState(false);
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
 	const lensRef = useRef<HTMLDivElement>(null);
+	const wmCanvasRef = useRef<HTMLCanvasElement>(null);
+
+	const paintWatermark = useCallback(() => {
+		const image = imageRef.current;
+		const canvas = wmCanvasRef.current;
+		if (!image || !canvas || !image.complete || image.naturalWidth < 2) {
+			setWmAdaptive(false);
+			return;
+		}
+
+		const box = imageContentRect(image);
+		canvas.style.left = `${box.x}px`;
+		canvas.style.top = `${box.y}px`;
+		const ok = paintAdaptiveWatermark(canvas, image, box.width, box.height);
+		setWmAdaptive(ok);
+	}, []);
 
 	const closeEditor = useCallback(() => setEditing(false), []);
 	const openEditor = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -89,11 +106,37 @@ export default function AssetPreviewPanel({
 		wrap.classList.add('asset-preview__image-wrap--zooming');
 	}, [hideLens]);
 
+	useEffect(() => {
+		const image = imageRef.current;
+		if (!image) return;
+
+		const onReady = () => paintWatermark();
+		if (image.complete) onReady();
+		else image.addEventListener('load', onReady);
+
+		const observer = new ResizeObserver(() => paintWatermark());
+		observer.observe(image);
+
+		return () => {
+			image.removeEventListener('load', onReady);
+			observer.disconnect();
+		};
+	}, [imageUrl, paintWatermark]);
+
+	const wrapClass = [
+		'asset-preview__image-wrap',
+		'wm-protected',
+		'wm-protected--lock',
+		wmAdaptive ? 'wm-protected--adaptive' : '',
+	]
+		.filter(Boolean)
+		.join(' ');
+
 	return (
 		<div className="asset-preview">
 			<div
 				ref={wrapRef}
-				className="asset-preview__image-wrap wm-protected wm-protected--lock"
+				className={wrapClass}
 				onContextMenu={(event) => event.preventDefault()}
 				onPointerMove={moveLens}
 				onPointerLeave={hideLens}
@@ -106,10 +149,16 @@ export default function AssetPreviewPanel({
 					width={width}
 					height={height}
 					className="asset-preview__image"
+					crossOrigin="anonymous"
 					fetchPriority="high"
 					decoding="async"
 					draggable={false}
 				/>
+				<div className="wm-protected__fallback" aria-hidden="true">
+					<span className="wm-protected__fallback-layer wm-protected__fallback-layer--dark" />
+					<span className="wm-protected__fallback-layer wm-protected__fallback-layer--light" />
+				</div>
+				<canvas ref={wmCanvasRef} className="wm-protected__adaptive" aria-hidden="true" />
 				<div
 					ref={lensRef}
 					className="asset-preview__lens"

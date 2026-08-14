@@ -2865,14 +2865,54 @@ body.upload-modal-open {
 }
 
 .wm-protected::after {
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='224' height='142'><text x='50%' y='54%' fill='rgba(255,255,255,0.66)' stroke='rgba(0,0,0,0.34)' stroke-width='1' font-size='21' font-family='Arial,sans-serif' font-weight='750' text-anchor='middle' transform='rotate(-32 112 71)'>iStockVisual</text></svg>");
+	display: none;
+}
+
+.wm-protected__fallback,
+.wm-protected__fallback-layer,
+.wm-protected__adaptive {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.wm-protected__adaptive {
+	inset: auto;
+	display: none;
+	max-width: none;
+	height: auto;
+}
+
+.wm-protected--adaptive .wm-protected__fallback {
+	display: none;
+}
+
+.wm-protected--adaptive .wm-protected__adaptive {
+	display: block;
+}
+
+.wm-protected__fallback-layer {
+	background-repeat: repeat;
 	background-size: 224px 142px;
-	mix-blend-mode: overlay;
-	opacity: 1;
+}
+
+.wm-protected__fallback-layer--dark {
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='224' height='142'><text x='50%' y='54%' fill='rgba(0,0,0,0.88)' font-size='21' font-family='Arial,sans-serif' font-weight='750' text-anchor='middle' transform='rotate(-32 112 71)'>iStockVisual</text></svg>");
+	mix-blend-mode: multiply;
+	opacity: 0.42;
+}
+
+.wm-protected__fallback-layer--light {
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='224' height='142'><text x='50%' y='54%' fill='rgba(255,255,255,0.92)' font-size='21' font-family='Arial,sans-serif' font-weight='750' text-anchor='middle' transform='rotate(-32 112 71)'>iStockVisual</text></svg>");
+	background-position: 1px 1px;
+	mix-blend-mode: screen;
+	opacity: 0.5;
 }
 
 .wm-protected--lock::before,
-.wm-protected--lock::after {
+.wm-protected--lock .wm-protected__fallback,
+.wm-protected--lock .wm-protected__adaptive {
 	pointer-events: auto;
 }
 
