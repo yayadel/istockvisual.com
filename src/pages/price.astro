@@ -64,7 +64,7 @@ const jsonLd = {
 				name: item.q,
 				acceptedAnswer: {
 					'@type': 'Answer',
-					text: item.a,
+					text: 'href' in item && item.href ? `${item.a} ${item.linkLabel}.` : item.a,
 				},
 			})),
 		},
