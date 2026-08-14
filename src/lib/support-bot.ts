@@ -121,6 +121,13 @@ function chatTurns(messages: SupportMessage[]) {
 		}));
 }
 
+function cleanModelText(text: string) {
+	return text
+		.replace(/<think>[\s\S]*?<\/think>/gi, '')
+		.replace(/^```(?:\w+)?\s*|\s*```$/g, '')
+		.trim();
+}
+
 async function askGemma(env: SupportEnv, messages: SupportMessage[]): Promise<string | null> {
 	const apiKey = envString(env, 'TOGETHER_API_KEY');
 	if (!apiKey) return null;
@@ -143,14 +150,18 @@ async function askGemma(env: SupportEnv, messages: SupportMessage[]): Promise<st
 				messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...turns],
 				temperature: 0.25,
 				max_tokens: 480,
+				enable_thinking: false,
+				chat_template_kwargs: { enable_thinking: false },
 			}),
 		});
 		const data = (await res.json()) as {
-			choices?: Array<{ message?: { content?: string } }>;
-			error?: { message?: string };
+			choices?: Array<{
+				message?: { content?: string; reasoning?: string; reasoning_content?: string };
+			}>;
 		};
 		if (!res.ok) return null;
-		const text = data.choices?.[0]?.message?.content?.trim() || '';
+		const message = data.choices?.[0]?.message;
+		const text = cleanModelText(message?.content || '');
 		return text || null;
 	} catch {
 		return null;
