@@ -169,7 +169,8 @@ def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
 	log_record["parseOk"] = True
 	log_record["parsedMeta"] = meta.model_dump()
 	log_record["usage"] = usage
-	append_response_log(log_record)
+	pretty_path = append_response_log(log_record)
+	usage["logPath"] = pretty_path.relative_to(gm.ROOT).as_posix()
 	return meta, usage
 
 
