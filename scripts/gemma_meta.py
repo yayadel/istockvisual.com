@@ -70,6 +70,26 @@ def usage_to_dict(response, model: str) -> dict:
 	}
 
 
+def message_text(message) -> tuple[str, str, str]:
+	content = getattr(message, "content", None) or ""
+	reasoning = ""
+	for field in ("reasoning", "reasoning_content"):
+		value = getattr(message, field, None)
+		if value:
+			reasoning = str(value)
+			break
+	finish = ""
+	return str(content), reasoning, finish
+
+
+def append_response_log(record: dict) -> Path:
+	log_path = gm.ROOT / ".tmp" / "gemma4-log.jsonl"
+	log_path.parent.mkdir(parents=True, exist_ok=True)
+	with log_path.open("a", encoding="utf-8") as handle:
+		handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+	return log_path
+
+
 def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
 	dev_vars = gm.load_dev_vars()
 	gm.apply_proxy(dev_vars)
@@ -101,22 +121,62 @@ def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
 		"response_format": {"type": "json_object"},
 	}
 
+	recorded_at = datetime.now(timezone.utc).isoformat()
 	response = client.chat.completions.create(**kwargs)
 	choice = (response.choices or [None])[0]
-	raw = getattr(getattr(choice, "message", None), "content", None) if choice else None
-	if not raw:
+	message = getattr(choice, "message", None) if choice else None
+	content = str(getattr(message, "content", None) or "")
+	reasoning = ""
+	if message is not None:
+		for field in ("reasoning", "reasoning_content"):
+			value = getattr(message, field, None)
+			if value:
+				reasoning = str(value)
+				break
+	finish_reason = str(getattr(choice, "finish_reason", "") or "") if choice else ""
+	raw_text = content.strip() or reasoning.strip()
+
+	log_record: dict = {
+		"recordedAt": recorded_at,
+		"provider": "together",
+		"model": model,
+		"keyword": keyword.strip(),
+		"finishReason": finish_reason,
+		"responseId": getattr(response, "id", None),
+		"rawContent": content,
+		"reasoning": reasoning,
+		"parseOk": False,
+		"parseError": None,
+		"parsedMeta": None,
+	}
+
+	if not raw_text:
+		log_record["parseError"] = "Together Gemma returned empty output"
+		append_response_log(log_record)
 		raise SystemExit("Together Gemma returned empty output")
 
 	try:
-		meta = gm.AssetMeta.model_validate_json(gm.extract_json(raw))
-	except Exception:
-		data = json.loads(gm.extract_json(raw))
-		meta = gm.AssetMeta.model_validate(data)
+		meta = gm.AssetMeta.model_validate_json(gm.extract_json(raw_text))
+	except Exception as first_error:
+		try:
+			data = json.loads(gm.extract_json(raw_text))
+			meta = gm.AssetMeta.model_validate(data)
+		except Exception as second_error:
+			log_record["parseError"] = f"{first_error}; {second_error}"
+			append_response_log(log_record)
+			raise SystemExit(f"Together Gemma JSON parse failed: {second_error}") from second_error
 
+	meta = gm.ensure_content_categories(meta, keyword)
 	usage = usage_to_dict(response, model)
 	usage["keyword"] = keyword.strip()
-	usage["recordedAt"] = datetime.now(timezone.utc).isoformat()
-	return gm.ensure_content_categories(meta, keyword), usage
+	usage["recordedAt"] = recorded_at
+	usage["finishReason"] = finish_reason
+	usage["hadReasoning"] = bool(reasoning)
+	log_record["parseOk"] = True
+	log_record["parsedMeta"] = meta.model_dump()
+	log_record["usage"] = usage
+	append_response_log(log_record)
+	return meta, usage
 
 
 def append_usage_log(usage: dict) -> None:
