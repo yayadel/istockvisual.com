@@ -36,25 +36,8 @@ const assetFields = groq`{
   publishedAt
 }`;
 
-/** Demo fixtures when Sanity env is not configured yet. */
-const DEMO_ASSETS: AssetDoc[] = [
-	{
-		_id: 'demo-photo-1',
-		title: 'Coastal Light',
-		slug: 'coastal-light-184203',
-		category: 'photos',
-		description: 'Soft morning light along a quiet coastline. Demo asset for local development.',
-		tags: ['nature', 'ocean', 'light'],
-		previewUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80',
-		r2ObjectKey: 'demo/photos/coastal-light.jpg',
-		fileType: 'image/jpeg',
-		width: 1200,
-		height: 800,
-		license: 'Demo / editorial use only',
-		isPremium: false,
-		publishedAt: '2026-01-10',
-	},
-];
+/** Fallback when Sanity env is not configured. Library content lives in D1. */
+const DEMO_ASSETS: AssetDoc[] = [];
 
 function getSanityConfig() {
 	const projectId = import.meta.env.SANITY_PROJECT_ID || import.meta.env.PUBLIC_SANITY_PROJECT_ID;
