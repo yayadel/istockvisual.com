@@ -80,6 +80,8 @@ export const SHORT_PLANS: PricingPlan[] = [
 		rate: '$0.66 / day',
 		cta: 'Get 1-Month Pro',
 		href: '/signup?plan=month',
+		highlight: '3-day trial',
+		note: 'Refund within 3 days if you have not downloaded any images.',
 	},
 ];
 
