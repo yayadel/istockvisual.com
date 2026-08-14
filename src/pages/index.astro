@@ -321,6 +321,7 @@ const proPerks = [
 			var velocity = 0;
 			var dragging = false;
 			var hovering = false;
+			var captured = false;
 			var pointerId = null;
 			var startX = 0;
 			var startOffset = 0;
@@ -328,6 +329,7 @@ const proPerks = [
 			var lastT = 0;
 			var moved = 0;
 			var loopW = 0;
+			var dragThreshold = 8;
 			var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 			var duration = parseFloat(getComputedStyle(track).getPropertyValue('--home-cats-duration')) || 40;
 
