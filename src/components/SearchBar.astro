@@ -24,7 +24,6 @@ const pathTopic =
 	path.startsWith('/c/') && path.length > 3 ? decodeURIComponent(path.slice(3).split('/')[0] || '') : '';
 const topic = Astro.url.searchParams.get('topic') || pathTopic;
 const color = Astro.url.searchParams.get('color') || '';
-const tag = Astro.url.searchParams.get('tag') || '';
 const orient = Astro.url.searchParams.get('orient') || '';
 const exclude = Astro.url.searchParams.get('exclude') || '';
 const sort = Astro.url.searchParams.get('sort') || '';
@@ -41,7 +40,6 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 	<input type="hidden" name="category" value={selected} data-category-input />
 	{topic ? <input type="hidden" name="topic" value={topic} /> : null}
 	{color ? <input type="hidden" name="color" value={color} /> : null}
-	{tag ? <input type="hidden" name="tag" value={tag} /> : null}
 	{orient ? <input type="hidden" name="orient" value={orient} /> : null}
 	{exclude ? <input type="hidden" name="exclude" value={exclude} /> : null}
 	{sort ? <input type="hidden" name="sort" value={sort} /> : null}

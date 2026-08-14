@@ -5,7 +5,7 @@ import {
 	assetMatchesContentCategory,
 	getContentCategoryBySlug,
 } from './content-categories';
-import { toPathSlug, tagMatches } from './paths';
+import { toPathSlug } from './paths';
 
 export type CatalogType = 'all' | CategorySlug;
 export type CatalogOrient = '' | 'landscape' | 'portrait' | 'square';
@@ -59,7 +59,6 @@ export const EMPTY_CATALOG_QUERY: CatalogQuery = {
 	type: 'all',
 	topic: '',
 	color: '',
-	tag: '',
 	orient: '',
 	exclude: '',
 	sort: 'newest',
@@ -173,7 +172,6 @@ export function parseCatalogQuery(
 	const typeParam = url.searchParams.get('category') || url.searchParams.get('type') || '';
 	const topicParam = toPathSlug(url.searchParams.get('topic') || '');
 	const colorParam = (url.searchParams.get('color') || '').trim().toLowerCase();
-	const tagParam = toPathSlug(url.searchParams.get('tag') || '');
 	const orientParam = (url.searchParams.get('orient') || '') as CatalogOrient;
 	const sortParam = (url.searchParams.get('sort') || '') as CatalogSort;
 	const excludeParam = (url.searchParams.get('exclude') || '').trim();
