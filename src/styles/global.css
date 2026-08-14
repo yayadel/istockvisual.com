@@ -4353,6 +4353,8 @@ body.image-editor-modal-open {
 	flex-wrap: wrap;
 	align-items: flex-start;
 	gap: 0.55rem 0.85rem;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .image-editor-modal__row-label {
