@@ -4,7 +4,7 @@ import ShareBar from './ShareBar';
 
 const LENS_SIZE = 196;
 const LENS_ZOOM = 2.5;
-const EDIT_HINT_SECONDS = 5;
+const EDIT_HINT_MS = 5000;
 const EDIT_HINT_SHATTER_MS = 620;
 
 type Props = {
