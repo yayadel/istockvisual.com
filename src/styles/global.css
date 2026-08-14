@@ -1889,6 +1889,12 @@ body.upload-modal-open {
 	transform: translate(0, -50%);
 }
 
+@media (prefers-reduced-motion: reduce) {
+	.catalog-filter-rail__tip {
+		transition: none;
+	}
+}
+
 [data-theme='dark'] .catalog-filter-rail__tip {
 	background: #eef3ef;
 	color: #13200f;
