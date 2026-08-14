@@ -428,5 +428,99 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 				closeModal();
 			}
 		});
+
+		var visualTipBtn = null;
+
+		function placeVisualTip(btn) {
+			var tip = btn.querySelector('.search-bar__visual-tip');
+			if (!(tip instanceof HTMLElement)) return;
+			var pad = 10;
+			var gap = 8;
+			var btnRect = btn.getBoundingClientRect();
+			tip.classList.add('is-fixed');
+			tip.style.left = '0px';
+			tip.style.top = '0px';
+			var width = tip.offsetWidth;
+			var height = tip.offsetHeight;
+			if (!width) return;
+			var maxLeft = window.innerWidth - pad - width;
+			var left = btnRect.left + btnRect.width / 2 - width / 2;
+			left = Math.max(pad, Math.min(left, Math.max(pad, maxLeft)));
+			var top = btnRect.bottom + gap;
+			if (top + height > window.innerHeight - pad && btnRect.top - gap - height >= pad) {
+				top = btnRect.top - gap - height;
+				tip.dataset.place = 'top';
+			} else {
+				top = Math.min(top, Math.max(pad, window.innerHeight - pad - height));
+				tip.dataset.place = 'bottom';
+			}
+			var arrow = btnRect.left + btnRect.width / 2 - left;
+			arrow = Math.max(10, Math.min(width - 10, arrow));
+			tip.style.left = left + 'px';
+			tip.style.top = top + 'px';
+			tip.style.setProperty('--tip-arrow', arrow + 'px');
+			tip.classList.toggle('is-above', tip.dataset.place === 'top');
+		}
+
+		function hideVisualTip() {
+			if (!visualTipBtn) return;
+			var tip = visualTipBtn.querySelector('.search-bar__visual-tip');
+			visualTipBtn.classList.remove('is-tip-open');
+			if (tip instanceof HTMLElement) {
+				tip.classList.remove('is-fixed', 'is-above');
+				tip.removeAttribute('data-place');
+				tip.style.left = '';
+				tip.style.top = '';
+				tip.style.removeProperty('--tip-arrow');
+			}
+			visualTipBtn = null;
+		}
+
+		function showVisualTip(btn) {
+			if (btn.classList.contains('is-uploading') || btn.disabled) return;
+			if (visualTipBtn && visualTipBtn !== btn) hideVisualTip();
+			visualTipBtn = btn;
+			placeVisualTip(btn);
+			btn.classList.add('is-tip-open');
+		}
+
+		document.addEventListener('pointerover', function (event) {
+			var btn = event.target instanceof Element && event.target.closest('.search-bar__visual');
+			if (!btn || visualTipBtn === btn) return;
+			showVisualTip(btn);
+		});
+
+		document.addEventListener('pointerout', function (event) {
+			if (!visualTipBtn) return;
+			var related = event.relatedTarget;
+			if (related instanceof Node && visualTipBtn.contains(related)) return;
+			var btn = event.target instanceof Element && event.target.closest('.search-bar__visual');
+			if (btn !== visualTipBtn) return;
+			hideVisualTip();
+		});
+
+		document.addEventListener('focusin', function (event) {
+			var btn = event.target instanceof Element && event.target.closest('.search-bar__visual');
+			if (btn) showVisualTip(btn);
+		});
+
+		document.addEventListener('focusout', function (event) {
+			if (!visualTipBtn) return;
+			var related = event.relatedTarget;
+			if (related instanceof Node && visualTipBtn.contains(related)) return;
+			hideVisualTip();
+		});
+
+		window.addEventListener('resize', function () {
+			if (visualTipBtn) placeVisualTip(visualTipBtn);
+		});
+
+		window.addEventListener(
+			'scroll',
+			function () {
+				if (visualTipBtn) placeVisualTip(visualTipBtn);
+			},
+			true,
+		);
 	})();
 </script>
