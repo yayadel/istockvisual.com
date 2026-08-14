@@ -1074,10 +1074,15 @@ export default function ImageEditor({
 					<div className="image-editor-modal__header-actions">
 						<a className="btn image-editor-modal__own-cta" href="/tools/image">
 							<svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-								<rect x="3" y="5.5" width="14.5" height="13" rx="2" stroke="currentColor" strokeWidth="1.7" />
-								<path d="M5 16.8 8.6 12.6l2.1 2.2 2.7-3.4L16.8 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-								<circle cx="18.2" cy="6.2" r="3.1" fill="currentColor" />
-								<path d="M18.2 4.8v2.8M16.8 6.2h2.8" stroke="#c4f04b" strokeWidth="1.6" strokeLinecap="round" />
+								<rect x="2.6" y="5.4" width="14.8" height="13.2" rx="2" stroke="currentColor" strokeWidth="1.7" />
+								<path
+									d="M4.6 16.9 8.5 12.5l2.1 2.15 2.85-3.55 4.35 5.8"
+									stroke="currentColor"
+									strokeWidth="1.7"
+									strokeLinejoin="round"
+								/>
+								<circle cx="18.1" cy="6.1" r="3.2" stroke="currentColor" strokeWidth="1.7" />
+								<path d="M18.1 4.6v3M16.6 6.1h3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
 							</svg>
 							Edit your own image
 						</a>
