@@ -29,7 +29,6 @@ const chips = catalogChips(query);
 const intro = query.topic ? getContentCategoryIntro(query.topic) : null;
 const clearHref = catalogHref({ ...EMPTY_CATALOG_QUERY, q: query.q });
 const hasFilters = catalogHasFilters({ ...query, q: '' });
-const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
 const excludeForm = catalogPathAndParams({ ...query, exclude: '' });
 const colorForm = catalogPathAndParams({ ...query, color: '' });
 ---
