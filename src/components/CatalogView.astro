@@ -333,6 +333,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			track.addEventListener('scroll', updateRelated, { passive: true });
 			window.addEventListener('resize', updateRelated);
 			updateRelated();
+			requestAnimationFrame(updateRelated);
 		}
 	});
 </script>
