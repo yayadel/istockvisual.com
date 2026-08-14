@@ -225,19 +225,53 @@ export function assetOrientation(asset: AssetDetail): CatalogOrient {
 	return 'square';
 }
 
-function assetSearchHay(asset: AssetDetail): string {
-	return [
-		asset.title,
-		asset.description,
-		asset.shortDescription,
-		asset.keyword,
-		asset.category,
-		...(asset.tags || []),
-		...(asset.relatedQueries || []),
-	]
-		.filter(Boolean)
-		.join(' ')
-		.toLowerCase();
+const SEARCH_STOPWORDS = new Set([
+	'a',
+	'an',
+	'the',
+	'of',
+	'in',
+	'on',
+	'at',
+	'to',
+	'for',
+	'and',
+	'or',
+	'how',
+	'what',
+	'with',
+	'from',
+	'by',
+	'vs',
+]);
+
+function escapeSearchRegExp(value: string): string {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function searchTokens(query: string): string[] {
+	return query
+		.toLowerCase()
+		.split(/[^a-z0-9]+/)
+		.filter((token) => token.length >= 2 && !SEARCH_STOPWORDS.has(token));
+}
+
+/** Title + source keyword + tags only — not description or related queries. */
+function assetKeywordHay(asset: AssetDetail): string {
+	return [asset.title, asset.keyword, ...(asset.tags || [])].filter(Boolean).join(' ').toLowerCase();
+}
+
+function hayHasToken(hay: string, token: string): boolean {
+	const stem = token.endsWith('s') && token.length > 3 ? token.slice(0, -1) : token;
+	const pattern = new RegExp(`(?:^|[^a-z0-9])${escapeSearchRegExp(stem)}s?(?:[^a-z0-9]|$)`, 'i');
+	return pattern.test(hay);
+}
+
+export function assetMatchesSearchQuery(asset: AssetDetail, query: string): boolean {
+	const tokens = searchTokens(query);
+	if (!tokens.length) return true;
+	const hay = assetKeywordHay(asset);
+	return tokens.every((token) => hayHasToken(hay, token));
 }
 
 export function parseCatalogQuery(
