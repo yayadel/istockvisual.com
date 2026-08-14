@@ -44,7 +44,7 @@ const FAQS: Faq[] = [
 	},
 	{
 		keys: ['refund', 'money back', 'cancel', 'guarantee'],
-		answer: `Refunds are for unused plans only: if you have not downloaded any images after purchase, you can request a refund. Any download voids it. 1-Month Pro has a 3-day trial (unused only). Email ${CONTACT} from your account address. Policy: /info/refunds.`,
+		answer: `Long-term (6-Month, 12-Month, Lifetime): 7-day trial, no-questions-asked refund within 7 days — even if you downloaded. 1-Month Pro: 3-day trial, unused only (no downloads). 1-Day and 7-Day: unused only. Email ${CONTACT} from your account address. Policy: /info/refunds.`,
 	},
 	{
 		keys: ['account', 'signup', 'login', 'password', 'sign in'],

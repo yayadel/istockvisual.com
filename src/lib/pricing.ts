@@ -105,8 +105,8 @@ export const PRICING_TRUST = [
 		text: 'Safe for client work, websites, and commercial printing.',
 	},
 	{
-		title: 'Unused-Plan Refund',
-		text: 'Refund if you have not downloaded any images. 1-Month Pro includes a 3-day trial.',
+		title: '7-Day Trial on Long-Term',
+		text: '6-Month, 12-Month, and Lifetime include a 7-day trial with a no-questions-asked refund. Short-term passes refund only if unused.',
 	},
 	{
 		title: 'No Recurring Fees',

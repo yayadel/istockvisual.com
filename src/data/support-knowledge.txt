@@ -54,13 +54,12 @@ After that: 10 HD downloads per hour, to keep speed up and block scraping.
 We may tighten/pause/restore limits if we see abuse or outages.
 
 ## Refunds
-Refunds are unused-plan only. If you have not downloaded any library images after purchase, you can request a refund. If you have downloaded one or more images (any size: 500, 1K, 2K, 4K, 8K), no refund. Free-member downloads from before that paid purchase do not count.
-1-Day Pass and 7-Day Pass: no calendar money-back window. Unused only (no downloads).
-1-Month Pro: 3-day trial from purchase. Refund within those 3 days only if unused (no downloads). After 3 days, or after any download, no refund.
-6-Month, 12-Month, Lifetime: refund if unused (no downloads after purchase). A download voids the refund.
-How: email hello@istockvisual.com from the account address. Include account email, plan name, approximate purchase date, optional note. We check downloads after that purchase.
-After refund: that Pro/pass access ends; free 500/1K remains.
-No refund for used plans, 1-Month after the 3-day trial, change of mind after use, or expired used plans, except where law requires it.
+Refund rules depend on the plan.
+6-Month Pro, 12-Month Pro, and Lifetime Access: 7-day free trial from purchase. No-questions-asked refund within 7 days, even if you downloaded images. After 7 days: no refund except where law requires it.
+1-Month Pro: 3-day trial. Refund within those 3 days only if unused (no library image downloads after purchase). After 3 days, or after any download, no refund.
+1-Day Pass and 7-Day Pass: no calendar money-back window. Unused only (no downloads after purchase). A single download voids the refund. Free-member downloads from before that paid purchase do not count.
+How: email hello@istockvisual.com from the account address. Include account email, plan name, approximate purchase date, optional note.
+After refund: that Pro/pass access ends; free 500/1K remains; files already downloaded stay usable under the license (attribution still required).
 Chargebacks: contact us first. Repeated refund abuse or fraud can lead to refused goodwill refunds or account suspension.
 Page: /info/refunds
 
