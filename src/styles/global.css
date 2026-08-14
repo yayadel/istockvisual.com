@@ -1746,53 +1746,37 @@ body.upload-modal-open {
 
 .home-cats {
 	position: relative;
-	margin: 1.15rem auto 0;
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) auto;
-	align-items: center;
-	gap: 0.45rem;
+	margin: 1.15rem 0 0;
+	overflow: hidden;
 }
 
-.home-cats__nav {
-	display: grid;
-	place-items: center;
-	width: 2.15rem;
-	height: 2.15rem;
-	padding: 0;
-	border: 1px solid var(--line);
-	border-radius: 50%;
-	background: #fff;
-	color: var(--text);
-	font-size: 1.35rem;
-	line-height: 1;
-	cursor: pointer;
+.home-cats__viewport {
+	overflow: hidden;
 }
 
-.home-cats__nav:hover:not(:disabled) {
-	border-color: var(--card-hover-border);
-	background: #f4f8ea;
+.home-cats__track {
+	display: flex;
+	width: max-content;
+	animation: home-cats-marquee var(--home-cats-duration, 40s) linear infinite;
 }
 
-.home-cats__nav:disabled {
-	opacity: 0.35;
-	cursor: default;
-}
-
-.home-cats:not(.is-scrollable) .home-cats__nav {
-	visibility: hidden;
-}
-
-.home-cats__scroller {
+.home-cats__group {
 	display: flex;
 	gap: 0.75rem;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	scrollbar-width: none;
-	padding: 0.1rem 0.15rem 0.35rem;
+	padding-right: 0.75rem;
 }
 
-.home-cats__scroller::-webkit-scrollbar {
-	display: none;
+.home-cats:hover .home-cats__track {
+	animation-play-state: paused;
+}
+
+@keyframes home-cats-marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
 }
 
 .home-featured,
@@ -1819,7 +1803,6 @@ body.upload-modal-open {
 	border-radius: var(--radius);
 	background: #1a1a1a;
 	color: #fff;
-	scroll-snap-align: start;
 }
 
 .home-cats__card img {
