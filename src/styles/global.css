@@ -304,8 +304,8 @@ textarea {
 .nav__categories-mega {
 	position: absolute;
 	top: calc(100% + 0.55rem);
-	/* Anchor to Categories trigger; open leftward (same pattern as Tool). */
-	right: 0;
+	/* Shift past the trigger so the panel is not flush-right with “Categories”. */
+	right: -5.5rem;
 	left: auto;
 	z-index: 60;
 	display: grid;
