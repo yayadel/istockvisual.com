@@ -36,16 +36,33 @@ export default function AssetPreviewPanel({
 	assetId,
 }: Props) {
 	const [editing, setEditing] = useState(false);
+	const [editHint, setEditHint] = useState<'in' | 'out' | 'gone'>('in');
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
 	const lensRef = useRef<HTMLDivElement>(null);
+
+	const dismissEditHint = useCallback(() => {
+		setEditHint((current) => (current === 'in' ? 'out' : current));
+	}, []);
+
+	useEffect(() => {
+		const hide = window.setTimeout(dismissEditHint, EDIT_HINT_MS);
+		return () => window.clearTimeout(hide);
+	}, [dismissEditHint]);
+
+	useEffect(() => {
+		if (editHint !== 'out') return;
+		const done = window.setTimeout(() => setEditHint('gone'), EDIT_HINT_SHATTER_MS);
+		return () => window.clearTimeout(done);
+	}, [editHint]);
 
 	const closeEditor = useCallback(() => setEditing(false), []);
 	const openEditor = useCallback((event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		event.stopPropagation();
+		dismissEditHint();
 		setEditing(true);
-	}, []);
+	}, [dismissEditHint]);
 
 	const hideLens = useCallback(() => {
 		const lens = lensRef.current;
@@ -123,16 +140,33 @@ export default function AssetPreviewPanel({
 				/>
 			</div>
 			<div className="asset-preview__footer">
-				<button
-					className="btn asset-preview__action asset-preview__action--edit"
-					type="button"
-					onClick={openEditor}
-				>
-					<span className="asset-preview__action-label">Edit image</span>
-					<span className="asset-preview__action-tools">
-						Adjust · Crop &amp; Flip · Remove BG · Expand
-					</span>
-				</button>
+				<div className="asset-preview__edit-wrap">
+					{editHint !== 'gone' ? (
+						<div
+							className={`asset-preview__edit-hint asset-preview__edit-hint--${editHint}`}
+							role="status"
+						>
+							<p className="asset-preview__edit-hint-copy">You can edit this file here</p>
+							<span className="asset-preview__edit-hint-arrow" aria-hidden="true" />
+							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
+							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
+							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
+							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
+							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
+							<span className="asset-preview__edit-hint-shard" aria-hidden="true" />
+						</div>
+					) : null}
+					<button
+						className="btn asset-preview__action asset-preview__action--edit"
+						type="button"
+						onClick={openEditor}
+					>
+						<span className="asset-preview__action-label">Edit image</span>
+						<span className="asset-preview__action-tools">
+							Adjust · Crop &amp; Flip · Remove BG · Expand
+						</span>
+					</button>
+				</div>
 				<div className="asset-preview__share">
 					<ShareBar title={title} url={shareUrl} compact inlineChannels />
 				</div>
