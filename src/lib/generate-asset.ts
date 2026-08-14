@@ -26,6 +26,7 @@ import {
 	KEYWORD_CONTENT_TYPES,
 	linkKeywordContent,
 } from './keyword-content';
+import { assetMatchesSearchQuery } from './catalog';
 import { tagMatches, toPathSlug } from './paths';
 import {
 	claimNextKeyword,
