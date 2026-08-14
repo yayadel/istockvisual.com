@@ -12,23 +12,18 @@ import { getContentCategoryIntro } from '../lib/content-categories';
 import AssetGrid from './AssetGrid.astro';
 
 interface Props {
-	pool: AssetDetail[];
+	assets: AssetDetail[];
+	facetPool: AssetDetail[];
 	query: CatalogQuery;
 	emptyMessage?: string;
 }
 
-const { pool, query, emptyMessage = 'No assets matched these filters.' } = Astro.props;
-const assets = pool; // already filtered by the page
-const facets = catalogFacets(
-	// Facets need the unfiltered-by-that-dimension pool. Pages pass filtered
-	// results as `pool` today; they should pass `facetPool` separately.
-	(Astro.props as Props & { facetPool?: AssetDetail[] }).facetPool || pool,
-	query,
-);
+const { assets, facetPool, query, emptyMessage = 'No assets matched these filters.' } = Astro.props;
+const facets = catalogFacets(facetPool, query);
 const heading = catalogHeading(query);
 const chips = catalogChips(query);
 const intro = query.topic ? getContentCategoryIntro(query.topic) : null;
-const clearHref = catalogHref({ ...query, q: '', type: 'all', topic: '', color: '', tag: '' });
+const clearHref = catalogHref({ q: '', type: 'all', topic: '', color: '', tag: '' });
 const hasFilters = catalogHasFilters(query);
 const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
 ---
