@@ -338,6 +338,10 @@ export default function DownloadPanel({
 	}, [pageUrl]);
 
 	useEffect(() => {
+		setNatural({ width: sourceWidth, height: sourceHeight });
+	}, [sourceHeight, sourceWidth]);
+
+	useEffect(() => {
 		if (!anyModalOpen) return;
 		const onKey = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
