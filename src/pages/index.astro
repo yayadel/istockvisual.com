@@ -51,42 +51,57 @@ const popularColumns = [0, 1, 2, 3]
 
 const proVisual = featured[0]?.previewUrl || categoryFallback;
 
+const toolCover = (index: number) =>
+	featured[index]?.previewUrl || pool[index]?.previewUrl || categoryFallback;
+
 const studioTools = [
 	{
 		id: 'image' as const,
 		title: 'Image Editor',
 		lede: 'Adjust, crop, remove backgrounds, and expand photos in the browser.',
 		href: '/tools/image',
+		image: toolCover(1),
+		chips: ['Crop', 'Background', 'Expand'],
 	},
 	{
 		id: 'convert' as const,
 		title: 'Image Convert',
 		lede: 'Batch convert JPG, PNG, WebP, and HEIC with quality and scale controls.',
 		href: '/tools/convert',
+		image: toolCover(2),
+		chips: ['JPG', 'PNG', 'WEBP', 'HEIC'],
 	},
 	{
 		id: 'vectorize' as const,
 		title: 'Image Vectorizer',
 		lede: 'Trace bitmaps into clean SVG paths, then copy the code or download the file.',
 		href: '/tools/vectorize',
+		image: toolCover(3),
+		chips: ['SVG', 'Paths'],
 	},
 	{
 		id: 'social' as const,
 		title: 'Social Resizer',
 		lede: 'Fit one batch to Instagram, TikTok, YouTube, Facebook, and LinkedIn.',
 		href: '/tools/social',
+		image: toolCover(4),
+		chips: ['Instagram', 'TikTok', 'YouTube'],
 	},
 	{
 		id: 'watermark' as const,
 		title: 'Batch Watermark',
 		lede: 'Stamp text or logo marks that scale with each photo. Tile or nine-point place.',
 		href: '/tools/watermark',
+		image: toolCover(5),
+		chips: ['Text', 'Logo', 'Tile'],
 	},
 	{
 		id: 'palette' as const,
 		title: 'Palette Generator',
 		lede: 'Extract dominant colors. Copy HEX, RGB, or HSL, or export CSS and Tailwind.',
 		href: '/tools/palette',
+		image: toolCover(6),
+		chips: ['HEX', 'RGB', 'HSL', 'CSS'],
 	},
 ];
 
