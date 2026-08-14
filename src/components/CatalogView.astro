@@ -146,31 +146,6 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={Boolean(query.tag) || undefined}>
-				<summary>Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
-				<div class="catalog-acc__panel">
-					{
-						facets.tags.length > 0 ? (
-							<ul class="catalog-filter__tags">
-								{facets.tags.map((item) => (
-									<li>
-										<a
-											class:list={[query.tag === item.slug && 'is-active']}
-											href={catalogHref(query, { tag: query.tag === item.slug ? '' : item.slug })}
-											aria-current={query.tag === item.slug ? 'true' : undefined}
-										>
-											{item.label}
-										</a>
-									</li>
-								))}
-							</ul>
-						) : (
-							<p class="catalog-filter__empty">No keywords in this result set.</p>
-						)
-					}
-				</div>
-			</details>
-
 			<details class="catalog-acc" open={Boolean(query.exclude) || undefined}>
 				<summary>Exclude Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
 				<div class="catalog-acc__panel">

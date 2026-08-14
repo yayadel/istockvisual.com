@@ -16,7 +16,6 @@ export type CatalogQuery = {
 	type: CatalogType;
 	topic: string;
 	color: string;
-	tag: string;
 	orient: CatalogOrient;
 	exclude: string;
 	sort: CatalogSort;
