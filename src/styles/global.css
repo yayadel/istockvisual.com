@@ -4340,6 +4340,8 @@ body.image-editor-modal-open {
 	padding: 0.85rem 1.1rem;
 	border-bottom: 1px solid var(--ie-line);
 	background: transparent;
+	min-width: 0;
+	max-width: 100%;
 	min-height: 0;
 	max-height: min(42vh, 300px);
 	overflow-x: hidden;
