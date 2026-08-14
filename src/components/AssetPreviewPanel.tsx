@@ -112,18 +112,27 @@ export default function AssetPreviewPanel({
 	}, [hideLens]);
 
 	useEffect(() => {
+		wmSizeRef.current = '';
+		setWmAdaptive(false);
+
 		const image = imageRef.current;
 		if (!image) return;
 
-		const onReady = () => paintWatermark();
-		if (image.complete) onReady();
-		else image.addEventListener('load', onReady);
+		let frame = 0;
+		const schedule = () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => paintWatermark());
+		};
 
-		const observer = new ResizeObserver(() => paintWatermark());
+		if (image.complete) schedule();
+		else image.addEventListener('load', schedule);
+
+		const observer = new ResizeObserver(schedule);
 		observer.observe(image);
 
 		return () => {
-			image.removeEventListener('load', onReady);
+			cancelAnimationFrame(frame);
+			image.removeEventListener('load', schedule);
 			observer.disconnect();
 		};
 	}, [imageUrl, paintWatermark]);
