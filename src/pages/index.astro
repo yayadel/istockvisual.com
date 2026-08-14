@@ -92,19 +92,19 @@ const proPerks = [
 	<section class="hero" aria-label="Hero">
 		<div class="hero__media" aria-hidden="true"></div>
 		<div class="hero__content">
-			<h1 class="hero__brand">Huge collections of stock photos, illustrations &amp; 3D</h1>
+			<h1 class="hero__brand">Huge Collections of Stock Photos, Illustrations &amp; 3D</h1>
 			<p class="hero__lead">
-				High-quality visuals for campaigns, products, and creative teams — search the library and start downloading.
+				High-quality stock images shared for campaigns, products, and creative teams.
 			</p>
-			<SearchBar variant="hero" placeholder="Search photos, illustrations, vectors, and 3D" />
+			<SearchBar variant="hero" placeholder="Search images, vectors and 3D" />
 			{
 				heroKeywords.length > 0 && (
 					<p class="hero__popular">
-						Popular:{' '}
+						Popular Images:{' '}
 						{heroKeywords.map((keyword, index) => (
 							<>
 								<a href={searchPath(keyword)}>{formatAssetTitle(keyword)}</a>
-								{index < heroKeywords.length - 1 ? ', ' : ''}
+								{index < heroKeywords.length - 1 ? ', ' : '.'}
 							</>
 						))}
 					</p>
@@ -113,13 +113,7 @@ const proPerks = [
 		</div>
 	</section>
 
-	<section class="home-cats" aria-labelledby="home-cats-title">
-		<div class="section-head">
-			<div>
-				<h2 id="home-cats-title">Explore categories</h2>
-				<p>Photos, illustrations, vectors, and 3D — pick a library and start browsing.</p>
-			</div>
-		</div>
+	<section class="home-cats" aria-label="Categories">
 		<div class="home-cats__grid">
 			{
 				categoryTiles.map((category) => (
