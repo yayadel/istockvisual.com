@@ -233,8 +233,14 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc catalog-acc--exclude" open={Boolean(query.exclude) || undefined}>
-				<summary>Exclude Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class="catalog-acc catalog-acc--exclude" open={Boolean(query.exclude) || undefined} data-filter-section="exclude">
+				<summary>
+					<span class="catalog-acc__icon" aria-hidden="true">
+						<CatalogFilterIcon name="exclude" />
+					</span>
+					<span class="catalog-acc__label">Exclude Keywords</span>
+					<span class="catalog-acc__chevron" aria-hidden="true"></span>
+				</summary>
 				<div class="catalog-acc__panel">
 					<form class="catalog-exclude" method="get" action={excludeForm.pathname}>
 						{
