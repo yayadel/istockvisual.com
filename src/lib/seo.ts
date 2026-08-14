@@ -36,19 +36,6 @@ export function assetPageHeading(imageName: string): string {
 	return assetSearchTitle(imageName);
 }
 
-function stockNoun(category: CategorySlug): string {
-	switch (category) {
-		case 'illustrations':
-			return 'stock illustration';
-		case 'vectors':
-			return 'stock vector';
-		case '3d':
-			return 'stock 3D image';
-		default:
-			return 'stock photo';
-	}
-}
-
 export function assetSearchDescription(input: {
 	title: string;
 	shortDescription?: string;
