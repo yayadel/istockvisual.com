@@ -2852,23 +2852,23 @@ body.upload-modal-open {
 	background-image:
 		repeating-linear-gradient(
 			0deg,
-			transparent 0 42px,
-			rgba(255, 255, 255, 0.1) 42px 43px
+			transparent 0 36px,
+			rgba(255, 255, 255, 0.22) 36px 37px
 		),
 		repeating-linear-gradient(
 			90deg,
-			transparent 0 42px,
-			rgba(0, 0, 0, 0.06) 42px 43px
+			transparent 0 36px,
+			rgba(0, 0, 0, 0.16) 36px 37px
 		);
-	mix-blend-mode: soft-light;
-	opacity: 0.45;
+	mix-blend-mode: overlay;
+	opacity: 0.75;
 }
 
 .wm-protected::after {
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='150'><text x='50%' y='54%' fill='rgba(255,255,255,0.42)' stroke='rgba(0,0,0,0.18)' stroke-width='0.6' font-size='18' font-family='Arial,sans-serif' font-weight='700' text-anchor='middle' transform='rotate(-32 120 75)'>iStockVisual</text></svg>");
-	background-size: 240px 150px;
-	mix-blend-mode: soft-light;
-	opacity: 0.95;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='140'><text x='50%' y='54%' fill='rgba(0,0,0,0.38)' stroke='none' font-size='23' font-family='Arial,sans-serif' font-weight='800' text-anchor='middle' transform='rotate(-32 111 71)'>iStockVisual</text><text x='50%' y='54%' fill='rgba(255,255,255,0.78)' stroke='rgba(0,0,0,0.4)' stroke-width='1.15' font-size='23' font-family='Arial,sans-serif' font-weight='800' text-anchor='middle' transform='rotate(-32 110 70)'>iStockVisual</text></svg>");
+	background-size: 220px 140px;
+	mix-blend-mode: normal;
+	opacity: 1;
 }
 
 .wm-protected--lock::before,
