@@ -1446,14 +1446,9 @@ body.upload-modal-open {
 	}
 
 	.search-bar--hero .search-bar__visual {
-		width: auto;
-		padding: 0 0.95rem;
-		gap: 0.45rem;
-		justify-content: flex-start;
-	}
-
-	.search-bar--hero .search-bar__visual-text {
-		display: inline;
+		width: 3.25rem;
+		padding: 0;
+		justify-content: center;
 	}
 
 	.search-bar--hero .search-bar__submit {
