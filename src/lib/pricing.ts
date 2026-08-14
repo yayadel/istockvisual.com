@@ -28,6 +28,8 @@ export const LONG_PLANS: PricingPlan[] = [
 		rate: '$8.33 / month',
 		cta: 'Choose 6-Month',
 		href: '/signup?plan=6month',
+		highlight: '7-day trial',
+		note: 'No-questions-asked refund within 7 days.',
 	},
 	{
 		id: 'lifetime',
@@ -40,6 +42,8 @@ export const LONG_PLANS: PricingPlan[] = [
 		href: '/signup?plan=lifetime',
 		featured: true,
 		badge: 'Launch · Most Popular',
+		highlight: '7-day trial',
+		note: 'No-questions-asked refund within 7 days.',
 	},
 	{
 		id: 'year',
@@ -49,6 +53,8 @@ export const LONG_PLANS: PricingPlan[] = [
 		rate: '$6.66 / month · Save 66%',
 		cta: 'Choose 12-Month',
 		href: '/signup?plan=year',
+		highlight: '7-day trial',
+		note: 'No-questions-asked refund within 7 days.',
 	},
 ];
 
