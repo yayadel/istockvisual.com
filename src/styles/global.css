@@ -1896,6 +1896,11 @@ body.upload-modal-open {
 	z-index: 1;
 }
 
+.home-top-search > .home-top-search__mark {
+	position: absolute;
+	z-index: 0;
+}
+
 .home-tools__grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
