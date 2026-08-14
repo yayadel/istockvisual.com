@@ -29,7 +29,7 @@ export const COPYRIGHT_NOTICE =
 const DESC_MAX = 160;
 
 export function assetSearchTitle(imageName: string): string {
-	return `STOCK IMAGE OF ${imageName.trim()} free download`;
+	return `${imageName.trim()} Stock Image - Free Download`;
 }
 
 export function assetPageHeading(imageName: string): string {
