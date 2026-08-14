@@ -215,8 +215,14 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open>
-				<summary>Color <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class="catalog-acc" open data-filter-section="color">
+				<summary>
+					<span class="catalog-acc__icon" aria-hidden="true">
+						<CatalogFilterIcon name="color" />
+					</span>
+					<span class="catalog-acc__label">Color</span>
+					<span class="catalog-acc__chevron" aria-hidden="true"></span>
+				</summary>
 				<div class="catalog-acc__panel">
 					<CatalogColorPicker
 						client:load
