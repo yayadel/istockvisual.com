@@ -72,7 +72,7 @@ const FAQS: Faq[] = [
 	},
 	{
 		keys: ['contact', 'email', 'support', 'help', 'human'],
-		answer: `This chat is free automated help. For billing, refunds, or anything we cannot answer, email ${CONTACT}.`,
+		answer: `This chat is the iStockVisual assistant. For billing, refunds, or anything we cannot answer, email ${CONTACT}.`,
 	},
 	{
 		keys: ['svg', 'png', 'jpg', 'webp', 'format', 'size', '4k', '8k', '2k'],

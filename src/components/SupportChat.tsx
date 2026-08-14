@@ -235,7 +235,7 @@ export default function SupportChat({ variant = 'page' }: Props) {
 				className="support-chat-launch"
 				type="button"
 				aria-expanded={open}
-				aria-label="Open free help chat"
+				aria-label="Open help chat"
 				onClick={() => setOpen((value) => !value)}
 			>
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
