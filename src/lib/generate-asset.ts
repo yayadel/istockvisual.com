@@ -164,21 +164,6 @@ export async function listAllAssets(
 	return listFeaturedAssets(db, origin, limit);
 }
 
-function assetSearchText(asset: AssetDetail): string {
-	return [
-		asset.title,
-		asset.description,
-		asset.shortDescription,
-		asset.keyword,
-		asset.category,
-		...(asset.tags || []),
-		...(asset.relatedQueries || []),
-	]
-		.filter(Boolean)
-		.join(' ')
-		.toLowerCase();
-}
-
 /** Tag page: match against unified image tags only. */
 export function filterAssetsByTag(assets: AssetDetail[], tagSlug: string): AssetDetail[] {
 	return assets.filter((asset) => {
