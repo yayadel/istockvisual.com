@@ -1,6 +1,7 @@
 import type { CategorySlug } from '../config/categories';
 import { contentCategoryPath } from './content-categories';
 
+export const ABOUT_PATH = '/info/about';
 export const LICENSE_PATH = '/info/license';
 export const TERMS_PATH = '/info/terms';
 export const PRIVACY_PATH = '/info/privacy';
@@ -10,6 +11,7 @@ export const LEGAL_CONTACT_EMAIL = 'hello@istockvisual.com';
 export const LEGAL_UPDATED = 'August 14, 2026';
 
 export const LEGAL_PAGES = [
+	{ href: ABOUT_PATH, label: 'About' },
 	{ href: LICENSE_PATH, label: 'License' },
 	{ href: TERMS_PATH, label: 'Terms' },
 	{ href: PRIVACY_PATH, label: 'Privacy' },
