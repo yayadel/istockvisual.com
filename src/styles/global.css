@@ -5127,17 +5127,17 @@ body.download-auth-modal-open {
 .asset-preview__edit-hint {
 	position: absolute;
 	left: 50%;
-	bottom: calc(100% + 0.7rem);
+	bottom: calc(100% + 0.85rem);
 	z-index: 12;
 	width: max-content;
-	max-width: min(18rem, calc(100% + 1.5rem));
-	padding: 0.55rem 0.8rem 0.58rem;
-	border-radius: 10px;
-	background: #16352f;
-	color: #f4f7f5;
+	max-width: min(22rem, calc(100% + 2.5rem));
+	padding: 0.82rem 1.15rem 0.86rem;
+	border-radius: 12px;
+	background: #ff4d1a;
+	color: #fff;
 	box-shadow:
-		0 10px 24px rgba(16, 32, 28, 0.28),
-		0 0 0 1px rgba(255, 255, 255, 0.08);
+		0 12px 28px rgba(255, 77, 26, 0.38),
+		0 0 0 1px rgba(255, 255, 255, 0.18);
 	transform: translateX(-50%);
 	transform-origin: 50% 110%;
 	pointer-events: none;
@@ -5145,8 +5145,8 @@ body.download-auth-modal-open {
 
 .asset-preview__edit-hint-copy {
 	margin: 0;
-	font-size: 0.78rem;
-	font-weight: 650;
+	font-size: 0.98rem;
+	font-weight: 750;
 	letter-spacing: 0.01em;
 	line-height: 1.35;
 	text-align: center;
@@ -5155,18 +5155,18 @@ body.download-auth-modal-open {
 .asset-preview__edit-hint-arrow {
 	position: absolute;
 	left: 50%;
-	bottom: -6px;
-	width: 12px;
-	height: 12px;
-	background: #16352f;
+	bottom: -7px;
+	width: 14px;
+	height: 14px;
+	background: #ff4d1a;
 	transform: translateX(-50%) rotate(45deg);
-	box-shadow: 2px 2px 0 0 rgba(255, 255, 255, 0.06);
+	box-shadow: 2px 2px 0 0 rgba(255, 255, 255, 0.12);
 }
 
 .asset-preview__edit-hint-shard {
 	position: absolute;
 	display: none;
-	background: #16352f;
+	background: #ff4d1a;
 	pointer-events: none;
 }
 
