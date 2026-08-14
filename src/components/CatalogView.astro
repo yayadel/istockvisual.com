@@ -176,8 +176,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={Boolean(query.color) || undefined}>
-				<summary>Color <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class="catalog-acc" open>
 				<div class="catalog-acc__panel">
 					<CatalogColorPicker
 						client:load
