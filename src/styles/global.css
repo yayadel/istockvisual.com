@@ -2483,6 +2483,22 @@ body.upload-modal-open {
 		grid-template-columns: 1fr;
 	}
 
+	.home-tools__card--image {
+		min-height: 16.5rem;
+	}
+
+	.home-tools__card--image h3 {
+		font-size: 1.22rem;
+	}
+
+	.home-tools__card--palette {
+		grid-template-columns: 1fr;
+	}
+
+	.home-tools__card--palette .home-tools__shot {
+		min-height: 6.25rem;
+	}
+
 	.home-cats__card {
 		flex-basis: 11.5rem;
 	}
