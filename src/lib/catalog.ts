@@ -463,7 +463,7 @@ export function catalogRelatedKeywords(
 	if (!needle) return [];
 
 	const querySlug = toPathSlug(needle);
-	const matched = pool.filter((asset) => assetSearchHay(asset).includes(needle));
+	const matched = pool.filter((asset) => assetMatchesSearchQuery(asset, needle));
 	const source = matched.length ? matched : pool;
 	const scores = new Map<string, { label: string; score: number }>();
 
