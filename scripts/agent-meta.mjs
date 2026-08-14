@@ -9,6 +9,7 @@ const devVars = loadDevVars();
 const baseUrl = process.env.GENERATE_BASE_URL || devVars.BETTER_AUTH_URL || 'http://localhost:4325';
 const secret =
 	process.env.GENERATE_API_SECRET || devVars.GENERATE_API_SECRET || 'dev-generate-secret';
+
 function parseCli(argv) {
 	const flags = {};
 	const positional = [];
@@ -172,7 +173,7 @@ for (const value of meta.contentCategories || []) {
 	if (contentCategories.length >= 1) break;
 }
 if (contentCategories.length === 0) {
-	console.error('Gemini JSON missing valid contentCategories (exactly 1 from /categories)');
+	console.error('Generated JSON missing valid contentCategories (exactly 1 from /categories)');
 	process.exit(1);
 }
 meta.contentCategories = contentCategories.slice(0, 1);
