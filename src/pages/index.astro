@@ -219,3 +219,40 @@ const proPerks = [
 		)
 	}
 </BaseLayout>
+
+<script is:inline>
+	(function () {
+		var root = document.querySelector('.home-cats');
+		if (!root) return;
+		var scroller = root.querySelector('[data-cats-scroller]');
+		var prev = root.querySelector('[data-cats-prev]');
+		var next = root.querySelector('[data-cats-next]');
+		if (!scroller) return;
+
+		function step() {
+			var card = scroller.querySelector('.home-cats__card');
+			return card ? card.getBoundingClientRect().width + 12 : 240;
+		}
+
+		function updateNav() {
+			var max = scroller.scrollWidth - scroller.clientWidth - 2;
+			if (prev) prev.disabled = scroller.scrollLeft <= 2;
+			if (next) next.disabled = scroller.scrollLeft >= max;
+			root.classList.toggle('is-scrollable', max > 0);
+		}
+
+		if (prev) {
+			prev.addEventListener('click', function () {
+				scroller.scrollBy({ left: -step(), behavior: 'smooth' });
+			});
+		}
+		if (next) {
+			next.addEventListener('click', function () {
+				scroller.scrollBy({ left: step(), behavior: 'smooth' });
+			});
+		}
+		scroller.addEventListener('scroll', updateNav, { passive: true });
+		window.addEventListener('resize', updateNav);
+		updateNav();
+	})();
+</script>

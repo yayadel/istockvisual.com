@@ -1587,7 +1587,7 @@ body.upload-modal-open {
 
 .hero .search-bar,
 .hero .search-bar--hero {
-	grid-template-columns: auto minmax(0, 1fr) 3.5rem;
+	grid-template-columns: auto minmax(0, 1fr) 3.5rem 3.5rem;
 	margin-top: 0.2rem;
 	text-align: left;
 	overflow: visible;
@@ -1600,19 +1600,17 @@ body.upload-modal-open {
 	-webkit-backdrop-filter: blur(18px) saturate(1.25);
 }
 
-.hero .search-bar__visual {
-	display: none;
-}
-
 .hero .search-bar__filter {
 	border-right: 1px solid rgba(255, 255, 255, 0.28);
 }
 
+.hero .search-bar__visual,
 .hero .search-bar__submit {
 	border-left: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .hero .search-bar__filter-trigger:hover,
+.hero .search-bar__visual:hover,
 .hero .search-bar__submit:hover {
 	background: rgba(255, 255, 255, 0.1);
 }
