@@ -1,0 +1,130 @@
+---
+import LegalLayout from '../../layouts/LegalLayout.astro';
+import {
+	COOKIES_PATH,
+	LEGAL_CONTACT_EMAIL,
+	LICENSE_PATH,
+	PRIVACY_PATH,
+	REFUNDS_PATH,
+	SITE_BRAND,
+} from '../../lib/seo';
+---
+
+<LegalLayout
+	title="Terms of Use"
+	description="Terms of Use for iStockVisual: accounts, plans, fair use, library content, and browser tools."
+	heading="Terms of Use"
+	lede="These terms govern your use of iStockVisual, including the library, accounts, paid plans, and in-browser tools."
+>
+	<h2>1. Agreement</h2>
+	<p>
+		By using {SITE_BRAND} (“the Service”), you agree to these Terms of Use, the
+		<a href={LICENSE_PATH}>Content License</a>, the <a href={PRIVACY_PATH}>Privacy Policy</a>, the
+		<a href={COOKIES_PATH}>Cookie Policy</a>, and the <a href={REFUNDS_PATH}>Refund Policy</a>. If
+		you do not agree, do not use the Service.
+	</p>
+
+	<h2>2. The Service</h2>
+	<p>
+		iStockVisual is a stock-visual library and a set of creative tools. You can browse and download
+		library images, search by text or by a query photo, and use browser-based tools to edit, convert,
+		vectorize, resize, watermark, or sample colors. We host the site on Cloudflare. Library listings
+		and available sizes can change as we add or retire assets.
+	</p>
+
+	<h2>3. Accounts</h2>
+	<p>
+		Some features require an account. We use email and password authentication. You must provide
+		accurate information, keep your password confidential, and be responsible for activity on your
+		account. You must be old enough to form a binding contract in your place of residence. We may
+		suspend or close accounts that are shared, automated, or used to abuse downloads.
+	</p>
+
+	<h2>4. Plans and payments</h2>
+	<p>
+		Free accounts can download 500 and 1K preview sizes. Paid Short-Term passes (1-Day, 7-Day,
+		1-Month) and Long-Term plans (6-Month, 12-Month, Lifetime) unlock 2K, 4K, and 8K downloads while
+		the plan is active. Prices are shown on the pricing page in US dollars.
+	</p>
+	<p>
+		Plans are sold as one-time charges for a stated period. Lifetime Access is a one-time payment
+		for Pro downloads for as long as we operate the library; it does not auto-renew. Term plans end
+		on their expiry date and also do not auto-renew unless we clearly offer a renewal and you accept
+		it. Refunds are covered by the <a href={REFUNDS_PATH}>Refund Policy</a>.
+	</p>
+
+	<h2>5. Fair use</h2>
+	<p>
+		The first 100 high-resolution (2K / 4K / 8K) downloads each day are unrestricted. After that, a
+		fair-use cap of 10 HD downloads per hour applies so the library stays fast for everyone and so
+		automated scraping is harder. We may tighten, pause, or restore these limits if we see abuse,
+		outages, or unusual load.
+	</p>
+
+	<h2>6. Acceptable use</h2>
+	<p>You agree not to:</p>
+	<ul>
+		<li>Scrape, crawl, or bulk-download the library except through ordinary use of the site</li>
+		<li>Circumvent paywalls, size limits, watermarks, or rate limits</li>
+		<li>Share, sell, or rent your login, or use another person’s account</li>
+		<li>Interfere with the Service, other users, or our hosting and storage</li>
+		<li>Upload malware or content you do not have the right to use in visual search or other upload features</li>
+		<li>Use the Service for unlawful, deceptive, or infringing activity</li>
+		<li>Misrepresent Library Content as exclusively yours or resell it as stock in violation of the license</li>
+	</ul>
+
+	<h2>7. Library Content and your files</h2>
+	<p>
+		Library Content is licensed, not sold. Use of those files is governed by the
+		<a href={LICENSE_PATH}>Content License</a>. Attribution is required.
+	</p>
+	<p>
+		Files you process in the in-browser tools stay on your device unless a feature expressly uploads
+		them. Visual search query photos are uploaded only to run a match and are retained for a short
+		period as described in the Privacy Policy. You keep the rights you already have in your own
+		files; we do not claim ownership of them.
+	</p>
+
+	<h2>8. Availability and changes</h2>
+	<p>
+		We aim to keep the Service available, but we do not guarantee uninterrupted access, a particular
+		download speed, or that any asset will remain in the library forever. We may modify features,
+		plans, or these terms. Material changes will be reflected on this page with an updated date.
+		Continued use after a change means you accept the revised terms.
+	</p>
+
+	<h2>9. Disclaimers</h2>
+	<p>
+		The Service and Library Content are provided “as is.” We do not warrant that files are error-free,
+		fit for a particular commercial campaign, or free of elements that your project might need extra
+		clearance for. Browser tools are provided as a convenience; you are responsible for checking
+		outputs before you publish them.
+	</p>
+
+	<h2>10. Limitation of liability</h2>
+	<p>
+		To the fullest extent permitted by law, iStockVisual and its operators are not liable for
+		indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or
+		goodwill, arising from your use of the Service. Our total liability for any claim relating to the
+		Service is limited to the amount you paid us for the plan giving rise to the claim in the 12
+		months before the claim, or USD $50 if you have not paid us.
+	</p>
+	<p>
+		Nothing in these terms limits liability that cannot be limited under applicable law, including
+		liability for fraud or for death or personal injury caused by negligence where such a limit is
+		not allowed.
+	</p>
+
+	<h2>11. Termination</h2>
+	<p>
+		You may stop using the Service at any time. We may suspend or terminate access if you breach
+		these terms, abuse downloads, or create legal or security risk. After a plan ends or an account
+		is closed, HD download access stops. Files you already downloaded remain subject to the Content
+		License.
+	</p>
+
+	<h2>12. Contact</h2>
+	<p>
+		Questions about these terms: <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a>.
+	</p>
+</LegalLayout>
