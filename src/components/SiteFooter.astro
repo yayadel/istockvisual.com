@@ -1,0 +1,104 @@
+---
+import { CATEGORIES } from '../config/categories';
+import { LEGAL_PAGES, LICENSE_PATH } from '../lib/seo';
+
+const year = new Date().getFullYear();
+
+const library = [
+	...CATEGORIES.map((category) => ({ href: `/${category.slug}`, label: category.label })),
+	{ href: '/c/', label: 'All Categories' },
+	{ href: '/s/', label: 'Search Library' },
+];
+
+const tools = [
+	{ href: '/tools/image', label: 'Image Editor' },
+	{ href: '/tools/convert', label: 'Image Convert' },
+	{ href: '/tools/vectorize', label: 'Image Vectorizer' },
+	{ href: '/tools/social', label: 'Social Resizer' },
+	{ href: '/tools/watermark', label: 'Batch Watermark' },
+	{ href: '/tools/palette', label: 'Palette Generator' },
+];
+
+const platform = [
+	{ href: '/price', label: 'Pricing' },
+	{ href: LICENSE_PATH, label: 'Content License' },
+	{ href: '/signup', label: 'Create Account' },
+	{ href: '/login', label: 'Log In' },
+	{ href: '/account', label: 'Account' },
+];
+---
+
+<footer class="site-footer">
+	<div class="site-footer__inner">
+		<div class="site-footer__grid">
+			<div class="site-footer__brand">
+				<a class="brand" href="/">iStock<span>Visual</span></a>
+				<p class="site-footer__lede">
+					Stock photos, illustrations, vectors, and 3D — with a commercial license and in-browser
+					studio tools for campaigns, products, and creative teams.
+				</p>
+				<ul class="site-footer__facts">
+					<li>Free 500 &amp; 1K downloads</li>
+					<li>Commercial use with attribution</li>
+					<li>2K / 4K / 8K with Pro</li>
+				</ul>
+				<div class="site-footer__cta">
+					<a class="site-footer__btn site-footer__btn--solid" href="/price">Get Pro</a>
+					<a class="site-footer__btn" href="/c/">Browse library</a>
+				</div>
+			</div>
+
+			<nav class="site-footer__col" aria-labelledby="footer-library">
+				<h2 id="footer-library">Library</h2>
+				<ul>
+					{library.map((item) => (
+						<li>
+							<a href={item.href}>{item.label}</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
+			<nav class="site-footer__col" aria-labelledby="footer-tools">
+				<h2 id="footer-tools">Studio Tools</h2>
+				<ul>
+					{tools.map((item) => (
+						<li>
+							<a href={item.href}>{item.label}</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
+			<nav class="site-footer__col" aria-labelledby="footer-platform">
+				<h2 id="footer-platform">Platform</h2>
+				<ul>
+					{platform.map((item) => (
+						<li>
+							<a href={item.href}>{item.label}</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
+			<nav class="site-footer__col" aria-labelledby="footer-legal">
+				<h2 id="footer-legal">Legal</h2>
+				<ul>
+					{LEGAL_PAGES.map((item) => (
+						<li>
+							<a href={item.href}>{item.label}</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+		</div>
+
+		<div class="site-footer__bar">
+			<p class="site-footer__copy">© {year} iStockVisual. All rights reserved.</p>
+			<p class="site-footer__note">
+				Free for commercial and personal use.
+				<a href={LICENSE_PATH}>Attribution required</a>.
+			</p>
+		</div>
+	</div>
+</footer>
