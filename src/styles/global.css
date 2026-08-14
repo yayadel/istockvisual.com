@@ -1743,7 +1743,7 @@ body.upload-modal-open {
 	position: sticky;
 	top: calc(var(--header-h) + 0.75rem);
 	padding: 0 0.2rem 1rem 0;
-	background: var(--bg);
+	background: transparent;
 }
 
 .catalog-filter__head {
