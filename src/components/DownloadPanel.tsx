@@ -343,6 +343,7 @@ export default function DownloadPanel({
 			if (event.key === 'Escape') {
 				setAuthModalOpen(false);
 				setPlansModalOpen(false);
+				setAttrModalOpen(false);
 			}
 		};
 		document.body.classList.add('download-auth-modal-open');
