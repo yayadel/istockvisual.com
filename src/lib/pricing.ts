@@ -62,6 +62,7 @@ export const SHORT_PLANS: PricingPlan[] = [
 		rate: '$5.99 / day',
 		cta: 'Get 1-Day Pass',
 		href: '/signup?plan=1day',
+		note: 'Refund only if you have not downloaded any images.',
 	},
 	{
 		id: 'week',
@@ -71,6 +72,7 @@ export const SHORT_PLANS: PricingPlan[] = [
 		rate: '$1.71 / day',
 		cta: 'Get 7-Day Pass',
 		href: '/signup?plan=7day',
+		note: 'Refund only if you have not downloaded any images.',
 	},
 	{
 		id: 'month',
