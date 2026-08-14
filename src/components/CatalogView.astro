@@ -105,7 +105,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				aria-label="Exclude Keywords"
 			>
 				<CatalogFilterIcon name="exclude" />
-				<span class="catalog-filter-rail__tip">Exclude Keywords</span>
+				<span class="catalog-filter-rail__tip" aria-hidden="true">Exclude Keywords</span>
 			</button>
 			<button
 				class:list={['catalog-filter-rail__btn', query.sort !== 'newest' && 'is-active']}
