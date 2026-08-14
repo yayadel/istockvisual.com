@@ -1,11 +1,14 @@
 ---
 import type { AssetDetail } from '../lib/asset-types';
 import {
+	CATALOG_SORTS,
+	EMPTY_CATALOG_QUERY,
 	catalogChips,
 	catalogFacets,
 	catalogHasFilters,
 	catalogHeading,
 	catalogHref,
+	catalogPathAndParams,
 	type CatalogQuery,
 } from '../lib/catalog';
 import { getContentCategoryIntro } from '../lib/content-categories';
@@ -23,129 +26,311 @@ const facets = catalogFacets(facetPool, query);
 const heading = catalogHeading(query);
 const chips = catalogChips(query);
 const intro = query.topic ? getContentCategoryIntro(query.topic) : null;
-const clearHref = catalogHref({ q: '', type: 'all', topic: '', color: '', tag: '' });
-const hasFilters = catalogHasFilters(query);
+const clearHref = catalogHref({ ...EMPTY_CATALOG_QUERY, q: query.q });
+const hasFilters = catalogHasFilters({ ...query, q: '' });
 const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
+const excludeForm = catalogPathAndParams({ ...query, exclude: '' });
 ---
 
-<div class="catalog">
-	<details class="catalog-filter" open>
-		<summary class="catalog-filter__toggle">
-			<span>Filters</span>
-			<em>{hasFilters ? `${chips.length} active` : 'Refine results'}</em>
-		</summary>
+<div class="catalog" data-catalog>
+	<aside class="catalog-filter" data-catalog-filter>
+		<div class="catalog-filter__head">
+			<p>
+				<svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+					<path d="M4 7h16M7 12h10M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+				</svg>
+				Filters
+			</p>
+			<button class="catalog-filter__fold" type="button" data-catalog-collapse aria-label="Hide filters">
+				<svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+					<path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+				</svg>
+			</button>
+		</div>
 
 		<div class="catalog-filter__body">
-			<section class="catalog-filter__section">
-				<h2>Category</h2>
-				<a
-					class:list={['catalog-filter__all', !query.topic && 'is-active']}
-					href={catalogHref(query, { topic: '' })}
-				>
-					<span>All categories</span>
-				</a>
-				<ul class="catalog-filter__list catalog-filter__list--scroll">
-					{
-						facets.topics.map((item) => (
-							<li>
-								<a
-									class:list={[query.topic === item.slug && 'is-active']}
-									href={catalogHref(query, { topic: query.topic === item.slug ? '' : item.slug })}
-									aria-current={query.topic === item.slug ? 'true' : undefined}
-								>
-									<span>{item.label}</span>
-									<em>{item.count}</em>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-
-			<section class="catalog-filter__section">
-				<h2>Type</h2>
-				<a
-					class:list={['catalog-filter__all', query.type === 'all' && 'is-active']}
-					href={catalogHref(query, { type: 'all' })}
-				>
-					<span>All types</span>
-					<em>{facets.types[0]?.count ?? 0}</em>
-				</a>
-				<ul class="catalog-filter__list">
-					{
-						facets.types.slice(1).map((item) => (
-							<li>
-								<a
-									class:list={[query.type === item.slug && 'is-active']}
-									href={catalogHref(query, {
-										type: query.type === item.slug ? 'all' : item.slug,
-									})}
-									aria-current={query.type === item.slug ? 'true' : undefined}
-								>
-									<span>{item.label}</span>
-									<em>{item.count}</em>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-
-			<section class="catalog-filter__section">
-				<h2>Color</h2>
-				<ul class="catalog-filter__colors">
-					{
-						facets.colors.map((item) => (
-							<li>
-								<a
-									class:list={[
-										'catalog-filter__swatch',
-										query.color === item.id && 'is-active',
-										item.id === 'white' && 'is-light',
-									]}
-									href={catalogHref(query, { color: query.color === item.id ? '' : item.id })}
-									title={`${item.label} (${item.count})`}
-									aria-label={`${item.label}, ${item.count} assets`}
-									aria-current={query.color === item.id ? 'true' : undefined}
-									style={`--swatch: ${item.hex}`}
-								>
-									<span class="visually-hidden">{item.label}</span>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-
-			{
-				facets.tags.length > 0 && (
-					<section class="catalog-filter__section">
-						<h2>Keywords</h2>
-						<ul class="catalog-filter__tags">
-							{facets.tags.map((item) => (
+			<details class="catalog-acc" open={Boolean(query.topic) || undefined}>
+				<summary>Category <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<a
+						class:list={['catalog-filter__all', !query.topic && 'is-active']}
+						href={catalogHref(query, { topic: '' })}
+					>
+						<span>All categories</span>
+					</a>
+					<ul class="catalog-filter__list catalog-filter__list--scroll">
+						{
+							facets.topics.map((item) => (
 								<li>
 									<a
-										class:list={[query.tag === item.slug && 'is-active']}
-										href={catalogHref(query, { tag: query.tag === item.slug ? '' : item.slug })}
-										aria-current={query.tag === item.slug ? 'true' : undefined}
+										class:list={[query.topic === item.slug && 'is-active']}
+										href={catalogHref(query, { topic: query.topic === item.slug ? '' : item.slug })}
+										aria-current={query.topic === item.slug ? 'true' : undefined}
 									>
-										{item.label}
+										<span>{item.label}</span>
+										<em>{item.count}</em>
 									</a>
 								</li>
-							))}
-						</ul>
-					</section>
-				)
-			}
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={query.type !== 'all' || undefined}>
+				<summary>Type <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<a
+						class:list={['catalog-filter__all', query.type === 'all' && 'is-active']}
+						href={catalogHref(query, { type: 'all' })}
+					>
+						<span>All types</span>
+						<em>{facets.types[0]?.count ?? 0}</em>
+					</a>
+					<ul class="catalog-filter__list">
+						{
+							facets.types.slice(1).map((item) => (
+								<li>
+									<a
+										class:list={[query.type === item.slug && 'is-active']}
+										href={catalogHref(query, {
+											type: query.type === item.slug ? 'all' : item.slug,
+										})}
+										aria-current={query.type === item.slug ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+										<em>{item.count}</em>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.license) || undefined}>
+				<summary>License Type <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__list">
+						{
+							facets.licenses.map((item) => (
+								<li>
+									<a
+										class:list={[query.license === item.id && 'is-active']}
+										href={catalogHref(query, { license: query.license === item.id ? '' : item.id })}
+										aria-current={query.license === item.id ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+										<em>{item.count}</em>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.ai) || undefined}>
+				<summary>AI Generated <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__list">
+						{
+							facets.ai.map((item) => (
+								<li>
+									<a
+										class:list={[query.ai === item.id && 'is-active']}
+										href={catalogHref(query, { ai: query.ai === item.id ? '' : item.id })}
+										aria-current={query.ai === item.id ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+										<em>{item.count}</em>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.orient) || undefined}>
+				<summary>Orientation <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__list">
+						{
+							facets.orients.map((item) => (
+								<li>
+									<a
+										class:list={[query.orient === item.id && 'is-active']}
+										href={catalogHref(query, { orient: query.orient === item.id ? '' : item.id })}
+										aria-current={query.orient === item.id ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+										<em>{item.count}</em>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.color) || undefined}>
+				<summary>Color <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__colors">
+						{
+							facets.colors.map((item) => (
+								<li>
+									<a
+										class:list={[
+											'catalog-filter__swatch',
+											query.color === item.id && 'is-active',
+											item.id === 'white' && 'is-light',
+										]}
+										href={catalogHref(query, { color: query.color === item.id ? '' : item.id })}
+										title={`${item.label} (${item.count})`}
+										aria-label={`${item.label}, ${item.count} assets`}
+										aria-current={query.color === item.id ? 'true' : undefined}
+										style={`--swatch: ${item.hex}`}
+									>
+										<span class="visually-hidden">{item.label}</span>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.format) || undefined}>
+				<summary>File Format <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__list">
+						{
+							facets.formats.map((item) => (
+								<li>
+									<a
+										class:list={[query.format === item.id && 'is-active']}
+										href={catalogHref(query, { format: query.format === item.id ? '' : item.id })}
+										aria-current={query.format === item.id ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+										<em>{item.count}</em>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.access) || undefined}>
+				<summary>Collection <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__list">
+						{
+							facets.access.map((item) => (
+								<li>
+									<a
+										class:list={[query.access === item.id && 'is-active']}
+										href={catalogHref(query, { access: query.access === item.id ? '' : item.id })}
+										aria-current={query.access === item.id ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+										<em>{item.count}</em>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.tag) || undefined}>
+				<summary>Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					{
+						facets.tags.length > 0 ? (
+							<ul class="catalog-filter__tags">
+								{facets.tags.map((item) => (
+									<li>
+										<a
+											class:list={[query.tag === item.slug && 'is-active']}
+											href={catalogHref(query, { tag: query.tag === item.slug ? '' : item.slug })}
+											aria-current={query.tag === item.slug ? 'true' : undefined}
+										>
+											{item.label}
+										</a>
+									</li>
+								))}
+							</ul>
+						) : (
+							<p class="catalog-filter__empty">No keywords in this result set.</p>
+						)
+					}
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={Boolean(query.exclude) || undefined}>
+				<summary>Exclude Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<form class="catalog-exclude" method="get" action={excludeForm.pathname}>
+						{
+							[...excludeForm.params.entries()].map(([name, value]) => (
+								<input type="hidden" name={name} value={value} />
+							))
+						}
+						<label class="visually-hidden" for="catalog-exclude">Keywords to exclude</label>
+						<input
+							id="catalog-exclude"
+							type="search"
+							name="exclude"
+							value={query.exclude}
+							placeholder="e.g. watermark, text"
+							maxlength="80"
+						/>
+						<button type="submit">Apply</button>
+					</form>
+				</div>
+			</details>
+
+			<details class="catalog-acc" open={query.sort !== 'newest' || undefined}>
+				<summary>Sort By <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+				<div class="catalog-acc__panel">
+					<ul class="catalog-filter__list">
+						{
+							CATALOG_SORTS.map((item) => (
+								<li>
+									<a
+										class:list={[query.sort === item.id && 'is-active']}
+										href={catalogHref(query, { sort: item.id })}
+										aria-current={query.sort === item.id ? 'true' : undefined}
+									>
+										<span>{item.label}</span>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</details>
 		</div>
-	</details>
+	</aside>
 
 	<div class="catalog-results">
 		<header class="catalog-results__head">
-			<p class="asset-card__meta">Library</p>
+			<div class="catalog-results__kicker">
+				<button class="catalog-filter-show" type="button" data-catalog-expand hidden>
+					<svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
+						<path d="M4 7h16M7 12h10M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+					</svg>
+					Filters
+				</button>
+				<p class="asset-card__meta">Library</p>
+			</div>
 			<h1>{heading}</h1>
 			<p>
-				{intro ? intro.lede : 'Filter by category, type, color, and keyword.'}
+				{intro ? intro.lede : 'Filter by category, type, license, color, and more.'}
 				<span class="catalog-results__count">{resultLabel}</span>
 			</p>
 			{
@@ -170,3 +355,34 @@ const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
 		<AssetGrid assets={assets} emptyMessage={emptyMessage} />
 	</div>
 </div>
+
+<script>
+	const STORAGE_KEY = 'istockvisual-catalog-filters';
+
+	function applyCatalogFold(root, collapsed) {
+		root.classList.toggle('is-filters-hidden', collapsed);
+		const expand = root.querySelector('[data-catalog-expand]');
+		if (expand instanceof HTMLElement) expand.hidden = !collapsed;
+	}
+
+	document.querySelectorAll('[data-catalog]').forEach(function (root) {
+		if (!(root instanceof HTMLElement)) return;
+		try {
+			applyCatalogFold(root, localStorage.getItem(STORAGE_KEY) === 'hidden');
+		} catch (e) {}
+
+		root.querySelector('[data-catalog-collapse]')?.addEventListener('click', function () {
+			applyCatalogFold(root, true);
+			try {
+				localStorage.setItem(STORAGE_KEY, 'hidden');
+			} catch (e) {}
+		});
+
+		root.querySelector('[data-catalog-expand]')?.addEventListener('click', function () {
+			applyCatalogFold(root, false);
+			try {
+				localStorage.setItem(STORAGE_KEY, 'open');
+			} catch (e) {}
+		});
+	});
+</script>
