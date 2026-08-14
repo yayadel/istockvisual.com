@@ -1797,6 +1797,7 @@ body.upload-modal-open {
 .catalog.is-filters-hidden .catalog-filter {
 	padding: 0.1rem 0;
 	overflow: visible;
+	border-right: 1px solid var(--line);
 }
 
 .catalog.is-filters-hidden .catalog-filter-rail {
