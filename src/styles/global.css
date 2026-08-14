@@ -2487,16 +2487,29 @@ body.upload-modal-open {
 }
 
 .download-split__label {
-	font-weight: 650;
+	font-weight: 700;
+}
+
+.download-split__label em {
+	font-style: normal;
+	font-weight: 800;
+	letter-spacing: 0.04em;
 }
 
 .download-split svg {
 	flex: 0 0 auto;
+}
+
+.download-split__icon {
+	opacity: 1;
+}
+
+.download-split__chevron {
 	opacity: 0.85;
 	transition: transform 0.15s ease;
 }
 
-.download-split.is-open svg {
+.download-split.is-open .download-split__chevron {
 	transform: rotate(180deg);
 }
 

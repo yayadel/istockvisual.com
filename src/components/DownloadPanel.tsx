@@ -54,8 +54,20 @@ function CrownIcon() {
 
 function ChevronIcon() {
 	return (
-		<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+		<svg className="download-split__chevron" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
 			<path fill="currentColor" d="M3.2 5.6 8 10.4l4.8-4.8 1.1 1.1L8 12.6 2.1 6.7z" />
+		</svg>
+	);
+}
+
+function DownloadIcon() {
+	return (
+		<svg className="download-split__icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+			<path
+				fill="currentColor"
+				d="M10 2.4v9.1l3.1-3.1 1.1 1.1L10 14.8 5.8 9.5l1.1-1.1 3.1 3.1V2.4z"
+			/>
+			<path fill="currentColor" d="M3.4 15.4h13.2v1.8H3.4z" />
 		</svg>
 	);
 }
