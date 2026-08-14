@@ -93,7 +93,6 @@ export default function AssetPreviewPanel({
 			<div
 				ref={wrapRef}
 				className="asset-preview__image-wrap wm-protected wm-protected--lock"
-				data-wm={String(wmLevel)}
 				onContextMenu={(event) => event.preventDefault()}
 				onPointerMove={moveLens}
 				onPointerLeave={hideLens}
@@ -116,25 +115,6 @@ export default function AssetPreviewPanel({
 					aria-hidden="true"
 					style={{ backgroundImage: `url(${JSON.stringify(imageUrl)})` }}
 				/>
-				<div
-					className="asset-preview__wm-scale"
-					onPointerDown={(event) => event.stopPropagation()}
-					onPointerMove={(event) => event.stopPropagation()}
-				>
-					<span>水印</span>
-					{[1, 2, 3, 4, 5].map((level) => (
-						<button
-							key={level}
-							type="button"
-							className={wmLevel === level ? 'is-on' : undefined}
-							aria-label={`Watermark strength ${level}`}
-							aria-pressed={wmLevel === level}
-							onClick={() => setWmLevel(level)}
-						>
-							{level}
-						</button>
-					))}
-				</div>
 			</div>
 			<div className="asset-preview__footer">
 				<button
