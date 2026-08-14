@@ -209,9 +209,7 @@ export function parseCatalogQuery(
 	const colorParam = (url.searchParams.get('color') || '').trim().toLowerCase();
 	const tagParam = toPathSlug(url.searchParams.get('tag') || '');
 	const licenseParam = (url.searchParams.get('license') || '') as CatalogLicense;
-	const aiParam = (url.searchParams.get('ai') || '') as CatalogAi;
 	const orientParam = (url.searchParams.get('orient') || '') as CatalogOrient;
-	const accessParam = (url.searchParams.get('access') || '') as CatalogAccess;
 	const formatParam = (url.searchParams.get('format') || '') as CatalogFormat;
 	const sortParam = (url.searchParams.get('sort') || '') as CatalogSort;
 	const excludeParam = (url.searchParams.get('exclude') || '').trim();
