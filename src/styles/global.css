@@ -154,6 +154,11 @@ textarea {
 	padding-bottom: 0;
 }
 
+.site-main:has(.catalog) {
+	width: min(100% - 2rem, 1440px);
+	padding-block: 1.15rem 3rem;
+}
+
 [data-theme='dark'] .site-main:has(.detail) {
 	background: transparent;
 }
