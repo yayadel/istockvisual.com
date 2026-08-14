@@ -2128,13 +2128,16 @@ body.upload-modal-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.home-cats__card img,
 	.home-cats__card::after,
-	.home-cats__card:hover img,
 	.home-cats__card:hover::after,
 	.home-tools__card,
 	.home-tools__card:hover {
 		transform: none;
+		transition: none;
+	}
+
+	.asset-card::after,
+	.asset-card:hover::after {
 		transition: none;
 	}
 }
@@ -3038,12 +3041,22 @@ body.upload-modal-open {
 	height: 100%;
 	object-fit: cover;
 	object-position: center 42%;
-	transition: filter 0.2s ease;
 }
 
-.asset-card:hover img,
-.asset-card:focus-visible img {
-	filter: brightness(0.92);
+.asset-card::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background: rgba(0, 0, 0, 0.1);
+	opacity: 0;
+	transition: opacity 0.18s ease;
+	pointer-events: none;
+}
+
+.asset-card:hover::after,
+.asset-card:focus-visible::after {
+	opacity: 1;
 }
 
 .asset-card__empty {
