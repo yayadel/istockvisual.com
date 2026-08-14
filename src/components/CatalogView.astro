@@ -303,5 +303,36 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				localStorage.setItem(STORAGE_KEY, 'open');
 			} catch (e) {}
 		});
+
+		const relatedRoot = root.querySelector('[data-related]');
+		const track = relatedRoot?.querySelector('[data-related-track]');
+		const next = relatedRoot?.querySelector('[data-related-next]');
+		const prev = relatedRoot?.querySelector('[data-related-prev]');
+		if (
+			relatedRoot instanceof HTMLElement &&
+			track instanceof HTMLElement &&
+			next instanceof HTMLElement &&
+			prev instanceof HTMLElement
+		) {
+			const updateRelated = function () {
+				const max = track.scrollWidth - track.clientWidth;
+				const overflow = max > 8;
+				relatedRoot.classList.toggle('is-overflow', overflow);
+				prev.hidden = !overflow || track.scrollLeft <= 8;
+				next.hidden = !overflow || track.scrollLeft >= max - 8;
+			};
+			const jump = function (dir) {
+				track.scrollBy({ left: dir * Math.max(240, track.clientWidth * 0.72), behavior: 'smooth' });
+			};
+			next.addEventListener('click', function () {
+				jump(1);
+			});
+			prev.addEventListener('click', function () {
+				jump(-1);
+			});
+			track.addEventListener('scroll', updateRelated, { passive: true });
+			window.addEventListener('resize', updateRelated);
+			updateRelated();
+		}
 	});
 </script>

@@ -1731,29 +1731,13 @@ body.upload-modal-open {
 	background: transparent;
 	color: var(--text-muted);
 	cursor: pointer;
+	flex-shrink: 0;
 }
 
 .catalog-filter__fold:hover,
 .catalog-filter-show:hover {
 	background: var(--ghost-bg);
 	color: var(--text);
-}
-
-.catalog-filter-show {
-	width: auto;
-	gap: 0.4rem;
-	padding: 0.25rem 0.55rem;
-	margin-right: 0.55rem;
-	font-size: 0.8rem;
-	font-weight: 650;
-	color: var(--text);
-}
-
-.catalog-results__kicker {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.35rem;
 }
 
 .catalog-filter__body {
