@@ -243,9 +243,7 @@ function appendSharedParams(params: URLSearchParams, query: CatalogQuery) {
 	if (query.color) params.set('color', query.color);
 	if (query.tag) params.set('tag', query.tag);
 	if (query.license) params.set('license', query.license);
-	if (query.ai) params.set('ai', query.ai);
 	if (query.orient) params.set('orient', query.orient);
-	if (query.access) params.set('access', query.access);
 	if (query.format) params.set('format', query.format);
 	if (query.exclude) params.set('exclude', query.exclude);
 	if (query.sort && query.sort !== 'newest') params.set('sort', query.sort);
