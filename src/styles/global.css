@@ -2206,12 +2206,10 @@ body.upload-modal-open {
 	pointer-events: none;
 }
 
-.home-tools__crop i {
-	position: absolute;
-	width: 14px;
-	height: 14px;
-	border: 2px solid #c4f04b;
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+.home-tools__crop i,
+.home-tools__frames i,
+.home-tools__swatches i {
+	font-style: normal;
 }
 
 .home-tools__crop i:nth-child(1) {
