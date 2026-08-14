@@ -310,7 +310,7 @@ function ShareLoveModal({
 						type="button"
 						className={`share-love__copy${copied ? ' is-copied' : ''}`}
 						onClick={() => void copySnippet()}
-						aria-label={copied ? 'Copied' : 'Copy attribution'}
+						aria-label={copied ? 'Copied' : 'Copy Attribution'}
 						title={copied ? 'Copied' : 'Copy'}
 					>
 						<CopySquaresIcon />
