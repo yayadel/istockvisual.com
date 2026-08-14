@@ -54,8 +54,11 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 		</div>
 
 		<div class="catalog-filter__body">
-			<details class="catalog-acc" open={Boolean(query.topic) || undefined}>
-				<summary>Category <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class:list={['catalog-acc', query.topic && 'has-pick']}>
+				<summary>
+					{topicLabel || 'Category'}
+					<span class="catalog-acc__chevron" aria-hidden="true"></span>
+				</summary>
 				<div class="catalog-acc__panel">
 					<a
 						class:list={['catalog-filter__all', !query.topic && 'is-active']}
