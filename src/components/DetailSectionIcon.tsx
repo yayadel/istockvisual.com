@@ -53,6 +53,12 @@ const icons: Record<IconName, JSX.Element> = {
 			<path d="M6.4 9.2 7 10.8l1.6.6L7 12l-.6 1.6L5.8 12l-1.6-.6 1.6-.6.6-1.6Z" />
 		</IconSvg>
 	),
+	tag: (
+		<IconSvg>
+			<path d="M20.2 13.15 13.1 20.25a2 2 0 0 1-2.83 0L3.6 13.58V3.6h10l6.6 6.72a2 2 0 0 1 0 2.83Z" />
+			<circle cx="8.35" cy="8.35" r="1.15" fill="currentColor" stroke="none" />
+		</IconSvg>
+	),
 };
 
 export default function DetailSectionIcon({ name }: { name: IconName }) {
