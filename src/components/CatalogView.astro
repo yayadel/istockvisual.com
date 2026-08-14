@@ -95,7 +95,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				aria-label="Color"
 			>
 				<CatalogFilterIcon name="color" />
-				<span class="catalog-filter-rail__tip">Color</span>
+				<span class="catalog-filter-rail__tip" aria-hidden="true">Color</span>
 			</button>
 			<button
 				class:list={['catalog-filter-rail__btn', query.exclude && 'is-active']}
