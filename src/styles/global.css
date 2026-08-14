@@ -5130,7 +5130,7 @@ body.download-auth-modal-open {
 	bottom: calc(100% + 0.85rem);
 	z-index: 12;
 	width: max-content;
-	max-width: min(22rem, calc(100% + 2.5rem));
+	max-width: none;
 	padding: 0.82rem 1.15rem 0.86rem;
 	border-radius: 18px;
 	background: #ff4d1a;
