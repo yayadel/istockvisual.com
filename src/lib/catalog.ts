@@ -396,9 +396,6 @@ export function catalogChips(query: CatalogQuery) {
 		const label = family ? family.label : `#${catalogColorHex(query.color).toUpperCase()}`;
 		chips.push({ key: 'color', label, href: catalogHref(query, { color: '' }) });
 	}
-	if (query.tag) {
-		chips.push({ key: 'tag', label: query.tag.replace(/-/g, ' '), href: catalogHref(query, { tag: '' }) });
-	}
 	if (query.exclude) {
 		chips.push({
 			key: 'exclude',
