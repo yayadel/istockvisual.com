@@ -74,7 +74,7 @@ const FAQS: Faq[] = [
 	{
 		keys: ['tool', 'editor', 'convert', 'vector', 'watermark', 'palette', 'resize'],
 		answer:
- mar			'Studio tools run in your browser: Image Editor /tools/image, Convert /tools/convert, Vectorizer /tools/vectorize, Social Resizer /tools/social, Watermark /tools/watermark, Palette /tools/palette. Your device files are not uploaded unless you use visual search.',
+			'Studio tools run in your browser: Image Editor /tools/image, Convert /tools/convert, Vectorizer /tools/vectorize, Social Resizer /tools/social, Watermark /tools/watermark, Palette /tools/palette. Your device files are not uploaded unless you use visual search.',
 	},
 	{
 		keys: ['search', 'upload', 'image search', 'visual'],
