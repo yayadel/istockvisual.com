@@ -245,7 +245,10 @@ export default function DownloadPanel({
 					aria-haspopup="listbox"
 					onClick={() => setMenuOpen((open) => !open)}
 				>
-					<span className="download-split__label">Free Download</span>
+					<DownloadIcon />
+					<span className="download-split__label">
+						Download for <em>FREE</em>
+					</span>
 					<ChevronIcon />
 				</button>
 
