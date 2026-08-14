@@ -123,7 +123,7 @@ export async function convertDownloadBlob(
 	return new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
 }
 
-export function downloadFileLabel(slug: string, sizeId: string, format: DownloadFormat) {
-	const base = sizeFileLabel(slug, sizeId).replace(/\.jpe?g$/i, '');
+export function downloadFileLabel(title: string, sizeId: string, format: DownloadFormat) {
+	const base = sizeFileLabel(title, sizeId).replace(/\.jpe?g$/i, '');
 	return `${base}.${format}`;
 }

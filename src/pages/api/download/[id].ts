@@ -136,7 +136,7 @@ export const GET: APIRoute = async (context) => {
 		);
 	}
 
-	const filename = sizeFileLabel(asset.slug || 'asset', size || 'original');
+	const filename = sizeFileLabel(asset.title || asset.slug || 'asset', size || 'original');
 
 	const finish = async (bytes: Uint8Array, headers: Record<string, string> = {}) =>
 		jpegDownload(bytes, filename, headers);

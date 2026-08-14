@@ -50,9 +50,21 @@ export function outputSizeForDownload(
 	return fitLongEdge(width, height, size.longEdge);
 }
 
-export function sizeFileLabel(slug: string, sizeId: string) {
-	const safe = slug.replace(/[^\w.\-]+/g, '_') || 'asset';
-	return `${safe}-${sizeId}.jpg`;
+/** Download filename stem: the page title, with only illegal path characters stripped. */
+export function filenameFromTitle(title: string): string {
+	const cleaned = title
+		.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '')
+		.replace(/\s+/g, ' ')
+		.trim()
+		.slice(0, 160);
+	return cleaned || 'asset';
+}
+
+export function sizeFileLabel(title: string, sizeId: string) {
+	const base = filenameFromTitle(title);
+	const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
+	const sizePart = size?.label || sizeId;
+	return `${base}-${sizePart}.jpg`;
 }
 
 export function variantObjectKey(originalKey: string, sizeId: string) {
