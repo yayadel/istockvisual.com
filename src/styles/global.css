@@ -1742,6 +1742,7 @@ body.upload-modal-open {
 .catalog-filter {
 	position: sticky;
 	top: calc(var(--header-h) + 0.75rem);
+	z-index: 12;
 	padding: 0 0.2rem 1rem 0;
 	background: transparent;
 }
@@ -1830,6 +1831,26 @@ body.upload-modal-open {
 	height: 1.18rem;
 }
 
+.catalog-filter-rail__btn--open {
+	color: var(--text);
+	margin-bottom: 0.4rem;
+}
+
+.catalog-filter-rail__btn--open svg {
+	width: 0.92rem;
+	height: 0.92rem;
+}
+
+.catalog-filter-rail__btn--open::after {
+	content: '';
+	position: absolute;
+	left: 0.55rem;
+	right: 0.55rem;
+	bottom: -0.12rem;
+	height: 1px;
+	background: var(--line);
+}
+
 .catalog-filter-rail__btn:hover,
 .catalog-filter-rail__btn:focus-visible {
 	background: var(--ghost-bg);
@@ -1856,7 +1877,7 @@ body.upload-modal-open {
 	position: absolute;
 	left: calc(100% + 0.55rem);
 	top: 50%;
-	z-index: 30;
+	z-index: 40;
 	padding: 0.38rem 0.62rem;
 	border-radius: 4px;
 	background: #161a18;
