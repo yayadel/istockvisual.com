@@ -1716,6 +1716,28 @@ body.upload-modal-open {
 .home-cats .section-head,
 .home-featured .section-head {
 	margin-top: 0;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--line);
+}
+
+.home-tools .section-head::after,
+.home-top-search .section-head::after,
+.home-cats .section-head::after,
+.home-featured .section-head::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	width: 2.6rem;
+	height: 2px;
+	background: var(--accent);
+}
+
+.home-tools .section-head,
+.home-top-search .section-head,
+.home-cats .section-head,
+.home-featured .section-head {
+	position: relative;
 }
 
 .home-pro,
