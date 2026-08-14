@@ -52,20 +52,10 @@ export const CATALOG_LICENSES: { id: CatalogLicense; label: string }[] = [
 	{ id: 'editorial', label: 'Editorial' },
 ];
 
-export const CATALOG_AI: { id: CatalogAi; label: string }[] = [
-	{ id: 'yes', label: 'AI generated' },
-	{ id: 'no', label: 'Not AI generated' },
-];
-
 export const CATALOG_ORIENTS: { id: CatalogOrient; label: string }[] = [
 	{ id: 'landscape', label: 'Landscape' },
 	{ id: 'portrait', label: 'Portrait' },
 	{ id: 'square', label: 'Square' },
-];
-
-export const CATALOG_ACCESS: { id: CatalogAccess; label: string }[] = [
-	{ id: 'standard', label: 'Standard' },
-	{ id: 'pro', label: 'Pro' },
 ];
 
 export const CATALOG_FORMATS: { id: CatalogFormat; label: string }[] = [
