@@ -101,7 +101,7 @@ export default function SupportChat({ variant = 'page' }: Props) {
 			</div>
 			{messages.length < 3 && (
 				<div className="support-chat__prompts">
-					{SUPPORT_PROMPTS.map((prompt) => (
+					{PROMPTS.map((prompt) => (
 						<button key={prompt} type="button" onClick={() => send(prompt)}>
 							{prompt}
 						</button>
