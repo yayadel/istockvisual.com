@@ -8,9 +8,7 @@ import {
 import { toPathSlug, tagMatches } from './paths';
 
 export type CatalogType = 'all' | CategorySlug;
-export type CatalogLicense = '' | 'commercial' | 'editorial';
 export type CatalogOrient = '' | 'landscape' | 'portrait' | 'square';
-export type CatalogFormat = '' | 'jpg' | 'png' | 'webp' | 'svg';
 export type CatalogSort = 'newest' | 'oldest' | 'title';
 
 export type CatalogQuery = {
@@ -19,9 +17,7 @@ export type CatalogQuery = {
 	topic: string;
 	color: string;
 	tag: string;
-	license: CatalogLicense;
 	orient: CatalogOrient;
-	format: CatalogFormat;
 	exclude: string;
 	sort: CatalogSort;
 };
