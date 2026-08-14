@@ -40,3 +40,10 @@ const links = [
 	<p class="tools-masthead__lede">{lede}</p>
 	<p class="tools-masthead__privacy">{privacy}</p>
 </header>
+
+<script>
+	const activeTab = document.querySelector('.tools-masthead__tab.is-active, .tools-masthead__tab[aria-current="page"]');
+	if (activeTab instanceof HTMLElement && window.matchMedia('(max-width: 800px)').matches) {
+		activeTab.scrollIntoView({ inline: 'center', block: 'nearest' });
+	}
+</script>
