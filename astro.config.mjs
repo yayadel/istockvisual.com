@@ -19,6 +19,9 @@ export default defineConfig({
 		remoteBindings: false,
 	}),
 	integrations: [react()],
+	build: {
+		inlineStylesheets: 'never',
+	},
 	vite: {
 		ssr: {
 			noExternal: ['jpeg-js', 'fast-png'],

@@ -56,6 +56,11 @@ interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }
 
+declare module '*.css?url' {
+	const href: string;
+	export default href;
+}
+
 declare module 'cloudflare:workers' {
 	interface Env extends CloudflareEnv {}
 }
