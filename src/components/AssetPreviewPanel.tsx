@@ -40,6 +40,7 @@ export default function AssetPreviewPanel({
 	const imageRef = useRef<HTMLImageElement>(null);
 	const lensRef = useRef<HTMLDivElement>(null);
 	const wmCanvasRef = useRef<HTMLCanvasElement>(null);
+	const wmSizeRef = useRef('');
 
 	const paintWatermark = useCallback(() => {
 		const image = imageRef.current;
@@ -50,11 +51,15 @@ export default function AssetPreviewPanel({
 		}
 
 		const box = imageContentRect(image);
+		const key = `${imageUrl}:${Math.round(box.width)}x${Math.round(box.height)}`;
+		if (key === wmSizeRef.current && canvas.width > 0) return;
+
 		canvas.style.left = `${box.x}px`;
 		canvas.style.top = `${box.y}px`;
 		const ok = paintAdaptiveWatermark(canvas, image, box.width, box.height);
+		if (ok) wmSizeRef.current = key;
 		setWmAdaptive(ok);
-	}, []);
+	}, [imageUrl]);
 
 	const closeEditor = useCallback(() => setEditing(false), []);
 	const openEditor = useCallback((event: MouseEvent<HTMLButtonElement>) => {
