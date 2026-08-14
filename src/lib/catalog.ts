@@ -282,13 +282,7 @@ export function applyCatalogFilters(assets: AssetDetail[], query: CatalogQuery):
 		if (query.topic && !assetMatchesContentCategory(asset, query.topic)) return false;
 		if (query.tag && !(asset.tags || []).some((value) => tagMatches(value, query.tag))) return false;
 		if (query.color && !assetMatchesColor(asset, query.color)) return false;
-		if (query.license && assetLicenseKind(asset) !== query.license) return false;
-		if (query.ai === 'yes' && !assetIsAiGenerated(asset)) return false;
-		if (query.ai === 'no' && assetIsAiGenerated(asset)) return false;
 		if (query.orient && assetOrientation(asset) !== query.orient) return false;
-		if (query.access === 'pro' && !asset.isPremium) return false;
-		if (query.access === 'standard' && asset.isPremium) return false;
-		if (query.format && assetFormat(asset) !== query.format) return false;
 		if (query.exclude && matchesExclude(asset, query.exclude)) return false;
 		if (needle && !assetSearchHay(asset).includes(needle)) return false;
 		return true;
@@ -313,11 +307,7 @@ export type CatalogFacets = {
 	topics: { slug: string; label: string; count: number }[];
 	colors: { id: string; label: string; hex: string; count: number }[];
 	tags: { slug: string; label: string; count: number }[];
-	licenses: { id: CatalogLicense; label: string; count: number }[];
-	ai: { id: CatalogAi; label: string; count: number }[];
 	orients: { id: CatalogOrient; label: string; count: number }[];
-	access: { id: CatalogAccess; label: string; count: number }[];
-	formats: { id: CatalogFormat; label: string; count: number }[];
 };
 
 function except<K extends keyof CatalogQuery>(query: CatalogQuery, key: K): CatalogQuery {
@@ -332,11 +322,7 @@ export function catalogFacets(pool: AssetDetail[], query: CatalogQuery, tagLimit
 	const topicBase = applyCatalogFilters(pool, except(query, 'topic'));
 	const colorBase = applyCatalogFilters(pool, except(query, 'color'));
 	const tagBase = applyCatalogFilters(pool, except(query, 'tag'));
-	const licenseBase = applyCatalogFilters(pool, except(query, 'license'));
-	const aiBase = applyCatalogFilters(pool, except(query, 'ai'));
 	const orientBase = applyCatalogFilters(pool, except(query, 'orient'));
-	const accessBase = applyCatalogFilters(pool, except(query, 'access'));
-	const formatBase = applyCatalogFilters(pool, except(query, 'format'));
 
 	const types: CatalogFacets['types'] = [
 		{ slug: 'all', label: 'All types', count: typeBase.length },
