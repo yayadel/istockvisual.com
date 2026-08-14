@@ -75,6 +75,7 @@ def coerce_gemma_payload(data: dict) -> dict:
 	aliases = {
 		"imagePrompt": (
 			"image_generation_prompt",
+			"imageGenerationPrompt",
 			"image_prompt",
 			"prompt",
 		),
