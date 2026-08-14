@@ -56,10 +56,76 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			</button>
 		</div>
 
+		<nav class="catalog-filter-rail" data-catalog-rail aria-label="Filter sections">
+			<button
+				class:list={['catalog-filter-rail__btn', query.topic && 'is-active']}
+				type="button"
+				data-catalog-expand
+				data-filter-target="category"
+				aria-label="Category"
+			>
+				<CatalogFilterIcon name="category" />
+				<span class="catalog-filter-rail__tip">Category</span>
+			</button>
+			<button
+				class:list={['catalog-filter-rail__btn', query.type !== 'all' && 'is-active']}
+				type="button"
+				data-catalog-expand
+				data-filter-target="type"
+				aria-label="Type"
+			>
+				<CatalogFilterIcon name="type" />
+				<span class="catalog-filter-rail__tip">Type</span>
+			</button>
+			<button
+				class:list={['catalog-filter-rail__btn', query.orient && 'is-active']}
+				type="button"
+				data-catalog-expand
+				data-filter-target="orient"
+				aria-label="Orientation"
+			>
+				<CatalogFilterIcon name="orient" />
+				<span class="catalog-filter-rail__tip">Orientation</span>
+			</button>
+			<button
+				class:list={['catalog-filter-rail__btn', query.color && 'is-active']}
+				type="button"
+				data-catalog-expand
+				data-filter-target="color"
+				aria-label="Color"
+			>
+				<CatalogFilterIcon name="color" />
+				<span class="catalog-filter-rail__tip">Color</span>
+			</button>
+			<button
+				class:list={['catalog-filter-rail__btn', query.exclude && 'is-active']}
+				type="button"
+				data-catalog-expand
+				data-filter-target="exclude"
+				aria-label="Exclude Keywords"
+			>
+				<CatalogFilterIcon name="exclude" />
+				<span class="catalog-filter-rail__tip">Exclude Keywords</span>
+			</button>
+			<button
+				class:list={['catalog-filter-rail__btn', query.sort !== 'newest' && 'is-active']}
+				type="button"
+				data-catalog-expand
+				data-filter-target="sort"
+				aria-label="Sort By"
+			>
+				<CatalogFilterIcon name="sort" />
+				<span class="catalog-filter-rail__tip">Sort By</span>
+			</button>
+		</nav>
+
 		<div class="catalog-filter__body">
-			<details class:list={['catalog-acc', query.topic && 'has-pick']}>
+			<details class:list={['catalog-acc', query.topic && 'has-pick']} data-filter-section="category">
 				<summary>
-					{topicLabel || 'Category'}
+					<span class="catalog-acc__icon" aria-hidden="true">
+						<CatalogFilterIcon name="category" />
+					</span>
+					<span class="catalog-acc__label">{topicLabel || 'Category'}</span>
 					<span class="catalog-acc__chevron" aria-hidden="true"></span>
 				</summary>
 				<div class="catalog-acc__panel">
