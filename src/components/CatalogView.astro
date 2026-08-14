@@ -153,8 +153,14 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={query.type !== 'all' || undefined}>
-				<summary>Type <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class="catalog-acc" open={query.type !== 'all' || undefined} data-filter-section="type">
+				<summary>
+					<span class="catalog-acc__icon" aria-hidden="true">
+						<CatalogFilterIcon name="type" />
+					</span>
+					<span class="catalog-acc__label">Type</span>
+					<span class="catalog-acc__chevron" aria-hidden="true"></span>
+				</summary>
 				<div class="catalog-acc__panel">
 					<a
 						class:list={['catalog-filter__all', query.type === 'all' && 'is-active']}
