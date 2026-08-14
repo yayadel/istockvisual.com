@@ -2110,7 +2110,6 @@ body.upload-modal-open {
 		padding: 1.75rem 0 2.4rem;
 	}
 
-	.home-cats__grid,
 	.home-tools__grid,
 	.home-top-search__cols {
 		grid-template-columns: 1fr 1fr;
