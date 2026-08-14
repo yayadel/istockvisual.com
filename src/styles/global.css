@@ -138,7 +138,18 @@ textarea {
 }
 
 .site-main:has(.hero) > :not(.hero) {
-	width: min(100% - 2rem, var(--max));
+	width: min(100% - 2rem, var(--content-wide));
+	margin-inline: auto;
+}
+
+.site-main:has(.hero) > .home-bleed {
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+}
+
+.home-bleed__inner {
+	width: min(100% - 2rem, var(--content-wide));
 	margin-inline: auto;
 }
 

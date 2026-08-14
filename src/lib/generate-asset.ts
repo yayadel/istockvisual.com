@@ -116,16 +116,17 @@ export async function listCategoryAssets(
 	db: D1Database | undefined,
 	origin: string,
 	category: CategorySlug,
+	limit = 50,
 ): Promise<AssetDetail[]> {
 	const sanityAssets = (await listSanityAssetsByCategory(category)).map(sanityToDetail);
-	if (!db) return sanityAssets;
+	if (!db) return sanityAssets.slice(0, limit);
 
-	const generated = (await listGeneratedAssetsByCategory(db, category)).map((row) =>
+	const generated = (await listGeneratedAssetsByCategory(db, category, limit)).map((row) =>
 		generatedToDetail(row, origin),
 	);
-	return [...generated, ...sanityAssets].sort((a, b) =>
-		(b.publishedAt || '').localeCompare(a.publishedAt || ''),
-	);
+	return [...generated, ...sanityAssets]
+		.sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || ''))
+		.slice(0, limit);
 }
 
 export async function listFeaturedAssets(
