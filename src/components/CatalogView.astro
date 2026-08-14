@@ -257,7 +257,8 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 					<div class="catalog-chips">
 						{chips.map((chip) => (
 							<a class="catalog-chips__item" href={chip.href}>
-								{chip.label}
+								<em>{chip.kind}</em>
+								<strong>{chip.value}</strong>
 								<span aria-hidden="true">×</span>
 							</a>
 						))}
