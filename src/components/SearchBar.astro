@@ -435,31 +435,32 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 			var tip = btn.querySelector('.search-bar__visual-tip');
 			if (!(tip instanceof HTMLElement)) return;
 			var pad = 10;
-			var gap = 8;
-			var btnRect = btn.getBoundingClientRect();
-			tip.classList.add('is-fixed');
-			tip.style.left = '0px';
-			tip.style.top = '0px';
-			var width = tip.offsetWidth;
-			var height = tip.offsetHeight;
-			if (!width) return;
-			var maxLeft = window.innerWidth - pad - width;
-			var left = btnRect.left + btnRect.width / 2 - width / 2;
-			left = Math.max(pad, Math.min(left, Math.max(pad, maxLeft)));
-			var top = btnRect.bottom + gap;
-			if (top + height > window.innerHeight - pad && btnRect.top - gap - height >= pad) {
-				top = btnRect.top - gap - height;
-				tip.dataset.place = 'top';
-			} else {
-				top = Math.min(top, Math.max(pad, window.innerHeight - pad - height));
-				tip.dataset.place = 'bottom';
+			tip.classList.remove('is-above');
+			tip.style.left = '50%';
+			tip.style.right = 'auto';
+			tip.style.top = '';
+			tip.style.bottom = '';
+			tip.style.transform = 'translateX(-50%)';
+			tip.style.setProperty('--tip-arrow', '50%');
+
+			var rect = tip.getBoundingClientRect();
+			if (!rect.width) return;
+
+			var shift = 0;
+			if (rect.left < pad) shift += pad - rect.left;
+			if (rect.right + shift > window.innerWidth - pad) {
+				shift -= rect.right + shift - (window.innerWidth - pad);
 			}
-			var arrow = btnRect.left + btnRect.width / 2 - left;
-			arrow = Math.max(10, Math.min(width - 10, arrow));
-			tip.style.left = left + 'px';
-			tip.style.top = top + 'px';
-			tip.style.setProperty('--tip-arrow', arrow + 'px');
-			tip.classList.toggle('is-above', tip.dataset.place === 'top');
+			if (shift) {
+				tip.style.transform = 'translateX(calc(-50% + ' + shift + 'px))';
+				var arrow = rect.width / 2 - shift;
+				tip.style.setProperty('--tip-arrow', Math.max(10, Math.min(rect.width - 10, arrow)) + 'px');
+			}
+
+			var btnRect = btn.getBoundingClientRect();
+			if (window.innerHeight - btnRect.bottom < rect.height + 16 && btnRect.top > rect.height + 16) {
+				tip.classList.add('is-above');
+			}
 		}
 
 		function hideVisualTip() {
@@ -467,10 +468,12 @@ const selectedLabel = options.find((option) => option.value === selected)?.label
 			var tip = visualTipBtn.querySelector('.search-bar__visual-tip');
 			visualTipBtn.classList.remove('is-tip-open');
 			if (tip instanceof HTMLElement) {
-				tip.classList.remove('is-fixed', 'is-above');
-				tip.removeAttribute('data-place');
+				tip.classList.remove('is-above');
 				tip.style.left = '';
+				tip.style.right = '';
 				tip.style.top = '';
+				tip.style.bottom = '';
+				tip.style.transform = '';
 				tip.style.removeProperty('--tip-arrow');
 			}
 			visualTipBtn = null;

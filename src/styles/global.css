@@ -1222,12 +1222,9 @@ body:has(.detail) .search-strip__inner {
 	transition: opacity 0.12s ease;
 }
 
-.search-bar__visual-tip.is-fixed {
-	position: fixed;
-	right: auto;
-	bottom: auto;
-	transform: none;
-	white-space: normal;
+.search-bar__visual-tip.is-above {
+	top: auto;
+	bottom: calc(100% + 0.5rem);
 }
 
 .search-bar__visual-tip::after {
