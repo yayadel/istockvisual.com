@@ -175,9 +175,7 @@ export function parseCatalogQuery(
 	const topicParam = toPathSlug(url.searchParams.get('topic') || '');
 	const colorParam = (url.searchParams.get('color') || '').trim().toLowerCase();
 	const tagParam = toPathSlug(url.searchParams.get('tag') || '');
-	const licenseParam = (url.searchParams.get('license') || '') as CatalogLicense;
 	const orientParam = (url.searchParams.get('orient') || '') as CatalogOrient;
-	const formatParam = (url.searchParams.get('format') || '') as CatalogFormat;
 	const sortParam = (url.searchParams.get('sort') || '') as CatalogSort;
 	const excludeParam = (url.searchParams.get('exclude') || '').trim();
 
