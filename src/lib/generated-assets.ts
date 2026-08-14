@@ -271,6 +271,32 @@ export async function listTopSearchKeywords(db: D1Database, limit = 16): Promise
 	return (result.results ?? []).map((row) => String(row.keyword).trim()).filter(Boolean);
 }
 
+/** Media types (photos / illustrations / …) that currently have generated library items. */
+export async function listPopulatedMediaTypes(
+	db: D1Database | undefined,
+): Promise<Set<CategorySlug>> {
+	const slugs = new Set<CategorySlug>();
+	if (!db) return slugs;
+
+	try {
+		const result = await db
+			.prepare(
+				`SELECT DISTINCT category
+				 FROM generated_asset
+				 WHERE category IS NOT NULL AND TRIM(category) != ''`,
+			)
+			.all<{ category: string }>();
+
+		for (const row of result.results ?? []) {
+			if (isCategorySlug(row.category)) slugs.add(row.category);
+		}
+	} catch {
+		/* empty set: hide types that require content */
+	}
+
+	return slugs;
+}
+
 export async function slugExists(
 	db: D1Database,
 	category: CategorySlug,
