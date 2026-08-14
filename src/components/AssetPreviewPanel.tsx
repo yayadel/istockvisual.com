@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
-import { imageContentRect, paintAdaptiveWatermark } from '../lib/adaptive-watermark';
+import { useCallback, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
 import ImageEditor from './ImageEditor';
 import ShareBar from './ShareBar';
 
@@ -35,31 +34,9 @@ export default function AssetPreviewPanel({
 	assetId,
 }: Props) {
 	const [editing, setEditing] = useState(false);
-	const [wmAdaptive, setWmAdaptive] = useState(false);
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
 	const lensRef = useRef<HTMLDivElement>(null);
-	const wmCanvasRef = useRef<HTMLCanvasElement>(null);
-	const wmSizeRef = useRef('');
-
-	const paintWatermark = useCallback(() => {
-		const image = imageRef.current;
-		const canvas = wmCanvasRef.current;
-		if (!image || !canvas || !image.complete || image.naturalWidth < 2) {
-			setWmAdaptive(false);
-			return;
-		}
-
-		const box = imageContentRect(image);
-		const key = `${imageUrl}:${Math.round(box.width)}x${Math.round(box.height)}`;
-		if (key === wmSizeRef.current && canvas.width > 0) return;
-
-		canvas.style.left = `${box.x}px`;
-		canvas.style.top = `${box.y}px`;
-		const ok = paintAdaptiveWatermark(canvas, image, box.width, box.height);
-		if (ok) wmSizeRef.current = key;
-		setWmAdaptive(ok);
-	}, [imageUrl]);
 
 	const closeEditor = useCallback(() => setEditing(false), []);
 	const openEditor = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -111,46 +88,11 @@ export default function AssetPreviewPanel({
 		wrap.classList.add('asset-preview__image-wrap--zooming');
 	}, [hideLens]);
 
-	useEffect(() => {
-		wmSizeRef.current = '';
-		setWmAdaptive(false);
-
-		const image = imageRef.current;
-		if (!image) return;
-
-		let frame = 0;
-		const schedule = () => {
-			cancelAnimationFrame(frame);
-			frame = requestAnimationFrame(() => paintWatermark());
-		};
-
-		if (image.complete) schedule();
-		else image.addEventListener('load', schedule);
-
-		const observer = new ResizeObserver(schedule);
-		observer.observe(image);
-
-		return () => {
-			cancelAnimationFrame(frame);
-			image.removeEventListener('load', schedule);
-			observer.disconnect();
-		};
-	}, [imageUrl, paintWatermark]);
-
-	const wrapClass = [
-		'asset-preview__image-wrap',
-		'wm-protected',
-		'wm-protected--lock',
-		wmAdaptive ? 'wm-protected--adaptive' : '',
-	]
-		.filter(Boolean)
-		.join(' ');
-
 	return (
 		<div className="asset-preview">
 			<div
 				ref={wrapRef}
-				className={wrapClass}
+				className="asset-preview__image-wrap wm-protected wm-protected--lock"
 				onContextMenu={(event) => event.preventDefault()}
 				onPointerMove={moveLens}
 				onPointerLeave={hideLens}
@@ -167,11 +109,10 @@ export default function AssetPreviewPanel({
 					decoding="async"
 					draggable={false}
 				/>
-				<div className="wm-protected__fallback" aria-hidden="true">
-					<span className="wm-protected__fallback-layer wm-protected__fallback-layer--dark" />
-					<span className="wm-protected__fallback-layer wm-protected__fallback-layer--light" />
+				<div className="wm-protected__mark" aria-hidden="true">
+					<span className="wm-protected__mark-layer wm-protected__mark-layer--dark" />
+					<span className="wm-protected__mark-layer wm-protected__mark-layer--light" />
 				</div>
-				<canvas ref={wmCanvasRef} className="wm-protected__adaptive" aria-hidden="true" />
 				<div
 					ref={lensRef}
 					className="asset-preview__lens"
