@@ -52,7 +52,9 @@ class AssetMeta(BaseModel):
 		max_length=1,
 		description="Exactly 1 allowed category label for the depicted scene",
 	)
-	imagePageTitle: str = Field(description="Title-case title containing the keyword")
+	imagePageTitle: str = Field(
+		description="Natural title-case stock caption of the visible scene; core subject from keyword, not a stuffed query"
+	)
 	pageShortDescription: str = Field(
 		description="Sentence-case short description containing the keyword"
 	)

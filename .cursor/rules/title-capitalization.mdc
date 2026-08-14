@@ -17,4 +17,10 @@ alwaysApply: true
 - 标题：`Orbital Quenching PDF Process in a Metallurgy Lab`
 - 标签：`Z Flashing`, `Galvanized Metal`, `PDF Template`
 
+标题必须是画面名，不要把搜索词整句塞进去：
+- 关键词 `how to size a magnetic motor starter` → `Electrician Sizing a Magnetic Motor Starter on a Workbench`
+- 不要写成 `Guide on How to Size a Magnetic Motor Starter`
+- 不要加 Stock Image / Free Download（页面拼装时再加）
+- 描述和标签里保留原始关键词；标题只保留核心主语（产品、场景、动作）
+
 描述字段用 sentence case，但缩写与专有名词仍要正确（PDF、Colorado、Kentucky 等）。
