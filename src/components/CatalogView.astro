@@ -1,0 +1,164 @@
+---
+import type { AssetDetail } from '../lib/asset-types';
+import {
+	catalogChips,
+	catalogFacets,
+	catalogHasFilters,
+	catalogHeading,
+	catalogHref,
+	type CatalogQuery,
+} from '../lib/catalog';
+import { getContentCategoryIntro } from '../lib/content-categories';
+import AssetGrid from './AssetGrid.astro';
+
+interface Props {
+	pool: AssetDetail[];
+	query: CatalogQuery;
+	emptyMessage?: string;
+}
+
+const { pool, query, emptyMessage = 'No assets matched these filters.' } = Astro.props;
+const assets = pool; // already filtered by the page
+const facets = catalogFacets(
+	// Facets need the unfiltered-by-that-dimension pool. Pages pass filtered
+	// results as `pool` today; they should pass `facetPool` separately.
+	(Astro.props as Props & { facetPool?: AssetDetail[] }).facetPool || pool,
+	query,
+);
+const heading = catalogHeading(query);
+const chips = catalogChips(query);
+const intro = query.topic ? getContentCategoryIntro(query.topic) : null;
+const clearHref = catalogHref({ ...query, q: '', type: 'all', topic: '', color: '', tag: '' });
+const hasFilters = catalogHasFilters(query);
+const resultLabel = `${assets.length} asset${assets.length === 1 ? '' : 's'}`;
+---
+
+<div class="catalog">
+	<details class="catalog-filter" open>
+		<summary class="catalog-filter__toggle">
+			<span>Filters</span>
+			<em>{hasFilters ? `${chips.length} active` : 'Refine results'}</em>
+		</summary>
+
+		<div class="catalog-filter__body">
+			<section class="catalog-filter__section">
+				<h2>Category</h2>
+				<a
+					class:list={['catalog-filter__all', !query.topic && 'is-active']}
+					href={catalogHref(query, { topic: '' })}
+				>
+					All categories
+				</a>
+				<ul class="catalog-filter__list catalog-filter__list--scroll">
+					{
+						facets.topics.map((item) => (
+							<li>
+								<a
+									class:list={[query.topic === item.slug && 'is-active']}
+									href={catalogHref(query, { topic: query.topic === item.slug ? '' : item.slug })}
+									aria-current={query.topic === item.slug ? 'true' : undefined}
+								>
+									<span>{item.label}</span>
+									<em>{item.count}</em>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<section class="catalog-filter__section">
+				<h2>Type</h2>
+				<ul class="catalog-filter__list">
+					{
+						facets.types.map((item) => (
+							<li>
+								<a
+									class:list={[query.type === item.slug && 'is-active']}
+									href={catalogHref(query, { type: query.type === item.slug ? 'all' : item.slug })}
+									aria-current={query.type === item.slug ? 'true' : undefined}
+								>
+									<span>{item.label}</span>
+									<em>{item.count}</em>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<section class="catalog-filter__section">
+				<h2>Color</h2>
+				<ul class="catalog-filter__colors">
+					{
+						facets.colors.map((item) => (
+							<li>
+								<a
+									class:list={['catalog-filter__swatch', query.color === item.id && 'is-active']}
+									href={catalogHref(query, { color: query.color === item.id ? '' : item.id })}
+									title={`${item.label} (${item.count})`}
+									aria-label={`${item.label}, ${item.count} assets`}
+									aria-current={query.color === item.id ? 'true' : undefined}
+									style={`--swatch: ${item.hex}`}
+								>
+									<span class="visually-hidden">{item.label}</span>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			{
+				facets.tags.length > 0 && (
+					<section class="catalog-filter__section">
+						<h2>Keywords</h2>
+						<ul class="catalog-filter__tags">
+							{facets.tags.map((item) => (
+								<li>
+									<a
+										class:list={[query.tag === item.slug && 'is-active']}
+										href={catalogHref(query, { tag: query.tag === item.slug ? '' : item.slug })}
+										aria-current={query.tag === item.slug ? 'true' : undefined}
+									>
+										{item.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				)
+			}
+		</div>
+	</details>
+
+	<div class="catalog-results">
+		<header class="catalog-results__head">
+			<p class="asset-card__meta">Library</p>
+			<h1>{heading}</h1>
+			<p>
+				{intro ? intro.lede : 'Filter by category, type, color, and keyword.'}
+				<span class="catalog-results__count">{resultLabel}</span>
+			</p>
+			{
+				chips.length > 0 && (
+					<div class="catalog-chips">
+						{chips.map((chip) => (
+							<a class="catalog-chips__item" href={chip.href}>
+								{chip.label}
+								<span aria-hidden="true">×</span>
+							</a>
+						))}
+						{hasFilters && (
+							<a class="catalog-chips__clear" href={clearHref}>
+								Clear all
+							</a>
+						)}
+					</div>
+				)
+			}
+		</header>
+
+		<AssetGrid assets={assets} emptyMessage={emptyMessage} />
+	</div>
+</div>
