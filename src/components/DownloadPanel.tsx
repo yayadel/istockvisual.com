@@ -316,6 +316,7 @@ export default function DownloadPanel({
 	isPro,
 	loginHref,
 	signupHref = '/signup',
+	pageUrl,
 }: Props) {
 	const [selected, setSelected] = useState<DownloadSizeId>('1k');
 	const [menuOpen, setMenuOpen] = useState(false);
