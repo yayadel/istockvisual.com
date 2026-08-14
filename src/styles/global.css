@@ -5055,25 +5055,146 @@ body.image-editor-modal-open {
 }
 
 @media (max-width: 900px) {
-	.image-editor-modal__dialog {
+	.image-editor-modal:not(.image-editor-modal--page) {
+		padding: 0;
+		place-items: stretch;
+	}
+
+	.image-editor-modal:not(.image-editor-modal--page) .image-editor-modal__dialog {
 		width: 100%;
-		height: 100%;
+		height: 100dvh;
+		max-height: 100dvh;
 		margin: 0;
 		border-radius: 0;
+		grid-template-rows: auto auto minmax(0, 1fr);
+	}
+
+	.image-editor-modal__header {
+		align-items: flex-start;
+		gap: 0.65rem;
+		padding: 0.7rem 0.85rem;
+	}
+
+	.image-editor-modal__header h2 {
+		font-size: 0.92rem;
+		line-height: 1.3;
+		max-width: none;
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+
+	.image-editor-modal__header-actions .btn {
+		padding: 0.42rem 0.7rem;
+		font-size: 0.82rem;
+	}
+
+	.image-editor-modal__controls {
+		gap: 0.55rem;
+		padding: 0.7rem 0.85rem 0.75rem;
+		max-height: none;
+		overflow: visible;
+	}
+
+	.image-editor-modal__row-label {
+		flex-basis: 3.35rem;
+		width: 3.35rem;
+		min-width: 3.35rem;
+		margin-top: 0;
+		padding-left: 0.5rem;
+		font-size: 0.6rem;
+		letter-spacing: 0.08em;
+		align-self: center;
+	}
+
+	.image-editor-modal__row--tools,
+	.image-editor-modal__controls > .image-editor-modal__row:first-child {
+		flex-wrap: nowrap;
 	}
 
 	.image-editor-modal__tools {
-		grid-template-columns: 1fr 1fr;
+		display: flex;
+		grid-template-columns: none;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scrollbar-width: thin;
+	}
+
+	.image-editor-modal__tool {
+		flex: 0 0 auto;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.08rem;
+		padding: 0.4rem 0.65rem;
+	}
+
+	.image-editor-modal__tool small {
+		display: none;
 	}
 
 	.image-editor-modal__workspace {
 		grid-template-columns: 1fr;
+		grid-template-rows: minmax(0, 1fr) auto;
 	}
 
 	.image-editor-modal__stage-wrap {
 		border-right: 0;
 		border-bottom: 1px solid var(--ie-line);
-		min-height: 42vh;
+		min-height: 0;
+		height: 100%;
+		padding: 0.65rem;
+	}
+
+	.image-editor-modal__panel {
+		height: auto;
+		max-height: 38dvh;
+		padding: 0.85rem 0.9rem 1rem;
+	}
+
+	.image-editor-modal__slider {
+		grid-template-columns: minmax(0, 1fr) 2rem auto;
+		grid-template-areas:
+			'label value reset'
+			'range range range';
+		gap: 0.22rem 0.4rem;
+		font-size: 0.78rem;
+	}
+
+	.image-editor-modal__slider > span:first-child {
+		grid-area: label;
+	}
+
+	.image-editor-modal__slider input[type='range'] {
+		grid-area: range;
+	}
+
+	.image-editor-modal__slider-value {
+		grid-area: value;
+	}
+
+	.image-editor-modal__slider-reset {
+		grid-area: reset;
+	}
+
+	.image-editor-modal--page .image-editor-modal__dialog {
+		height: auto;
+		max-height: none;
+	}
+
+	.image-editor-modal--page .image-editor-modal__workspace {
+		grid-template-columns: 1fr;
+		grid-template-rows: none;
+	}
+
+	.image-editor-modal--page .image-editor-modal__stage-wrap {
+		height: min(48vh, 380px);
+		min-height: 220px;
+	}
+
+	.image-editor-modal--page .image-editor-modal__panel {
+		max-height: none;
 	}
 }
 
