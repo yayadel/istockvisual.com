@@ -4384,8 +4384,9 @@ body.image-editor-modal-open {
 	display: flex;
 	flex-wrap: nowrap;
 	gap: 0.35rem;
-	flex: 1 1 auto;
+	flex: 1 1 0;
 	min-width: 0;
+	max-width: 100%;
 	overflow-x: auto;
 	overflow-y: hidden;
 	padding-bottom: 0.1rem;
