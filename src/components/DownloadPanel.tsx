@@ -279,6 +279,26 @@ export default function DownloadPanel({
 					</ul>
 				)}
 			</div>
+			<ul className="download-perks">
+				<li>
+					<a href={LICENSE_PATH}>
+						<CheckIcon />
+						Free to use
+					</a>
+				</li>
+				<li>
+					<a href={LICENSE_PATH}>
+						<CheckIcon />
+						Commercial use
+					</a>
+				</li>
+				<li>
+					<button type="button" onClick={() => void copyAttribution()}>
+						<LinkIcon />
+						{copiedAttr ? 'Copied' : 'Copy attribution'}
+					</button>
+				</li>
+			</ul>
 			{error && <p className="download-panel__error">{error}</p>}
 
 			{authModalOpen && (
