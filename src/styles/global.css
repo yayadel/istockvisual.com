@@ -5267,6 +5267,19 @@ body.download-auth-modal-open {
 	}
 }
 
+@keyframes asset-edit-hint-float {
+	0%,
+	100% {
+		transform: translateX(-50%) translateY(0) scale(1);
+	}
+	35% {
+		transform: translateX(-50%) translateY(-4px) scale(1.045);
+	}
+	68% {
+		transform: translateX(-50%) translateY(2px) scale(0.97);
+	}
+}
+
 @keyframes asset-edit-hint-fade {
 	to {
 		opacity: 0;
@@ -5300,7 +5313,7 @@ body.download-auth-modal-open {
 [data-theme='dark'] .asset-preview__edit-hint,
 [data-theme='dark'] .asset-preview__edit-hint-arrow,
 [data-theme='dark'] .asset-preview__edit-hint-shard {
-	background: #0f241f;
+	background: #ff5a2a;
 }
 
 .asset-preview__action.btn,
