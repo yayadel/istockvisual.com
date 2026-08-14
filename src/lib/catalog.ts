@@ -162,7 +162,7 @@ function colorMatchThreshold(deltas: number[]): number {
 	const finite = deltas.filter((d) => Number.isFinite(d)).sort((a, b) => a - b);
 	if (!finite.length) return -1;
 	for (const step of COLOR_DELTA_STEPS) {
-		if (finite[0] <= step) return step;
+		if (finite[0] <= step) return Math.max(step, 22);
 	}
 	const nearest = finite[0];
 	const clusterEnd = finite.findIndex((d) => d > nearest + 10);
