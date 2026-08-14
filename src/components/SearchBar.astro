@@ -18,7 +18,13 @@ const pathQuery =
 		? fromPathSlug(decodeURIComponent(path.slice(3).split('/')[0] || ''))
 		: '';
 const q = pathQuery || Astro.url.searchParams.get('q') || '';
-const selected = Astro.url.searchParams.get('category') ?? 'all';
+const pathType = CATEGORIES.find((category) => path === `/${category.slug}`)?.slug;
+const selected = Astro.url.searchParams.get('category') ?? pathType ?? 'all';
+const pathTopic =
+	path.startsWith('/c/') && path.length > 3 ? decodeURIComponent(path.slice(3).split('/')[0] || '') : '';
+const topic = Astro.url.searchParams.get('topic') || pathTopic;
+const color = Astro.url.searchParams.get('color') || '';
+const tag = Astro.url.searchParams.get('tag') || '';
 
 const options = [
 	{ value: 'all', label: 'All media' },
