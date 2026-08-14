@@ -99,8 +99,17 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 			</main>
 			<footer class="site-footer">
 				<div class="site-footer__inner">
-					<span>iStockVisual — stock visuals for makers</span>
-					<span>Cloudflare · Sanity · Better Auth</span>
+					<div class="site-footer__brand">
+						<span>iStockVisual — stock visuals for makers</span>
+						<span class="site-footer__copy">© {new Date().getFullYear()} iStockVisual</span>
+					</div>
+					<nav class="site-footer__nav" aria-label="Legal">
+						{
+							LEGAL_PAGES.map((item) => (
+								<a href={item.href}>{item.label}</a>
+							))
+						}
+					</nav>
 				</div>
 			</footer>
 		</div>
