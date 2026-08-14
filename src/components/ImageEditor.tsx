@@ -1072,6 +1072,9 @@ export default function ImageEditor({
 						<h2 id="image-editor-title">{title}</h2>
 					</div>
 					<div className="image-editor-modal__header-actions">
+						<a className="btn" href="/tools/image">
+							Edit your own image
+						</a>
 						<button
 							className="btn btn--ghost"
 							type="button"
