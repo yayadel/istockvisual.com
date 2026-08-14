@@ -112,6 +112,9 @@ def coerce_gemma_payload(data: dict) -> dict:
 		else:
 			out["medium"] = "Photograph"
 	return out
+
+
+def append_response_log(record: dict) -> Path:
 	log_dir = gm.ROOT / ".tmp"
 	log_dir.mkdir(parents=True, exist_ok=True)
 	jsonl_path = log_dir / "gemma4-log.jsonl"
@@ -191,11 +194,12 @@ def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
 		raise SystemExit("Together Gemma returned empty output")
 
 	try:
-		meta = gm.AssetMeta.model_validate_json(gm.extract_json(raw_text))
+		payload = coerce_gemma_payload(json.loads(gm.extract_json(raw_text)))
+		meta = gm.AssetMeta.model_validate(payload)
 	except Exception as first_error:
 		try:
-			data = json.loads(gm.extract_json(raw_text))
-			meta = gm.AssetMeta.model_validate(data)
+			payload = coerce_gemma_payload(json.loads(gm.extract_json(raw_text)))
+			meta = gm.AssetMeta.model_validate(payload)
 		except Exception as second_error:
 			log_record["parseError"] = f"{first_error}; {second_error}"
 			append_response_log(log_record)
