@@ -14,6 +14,7 @@ GEMINI_MAX_OUTPUT_TOKENS=8192
 # Together AI (Gemma 4) — optional alternative to Gemini for npm run agent:meta:gemma
 TOGETHER_API_KEY=
 TOGETHER_MODEL=google/gemma-4-31B-it
+# Thinking is forced off in scripts/gemma_meta.py (direct JSON, no reasoning)
 # TOGETHER_MAX_OUTPUT_TOKENS=8192
 SANITY_PROJECT_ID=
 SANITY_DATASET=production

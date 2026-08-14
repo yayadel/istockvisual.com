@@ -193,10 +193,20 @@ def generate_meta(keyword: str) -> tuple[gm.AssetMeta, dict]:
 
 	kwargs: dict = {
 		"model": model,
-		"messages": [{"role": "user", "content": prompt}],
+		"messages": [
+			{
+				"role": "system",
+				"content": "Direct JSON output only. Do not think, reason, or explain. Return one JSON object.",
+			},
+			{"role": "user", "content": prompt},
+		],
 		"temperature": 0.75,
 		"max_tokens": max_output,
 		"response_format": {"type": "json_object"},
+		"extra_body": {
+			"enable_thinking": False,
+			"chat_template_kwargs": {"enable_thinking": False},
+		},
 	}
 
 	recorded_at = datetime.now(timezone.utc).isoformat()
