@@ -5138,6 +5138,7 @@ body.download-auth-modal-open {
 	box-shadow:
 		0 10px 24px rgba(16, 32, 28, 0.28),
 		0 0 0 1px rgba(255, 255, 255, 0.08);
+	transform: translateX(-50%);
 	transform-origin: 50% 110%;
 	pointer-events: none;
 }
