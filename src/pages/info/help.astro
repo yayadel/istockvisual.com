@@ -1,0 +1,20 @@
+---
+import LegalLayout from '../../layouts/LegalLayout.astro';
+import SupportChat from '../../components/SupportChat';
+import { LEGAL_CONTACT_EMAIL } from '../../lib/seo';
+---
+
+<LegalLayout
+	title="Help"
+	description="Free iStockVisual assistant for questions about licenses, downloads, plans, refunds, and studio tools."
+	heading="Help"
+	lede="Ask the free assistant about the library, Pro sizes, attribution, refunds, and in-browser tools. No account required."
+>
+	<p>
+		This chat is free. It answers from iStockVisual’s public policies. For a refund or an account
+		issue, email <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a>.
+	</p>
+	<div class="support-chat-embed">
+		<SupportChat client:load variant="page" />
+	</div>
+</LegalLayout>
