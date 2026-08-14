@@ -55,17 +55,16 @@ export function assetSearchDescription(input: {
 	description?: string;
 	category: CategorySlug;
 }): string {
-	const noun = stockNoun(input.category);
+	const heading = assetSearchTitle(input.title);
 	const lead = (input.shortDescription || input.description || '').trim();
-	const prefix = 'Download high-quality';
-	const closer = `Free HD ${noun} download. Royalty-free for commercial use.`;
+	const closer = 'Royalty-free for commercial use.';
 
 	if (!lead) {
-		return clipDescription(`${prefix} ${input.title} ${noun}. ${closer}`);
+		return clipDescription(`${heading}. ${closer}`);
 	}
 
 	const punctuated = /[.!?]$/.test(lead) ? lead : `${lead}.`;
-	return clipDescription(`${prefix} ${punctuated} ${closer}`);
+	return clipDescription(`${heading}. ${punctuated} ${closer}`);
 }
 
 function clipDescription(text: string): string {

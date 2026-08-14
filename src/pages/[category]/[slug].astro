@@ -52,7 +52,6 @@ const origin = Astro.url.origin;
 const pagePath = `/${category.slug}/${asset.slug}`;
 const pageUrl = absoluteUrl(pagePath, origin);
 const seoTitle = assetSearchTitle(asset.title);
-const pageHeading = assetPageHeading(asset.title);
 const seoDescription = assetSearchDescription({
 	title: asset.title,
 	shortDescription: asset.shortDescription,
@@ -111,7 +110,7 @@ const jsonLd = assetJsonLd({
 					</ol>
 				</nav>
 				<div class="detail__title-row">
-					<h1>{pageHeading}</h1>
+					<h1>{seoTitle}</h1>
 				</div>
 				{asset.shortDescription && (
 					<p class="detail__lead">{asset.shortDescription}</p>
