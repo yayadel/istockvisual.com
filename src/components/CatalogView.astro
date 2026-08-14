@@ -188,8 +188,14 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={Boolean(query.orient) || undefined}>
-				<summary>Orientation <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
+			<details class="catalog-acc" open={Boolean(query.orient) || undefined} data-filter-section="orient">
+				<summary>
+					<span class="catalog-acc__icon" aria-hidden="true">
+						<CatalogFilterIcon name="orient" />
+					</span>
+					<span class="catalog-acc__label">Orientation</span>
+					<span class="catalog-acc__chevron" aria-hidden="true"></span>
+				</summary>
 				<div class="catalog-acc__panel">
 					<ul class="catalog-filter__list">
 						{
