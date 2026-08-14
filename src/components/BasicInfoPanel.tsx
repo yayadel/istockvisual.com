@@ -43,7 +43,17 @@ export default function BasicInfoPanel({
 					<li>
 						<span>License</span>
 						<span>
-							{licenseHref ? <a href={licenseHref}>{license}</a> : license}
+							{licenseHref ? (
+								<a className="meta-list__license" href={licenseHref}>
+									<span>Free to use — commercial OK,</span>
+									<span>attribution required</span>
+								</a>
+							) : (
+								<span className="meta-list__license">
+									<span>Free to use — commercial OK,</span>
+									<span>attribution required</span>
+								</span>
+							)}
 						</span>
 					</li>
 					{categoryLinks.length > 0 && (
