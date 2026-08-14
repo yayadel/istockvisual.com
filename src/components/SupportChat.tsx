@@ -13,7 +13,7 @@ type StoredChat = {
 };
 
 const GREETING =
-	'Hi — I’m the free iStockVisual assistant. Ask about licenses, free vs Pro sizes, plans, refunds, or studio tools. I answer from our public policies. For account billing, email hello@istockvisual.com.';
+	'Hi — I’m the iStockVisual assistant. Ask about licenses, Pro sizes, plans, refunds, or studio tools. For account-specific billing, email hello@istockvisual.com.';
 
 const PROMPTS = [
 	'Is 1K really free?',
