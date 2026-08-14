@@ -326,10 +326,11 @@ export default function DownloadPanel({
 	const [authModalOpen, setAuthModalOpen] = useState(false);
 	const [plansModalOpen, setPlansModalOpen] = useState(false);
 	const [pendingSize, setPendingSize] = useState<string | null>(null);
-	const [copiedAttr, setCopiedAttr] = useState(false);
+	const [attrModalOpen, setAttrModalOpen] = useState(false);
+	const [pageHref, setPageHref] = useState(pageUrl || '');
 	const rootRef = useRef<HTMLDivElement>(null);
 
-	const anyModalOpen = authModalOpen || plansModalOpen;
+	const anyModalOpen = authModalOpen || plansModalOpen || attrModalOpen;
 
 	useEffect(() => {
 		setNatural({ width: sourceWidth, height: sourceHeight });
