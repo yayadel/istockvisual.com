@@ -148,7 +148,7 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 				</div>
 			</details>
 
-			<details class="catalog-acc" open={Boolean(query.exclude) || undefined}>
+			<details class:list={['catalog-acc', 'catalog-acc--exclude', query.exclude && 'is-open-default']} open={Boolean(query.exclude) || undefined}>
 				<summary>Exclude Keywords <span class="catalog-acc__chevron" aria-hidden="true"></span></summary>
 				<div class="catalog-acc__panel">
 					<form class="catalog-exclude" method="get" action={excludeForm.pathname}>
