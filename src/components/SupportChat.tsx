@@ -36,7 +36,7 @@ export default function SupportChat({ variant = 'page' }: Props) {
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState('');
 	const [messages, setMessages] = useState<ChatItem[]>([
-		{ role: 'assistant', content: SUPPORT_GREETING },
+		{ role: 'assistant', content: GREETING },
 	]);
 	const scrollerRef = useRef<HTMLDivElement>(null);
 
