@@ -14,6 +14,7 @@ import {
 	type DownloadSizeId,
 } from '../lib/download-sizes';
 import { LONG_PLANS } from '../lib/pricing';
+import { LICENSE_PATH, SITE_BRAND } from '../lib/seo';
 
 type Props = {
 	assetId: string;
