@@ -399,37 +399,38 @@ export function catalogHeading(query: CatalogQuery) {
 }
 
 export function catalogChips(query: CatalogQuery) {
-	const chips: { key: keyof CatalogQuery; label: string; href: string }[] = [];
+	const chips: { key: keyof CatalogQuery; kind: string; value: string; href: string }[] = [];
 	if (query.topic) {
-		const label = getContentCategoryBySlug(query.topic)?.label || query.topic;
-		chips.push({ key: 'topic', label, href: catalogHref(query, { topic: '' }) });
+		const value = getContentCategoryBySlug(query.topic)?.label || query.topic;
+		chips.push({ key: 'topic', kind: 'Category', value, href: catalogHref(query, { topic: '' }) });
 	}
 	if (query.type !== 'all') {
-		const label = CATEGORIES.find((item) => item.slug === query.type)?.label || query.type;
-		chips.push({ key: 'type', label, href: catalogHref(query, { type: 'all' }) });
+		const value = CATEGORIES.find((item) => item.slug === query.type)?.label || query.type;
+		chips.push({ key: 'type', kind: 'Type', value, href: catalogHref(query, { type: 'all' }) });
 	}
 	if (query.orient) {
-		const label = CATALOG_ORIENTS.find((item) => item.id === query.orient)?.label || query.orient;
-		chips.push({ key: 'orient', label, href: catalogHref(query, { orient: '' }) });
+		const value = CATALOG_ORIENTS.find((item) => item.id === query.orient)?.label || query.orient;
+		chips.push({ key: 'orient', kind: 'Orientation', value, href: catalogHref(query, { orient: '' }) });
 	}
 	if (query.color) {
 		const family = CATALOG_COLORS.find((item) => item.id === query.color);
-		const label = family ? family.label : `#${catalogColorHex(query.color).toUpperCase()}`;
-		chips.push({ key: 'color', label, href: catalogHref(query, { color: '' }) });
+		const value = family ? family.label : `#${catalogColorHex(query.color).toUpperCase()}`;
+		chips.push({ key: 'color', kind: 'Color', value, href: catalogHref(query, { color: '' }) });
 	}
 	if (query.exclude) {
 		chips.push({
 			key: 'exclude',
-			label: `Not “${query.exclude}”`,
+			kind: 'Exclude',
+			value: query.exclude,
 			href: catalogHref(query, { exclude: '' }),
 		});
 	}
 	if (query.sort !== 'newest') {
-		const label = CATALOG_SORTS.find((item) => item.id === query.sort)?.label || query.sort;
-		chips.push({ key: 'sort', label, href: catalogHref(query, { sort: 'newest' }) });
+		const value = CATALOG_SORTS.find((item) => item.id === query.sort)?.label || query.sort;
+		chips.push({ key: 'sort', kind: 'Sort', value, href: catalogHref(query, { sort: 'newest' }) });
 	}
 	if (query.q) {
-		chips.push({ key: 'q', label: `“${query.q}”`, href: catalogHref(query, { q: '' }) });
+		chips.push({ key: 'q', kind: 'Search', value: query.q, href: catalogHref(query, { q: '' }) });
 	}
 	return chips;
 }
