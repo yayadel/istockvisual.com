@@ -1695,12 +1695,7 @@ body.upload-modal-open {
 }
 
 .catalog-filter {
-	position: sticky;
-	top: calc(var(--header-h) + 0.75rem);
-	max-height: calc(100dvh - var(--header-h) - 1.5rem);
-	overflow: auto;
 	padding: 0 0.2rem 1rem 0;
-	scrollbar-width: thin;
 	background: var(--bg);
 }
 
