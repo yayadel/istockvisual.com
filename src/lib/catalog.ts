@@ -61,9 +61,7 @@ export const EMPTY_CATALOG_QUERY: CatalogQuery = {
 	topic: '',
 	color: '',
 	tag: '',
-	license: '',
 	orient: '',
-	format: '',
 	exclude: '',
 	sort: 'newest',
 };
