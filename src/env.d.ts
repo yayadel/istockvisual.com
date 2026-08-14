@@ -37,6 +37,8 @@ interface ImportMetaEnv {
 	readonly ADMIN_EMAILS?: string;
 	readonly GEMINI_API_KEY?: string;
 	readonly GEMINI_MODEL?: string;
+	readonly TOGETHER_API_KEY?: string;
+	readonly TOGETHER_MODEL?: string;
 	readonly LOCAL_AI_TEXT_URL?: string;
 	readonly LOCAL_AI_TEXT_MODEL?: string;
 	readonly LOCAL_AI_TEXT_API_KEY?: string;

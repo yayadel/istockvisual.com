@@ -11,6 +11,10 @@ GEMINI_MAX_OUTPUT_TOKENS=8192
 # Optional: proxy or gateway if Google is unreachable
 # HTTPS_PROXY=http://127.0.0.1:7890
 # GEMINI_BASE_URL=https://generativelanguage.googleapis.com
+# Together AI (Gemma 4) — optional alternative to Gemini for npm run agent:meta:gemma
+TOGETHER_API_KEY=
+TOGETHER_MODEL=google/gemma-4-31B-it
+# TOGETHER_MAX_OUTPUT_TOKENS=8192
 SANITY_PROJECT_ID=
 SANITY_DATASET=production
 SANITY_API_TOKEN=

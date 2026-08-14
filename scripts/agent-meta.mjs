@@ -153,7 +153,7 @@ try {
 }
 
 if (!meta?.imagePrompt) {
-	console.error('Gemini JSON missing imagePrompt');
+	console.error('Generated JSON missing imagePrompt');
 	process.exit(1);
 }
 

@@ -13,7 +13,7 @@ alwaysApply: true
 
 对每一个素材，独立走完整闭环，确认完成后再开始下一个：
 
-1. 认领 **1** 个关键词，并用 **Gemini Interactions API**（`scripts/gemini_meta.py` / `npm run agent:meta`，模型默认 `gemini-3.6-flash` + `google_search`）生成元数据
+1. 认领 **1** 个关键词，并用 **Gemini Interactions API**（`scripts/gemini_meta.py` / `npm run agent:meta`，模型默认 `gemini-3.6-flash` + `google_search`）生成元数据。可选替代：Together **Gemma 4**（`npm run agent:meta:gemma`，模型 `google/gemma-4-31B-it`，需 `TOGETHER_API_KEY`）
 2. 使用返回的 `meta.imagePrompt` **单独**生成该素材图片（一次只调一次图像生成）
 3. 导入该素材（含尺寸变体等）：`node scripts/agent-import.mjs …`
 4. 确认成功后，再开始下一条
