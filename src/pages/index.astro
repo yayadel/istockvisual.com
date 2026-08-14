@@ -13,28 +13,27 @@ import { LIFETIME_PLAN } from '../lib/pricing';
 import { env } from 'cloudflare:workers';
 
 const origin = Astro.url.origin;
-const featured = await listFeaturedAssets(env.DB, origin, 16);
+const pool = await listFeaturedAssets(env.DB, origin, 80);
+const featured = pool.slice(0, 16);
 const topKeywords = await listTopSearchKeywords(env.DB, 16);
 const heroKeywords = topKeywords.slice(0, 10);
 
-const categoryFallbacks: Record<CategorySlug, string> = {
-	photos: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80',
-	illustrations: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=900&q=80',
-	vectors: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=900&q=80',
-	'3d': 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=900&q=80',
-};
+const categoryFallback = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80';
+const rankedCategories = await listTopContentCategoriesByCount(env.DB, 10);
+const topCategories = (
+	rankedCategories.some((item) => item.count > 0)
+		? rankedCategories.filter((item) => item.count > 0)
+		: rankedCategories
+).slice(0, 10);
 
-const categoryTiles = await Promise.all(
-	CATEGORIES.map(async (category) => {
-		const [cover] = await listCategoryAssets(env.DB, origin, category.slug, 1);
-		return {
-			slug: category.slug,
-			label: category.label,
-			href: `/${category.slug}`,
-			image: cover?.previewUrl || categoryFallbacks[category.slug],
-		};
-	}),
-);
+const categoryTiles = topCategories.map((category) => {
+	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
+	return {
+		label: category.label,
+		href: contentCategoryPath(category.slug),
+		image: cover?.previewUrl || categoryFallback,
+	};
+});
 
 const columnSize = Math.ceil(topKeywords.length / 4) || 1;
 const popularColumns = [0, 1, 2, 3]
