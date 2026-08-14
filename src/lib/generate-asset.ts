@@ -180,44 +180,140 @@ export function filterAssetsByContentCategory(
 	return assets.filter((asset) => assetMatchesContentCategory(asset, labelOrSlug));
 }
 
-function tokenSet(values?: string[]): Set<string> {
-	return new Set((values || []).map((value) => toPathSlug(value)).filter(Boolean));
+const SIMILAR_STOPWORDS = new Set([
+	'a',
+	'an',
+	'the',
+	'of',
+	'in',
+	'on',
+	'at',
+	'to',
+	'for',
+	'and',
+	'or',
+	'how',
+	'what',
+	'with',
+	'from',
+	'by',
+	'vs',
+	'its',
+	'into',
+	'over',
+	'your',
+	'this',
+	'that',
+]);
+
+function similarTokens(value?: string): string[] {
+	return (value || '')
+		.toLowerCase()
+		.split(/[^a-z0-9]+/)
+		.filter((token) => token.length >= 2 && !SIMILAR_STOPWORDS.has(token));
 }
 
-/** Detail page: rank other assets by shared tags, keyword, and category. */
+function overlapCount(tokens: string[], against: Set<string>): number {
+	let count = 0;
+	for (const token of tokens) {
+		if (against.has(token)) count += 1;
+	}
+	return count;
+}
+
+/** Title-to-title overlap. Longer words and shared phrases rank higher. */
+function titleSimilarity(currentTitle: string, otherTitle: string): number {
+	const current = similarTokens(currentTitle);
+	const other = similarTokens(otherTitle);
+	if (!current.length || !other.length) return 0;
+	if (toPathSlug(currentTitle) === toPathSlug(otherTitle)) return 100;
+
+	const otherSet = new Set(other);
+	let score = 0;
+	for (const token of current) {
+		if (!otherSet.has(token)) continue;
+		score += token.length >= 5 ? 2 : 1;
+	}
+
+	const otherBigrams = new Set<string>();
+	for (let index = 0; index < other.length - 1; index += 1) {
+		otherBigrams.add(`${other[index]} ${other[index + 1]}`);
+	}
+	for (let index = 0; index < current.length - 1; index += 1) {
+		if (otherBigrams.has(`${current[index]} ${current[index + 1]}`)) score += 4;
+	}
+	return score;
+}
+
+/** Source keyword first, then weaker tag overlap. */
+function keywordSimilarity(current: AssetDetail, other: AssetDetail): number {
+	const currentKey = similarTokens(current.keyword);
+	const otherKey = similarTokens(other.keyword);
+	let score = 0;
+
+	if (
+		current.keyword &&
+		other.keyword &&
+		toPathSlug(current.keyword) === toPathSlug(other.keyword)
+	) {
+		score += 20;
+	}
+	score += overlapCount(currentKey, new Set(otherKey)) * 4;
+	score += overlapCount(currentKey, new Set(similarTokens(other.title))) * 2;
+	score += overlapCount(otherKey, new Set(similarTokens(current.title))) * 2;
+
+	const currentTags = new Set((current.tags || []).map((tag) => toPathSlug(tag)).filter(Boolean));
+	let tagHits = 0;
+	for (const tag of other.tags || []) {
+		if (currentTags.has(toPathSlug(tag))) tagHits += 1;
+	}
+	score += Math.min(tagHits, 6);
+	return score;
+}
+
+function paletteDistance(current: AssetDetail, other: AssetDetail): number {
+	const query = (current.colorPalette || [])
+		.map((swatch) => parseHexColor(swatch.hex))
+		.filter(Boolean) as { r: number; g: number; b: number }[];
+	const palette = (other.colorPalette || [])
+		.map((swatch) => parseHexColor(swatch.hex))
+		.filter(Boolean) as { r: number; g: number; b: number }[];
+	if (!query.length || !palette.length) return Number.POSITIVE_INFINITY;
+
+	let total = 0;
+	for (const color of query) {
+		let best = Number.POSITIVE_INFINITY;
+		for (const swatch of palette) {
+			best = Math.min(best, colorDistance(color, swatch));
+		}
+		total += best;
+	}
+	return total / query.length;
+}
+
+/** Detail page: title similarity, then main keyword, then palette. */
 export function findSimilarAssets(
 	assets: AssetDetail[],
 	current: AssetDetail,
 	limit = 18,
 ): AssetDetail[] {
-	const currentId = current._id;
-	const tags = tokenSet(current.tags);
-	const keyword = toPathSlug(current.keyword || '');
-
-	const scored = assets
-		.filter((asset) => asset._id !== currentId && Boolean(asset.previewUrl))
-		.map((asset) => {
-			let score = 0;
-			if (keyword && toPathSlug(asset.keyword || '') === keyword) score += 8;
-			if (asset.category === current.category) score += 1;
-			for (const value of asset.tags || []) {
-				if (tags.has(toPathSlug(value))) score += 3;
-			}
-			return { asset, score };
-		})
+	return assets
+		.filter((asset) => asset._id !== current._id && Boolean(asset.previewUrl))
+		.map((asset) => ({
+			asset,
+			titleScore: titleSimilarity(current.title, asset.title),
+			keywordScore: keywordSimilarity(current, asset),
+			colorDistance: paletteDistance(current, asset),
+		}))
 		.sort(
 			(a, b) =>
-				b.score - a.score || (b.asset.publishedAt || '').localeCompare(a.asset.publishedAt || ''),
-		);
-
-	const related = scored.filter((item) => item.score > 1).map((item) => item.asset);
-	if (related.length >= limit) return related.slice(0, limit);
-
-	const seen = new Set(related.map((asset) => asset._id));
-	const fallback = scored
+				b.titleScore - a.titleScore ||
+				b.keywordScore - a.keywordScore ||
+				a.colorDistance - b.colorDistance ||
+				(b.asset.publishedAt || '').localeCompare(a.asset.publishedAt || ''),
+		)
 		.map((item) => item.asset)
-		.filter((asset) => !seen.has(asset._id));
-	return [...related, ...fallback].slice(0, limit);
+		.slice(0, limit);
 }
 
 /** Search page: whole-word match on title, source keyword, and tags. */
