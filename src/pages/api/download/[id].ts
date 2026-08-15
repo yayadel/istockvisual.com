@@ -103,7 +103,7 @@ export const GET: APIRoute = async (context) => {
 		});
 	}
 
-	// 500 / 1K: free for everyone. 2K / 4K / 8K: Pro only.
+	// 512 / 1K: free for everyone. 2K / 4K / 8K: Pro only.
 	if (size && !freeSize) {
 		if (!user) {
 			return new Response(JSON.stringify({ error: 'Login required', login: '/login' }), {
@@ -145,9 +145,9 @@ export const GET: APIRoute = async (context) => {
 	const original = await readOriginalBytes(context, asset.r2ObjectKey || '', asset.previewUrl);
 	if (original instanceof Response) return original;
 
-	if (size === '500') {
+	if (size === '500' || size === '512') {
 		try {
-			const resized = resizeImageToWidthJpeg(original.bytes, FREE_DOWNLOAD_WIDTH);
+			const resized = resizeImageToLongEdgeJpeg(original.bytes, FREE_DOWNLOAD_EDGE);
 			return finish(resized.bytes, {
 				'X-Image-Width': String(resized.width),
 				'X-Image-Height': String(resized.height),

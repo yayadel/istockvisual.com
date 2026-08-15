@@ -22,7 +22,7 @@ export type DownloadSizeId = (typeof DOWNLOAD_SIZES)[number]['id'];
 
 export const DEFAULT_DOWNLOAD_SIZE: DownloadSizeId = '1k';
 
-/** 500 and 1K: free for everyone, no login. */
+/** 512 and 1K (1024): free for everyone, no login. */
 export function isFreeDownloadSize(sizeId: string | null | undefined): boolean {
 	return sizeId === '500' || sizeId === '1k';
 }
