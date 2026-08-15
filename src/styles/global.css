@@ -3671,19 +3671,7 @@ body.upload-modal-open {
 }
 
 .catalog .asset-grid {
-	column-count: 2;
-}
-
-@media (min-width: 900px) {
-	.catalog .asset-grid {
-		column-count: 3;
-	}
-}
-
-@media (min-width: 1280px) {
-	.catalog .asset-grid {
-		column-count: 4;
-	}
+	gap: 12px;
 }
 
 @media (max-width: 860px) {
