@@ -45,7 +45,8 @@ export const GET: APIRoute = async (context) => {
 	}
 
 	const size = (context.url.searchParams.get('size') || '').toLowerCase();
-	if (size === '500' || size === '1k') {
+	if (size === '500' || size === '512' || size === '1k') {
+		const variantId = size === '512' ? '500' : size;
 		const variant = await bucket.get(variantObjectKey(r2ObjectKey, size));
 		if (variant) {
 			const headers = new Headers();

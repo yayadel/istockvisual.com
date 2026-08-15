@@ -93,11 +93,12 @@ export const GET: APIRoute = async (context) => {
 		return new Response('Missing asset id', { status: 400 });
 	}
 
-	const size = context.url.searchParams.get('size')?.toLowerCase() || '';
+	const sizeRaw = context.url.searchParams.get('size')?.toLowerCase() || '';
+	const size = sizeRaw ? normalizeDownloadSizeId(sizeRaw) || '' : '';
 	const freeSize = isFreeDownloadSize(size);
 	const user = await getSessionUser(context);
 
-	if (size && !isDownloadSizeId(size)) {
+	if (sizeRaw && !isDownloadSizeId(sizeRaw)) {
 		return new Response(JSON.stringify({ error: 'Unknown size' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
@@ -146,7 +147,7 @@ export const GET: APIRoute = async (context) => {
 	const original = await readOriginalBytes(context, asset.r2ObjectKey || '', asset.previewUrl);
 	if (original instanceof Response) return original;
 
-	if (size === '500' || size === '512') {
+	if (size === '500') {
 		try {
 			const resized = resizeImageToLongEdgeJpeg(original.bytes, FREE_DOWNLOAD_EDGE);
 			return finish(resized.bytes, {
