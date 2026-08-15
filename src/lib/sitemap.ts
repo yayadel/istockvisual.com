@@ -78,6 +78,19 @@ export async function buildPagesSitemapXml(env: SitemapEnv): Promise<string> {
 	return urlsetXml(origin, urls);
 }
 
+export async function buildToolsSitemapXml(env: SitemapEnv): Promise<string> {
+	const origin = siteOrigin();
+	void env;
+	return urlsetXml(origin, [
+		{ path: '/tools/image', changefreq: 'weekly', priority: '0.7' },
+		{ path: '/tools/convert', changefreq: 'weekly', priority: '0.7' },
+		{ path: '/tools/vectorize', changefreq: 'weekly', priority: '0.7' },
+		{ path: '/tools/social', changefreq: 'weekly', priority: '0.7' },
+		{ path: '/tools/watermark', changefreq: 'weekly', priority: '0.7' },
+		{ path: '/tools/palette', changefreq: 'weekly', priority: '0.7' },
+	]);
+}
+
 export async function buildCategoriesSitemapXml(env: SitemapEnv): Promise<string> {
 	const origin = siteOrigin();
 	const urls: SitemapUrl[] = [{ path: '/c/', changefreq: 'daily', priority: '0.8' }];
