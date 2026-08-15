@@ -21,6 +21,7 @@ import {
 	siteOrigin,
 } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
+import { fitWidth } from '../../lib/download-sizes';
 
 const { category: categorySlug, slug } = Astro.params;
 
