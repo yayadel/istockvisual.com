@@ -12,9 +12,9 @@ import {
 
 <LegalLayout
 	title="Terms of Use"
-	description="Terms of Use for iStockVisual: accounts, plans, fair use, library content, and browser tools."
+	description="Terms of Use for iStockVisual.com: library downloads, Pro sizes, fair use, visual search, and on-device studio tools."
 	heading="Terms of Use"
-	lede="These terms govern your use of iStockVisual, including the library, accounts, paid plans, and in-browser tools."
+	lede="These terms govern iStockVisual.com — the library, accounts, paid plans, visual search, and the in-browser studio."
 >
 	<h2>1. Agreement</h2>
 	<p>
@@ -25,66 +25,102 @@ import {
 	</p>
 
 	<h2>2. The Service</h2>
+	<p>The Service has two public parts that work together:</p>
+	<ul>
+		<li>
+			<strong>Library.</strong> Searchable stock visuals (photos, illustrations, vectors, 3D) with
+			detail pages, palettes, similar images, and downloads in JPG, PNG, WEBP, or SVG at 512, 1K,
+			2K, 4K, and 8K.
+		</li>
+		<li>
+			<strong>Studio tools.</strong> Image Editor, Image Convert, Image Vectorizer, Social Resizer,
+			Batch Watermark, and Palette Generator. These run in your browser on files you choose. Visual
+			search is separate: a query photo is uploaded only to run a match.
+		</li>
+	</ul>
 	<p>
-		iStockVisual is a stock-visual library and a set of creative tools. You can browse and download
-		library images, search by text or by a query photo, and use browser-based tools to edit, convert,
-		vectorize, resize, watermark, or sample colors. We host the site on Cloudflare. Library listings
-		and available sizes can change as we add or retire assets.
+		We host on Cloudflare. Catalog listings, previews, and available sizes can change as we add or
+		retire assets. Internal generate or admin routes are not a public product and may be blocked,
+		rate-limited, or changed without notice.
 	</p>
 
 	<h2>3. Accounts</h2>
 	<p>
-		Some features require an account. We use email and password authentication. You must provide
-		accurate information, keep your password confidential, and be responsible for activity on your
-		account. You must be old enough to form a binding contract in your place of residence. We may
-		suspend or close accounts that are shared, automated, or used to abuse downloads.
+		You can browse the library and take free 512 and 1K sizes without an account. An account (email
+		and password) is required to buy a plan, keep Pro access, and use signed-in download state. You
+		must provide accurate information, keep your password confidential, and be responsible for
+		activity on the account. You must be old enough to form a binding contract where you live.
+	</p>
+	<p>
+		We may suspend or close accounts that are shared, sold, automated, used to scrape the catalog,
+		or used to bypass size gates, watermarks, or fair-use caps.
 	</p>
 
 	<h2>4. Plans and payments</h2>
 	<p>
-		Free accounts can download 512 and 1K preview sizes. Paid Short-Term passes (1-Day, 7-Day,
-		1-Month) and Long-Term plans (6-Month, 12-Month, Lifetime) unlock 2K, 4K, and 8K downloads while
-		the plan is active. Prices are shown on the pricing page in US dollars.
+		<strong>Free:</strong> 512 and 1K (1024 long edge) for everyone, with or without login.
+		<strong>Pro / pass:</strong> 2K, 4K, and 8K while the plan is active. Current prices are in US
+		dollars on <a href="/price">Pricing</a>.
+	</p>
+	<ul>
+		<li>Short-Term: 1-Day Pass, 7-Day Pass, 1-Month Pro</li>
+		<li>Long-Term: 6-Month Pro, 12-Month Pro, Lifetime Access</li>
+	</ul>
+	<p>
+		Plans are one-time charges for a stated period. Lifetime Access is a one-time payment for Pro
+		downloads for as long as we operate the library; it does not auto-renew. Term plans end on their
+		expiry date and do not auto-renew unless we clearly offer renewal and you accept it.
 	</p>
 	<p>
-		Plans are sold as one-time charges for a stated period. Lifetime Access is a one-time payment
-		for Pro downloads for as long as we operate the library; it does not auto-renew. Term plans end
-		on their expiry date and also do not auto-renew unless we clearly offer a renewal and you accept
-		it. 6-Month, 12-Month, and Lifetime Access include a 7-day trial with a no-questions-asked
-		refund. 1-Month Pro includes a 3-day unused trial. 1-Day and 7-Day passes refund only if unused.
-		Details are in the <a href={REFUNDS_PATH}>Refund Policy</a>.
+		6-Month, 12-Month, and Lifetime include a 7-day trial with a no-questions-asked refund. 1-Month
+		Pro includes a 3-day unused trial. 1-Day and 7-Day passes refund only if unused. Details:
+		<a href={REFUNDS_PATH}>Refund Policy</a>.
 	</p>
 
-	<h2>5. Fair use</h2>
+	<h2>5. Fair use (HD downloads)</h2>
 	<p>
 		The first 100 high-resolution (2K / 4K / 8K) downloads each day are unrestricted. After that, a
-		fair-use cap of 10 HD downloads per hour applies so the library stays fast for everyone and so
-		automated scraping is harder. We may tighten, pause, or restore these limits if we see abuse,
-		outages, or unusual load.
+		cap of 10 HD downloads per hour applies so the library stays usable and automated harvesting is
+		harder. 512 and 1K are not part of that HD cap. We may tighten, pause, or restore limits if we
+		see abuse, outages, or unusual load.
 	</p>
 
 	<h2>6. Acceptable use</h2>
 	<p>You agree not to:</p>
 	<ul>
 		<li>Scrape, crawl, or bulk-download the library except through ordinary use of the site</li>
-		<li>Circumvent paywalls, size limits, watermarks, or rate limits</li>
+		<li>Circumvent paywalls, size limits, on-page watermarks, or rate limits</li>
 		<li>Share, sell, or rent your login, or use another person’s account</li>
 		<li>Interfere with the Service, other users, or our hosting and storage</li>
-		<li>Upload malware or content you do not have the right to use in visual search or other upload features</li>
+		<li>
+			Upload malware, or upload content you do not have the right to use in visual search or any
+			other upload
+		</li>
 		<li>Use the Service for unlawful, deceptive, or infringing activity</li>
-		<li>Misrepresent Library Content as exclusively yours or resell it as stock in violation of the license</li>
+		<li>
+			Resell Library Content as competing stock, or claim unmodified Library Content as exclusively
+			yours
+		</li>
+		<li>
+			Use studio tools to strip required attribution from Library Content you then publish as if it
+			were an original stock file
+		</li>
 	</ul>
 
-	<h2>7. Library Content and your files</h2>
+	<h2>7. Library Content, editor, and your files</h2>
 	<p>
-		Library Content is licensed, not sold. Use of those files is governed by the
-		<a href={LICENSE_PATH}>Content License</a>. Attribution is required.
+		Library Content is licensed, not sold. Use is governed by the
+		<a href={LICENSE_PATH}>Content License</a>. Attribution is required on every size, including Pro.
 	</p>
 	<p>
-		Files you process in the in-browser tools stay on your device unless a feature expressly uploads
-		them. Visual search query photos are uploaded only to run a match and are retained for a short
-		period as described in the Privacy Policy. You keep the rights you already have in your own
-		files; we do not claim ownership of them.
+		The on-page editor and the Tools studio process pixels in your browser. Files you pick from disk
+		are not uploaded to iStockVisual. If you start from a library preview or download, this license
+		still applies. Expand on library assets is limited to Pro. Free editor exports from library
+		files stay within the free long-edge sizes (512 and 1K).
+	</p>
+	<p>
+		Visual-search query photos are uploaded only to run a match and are retained for a short period
+		as described in the Privacy Policy. We do not claim ownership of your own files.
 	</p>
 
 	<h2>8. Availability and changes</h2>
@@ -97,18 +133,18 @@ import {
 
 	<h2>9. Disclaimers</h2>
 	<p>
-		The Service and Library Content are provided “as is.” We do not warrant that files are error-free,
-		fit for a particular commercial campaign, or free of elements that your project might need extra
-		clearance for. Browser tools are provided as a convenience; you are responsible for checking
-		outputs before you publish them.
+		The Service and Library Content are provided “as is.” We do not warrant that files are
+		error-free, fit for a particular campaign, or free of elements that your project might need
+		extra clearance for (for example marks or likenesses you add yourself). Browser tools are a
+		convenience: check outputs (hands, text, background removal, SVG traces) before you publish.
 	</p>
 
 	<h2>10. Limitation of liability</h2>
 	<p>
 		To the fullest extent permitted by law, iStockVisual and its operators are not liable for
 		indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or
-		goodwill, arising from your use of the Service. Our total liability for any claim relating to the
-		Service is limited to the amount you paid us for the plan giving rise to the claim in the 12
+		goodwill, arising from your use of the Service. Our total liability for any claim relating to
+		the Service is limited to the amount you paid us for the plan giving rise to the claim in the 12
 		months before the claim, or USD $50 if you have not paid us.
 	</p>
 	<p>
