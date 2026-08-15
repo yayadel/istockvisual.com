@@ -385,12 +385,7 @@ export function assetJsonLd(input: {
 		input.title
 	).trim();
 
-	const organization = {
-		'@type': 'Organization',
-		'@id': orgId,
-		name: SITE_BRAND,
-		url: homeUrl,
-	};
+	const organization = organizationJsonLd(input.origin);
 
 	const imageObject: Record<string, unknown> = {
 		'@type': ['ImageObject', 'VisualArtwork'],
