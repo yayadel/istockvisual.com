@@ -78,7 +78,7 @@ const FAQS: Faq[] = [
 	{
 		keys: ['svg', 'png', 'jpg', 'webp', 'format', 'size', '4k', '8k', '2k'],
 		answer:
-			'Files come as JPG, PNG, WEBP, or SVG depending on the asset. 500 and 1K are free; 2K, 4K, and 8K need Pro. The same license applies to every size.',
+			'Files come as JPG, PNG, WEBP, or SVG depending on the asset. 512 and 1K are free; 2K, 4K, and 8K need Pro. The same license applies to every size.',
 	},
 ];
 
