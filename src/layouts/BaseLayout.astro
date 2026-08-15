@@ -46,7 +46,7 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-page={pagePath === '/c' ? 'categories-hub' : undefined}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
