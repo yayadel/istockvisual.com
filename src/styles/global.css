@@ -910,7 +910,7 @@ body.nav-open .nav-toggle span:nth-child(3) {
 		flex-wrap: nowrap;
 		align-items: stretch;
 		gap: 0;
-		padding: 4.35rem 1.1rem 1.6rem;
+		padding: 4.35rem 1.1rem calc(5.75rem + env(safe-area-inset-bottom, 0px));
 		background: #0b0b0b;
 		border-left: 1px solid rgba(255, 255, 255, 0.1);
 		overflow-x: hidden;
