@@ -8075,6 +8075,7 @@ body.image-editor-modal-open {
 }
 
 .partner-strip {
+	margin-top: auto;
 	background: #ffffff;
 	color: #111111;
 	border-top: 1px solid #ececec;
