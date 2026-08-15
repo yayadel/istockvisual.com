@@ -2926,6 +2926,10 @@ body.upload-modal-open {
 	gap: 12px;
 }
 
+.asset-grid__col .asset-card {
+	aspect-ratio: auto;
+}
+
 .catalog-visual {
 	margin: 0 0 1.1rem;
 }
