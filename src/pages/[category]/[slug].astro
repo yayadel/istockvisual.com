@@ -62,6 +62,10 @@ const seoDescription = assetSearchDescription({
 	category: category.slug,
 });
 const ogImage = asset.previewUrl ? absoluteUrl(asset.previewUrl, origin) : undefined;
+const previewBox = fitWidth(asset.width || 1536, asset.height || 1024, 500);
+const lcpImage = asset.previewUrl
+	? `${asset.previewUrl}${asset.previewUrl.includes('?') ? '&' : '?'}size=500`
+	: undefined;
 const jsonLd = assetJsonLd({
 	origin,
 	pagePath,
@@ -94,6 +98,7 @@ const jsonLd = assetJsonLd({
 	ogImageWidth={asset.width}
 	ogImageHeight={asset.height}
 	jsonLd={jsonLd}
+	lcpImage={lcpImage}
 >
 	<article class="detail">
 		<div class="detail__shell">
