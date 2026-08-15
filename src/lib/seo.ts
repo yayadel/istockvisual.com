@@ -76,7 +76,36 @@ export function stringifyJsonLd(data: unknown): string {
 export const SITE_TAGLINE =
 	'Stock photos, illustrations, vectors, and 3D assets — plus AI editing tools.';
 export const SITE_HOME_DESCRIPTION =
-	'Stock photos, illustrations, vectors, and 3D — with AI editing tools.';
+	'Royalty-free stock photos, illustrations, vectors, and 3D for commercial and personal use. Free downloads on iStockVisual.';
+export const SITE_HOME_TITLE = 'Free Stock Photos, Illustrations & 3D';
+
+export function siteOrigin(fallback?: string): string {
+	const configured = import.meta.env.SITE;
+	if (configured) {
+		try {
+			return new URL(configured).origin;
+		} catch {
+			/* use fallback */
+		}
+	}
+	return String(fallback || 'https://istockvisual.com').replace(/\/$/, '');
+}
+
+export function canonicalPath(pathname: string): string {
+	const trimmed = pathname.replace(/\/+$/, '');
+	return trimmed || '/';
+}
+
+export function canonicalHref(pathname: string, origin?: string): string {
+	const root = siteOrigin(origin);
+	const path = canonicalPath(pathname);
+	return path === '/' ? `${root}/` : `${root}${path}`;
+}
+
+export function libraryPageTitle(subject: string): string {
+	const name = subject.trim();
+	return name ? `${name} Stock Images - Free Download` : 'Stock Images - Free Download';
+}
 
 const JSON_LD_LIST_LIMIT = 24;
 
