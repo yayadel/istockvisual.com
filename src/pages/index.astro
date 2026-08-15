@@ -10,9 +10,9 @@ import { formatAssetTitle } from '../lib/asset-types';
 import { searchPath } from '../lib/paths';
 import { LIFETIME_PLAN } from '../lib/pricing';
 import { env } from 'cloudflare:workers';
-import { homeJsonLd, SITE_HOME_DESCRIPTION } from '../lib/seo';
+import { homeJsonLd, SITE_HOME_DESCRIPTION, SITE_HOME_TITLE, siteOrigin } from '../lib/seo';
 
-const origin = Astro.url.origin;
+const origin = siteOrigin(Astro.url.origin);
 const seenTitles = new Set<string>();
 const pool = (await listFeaturedAssets(env.DB, origin, 80)).filter((asset) => {
 	const key = asset.title.trim().toLowerCase();

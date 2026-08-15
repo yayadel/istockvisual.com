@@ -337,56 +337,6 @@ export function collectionPageJsonLd(input: {
 	return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-export function searchResultsJsonLd(input: {
-	origin: string;
-	pagePath: string;
-	title: string;
-	description: string;
-	query?: string;
-	assets: JsonLdListAsset[];
-	totalCount?: number;
-}): Record<string, unknown> {
-	const pageUrl = absoluteUrl(input.pagePath, input.origin);
-	const listId = `${pageUrl}#results`;
-	const crumbs: BreadcrumbCrumb[] = [
-		{ name: 'Home', path: '/' },
-		{ name: input.query ? `Search: ${input.query}` : 'Search', path: input.pagePath },
-	];
-	const breadcrumb = breadcrumbList(input.origin, pageUrl, crumbs);
-	const first = input.assets[0];
-	return {
-		'@context': 'https://schema.org',
-		'@graph': [
-			organizationJsonLd(input.origin),
-			websiteJsonLd(input.origin),
-			{
-				'@type': input.query ? 'SearchResultsPage' : 'CollectionPage',
-				'@id': pageUrl,
-				url: pageUrl,
-				name: input.title,
-				description: input.description,
-				inLanguage: 'en',
-				isPartOf: { '@id': websiteId(input.origin) },
-				breadcrumb: { '@id': breadcrumb['@id'] },
-				mainEntity: { '@id': listId },
-				primaryImageOfPage: first
-					? {
-							'@id': `${absoluteUrl(`/${first.category}/${first.slug}`, input.origin)}#image`,
-						}
-					: undefined,
-			},
-			breadcrumb,
-			itemListNode(
-				listId,
-				input.query ? `Results for ${input.query}` : 'Search results',
-				input.origin,
-				input.assets,
-				input.totalCount ?? input.assets.length,
-			),
-		],
-	};
-}
-
 export function assetJsonLd(input: {
 	origin: string;
 	pagePath: string;
