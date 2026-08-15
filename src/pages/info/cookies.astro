@@ -5,26 +5,27 @@ import { LEGAL_CONTACT_EMAIL, PRIVACY_PATH, SITE_BRAND } from '../../lib/seo';
 
 <LegalLayout
 	title="Cookie Policy"
-	description="Cookies and local storage used by iStockVisual for sign-in, security, and theme preference."
+	description="Cookies and local storage on iStockVisual.com: sign-in, visual search, theme, and studio tools that do not track you."
 	heading="Cookie Policy"
-	lede="We use essential cookies to keep you signed in. Theme preference stays in your browser. Browser tools do not set tracking cookies."
+	lede="We use essential cookies to keep you signed in. Theme and studio work stay in the tab. We do not set ad-tracking cookies."
 >
 	<h2>1. What this page covers</h2>
 	<p>
-		{SITE_BRAND} uses cookies and similar storage so the site can function. This page explains what
-		we set and why. How we handle personal data more broadly is in the
-		<a href={PRIVACY_PATH}>Privacy Policy</a>.
+		{SITE_BRAND} uses cookies and similar storage so the live site can function: sign-in, Pro vs
+		free downloads, and a few on-device preferences. How we handle personal data more broadly is in
+		the <a href={PRIVACY_PATH}>Privacy Policy</a>.
 	</p>
 
 	<h2>2. Essential cookies</h2>
 	<p>
 		When you create an account or sign in, our authentication system (Better Auth) sets session
-		cookies. These cookies are necessary to recognize you, protect the account, and apply free vs
-		Pro download access. Without them, signed-in features cannot work.
+		cookies. These cookies are necessary to recognize you, protect the account, and apply 512 / 1K
+		versus 2K / 4K / 8K access. Without them, signed-in features cannot work.
 	</p>
 	<p>
-		We do not currently set advertising, social-media, or cross-site tracking cookies, and we do not
-		use cookies to sell a profile of you to third parties.
+		We do not currently set advertising, social-media pixel, or cross-site tracking cookies, and we
+		do not use cookies to sell a profile of you to third parties. Google Fonts, if loaded, may set
+		cookies according to Google’s own policies when your browser requests those styles.
 	</p>
 
 	<h2>3. Local and session storage</h2>
@@ -34,17 +35,22 @@ import { LEGAL_CONTACT_EMAIL, PRIVACY_PATH, SITE_BRAND } from '../../lib/seo';
 			<code>istockvisual-theme</code>. It never leaves your browser.
 		</li>
 		<li>
-			<strong>Visual search.</strong> The current query-photo reference may be kept in session
-			storage on your device so the search page can finish loading. The photo itself, if uploaded,
-			is stored on our side for about one hour and then deleted, as described in the Privacy Policy.
+			<strong>Visual search.</strong> A query-photo reference may be kept in session storage so the
+			search page can finish loading. If a photo is uploaded, it is stored on our side for about one
+			hour and then deleted.
+		</li>
+		<li>
+			<strong>Studio tools.</strong> Convert, vectorize, social resize, watermark, palette, and the
+			image editor may hold working images in memory or temporary browser storage for that tab.
+			Closing the tab discards them. They are not sent to iStockVisual.
 		</li>
 	</ul>
 
 	<h2>4. Browser tools</h2>
 	<p>
-		Image editor, convert, vectorize, social resize, watermark, and palette tools process files in
-		your browser. They do not upload those files and they do not set extra analytics cookies for
-		that processing.
+		The public studio at /tools/image, /tools/convert, /tools/vectorize, /tools/social,
+		/tools/watermark, and /tools/palette processes files in your browser. They do not upload those
+		files and they do not set extra analytics cookies for that processing.
 	</p>
 
 	<h2>5. How long they last</h2>
@@ -52,14 +58,14 @@ import { LEGAL_CONTACT_EMAIL, PRIVACY_PATH, SITE_BRAND } from '../../lib/seo';
 		Session cookies last while you are signed in or until they expire or you sign out. Local-storage
 		theme preference remains until you clear site data or change the theme. You can delete cookies
 		and site storage in your browser settings; if you remove session cookies you will need to sign
-		in again.
+		in again to use Pro sizes.
 	</p>
 
 	<h2>6. Your choices</h2>
 	<p>
 		Essential cookies are required for accounts. You can use the public library without an account
-		and still download free 512 and 1K sizes. Blocking all cookies may break sign-in, downloads that
-		depend on your plan, and some forms.
+		and still download free 512 and 1K sizes. Blocking all cookies may break sign-in, plan-aware
+		downloads, and some forms.
 	</p>
 	<p>
 		Questions: <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a>.
