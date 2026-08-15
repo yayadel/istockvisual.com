@@ -11,6 +11,8 @@ function withCache(headers: Headers, cacheControl: string, contentType: string, 
 	headers.set('Content-Type', contentType);
 	headers.set('Cache-Control', cacheControl);
 	headers.set('CDN-Cache-Control', cacheControl);
+	const maxAge = cacheControl.includes('31536000') ? 31_536_000 : 86_400;
+	headers.set('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
 	if (etag) headers.set('etag', etag);
 }
 

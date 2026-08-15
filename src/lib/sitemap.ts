@@ -179,6 +179,7 @@ export function sitemapResponse(xml: string) {
 			'Content-Type': 'application/xml; charset=utf-8',
 			'Cache-Control': 'public, max-age=300, s-maxage=3600',
 			'CDN-Cache-Control': 'public, max-age=3600',
+			Expires: new Date(Date.now() + 3600 * 1000).toUTCString(),
 		},
 	});
 }
