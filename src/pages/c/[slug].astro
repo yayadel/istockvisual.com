@@ -7,7 +7,7 @@ import {
 } from '../../lib/content-categories';
 import { applyCatalogFilters, parseCatalogQuery } from '../../lib/catalog';
 import { listAllAssets } from '../../lib/generate-asset';
-import { collectionPageJsonLd } from '../../lib/seo';
+import { collectionPageJsonLd, libraryPageTitle, siteOrigin } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
 
 const slug = Astro.params.slug || '';
