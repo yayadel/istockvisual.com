@@ -161,6 +161,7 @@ export async function sitemapXmlForPath(pathname: string, env: SitemapEnv): Prom
 	if (path === '/sitemap.xml') return buildSitemapIndexXml(env);
 	if (path === '/sitemap-pages.xml') return buildPagesSitemapXml(env);
 	if (path === '/sitemap-categories.xml') return buildCategoriesSitemapXml(env);
+	if (path === '/sitemap-tools.xml') return buildToolsSitemapXml(env);
 
 	const content = path.match(/^\/sitemap-content-(\d+)\.xml$/);
 	if (content) {
