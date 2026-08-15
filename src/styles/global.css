@@ -1058,7 +1058,7 @@ body:has(.detail) .search-strip__inner {
 
 .search-bar {
 	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) 3.25rem 3.25rem;
+	grid-template-columns: auto minmax(0, 1fr) auto;
 	align-items: stretch;
 	width: 100%;
 	background: transparent;
@@ -1072,7 +1072,16 @@ body:has(.detail) .search-strip__inner {
 }
 
 .search-bar--hero {
-	grid-template-columns: auto minmax(0, 1fr) auto auto;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.search-bar__actions {
+	display: flex;
+	flex-direction: row;
+	flex-shrink: 0;
+	align-items: stretch;
+	justify-content: flex-end;
+	height: 100%;
 }
 
 .search-bar--bar {
