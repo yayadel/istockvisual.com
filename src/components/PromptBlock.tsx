@@ -89,17 +89,51 @@ function PromptArt() {
 	);
 }
 
+function fallbackCopy(text: string) {
+	const field = document.createElement('textarea');
+	field.value = text;
+	field.setAttribute('readonly', '');
+	field.setAttribute('aria-hidden', 'true');
+	field.style.position = 'fixed';
+	field.style.top = '0';
+	field.style.left = '0';
+	field.style.width = '1px';
+	field.style.height = '1px';
+	field.style.padding = '0';
+	field.style.border = '0';
+	field.style.opacity = '0';
+	field.style.fontSize = '16px';
+	document.body.appendChild(field);
+	field.focus();
+	field.select();
+	field.setSelectionRange(0, text.length);
+	let ok = false;
+	try {
+		ok = document.execCommand('copy');
+	} catch {
+		ok = false;
+	}
+	document.body.removeChild(field);
+	return ok;
+}
+
 export default function PromptBlock({ prompt }: { prompt: string }) {
 	const [copied, setCopied] = useState(false);
 
-	async function copyPrompt() {
-		try {
-			await navigator.clipboard.writeText(prompt);
-			setCopied(true);
-			window.setTimeout(() => setCopied(false), 1400);
-		} catch {
-			setCopied(false);
+	function markCopied() {
+		setCopied(true);
+		window.setTimeout(() => setCopied(false), 1400);
+	}
+
+	function copyPrompt() {
+		const text = prompt;
+		if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText && window.isSecureContext) {
+			void navigator.clipboard.writeText(text).then(markCopied).catch(() => {
+				if (fallbackCopy(text)) markCopied();
+			});
+			return;
 		}
+		if (fallbackCopy(text)) markCopied();
 	}
 
 	return (
