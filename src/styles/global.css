@@ -2911,24 +2911,12 @@ body.upload-modal-open {
 }
 
 .asset-grid {
-	column-count: 2;
-	column-gap: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 12px;
 	max-width: 100%;
 	min-width: 0;
-}
-
-@media (min-width: 640px) {
-	.asset-grid {
-		column-count: 3;
-		column-gap: 12px;
-	}
-}
-
-@media (min-width: 900px) {
-	.asset-grid {
-		column-count: 4;
-		column-gap: 12px;
-	}
 }
 
 .catalog-visual {
