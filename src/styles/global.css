@@ -5627,9 +5627,12 @@ body.download-auth-modal-open {
 }
 
 .prompt-block {
-	display: block;
-	max-width: 48rem;
-	margin-inline: auto;
+	display: grid;
+	grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+	gap: 1.75rem;
+	align-items: stretch;
+	max-width: none;
+	margin-inline: 0;
 }
 
 .prompt-block__composer {
