@@ -42,6 +42,34 @@ def object_url(account_id: str, key: str) -> str:
 	)
 
 
+def list_keys(account_id: str, token: str) -> set[str]:
+	keys: set[str] = set()
+	cursor = ""
+	while True:
+		qs = f"?per_page=1000&cursor={urllib.parse.quote(cursor)}" if cursor else "?per_page=1000"
+		url = (
+			f"https://api.cloudflare.com/client/v4/accounts/{account_id}"
+			f"/r2/buckets/{BUCKET}/objects{qs}"
+		)
+		req = urllib.request.Request(
+			url,
+			headers={"Authorization": f"Bearer {token}"},
+		)
+		with urllib.request.urlopen(req, timeout=60) as resp:
+			payload = json.loads(resp.read().decode("utf-8"))
+		if not payload.get("success"):
+			raise RuntimeError(payload)
+		for item in payload.get("result") or []:
+			key = item.get("key") if isinstance(item, dict) else None
+			if key:
+				keys.add(key)
+		info = payload.get("result_info") or {}
+		cursor = info.get("cursor") or ""
+		if not cursor or not info.get("is_truncated"):
+			break
+	return keys
+
+
 def put_object(account_id: str, token: str, key: str, body: bytes, content_type: str) -> None:
 	req = urllib.request.Request(
 		object_url(account_id, key),
@@ -52,14 +80,21 @@ def put_object(account_id: str, token: str, key: str, body: bytes, content_type:
 			"Content-Type": content_type or "application/octet-stream",
 		},
 	)
-	try:
-		with urllib.request.urlopen(req, timeout=120) as resp:
-			payload = json.loads(resp.read().decode("utf-8"))
-	except urllib.error.HTTPError as exc:
-		detail = exc.read().decode("utf-8", errors="replace")
-		raise RuntimeError(f"{exc.code} {key}: {detail}") from exc
-	if not payload.get("success"):
-		raise RuntimeError(f"{key}: {payload}")
+	last_error: Exception | None = None
+	for attempt in range(6):
+		try:
+			with urllib.request.urlopen(req, timeout=180) as resp:
+				payload = json.loads(resp.read().decode("utf-8"))
+			if not payload.get("success"):
+				raise RuntimeError(f"{key}: {payload}")
+			return
+		except (urllib.error.URLError, TimeoutError, urllib.error.HTTPError) as exc:
+			last_error = exc
+			if isinstance(exc, urllib.error.HTTPError) and exc.code in {400, 401, 403, 404}:
+				detail = exc.read().decode("utf-8", errors="replace")
+				raise RuntimeError(f"{exc.code} {key}: {detail}") from exc
+			time.sleep(min(2 ** attempt, 20))
+	raise RuntimeError(f"{key}: {last_error}") from last_error
 
 
 def main() -> None:
