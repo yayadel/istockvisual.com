@@ -68,7 +68,9 @@ const { assets, emptyMessage = 'No assets in this category yet.' } = Astro.props
 
 		for (const card of cards) {
 			const index = heights.indexOf(Math.min(...heights));
-			const height = colWidth * tileRatio(card);
+			const raw = colWidth * tileRatio(card);
+			const cap = width < 640 ? Math.min(window.innerHeight * 0.42, colWidth * 1.2) : colWidth * 1.25;
+			const height = Math.min(raw, cap);
 			card.style.height = '';
 			card.style.flexGrow = '1';
 			card.style.flexShrink = '1';
