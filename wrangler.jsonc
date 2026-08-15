@@ -25,6 +25,12 @@
 			"bucket_name": "istockvisual-media"
 		}
 	],
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "81b70ed1a26945858f9298b009f6d04b"
+		}
+	],
 	"triggers": {
 		"crons": ["0 * * * *"]
 	},
