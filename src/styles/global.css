@@ -1610,7 +1610,7 @@ body.upload-modal-open {
 
 .hero .search-bar,
 .hero .search-bar--hero {
-	grid-template-columns: auto minmax(0, 1fr) 3.5rem 3.5rem;
+	grid-template-columns: auto minmax(0, 1fr) auto;
 	margin-top: 0.2rem;
 	text-align: left;
 	overflow: visible;
@@ -1648,6 +1648,28 @@ body.upload-modal-open {
 	border-color: var(--line);
 	color: var(--text);
 	border-radius: 10px;
+}
+
+@media (max-width: 720px) {
+	.search-bar,
+	.search-bar--hero,
+	.hero .search-bar,
+	.hero .search-bar--hero {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.search-bar__actions {
+		margin-left: auto;
+	}
+
+	.search-bar__visual,
+	.search-bar__submit,
+	.hero .search-bar__visual,
+	.hero .search-bar__submit {
+		width: 3.25rem;
+		flex: 0 0 3.25rem;
+		padding: 0;
+	}
 }
 
 .cta-row {
