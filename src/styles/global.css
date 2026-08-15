@@ -5627,21 +5627,20 @@ body.download-auth-modal-open {
 }
 
 .prompt-block {
-	display: grid;
-	grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
-	gap: 1.75rem;
-	align-items: stretch;
+	display: block;
+	max-width: 48rem;
+	margin-inline: auto;
 }
 
 .prompt-block__composer {
 	min-width: 0;
 	display: flex;
 	flex-direction: column;
-	border: 1px solid var(--line);
-	border-radius: 1.15rem;
-	background: transparent;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 1.75rem;
+	background: #ffffff;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(0, 0, 0, 0.06);
 	overflow: hidden;
-	isolation: isolate;
 }
 
 .prompt-block__field {
@@ -5651,7 +5650,7 @@ body.download-auth-modal-open {
 
 .prompt-block__field pre {
 	margin: 0;
-	padding: 1.05rem 1.15rem 0.55rem;
+	padding: 1.05rem 1.2rem 0.35rem;
 	overflow: auto;
 	max-height: 13.5rem;
 	background: transparent;
@@ -5662,35 +5661,36 @@ body.download-auth-modal-open {
 	white-space: pre-wrap;
 	word-break: break-word;
 	font-family: var(--font-body);
-	font-size: 0.92rem;
+	font-size: 0.98rem;
 	line-height: 1.65;
-	color: var(--text);
+	color: #0d0d0d;
 }
 
 .prompt-block__dock {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 0.75rem;
-	padding: 0.55rem 0.7rem 0.65rem 0.85rem;
+	gap: 0.65rem;
+	padding: 0.35rem 0.55rem 0.55rem 0.85rem;
 }
 
 .prompt-block__model {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.38rem;
-	padding: 0.32rem 0.7rem 0.32rem 0.55rem;
-	border: 1px solid var(--line);
-	border-radius: 0;
-	color: var(--text);
-	font-size: 0.78rem;
-	font-weight: 650;
-	letter-spacing: 0.01em;
+	gap: 0.28rem;
+	padding: 0.35rem 0.45rem;
+	border: 0;
+	border-radius: 999px;
+	color: #5d5d5d;
+	font-size: 0.86rem;
+	font-weight: 600;
+	letter-spacing: 0;
 	line-height: 1;
+	background: transparent;
 }
 
 .prompt-block__model svg {
-	color: #1f4f45;
+	color: #8f8f8f;
 	flex: 0 0 auto;
 }
 
@@ -5699,134 +5699,113 @@ body.download-auth-modal-open {
 	z-index: 2;
 	display: inline-flex;
 	align-items: center;
-	gap: 0.4rem;
+	gap: 0.35rem;
 	flex: 0 0 auto;
 }
 
 .prompt-block__copy,
 .prompt-block__send {
 	touch-action: manipulation;
-	-webkit-tap-highlight-color: rgba(31, 79, 69, 0.18);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0.08);
 }
 
 .prompt-block__copy {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.35rem;
+	gap: 0.4rem;
 	margin: 0;
-	min-height: 2.75rem;
-	padding: 0.5rem 0.9rem;
-	border: 1px solid var(--line);
-	border-radius: 0;
+	min-height: 2.25rem;
+	padding: 0.4rem 0.75rem;
+	border: 0;
+	border-radius: 999px;
 	background: transparent;
-	color: var(--text-muted);
+	color: #5d5d5d;
 	font: inherit;
-	font-size: 0.78rem;
-	font-weight: 650;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
+	font-size: 0.84rem;
+	font-weight: 600;
+	letter-spacing: 0;
+	text-transform: none;
 	cursor: pointer;
 }
 
 .prompt-block__copy:hover,
 .prompt-block__copy.is-copied {
-	border-color: rgba(31, 79, 69, 0.35);
-	background: var(--ghost-bg);
-	color: #1f4f45;
+	background: rgba(0, 0, 0, 0.06);
+	color: #0d0d0d;
+	border-color: transparent;
 }
 
 .prompt-block__send {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.75rem;
-	height: 2.75rem;
+	width: 2.25rem;
+	height: 2.25rem;
 	margin: 0;
 	padding: 0;
 	border: 0;
 	border-radius: 999px;
-	background: #1f4f45;
+	background: #0d0d0d;
 	color: #fff;
 	cursor: pointer;
 }
 
 .prompt-block__send:hover,
 .prompt-block__send.is-copied {
-	background: #173d36;
+	background: #2a2a2a;
 }
 
-.prompt-block__art {
-	display: grid;
-	align-content: center;
-	justify-items: center;
-	gap: 0.65rem;
-	min-height: 100%;
-	padding: 0.5rem 0.25rem;
-	color: #1f4f45;
-}
-
-.prompt-block__art p {
-	margin: 0;
-	font-size: 0.68rem;
-	font-weight: 650;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-	text-align: center;
-}
-
+.prompt-block__art,
+.prompt-block__art p,
 .prompt-block__svg {
-	width: min(100%, 13.5rem);
-	height: auto;
+	display: none;
 }
 
-[data-theme='dark'] .prompt-block__model svg,
-[data-theme='dark'] .prompt-block__copy:hover,
-[data-theme='dark'] .prompt-block__copy.is-copied {
-	color: var(--accent);
+[data-theme='dark'] .prompt-block__composer {
+	border-color: rgba(255, 255, 255, 0.12);
+	background: #303030;
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .prompt-block__field code {
+	color: #ececec;
+}
+
+[data-theme='dark'] .prompt-block__model,
+[data-theme='dark'] .prompt-block__copy {
+	color: #b4b4b4;
+}
+
+[data-theme='dark'] .prompt-block__model svg {
+	color: #8f8f8f;
 }
 
 [data-theme='dark'] .prompt-block__copy:hover,
 [data-theme='dark'] .prompt-block__copy.is-copied {
-	border-color: rgba(196, 240, 75, 0.35);
-	background: var(--ghost-bg);
+	background: rgba(255, 255, 255, 0.08);
+	color: #ececec;
+	border-color: transparent;
 }
 
 [data-theme='dark'] .prompt-block__send {
-	background: #c4f04b;
-	color: #13200f;
+	background: #ececec;
+	color: #0d0d0d;
 }
 
 [data-theme='dark'] .prompt-block__send:hover,
 [data-theme='dark'] .prompt-block__send.is-copied {
-	background: #b3de3f;
-}
-
-[data-theme='dark'] .prompt-block__art {
-	color: #c8d4cc;
+	background: #ffffff;
 }
 
 @media (max-width: 800px) {
 	.prompt-block {
-		grid-template-columns: 1fr;
-		gap: 1.15rem;
-	}
-
-	.prompt-block__art {
-		min-height: 0;
-		padding: 0;
-	}
-
-	.prompt-block__svg {
-		width: min(100%, 9.5rem);
+		max-width: none;
 	}
 
 	.prompt-block__dock {
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.55rem;
-		padding: 0.55rem 0.65rem 0.7rem;
+		gap: 0.45rem;
+		padding: 0.3rem 0.5rem 0.5rem 0.7rem;
 	}
 
 	.prompt-block__actions {
@@ -5835,8 +5814,8 @@ body.download-auth-modal-open {
 
 	.prompt-block__copy,
 	.prompt-block__send {
-		min-width: 2.75rem;
-		min-height: 2.75rem;
+		min-width: 2.25rem;
+		min-height: 2.25rem;
 	}
 }
 
