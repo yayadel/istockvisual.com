@@ -3517,10 +3517,19 @@ body.upload-modal-open {
 		cursor: pointer;
 	}
 
+	.header-filter-toggle circle {
+		fill: #111111;
+	}
+
 	.header-filter-toggle:hover,
 	.header-filter-toggle[aria-expanded='true'] {
 		background: #000000;
 		border-color: #000000;
+	}
+
+	.header-filter-toggle:hover circle,
+	.header-filter-toggle[aria-expanded='true'] circle {
+		fill: #000000;
 	}
 
 	body.catalog-filters-open {
