@@ -345,7 +345,7 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 </header>
 
 {
-	!isHome && (
+	!isHome && !isCategoriesHub && (
 		<div class="search-strip">
 			<div class="search-strip__inner">
 				<SearchBar variant="bar" />
