@@ -23,14 +23,15 @@ function CopyIcon() {
 	);
 }
 
-function SparkIcon() {
+function ChevronIcon() {
 	return (
-		<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+		<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
 			<path
-				d="M8 1.4 9.1 5.4 13.2 6.5 9.1 7.6 8 11.6 6.9 7.6 2.8 6.5 6.9 5.4Z"
+				d="M4.2 6.2 8 10l3.8-3.8"
 				fill="none"
 				stroke="currentColor"
-				strokeWidth="1.3"
+				strokeWidth="1.5"
+				strokeLinecap="round"
 				strokeLinejoin="round"
 			/>
 		</svg>
