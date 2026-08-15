@@ -569,7 +569,7 @@ export default function DownloadPanel({
 						</p>
 						<h2 id="download-auth-title">Sign up for {pendingSize || '2K+'} downloads</h2>
 						<p>
-							500 and 1K are free without logging in. Create an account and upgrade to Pro for
+							512 and 1K are free without logging in. Create an account and upgrade to Pro for
 							2K, 4K, and 8K.
 						</p>
 						<div className="download-auth-modal__actions">

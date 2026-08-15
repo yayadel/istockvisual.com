@@ -583,7 +583,7 @@ export default function ImageEditor({
 				return;
 			}
 			if (!isPro) {
-				setSizeGateMessage('Pro required for 2K / 4K / 8K. Free sizes: 500 and 1K.');
+				setSizeGateMessage('Pro required for 2K / 4K / 8K. Free sizes: 512 and 1K.');
 				return;
 			}
 		}
@@ -1000,7 +1000,7 @@ export default function ImageEditor({
 				return;
 			}
 			if (!isPro) {
-				setSizeGateMessage('Pro required for 2K / 4K / 8K. Free sizes: 500 and 1K.');
+				setSizeGateMessage('Pro required for 2K / 4K / 8K. Free sizes: 512 and 1K.');
 				return;
 			}
 		}

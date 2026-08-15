@@ -75,7 +75,7 @@ export default function BasicInfoPanel({
 					</li>
 				</ul>
 				<ul className="download-rules" aria-label="Download notes">
-					<li>500 and 1K: free download, no login required.</li>
+					<li>512 and 1K: free download, no login required.</li>
 					<li>2K / 4K / 8K: requires a registered Pro membership.</li>
 					<li>Pro: unlimited high-resolution downloads.</li>
 				</ul>
