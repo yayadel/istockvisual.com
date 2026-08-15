@@ -41,14 +41,18 @@ def main() -> None:
 			cols = [info[0] for info in rows.description]
 			col_sql = ", ".join(f'"{c}"' for c in cols)
 			batch: list[str] = []
+			batch_chars = 0
+			row_limit = 1 if table in {"generated_asset", "keyword_content"} else 25
 
 			def flush() -> None:
+				nonlocal batch_chars
 				if not batch:
 					return
 				fh.write(f"INSERT INTO {quoted} ({col_sql}) VALUES\n")
 				fh.write(",\n".join(batch))
 				fh.write(";\n")
 				batch.clear()
+				batch_chars = 0
 
 			for row in rows:
 				values = []
@@ -62,9 +66,11 @@ def main() -> None:
 					else:
 						text = str(value).replace("'", "''")
 						values.append("'" + text + "'")
-				batch.append("(" + ", ".join(values) + ")")
-				if len(batch) >= 80:
+				item = "(" + ", ".join(values) + ")"
+				if batch and (len(batch) >= row_limit or batch_chars + len(item) > 40_000):
 					flush()
+				batch.append(item)
+				batch_chars += len(item)
 			flush()
 			n = con.execute(f"SELECT COUNT(*) FROM {quoted}").fetchone()[0]
 			print(table, n)
