@@ -144,6 +144,7 @@ export async function buildSitemapIndexXml(env: SitemapEnv): Promise<string> {
 	const files = [
 		{ path: '/sitemap-pages.xml', lastmod: today },
 		{ path: '/sitemap-categories.xml', lastmod: today },
+		{ path: '/sitemap-tools.xml', lastmod: today },
 	];
 
 	const total = env.DB ? await countSitemapAssets(env.DB) : 0;
