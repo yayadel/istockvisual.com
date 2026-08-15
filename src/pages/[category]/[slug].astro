@@ -148,7 +148,7 @@ const jsonLd = assetJsonLd({
 
 				<aside class="detail__info">
 					<DownloadPanel
-						client:only="react"
+						client:idle
 						assetId={asset._id}
 						title={asset.title}
 						slug={asset.slug}
@@ -226,7 +226,7 @@ const jsonLd = assetJsonLd({
 										<DetailSectionIcon name="palette" />
 										<span>Color palette</span>
 									</h2>
-									<ColorPalette client:load swatches={asset.colorPalette} />
+									<ColorPalette client:idle swatches={asset.colorPalette} />
 								</article>
 							)
 						}
@@ -237,7 +237,7 @@ const jsonLd = assetJsonLd({
 										<DetailSectionIcon name="prompt" />
 										<span>Image generation prompt</span>
 									</h2>
-									<PromptBlock client:load prompt={asset.imagePrompt} />
+									<PromptBlock client:idle prompt={asset.imagePrompt} />
 								</article>
 							)
 						}

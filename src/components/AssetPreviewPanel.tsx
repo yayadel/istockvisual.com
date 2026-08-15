@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
-import ImageEditor from './ImageEditor';
+import { useCallback, useEffect, useRef, useState, type ComponentType, type MouseEvent, type PointerEvent } from 'react';
 import ShareBar from './ShareBar';
 
 const LENS_SIZE = 196;
@@ -113,8 +112,7 @@ export default function AssetPreviewPanel({
 	}, [hideLens]);
 
 	const src500 = sizedPreview(imageUrl, '500');
-	const src1k = sizedPreview(imageUrl, '1k');
-	const srcSet = `${src500} 500w, ${src1k} 1024w, ${imageUrl} 1280w`;
+	const wrapRatio = width && height ? { aspectRatio: `${width} / ${height}` } : undefined;
 
 	return (
 		<div className="asset-preview">
