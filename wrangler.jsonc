@@ -15,7 +15,7 @@
 		{
 			"binding": "DB",
 			"database_name": "istockvisual-db",
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "7d882e78-798b-4bee-ba32-5e3c255e638d",
 			"migrations_dir": "migrations"
 		}
 	],
