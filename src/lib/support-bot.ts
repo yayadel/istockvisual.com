@@ -134,7 +134,9 @@ function cleanModelText(text: string) {
 async function askGemma(env: SupportEnv, messages: SupportMessage[]): Promise<string | null> {
 	const apiKey = envString(env, 'TOGETHER_API_KEY');
 	if (!apiKey) return null;
-	const model = envString(env, 'TOGETHER_MODEL') || GEMMA_MODEL;
+	const model =
+		envString(env, 'TOGETHER_SUPPORT_MODEL') ||
+		SUPPORT_TOGETHER_MODEL;
 	const turns = chatTurns(messages);
 	if (!turns.length || turns[turns.length - 1]?.role !== 'user') return null;
 
