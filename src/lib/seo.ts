@@ -202,6 +202,8 @@ function collectionListItems(origin: string, collections: Array<{ name: string; 
 		},
 	}));
 }
+
+function itemListNode(
 	listId: string,
 	name: string,
 	origin: string,
@@ -308,17 +310,7 @@ export function collectionPageJsonLd(input: {
 			'@id': listId,
 			name: input.title,
 			numberOfItems: input.collections.length,
-			itemListElement: input.collections.map((collection, index) => ({
-				'@type': 'ListItem',
-				position: index + 1,
-				name: collection.name,
-				url: absoluteUrl(collection.path, input.origin),
-				item: {
-					'@type': 'CollectionPage',
-					name: collection.name,
-					url: absoluteUrl(collection.path, input.origin),
-				},
-			})),
+			itemListElement: collectionListItems(input.origin, input.collections),
 		});
 	} else {
 		graph.push(
