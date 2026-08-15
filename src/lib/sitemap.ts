@@ -20,7 +20,7 @@ type SitemapUrl = {
 	priority?: string;
 };
 
-export const SITEMAP_CONTENT_PAGE_SIZE = 10_000;
+function xmlEscape(value: string) {
 	return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
