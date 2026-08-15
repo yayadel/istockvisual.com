@@ -366,6 +366,16 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 	function setMobileNavOpen(open) {
 		var toggle = document.querySelector('[data-nav-toggle]');
 		var backdrop = document.querySelector('[data-nav-backdrop]');
+		if (open) {
+			document.body.classList.remove('catalog-filters-open');
+			var filterToggle = document.querySelector('[data-catalog-filter-toggle]');
+			if (filterToggle) {
+				filterToggle.setAttribute('aria-expanded', 'false');
+				filterToggle.setAttribute('aria-label', 'Open filters');
+			}
+			var filterBackdrop = document.querySelector('[data-catalog-filter-backdrop]');
+			if (filterBackdrop) filterBackdrop.hidden = true;
+		}
 		document.body.classList.toggle('nav-open', open);
 		if (toggle) {
 			toggle.setAttribute('aria-expanded', open ? 'true' : 'false');

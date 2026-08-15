@@ -403,6 +403,16 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 	}
 
 	function setMobileFiltersOpen(open) {
+		if (open) {
+			document.body.classList.remove('nav-open');
+			const navToggle = document.querySelector('[data-nav-toggle]');
+			if (navToggle) {
+				navToggle.setAttribute('aria-expanded', 'false');
+				navToggle.setAttribute('aria-label', 'Open menu');
+			}
+			const navBackdrop = document.querySelector('[data-nav-backdrop]');
+			if (navBackdrop) navBackdrop.hidden = true;
+		}
 		document.body.classList.toggle('catalog-filters-open', open);
 		const toggle = document.querySelector('[data-catalog-filter-toggle]');
 		if (toggle) {

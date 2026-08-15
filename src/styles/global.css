@@ -3479,6 +3479,12 @@ body.upload-modal-open {
 		background: rgba(255, 255, 255, 0.1);
 	}
 
+	@media (max-width: 420px) {
+		.header-filter-toggle span {
+			display: none;
+		}
+	}
+
 	body.catalog-filters-open {
 		overflow: hidden;
 	}
