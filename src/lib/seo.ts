@@ -442,13 +442,7 @@ export function assetJsonLd(input: {
 		'@context': 'https://schema.org',
 		'@graph': [
 			organization,
-			{
-				'@type': 'WebSite',
-				'@id': websiteId,
-				name: SITE_BRAND,
-				url: homeUrl,
-				publisher: { '@id': orgId },
-			},
+			websiteJsonLd(input.origin),
 			{
 				'@type': 'WebPage',
 				'@id': pageUrl,
@@ -456,7 +450,7 @@ export function assetJsonLd(input: {
 				name: input.seoTitle,
 				description: input.seoDescription,
 				inLanguage: 'en',
-				isPartOf: { '@id': websiteId },
+				isPartOf: { '@id': websiteId(input.origin) },
 				primaryImageOfPage: { '@id': imageId },
 				breadcrumb: { '@id': breadcrumbId },
 			},
