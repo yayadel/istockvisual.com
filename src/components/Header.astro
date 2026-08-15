@@ -10,6 +10,7 @@ import { env } from 'cloudflare:workers';
 const user = Astro.locals.user;
 const path = Astro.url.pathname;
 const isHome = path === '/';
+const isCategoriesHub = path === '/c' || path === '/c/';
 const isAdmin = isAdminUser(user, env);
 const toolsActive = path.startsWith('/tools/');
 const categoriesActive = path === '/c' || path.startsWith('/c/');
