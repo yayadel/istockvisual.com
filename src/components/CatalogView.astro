@@ -500,6 +500,44 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			prev.addEventListener('click', function () {
 				jump(-1);
 			});
+			let relatedDrag = null;
+			track.addEventListener('pointerdown', function (event) {
+				if (event.pointerType !== 'mouse' || event.button !== 0) return;
+				if (event.target instanceof Element && event.target.closest('.catalog-related__arrow')) return;
+				relatedDrag = {
+					id: event.pointerId,
+					x: event.clientX,
+					scroll: track.scrollLeft,
+					moved: false,
+				};
+				track.setPointerCapture(event.pointerId);
+			});
+			track.addEventListener('pointermove', function (event) {
+				if (!relatedDrag || event.pointerId !== relatedDrag.id) return;
+				const dx = event.clientX - relatedDrag.x;
+				if (Math.abs(dx) > 5) {
+					relatedDrag.moved = true;
+					track.classList.add('is-dragging');
+				}
+				if (relatedDrag.moved) {
+					track.scrollLeft = relatedDrag.scroll - dx;
+				}
+			});
+			const endRelatedDrag = function (event) {
+				if (!relatedDrag || event.pointerId !== relatedDrag.id) return;
+				const moved = relatedDrag.moved;
+				relatedDrag = null;
+				track.classList.remove('is-dragging');
+				if (!moved) return;
+				const blockClick = function (clickEvent) {
+					clickEvent.preventDefault();
+					clickEvent.stopPropagation();
+					track.removeEventListener('click', blockClick, true);
+				};
+				track.addEventListener('click', blockClick, true);
+			};
+			track.addEventListener('pointerup', endRelatedDrag);
+			track.addEventListener('pointercancel', endRelatedDrag);
 			track.addEventListener('scroll', updateRelated, { passive: true });
 			window.addEventListener('resize', updateRelated);
 			updateRelated();
