@@ -1924,8 +1924,7 @@ body.upload-modal-open {
 
 @media (max-width: 639px) {
 	.home-featured .asset-grid {
-		column-count: 2;
-		column-gap: 8px;
+		gap: 8px;
 	}
 }
 
