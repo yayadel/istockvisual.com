@@ -5,7 +5,6 @@ import { env } from 'cloudflare:workers';
 import { applyCatalogFilters, parseCatalogQuery } from '../../lib/catalog';
 import { listAllAssets } from '../../lib/generate-asset';
 import { fromPathSlug } from '../../lib/paths';
-import { searchResultsJsonLd } from '../../lib/seo';
 
 const raw = Astro.params.q || '';
 const q = fromPathSlug(decodeURIComponent(raw));
