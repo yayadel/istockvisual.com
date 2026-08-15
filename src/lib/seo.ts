@@ -186,8 +186,6 @@ function assetListItems(origin: string, assets: JsonLdListAsset[]) {
 		return {
 			'@type': 'ListItem',
 			position: index + 1,
-			url,
-			name: asset.title,
 			item,
 		};
 	});
