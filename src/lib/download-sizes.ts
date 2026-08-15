@@ -88,7 +88,13 @@ export function legacyPreviewObjectKey(originalKey: string) {
 }
 
 export function isDownloadSizeId(value: string | null | undefined): value is DownloadSizeId {
-	return value === '512' || DOWNLOAD_SIZES.some((size) => size.id === value);
+	return Boolean(normalizeDownloadSizeId(value));
+}
+
+export function normalizeDownloadSizeId(value: string | null | undefined): DownloadSizeId | null {
+	if (!value) return null;
+	if (value === '512' || value === '500') return '500';
+	return DOWNLOAD_SIZES.some((size) => size.id === value) ? (value as DownloadSizeId) : null;
 }
 
 /** Free sizes stay server-resized so 4K is not sent to unpaid clients. */

@@ -5,6 +5,7 @@ import {
 	FREE_DOWNLOAD_EDGE,
 	isDownloadSizeId,
 	isFreeDownloadSize,
+	normalizeDownloadSizeId,
 	sizeFileLabel,
 	filenameFromTitle,
 } from '../../../lib/download-sizes';
