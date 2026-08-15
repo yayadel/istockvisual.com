@@ -10,7 +10,7 @@ import {
 } from '../../../lib/download-sizes';
 import { resolveAssetById } from '../../../lib/generate-asset';
 import { contentDisposition } from '../../../lib/r2';
-import { resizeImageToLongEdgeJpeg, resizeImageToWidthJpeg } from '../../../lib/resize-jpeg';
+import { resizeImageToLongEdgeJpeg } from '../../../lib/resize-jpeg';
 
 async function getSessionUser(context: Parameters<APIRoute>[0]): Promise<AppUser | null> {
 	let user = context.locals.user as AppUser | null;

@@ -24,7 +24,7 @@ export const DEFAULT_DOWNLOAD_SIZE: DownloadSizeId = '1k';
 
 /** 512 and 1K (1024): free for everyone, no login. */
 export function isFreeDownloadSize(sizeId: string | null | undefined): boolean {
-	return sizeId === '500' || sizeId === '1k';
+	return sizeId === '500' || sizeId === '512' || sizeId === '1k';
 }
 export function fitLongEdge(width: number, height: number, longEdge: number) {
 	const longest = Math.max(width, height) || 1;
@@ -88,7 +88,7 @@ export function legacyPreviewObjectKey(originalKey: string) {
 }
 
 export function isDownloadSizeId(value: string | null | undefined): value is DownloadSizeId {
-	return DOWNLOAD_SIZES.some((size) => size.id === value);
+	return value === '512' || DOWNLOAD_SIZES.some((size) => size.id === value);
 }
 
 /** Free sizes stay server-resized so 4K is not sent to unpaid clients. */
