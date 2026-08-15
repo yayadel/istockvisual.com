@@ -2732,6 +2732,8 @@ body.upload-modal-open {
 .asset-grid {
 	column-count: 2;
 	column-gap: 10px;
+	max-width: 100%;
+	min-width: 0;
 }
 
 @media (min-width: 640px) {
