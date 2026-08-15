@@ -10,7 +10,7 @@ if (!user) return Astro.redirect('/login?next=/admin/content');
 if (!isAdminUser(user, env)) return Astro.redirect('/account');
 ---
 
-<BaseLayout title="Admin · Content" description="Manage generated assets">
+<BaseLayout title="Admin · Content" description="Manage generated assets" robots="noindex, nofollow">
 	<AdminLayout
 		title="Generated content"
 		description="All assets created from the keyword pipeline."

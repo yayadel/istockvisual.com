@@ -309,6 +309,31 @@ export async function slugExists(
 	return Boolean(row);
 }
 
+export async function listSitemapAssets(
+	db: D1Database,
+): Promise<Array<{ category: CategorySlug; slug: string; publishedAt: string }>> {
+	const result = await db
+		.prepare(
+			`SELECT category, slug, publishedAt
+			 FROM generated_asset
+			 WHERE category IS NOT NULL AND TRIM(category) != ''
+			   AND slug IS NOT NULL AND TRIM(slug) != ''
+			 ORDER BY publishedAt DESC`,
+		)
+		.all<{ category: string; slug: string; publishedAt: string }>();
+
+	return (result.results ?? []).flatMap((row) => {
+		if (!isCategorySlug(row.category) || !row.slug) return [];
+		return [
+			{
+				category: row.category,
+				slug: String(row.slug),
+				publishedAt: String(row.publishedAt || ''),
+			},
+		];
+	});
+}
+
 /** Top topical categories by published image count (D1 depictedElements). */
 export async function listTopContentCategoriesByCount(
 	db: D1Database | undefined,

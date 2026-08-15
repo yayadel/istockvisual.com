@@ -10,7 +10,7 @@ if (!user) return Astro.redirect('/login?next=/admin/keywords');
 if (!isAdminUser(user, env)) return Astro.redirect('/account');
 ---
 
-<BaseLayout title="Admin · Keywords" description="Manage imported keywords and linked content">
+<BaseLayout title="Admin · Keywords" description="Manage imported keywords and linked content" robots="noindex, nofollow">
 	<AdminLayout
 		title="Keywords"
 		description="Browse all imported topics, usage status, and linked generated assets."
