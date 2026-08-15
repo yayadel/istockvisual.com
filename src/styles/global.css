@@ -1908,7 +1908,6 @@ body.upload-modal-open {
 	.home-featured .asset-grid {
 		column-count: 2;
 		column-gap: 8px;
-		column-fill: auto;
 	}
 
 	.home-featured .asset-card:nth-child(6n + 1) {
