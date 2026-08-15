@@ -80,6 +80,7 @@ export async function buildPagesSitemapXml(env: SitemapEnv): Promise<string> {
 			priority: '0.3',
 		})),
 	];
+	void env;
 	return urlsetXml(origin, urls);
 }
 
