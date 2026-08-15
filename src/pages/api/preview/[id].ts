@@ -1,8 +1,18 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { previewObjectKey } from '../../../lib/download-sizes';
+import { previewObjectKey, variantObjectKey } from '../../../lib/download-sizes';
 import { getGeneratedAssetById } from '../../../lib/generated-assets';
 import { getAssetById } from '../../../lib/sanity';
+
+const PREVIEW_CACHE = 'public, max-age=31536000, immutable';
+const FALLBACK_CACHE = 'public, max-age=86400';
+
+function withCache(headers: Headers, cacheControl: string, contentType: string, etag?: string) {
+	headers.set('Content-Type', contentType);
+	headers.set('Cache-Control', cacheControl);
+	headers.set('CDN-Cache-Control', cacheControl);
+	if (etag) headers.set('etag', etag);
+}
 
 export const GET: APIRoute = async (context) => {
 	const id = context.params.id;
@@ -34,14 +44,23 @@ export const GET: APIRoute = async (context) => {
 		fileType = asset.fileType || fileType;
 	}
 
+	const size = (context.url.searchParams.get('size') || '').toLowerCase();
+	if (size === '500' || size === '1k') {
+		const variant = await bucket.get(variantObjectKey(r2ObjectKey, size));
+		if (variant) {
+			const headers = new Headers();
+			variant.writeHttpMetadata(headers);
+			withCache(headers, PREVIEW_CACHE, 'image/jpeg', variant.httpEtag);
+			return new Response(variant.body, { headers });
+		}
+	}
+
 	const previewKey = previewObjectKey(r2ObjectKey);
 	const preview = await bucket.get(previewKey);
 	if (preview) {
 		const headers = new Headers();
 		preview.writeHttpMetadata(headers);
-		headers.set('etag', preview.httpEtag);
-		headers.set('Content-Type', 'image/avif');
-		headers.set('Cache-Control', 'public, max-age=86400');
+		withCache(headers, PREVIEW_CACHE, 'image/avif', preview.httpEtag);
 		return new Response(preview.body, { headers });
 	}
 
@@ -52,8 +71,6 @@ export const GET: APIRoute = async (context) => {
 
 	const headers = new Headers();
 	object.writeHttpMetadata(headers);
-	headers.set('etag', object.httpEtag);
-	headers.set('Content-Type', fileType);
-	headers.set('Cache-Control', 'public, max-age=3600');
+	withCache(headers, FALLBACK_CACHE, fileType, object.httpEtag);
 	return new Response(object.body, { headers });
 };
