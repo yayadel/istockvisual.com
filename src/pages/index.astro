@@ -13,7 +13,14 @@ import { env } from 'cloudflare:workers';
 
 const origin = Astro.url.origin;
 const pool = await listFeaturedAssets(env.DB, origin, 80);
-const featured = pool.slice(0, 16);
+const seenTitles = new Set<string>();
+const uniquePool = pool.filter((asset) => {
+	const key = asset.title.trim().toLowerCase();
+	if (!key || seenTitles.has(key)) return false;
+	seenTitles.add(key);
+	return true;
+});
+const featured = uniquePool.slice(0, 16);
 const topKeywords = await listTopSearchKeywords(env.DB, 16);
 const heroKeywords = topKeywords.slice(0, 10);
 
