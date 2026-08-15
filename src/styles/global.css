@@ -3662,9 +3662,11 @@ body.upload-modal-open {
 }
 
 .asset-card__empty {
+	position: absolute;
+	inset: 0;
 	display: grid;
 	place-items: center;
-	min-height: 160px;
+	min-height: 0;
 	color: var(--text-muted);
 	font-size: 0.82rem;
 }
