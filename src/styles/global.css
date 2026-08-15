@@ -2791,7 +2791,8 @@ body.upload-modal-open {
 	display: none;
 }
 
-.catalog-filter__fold:hover {
+.catalog-filter__fold:hover,
+.catalog-filter__close:hover {
 	background: var(--ghost-bg);
 	color: var(--text);
 }
@@ -3465,26 +3466,89 @@ body.upload-modal-open {
 }
 
 @media (max-width: 860px) {
+	.header-filter-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.28rem;
+		height: 2.15rem;
+		padding: 0 0.55rem;
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		border-radius: 2px;
+		background: transparent;
+		color: #ffffff;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+
+	.header-filter-toggle:hover,
+	.header-filter-toggle[aria-expanded='true'] {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	body.catalog-filters-open {
+		overflow: hidden;
+	}
+
 	.catalog,
 	.catalog.is-filters-hidden {
 		grid-template-columns: 1fr;
 		gap: 1.1rem;
 	}
 
+	.catalog-filter-backdrop {
+		display: none;
+		position: fixed;
+		inset: 3.4rem 0 0;
+		z-index: 68;
+		border: 0;
+		padding: 0;
+		background: rgba(10, 12, 14, 0.46);
+	}
+
+	body.catalog-filters-open .catalog-filter-backdrop {
+		display: block;
+	}
+
+	.catalog-filter-backdrop[hidden] {
+		display: none;
+	}
+
 	.catalog-filter,
 	.catalog.is-filters-hidden .catalog-filter {
-		position: static;
+		position: fixed;
+		top: 3.4rem;
+		left: 0;
+		bottom: 0;
+		z-index: 69;
+		width: min(20.5rem, 88vw);
 		max-height: none;
-		overflow: visible;
+		margin: 0;
 		padding: 0;
-		border: 1px solid var(--line);
-		background: var(--panel-bg);
+		overflow: auto;
+		border: 0;
+		border-right: 1px solid var(--line);
+		background: var(--bg);
+		box-shadow: 16px 0 40px rgba(0, 0, 0, 0.22);
+		transform: translateX(-105%);
+		transition: transform 0.22s ease;
+	}
+
+	body.catalog-filters-open .catalog-filter,
+	body.catalog-filters-open .catalog.is-filters-hidden .catalog-filter {
+		transform: translateX(0);
 	}
 
 	.catalog-filter__head {
 		padding: 0.7rem 0.9rem 0.65rem;
-		position: static;
-		background: transparent;
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		background: var(--bg);
 	}
 
 	.catalog.is-filters-hidden .catalog-filter__head {
@@ -3502,6 +3566,10 @@ body.upload-modal-open {
 
 	.catalog-filter__fold {
 		display: none;
+	}
+
+	.catalog-filter__close {
+		display: inline-flex;
 	}
 
 	.catalog-acc > summary {
