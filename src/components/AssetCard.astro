@@ -23,6 +23,7 @@ const tile = TILES[index % TILES.length];
 				width={asset.width}
 				height={asset.height}
 				loading="lazy"
+				decoding="async"
 			/>
 		) : (
 			<div class="asset-card__empty">No preview</div>
