@@ -27,5 +27,9 @@
 	],
 	"triggers": {
 		"crons": ["0 * * * *"]
-	}
+	},
+	"routes": [
+		{ "pattern": "istockvisual.com", "custom_domain": true },
+		{ "pattern": "www.istockvisual.com", "custom_domain": true }
+	]
 }
