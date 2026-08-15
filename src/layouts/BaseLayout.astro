@@ -121,6 +121,6 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 			<SiteFooter />
 		</div>
 		<UploadModal />
-		{Astro.url.pathname.replace(/\/$/, '') !== '/info/help' && <SupportChat client:load variant="widget" />}
+		{Astro.url.pathname.replace(/\/$/, '') !== '/info/help' && <SupportChat client:idle variant="widget" />}
 	</body>
 </html>
