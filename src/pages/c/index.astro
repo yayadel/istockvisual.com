@@ -9,6 +9,7 @@ import {
 } from '../../lib/content-categories';
 import { listFeaturedAssets } from '../../lib/generate-asset';
 import { listTopContentCategoriesByCount } from '../../lib/generated-assets';
+import { collectionPageJsonLd } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
 
 const COVER_FALLBACKS = [
@@ -56,12 +57,23 @@ const marqueeTiles = (() => {
 	return padded;
 })();
 const heroTopics = catalog.slice(0, 10);
+const description =
+	'Browse every topical collection on iStockVisual — photography, business, nature, 3D, and more.';
+const jsonLd = collectionPageJsonLd({
+	origin,
+	pagePath: '/c/',
+	title: 'Categories',
+	description,
+	assets: [],
+	crumbs: [
+		{ name: 'Home', path: '/' },
+		{ name: 'Categories', path: '/c/' },
+	],
+	collections: catalog.map((item) => ({ name: item.label, path: item.href })),
+});
 ---
 
-<BaseLayout
-	title="Categories"
-	description="Browse every topical collection on iStockVisual — photography, business, nature, 3D, and more."
->
+<BaseLayout title="Categories" description={description} jsonLd={jsonLd}>
 	<section class="hero" aria-label="Categories hero">
 		<div class="hero__media" aria-hidden="true"></div>
 		<div class="hero__content">

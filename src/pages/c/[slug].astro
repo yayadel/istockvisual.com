@@ -7,6 +7,7 @@ import {
 } from '../../lib/content-categories';
 import { applyCatalogFilters, parseCatalogQuery } from '../../lib/catalog';
 import { listAllAssets } from '../../lib/generate-asset';
+import { collectionPageJsonLd } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
 
 const slug = Astro.params.slug || '';
@@ -19,12 +20,24 @@ const topic = getContentCategoryBySlug(slug)!;
 const query = parseCatalogQuery(Astro.url, { topic: topic.slug });
 const pool = await listAllAssets(env.DB, Astro.url.origin, 600);
 const assets = applyCatalogFilters(pool, query);
+const origin = Astro.url.origin;
+const description = `Browse ${topic.label} stock assets on iStockVisual.`;
+const jsonLd = collectionPageJsonLd({
+	origin,
+	pagePath: `/c/${topic.slug}`,
+	title: topic.label,
+	description,
+	assets,
+	totalCount: assets.length,
+	crumbs: [
+		{ name: 'Home', path: '/' },
+		{ name: 'Categories', path: '/c/' },
+		{ name: topic.label, path: `/c/${topic.slug}` },
+	],
+});
 ---
 
-<BaseLayout
-	title={topic.label}
-	description={`Browse ${topic.label} stock assets on iStockVisual.`}
->
+<BaseLayout title={topic.label} description={description} jsonLd={jsonLd}>
 	<CatalogView
 		assets={assets}
 		facetPool={pool}

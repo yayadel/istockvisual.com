@@ -17,9 +17,23 @@ const category = getCategory(categorySlug)!;
 const query = parseCatalogQuery(Astro.url, { type: category.slug });
 const pool = await listAllAssets(env.DB, Astro.url.origin, 600);
 const assets = applyCatalogFilters(pool, query);
+const origin = Astro.url.origin;
+const description = `Browse ${category.label} on iStockVisual.`;
+const jsonLd = collectionPageJsonLd({
+	origin,
+	pagePath: `/${category.slug}`,
+	title: category.label,
+	description,
+	assets,
+	totalCount: assets.length,
+	crumbs: [
+		{ name: 'Home', path: '/' },
+		{ name: category.label, path: `/${category.slug}` },
+	],
+});
 ---
 
-<BaseLayout title={category.label} description={`Browse ${category.label} on iStockVisual.`}>
+<BaseLayout title={category.label} description={description} jsonLd={jsonLd}>
 	<CatalogView
 		assets={assets}
 		facetPool={pool}
