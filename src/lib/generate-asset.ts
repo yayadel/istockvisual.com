@@ -24,6 +24,7 @@ import {
 } from './generated-assets';
 import {
 	KEYWORD_CONTENT_TYPES,
+	getPrimaryContentLink,
 	linkKeywordContent,
 } from './keyword-content';
 import { assetMatchesSearchQuery } from './catalog';
