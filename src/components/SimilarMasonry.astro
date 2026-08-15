@@ -21,7 +21,7 @@ const { assets, viewAllHref, viewAllLabel } = Astro.props;
 						{viewAllLabel} <span aria-hidden="true">›</span>
 					</a>
 				</div>
-				<div class="asset-grid">
+				<div class="asset-grid" data-asset-grid>
 					{assets.map((asset, index) => (
 						<AssetCard asset={asset} index={index} />
 					))}

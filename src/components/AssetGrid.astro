@@ -14,10 +14,79 @@ const { assets, emptyMessage = 'No assets in this category yet.' } = Astro.props
 	assets.length === 0 ? (
 		<div class="empty">{emptyMessage}</div>
 	) : (
-		<div class="asset-grid">
+		<div class="asset-grid" data-asset-grid>
 			{assets.map((asset, index) => (
 				<AssetCard asset={asset} index={index} />
 			))}
 		</div>
 	)
 }
+
+<script>
+	const arOf = (card: HTMLElement) => {
+		const width = Number(card.dataset.w) || 3;
+		const height = Number(card.dataset.h) || 2;
+		return Math.max(0.42, Math.min(2.8, width / height));
+	};
+
+	const packGrid = (grid: HTMLElement) => {
+		const cards = Array.from(grid.children).filter(
+			(node): node is HTMLElement => node instanceof HTMLElement && node.classList.contains('asset-card'),
+		);
+		const width = grid.clientWidth;
+		if (!cards.length || width < 40) return;
+
+		const gap = width < 640 ? 8 : 12;
+		const targetH = width < 640 ? 164 : width < 900 ? 196 : 228;
+		grid.style.gap = `${gap}px`;
+
+		type Row = { items: HTMLElement[]; ar: number };
+		const rows: Row[] = [];
+		let items: HTMLElement[] = [];
+		let ar = 0;
+
+		for (const card of cards) {
+			const nextAr = arOf(card);
+			const nextWidth = (ar + nextAr) * targetH + gap * items.length;
+			if (items.length > 0 && nextWidth > width) {
+				rows.push({ items, ar });
+				items = [card];
+				ar = nextAr;
+			} else {
+				items.push(card);
+				ar += nextAr;
+			}
+		}
+		if (items.length) rows.push({ items, ar });
+
+		for (const row of rows) {
+			const height = Math.max(120, (width - gap * Math.max(0, row.items.length - 1)) / row.ar);
+			for (const card of row.items) {
+				const ratio = arOf(card);
+				const cardWidth = height * ratio;
+				card.style.width = `${cardWidth}px`;
+				card.style.height = `${height}px`;
+				card.style.flexGrow = '1';
+				card.style.flexBasis = `${cardWidth}px`;
+				card.style.margin = '0';
+			}
+		}
+	};
+
+	const packAll = () => {
+		document.querySelectorAll<HTMLElement>('[data-asset-grid]').forEach(packGrid);
+	};
+
+	const watched = new WeakSet<HTMLElement>();
+	const observe = () => {
+		document.querySelectorAll<HTMLElement>('[data-asset-grid]').forEach((grid) => {
+			if (watched.has(grid)) return;
+			watched.add(grid);
+			new ResizeObserver(() => packGrid(grid)).observe(grid);
+		});
+		packAll();
+	};
+
+	observe();
+	document.addEventListener('astro:page-load', observe);
+</script>

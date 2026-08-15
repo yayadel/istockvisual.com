@@ -6,22 +6,26 @@ interface Props {
 	index?: number;
 }
 
-/** Height-only variety. No column-span tiles, so the mosaic never leaves holes. */
-const TILES = ['tall', 'landscape', 'square', 'short', 'portrait', 'tall', 'landscape', 'square'] as const;
-
-const { asset, index = 0 } = Astro.props;
+const { asset } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
-const tile = TILES[index % TILES.length];
+const width = Math.max(1, Number(asset.width) || 3);
+const height = Math.max(1, Number(asset.height) || 2);
 ---
 
-<a class={`asset-card asset-card--${tile}`} href={href}>
+<a
+	class="asset-card"
+	href={href}
+	data-w={width}
+	data-h={height}
+	style={`--w:${width};--h:${height};`}
+>
 	{
 		asset.previewUrl ? (
 			<img
 				src={asset.previewUrl}
 				alt={asset.title}
-				width={asset.width}
-				height={asset.height}
+				width={width}
+				height={height}
 				loading="lazy"
 			/>
 		) : (
