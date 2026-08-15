@@ -3459,30 +3459,20 @@ body.upload-modal-open {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.28rem;
+		width: 2.15rem;
 		height: 2.15rem;
-		padding: 0 0.55rem;
-		border: 1px solid rgba(255, 255, 255, 0.22);
-		border-radius: 2px;
-		background: transparent;
-		color: #ffffff;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-		white-space: nowrap;
+		padding: 0;
+		border: 1px solid #d8d8d8;
+		border-radius: 0.42rem;
+		background: #ffffff;
+		color: #1a1a1a;
 		cursor: pointer;
 	}
 
 	.header-filter-toggle:hover,
 	.header-filter-toggle[aria-expanded='true'] {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	@media (max-width: 420px) {
-		.header-filter-toggle span {
-			display: none;
-		}
+		background: #f3f3f3;
+		border-color: #c8c8c8;
 	}
 
 	body.catalog-filters-open {
