@@ -3377,6 +3377,11 @@ body.upload-modal-open {
 	left: 0.05rem;
 }
 
+.catalog-results {
+	min-width: 0;
+	max-width: 100%;
+}
+
 .catalog-results__head {
 	margin: 0 0 1.15rem;
 }
@@ -3514,7 +3519,7 @@ body.upload-modal-open {
 
 	.catalog,
 	.catalog.is-filters-hidden {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 1.1rem;
 	}
 
