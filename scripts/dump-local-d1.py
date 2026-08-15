@@ -12,7 +12,6 @@ SRC = (
 	/ "9ba2b04bf514d9facfd57ed57d849e77241a7adc99d1c1545d06688b43d84248.sqlite"
 )
 OUT = ROOT / ".tmp" / "d1-data.sql"
-SKIP = {"d1_migrations", "sqlite_sequence", "_cf_METADATA", "sqlite_stat1"}
 ORDER = [
 	"user",
 	"session",
@@ -36,11 +35,6 @@ def main() -> None:
 	print("dumping", tables, "from", SRC.name)
 	with OUT.open("w", encoding="utf-8", newline="\n") as fh:
 		fh.write("PRAGMA defer_foreign_keys=TRUE;\n")
-		for table in tables:
-			count = 0
-			for line in con.iterdump():
-				pass
-			# iterdump is whole-db; dump per-table instead
 		for table in tables:
 			quoted = f'"{table}"'
 			rows = con.execute(f"SELECT * FROM {quoted}")
