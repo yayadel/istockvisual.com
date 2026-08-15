@@ -12,20 +12,21 @@ import {
 
 <LegalLayout
 	title="Privacy Policy"
-	description="How iStockVisual collects, uses, and stores account data, visual-search uploads, and cookies."
+	description="How iStockVisual.com handles accounts, download logs, visual-search uploads, and on-device studio tools."
 	heading="Privacy Policy"
-	lede="We collect only what we need to run accounts, serve the library, and operate visual search. Browser tools keep your files on your device."
+	lede="We collect what we need to run accounts, serve the library, and operate visual search. Studio tools keep your files on your device."
 >
 	<h2>1. Who we are</h2>
 	<p>
-		This policy describes how {SITE_BRAND} (“we”) handles personal data when you visit the site,
-		create an account, download assets, or use visual search. Related rules are in the
-		<a href={TERMS_PATH}>Terms of Use</a>, <a href={LICENSE_PATH}>Content License</a>,
-		<a href={COOKIES_PATH}>Cookie Policy</a>, and <a href={REFUNDS_PATH}>Refund Policy</a>.
+		This policy describes how {SITE_BRAND} (“we”) handles personal data when you visit
+		istockvisual.com, create an account, download assets, use visual search, or open Help chat.
+		Related rules: <a href={TERMS_PATH}>Terms of Use</a>, <a href={LICENSE_PATH}>Content License</a>,
+		<a href={COOKIES_PATH}>Cookie Policy</a>, <a href={REFUNDS_PATH}>Refund Policy</a>.
 	</p>
 	<p>
-		The Service is hosted on Cloudflare. Account records are stored in a Cloudflare D1 database.
-		Library files and short-lived visual-search uploads are stored in Cloudflare R2.
+		The Service is hosted on Cloudflare. Account and session records are stored in Cloudflare D1 (and
+		session storage such as KV where used for sign-in). Library files and short-lived visual-search
+		uploads are stored in Cloudflare R2.
 	</p>
 
 	<h2>2. Information we collect</h2>
@@ -36,20 +37,34 @@ import {
 	</p>
 	<h3>Usage needed to run the Service</h3>
 	<ul>
-		<li>Session cookies so you stay signed in</li>
-		<li>Download requests so we can apply free vs Pro sizes and fair-use limits</li>
-		<li>Standard request logs on our host (IP address, user agent, and similar technical data) for security and abuse prevention</li>
+		<li>Session cookies so you stay signed in and so free vs Pro sizes apply</li>
+		<li>
+			Download requests (asset, size such as 512 / 1K / 2K / 4K / 8K) so we can enforce plans and
+			the HD fair-use cap
+		</li>
+		<li>
+			Standard request logs on our host (IP address, user agent, URL, and similar technical data)
+			for security and abuse prevention
+		</li>
 	</ul>
 	<h3>Visual search</h3>
 	<p>
-		If you search with a photo, that file is uploaded so we can match it against the library. Query
-		photos are stored under a visual-search prefix and are deleted after about one hour. They are
-		not published in the library and are not used to train a public model on this site.
+		If you search with a photo, that file is uploaded so we can match it against the library
+		(including color). Query photos are stored under a visual-search prefix and are deleted after
+		about one hour. They are not published in the library and are not used on this site to train a
+		public model.
 	</p>
-	<h3>Information we do not collect from browser tools</h3>
+	<h3>Help chat</h3>
 	<p>
-		Image editor, convert, vectorize, social resize, watermark, and palette tools run locally in
-		your browser. Those files are not uploaded to iStockVisual.
+		The on-site assistant answers from a fixed support brief (license, plans, tools, privacy). Do
+		not paste passwords or payment numbers into chat. We may keep short operational logs of abuse or
+		errors; chat is not a substitute for emailing a refund request.
+	</p>
+	<h3>Information we do not collect from studio tools</h3>
+	<p>
+		Image Editor, Convert, Vectorizer, Social Resizer, Batch Watermark, and Palette Generator run
+		locally in your browser. Those files — and extracted palettes — are not uploaded to iStockVisual.
+		The same is true of the on-page editor when it works from a preview already on your device.
 	</p>
 	<h3>Theme preference</h3>
 	<p>
@@ -60,7 +75,7 @@ import {
 	<h2>3. How we use information</h2>
 	<ul>
 		<li>Create and maintain your account</li>
-		<li>Authenticate sessions and protect against abuse</li>
+		<li>Authenticate sessions and protect against scrape and credential abuse</li>
 		<li>Provide free and paid downloads and enforce plan and fair-use limits</li>
 		<li>Run visual search and then delete the query photo</li>
 		<li>Respond to support, refund, or legal requests</li>
@@ -71,31 +86,39 @@ import {
 	<h2>4. Cookies and similar storage</h2>
 	<p>
 		We use essential cookies for sign-in and security. Theme preference uses local storage, not a
-		cookie. Details are on the <a href={COOKIES_PATH}>Cookie Policy</a> page.
+		cookie. Visual search may keep a short-lived query reference in session storage on your device.
+		Details: <a href={COOKIES_PATH}>Cookie Policy</a>.
 	</p>
 
 	<h2>5. Sharing</h2>
 	<p>
 		We share data with infrastructure providers only as needed to host and operate the Service
-		(currently Cloudflare for hosting, database, and object storage). We may disclose information if
-		required by law, to protect the Service or other users, or in connection with a transfer of the
-		Service to a successor operator, who must handle the data under comparable protections.
+		(currently Cloudflare for the Worker, D1, R2, and related edge features). We may disclose
+		information if required by law, to protect the Service or other users, or in connection with a
+		transfer of the Service to a successor operator, who must handle the data under comparable
+		protections.
 	</p>
-	<p>Payment details, when checkout is completed through a processor, are handled by that processor — we do not intend to store full card numbers on iStockVisual.</p>
+	<p>
+		Payment details, when checkout is completed through a processor, are handled by that processor —
+		we do not intend to store full card numbers on iStockVisual.
+	</p>
 
 	<h2>6. Retention</h2>
 	<ul>
-		<li>Account data is kept while the account is open, and for a reasonable period afterward if needed for security, refunds, or legal records</li>
+		<li>
+			Account data is kept while the account is open, and for a reasonable period afterward if needed
+			for security, refunds, or legal records
+		</li>
 		<li>Visual-search query photos are removed after about one hour</li>
-		<li>Server logs are retained only as long as needed for operations and abuse review</li>
+		<li>Download and server logs are retained only as long as needed for operations and abuse review</li>
 	</ul>
 
 	<h2>7. Your choices</h2>
 	<p>
-		You can update account details while signed in, sign out at any time, and control theme
-		preference in the header. To correct data, close an account, or request a copy of the personal
-		data we hold, email <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a> from the
-		address on the account. We may need to verify the request.
+		You can update account details while signed in, sign out at any time, and control theme in the
+		header. To correct data, close an account, or request a copy of the personal data we hold, email
+		<a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a> from the address on the
+		account. We may need to verify the request.
 	</p>
 	<p>
 		Depending on where you live, you may have rights to access, correct, delete, or restrict
