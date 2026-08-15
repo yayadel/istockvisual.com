@@ -46,17 +46,25 @@ async function withEdgeCache(
 	const response = await produce();
 	const headers = new Headers(response.headers);
 	headers.set('X-Worker-Cache', 'MISS');
-	if (response.ok && request.method === 'GET') {
-		const cached = new Response(response.clone().body, {
+	if (!response.ok) {
+		if (request.method === 'HEAD') {
+			return new Response(null, { status: response.status, headers });
+		}
+		return new Response(response.body, { status: response.status, headers });
+	}
+
+	const body = await response.arrayBuffer();
+	if (request.method === 'GET') {
+		const stored = new Response(body.slice(0), {
 			status: response.status,
 			headers,
 		});
-		ctx.waitUntil(cache.put(key, cached));
+		ctx.waitUntil(cache.put(key, stored));
 	}
 	if (request.method === 'HEAD') {
 		return new Response(null, { status: response.status, headers });
 	}
-	return new Response(response.body, { status: response.status, headers });
+	return new Response(body, { status: response.status, headers });
 }
 
 export default {
