@@ -3601,11 +3601,11 @@ body.upload-modal-open {
 }
 
 .asset-card--short {
-	aspect-ratio: 16 / 10;
+	aspect-ratio: 16 / 9;
 }
 
 .asset-card--landscape {
-	aspect-ratio: 3 / 2;
+	aspect-ratio: 5 / 4;
 }
 
 .asset-card--square {
@@ -3617,7 +3617,7 @@ body.upload-modal-open {
 }
 
 .asset-card--tall {
-	aspect-ratio: 3 / 4;
+	aspect-ratio: 3 / 5;
 }
 
 .asset-card:hover,
