@@ -18,10 +18,8 @@ const navCategories = visibleNavCategories(await listPopulatedMediaTypes(env.DB)
 const isCatalogPage =
 	path === '/s' ||
 	path.startsWith('/s/') ||
-	path.startsWith('/c/') ||
-	navCategories.some(
-		(category) => path === `/${category.slug}` || path.startsWith(`/${category.slug}/`),
-	);
+	/^\/c\/[^/]+\/?$/.test(path) ||
+	navCategories.some((category) => path === `/${category.slug}` || path === `/${category.slug}/`);
 const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((item, index) => {
 	const intro = getContentCategoryIntro(item.label);
 	return {
