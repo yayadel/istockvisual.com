@@ -25,8 +25,6 @@ export function setFarFutureExpires(headers: Headers) {
 	headers.set('Expires', httpDate(FAR_FUTURE_MS));
 }
 
-const COMPRESSIBLE = /text\/|javascript|json|xml|svg\+xml|manifest|form-urlencoded/i;
-
 export function mergeVary(current: string | null, token: string) {
 	const parts = new Set(
 		(current || '')
@@ -36,27 +34,6 @@ export function mergeVary(current: string | null, token: string) {
 	);
 	parts.add(token);
 	return [...parts].join(', ');
-}
-
-export function shouldGzip(request: Request, response: Response) {
-	if (response.headers.get('Content-Encoding')) return false;
-	const type = response.headers.get('Content-Type') || '';
-	if (!COMPRESSIBLE.test(type)) return false;
-	const accept = request.headers.get('Accept-Encoding') || '';
-	return /\bgzip\b/i.test(accept);
-}
-
-export function gzipResponse(response: Response): Response {
-	if (!response.body) return response;
-	const headers = new Headers(response.headers);
-	headers.set('Content-Encoding', 'gzip');
-	headers.set('Vary', mergeVary(headers.get('Vary'), 'Accept-Encoding'));
-	headers.delete('Content-Length');
-	return new Response(response.body.pipeThrough(new CompressionStream('gzip')), {
-		status: response.status,
-		statusText: response.statusText,
-		headers,
-	});
 }
 
 export function htmlCachePolicy(pathname: string): { maxAge: number; cacheControl: string } {
