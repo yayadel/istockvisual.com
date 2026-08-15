@@ -13,6 +13,7 @@ import {
 	isVisualSearchObjectKey,
 	purgeExpiredVisualSearchUploads,
 } from '../../lib/visual-search-storage';
+import { searchResultsJsonLd } from '../../lib/seo';
 
 const q = (Astro.url.searchParams.get('q') || '').trim();
 if (q) {
