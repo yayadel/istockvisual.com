@@ -63,7 +63,7 @@ export function contentSitemapCount(totalAssets: number) {
 	return Math.max(1, Math.ceil(totalAssets / SITEMAP_CONTENT_PAGE_SIZE));
 }
 
-export async function buildPagesSitemapXml(env: SitemapEnv): Promise<string> {
+export async function buildPagesSitemapXml(_env: SitemapEnv): Promise<string> {
 	const origin = siteOrigin();
 	const urls: SitemapUrl[] = [
 		{ path: '/', changefreq: 'daily', priority: '1.0' },
