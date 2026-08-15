@@ -35,22 +35,16 @@ if (isVisual) {
 }
 const scoped = applyCatalogFilters(pool, query);
 const assets = isVisual ? rankAssetsByPalette(scoped, queryColors) : scoped;
-const origin = Astro.url.origin;
 const title = isVisual ? 'Visual search' : 'Search';
 const description =
 	'Browse stock photos, illustrations, vectors, and 3D by category, type, color, and keyword.';
-const jsonLd = searchResultsJsonLd({
-	origin,
-	pagePath: Astro.url.pathname,
-	title,
-	description,
-	query: isVisual ? 'visual search' : undefined,
-	assets,
-	totalCount: assets.length,
-});
 ---
 
-<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+<BaseLayout
+	title={title}
+	description={description}
+	robots="noindex, nofollow"
+>
 	{
 		isVisual && (
 			<div class="catalog-visual">
