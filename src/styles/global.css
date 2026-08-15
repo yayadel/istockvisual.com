@@ -3510,17 +3510,17 @@ body.upload-modal-open {
 		width: 2.15rem;
 		height: 2.15rem;
 		padding: 0;
-		border: 1px solid #d8d8d8;
+		border: 1px solid #111111;
 		border-radius: 0.42rem;
-		background: #ffffff;
-		color: #1a1a1a;
+		background: #111111;
+		color: #ffffff;
 		cursor: pointer;
 	}
 
 	.header-filter-toggle:hover,
 	.header-filter-toggle[aria-expanded='true'] {
-		background: #f3f3f3;
-		border-color: #c8c8c8;
+		background: #000000;
+		border-color: #000000;
 	}
 
 	body.catalog-filters-open {
