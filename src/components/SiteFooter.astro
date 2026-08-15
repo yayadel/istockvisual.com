@@ -3,7 +3,6 @@ import { visibleNavCategories } from '../config/categories';
 import { LEGAL_PAGES, LICENSE_PATH } from '../lib/seo';
 import { listPopulatedMediaTypes } from '../lib/generated-assets';
 import { env } from 'cloudflare:workers';
-import PartnerStrip from './PartnerStrip.astro';
 
 const year = new Date().getFullYear();
 const navCategories = visibleNavCategories(await listPopulatedMediaTypes(env.DB));

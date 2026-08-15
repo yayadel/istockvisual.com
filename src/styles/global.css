@@ -8075,11 +8075,14 @@ body.image-editor-modal-open {
 }
 
 .partner-strip {
-	margin-top: auto;
+	flex: 0 0 auto;
+	width: 100%;
+	margin: 0;
 	background: #ffffff;
 	color: #111111;
 	border-top: 1px solid #ececec;
-	padding: 2.35rem 0 2.2rem;
+	padding: 2.6rem 0 2.4rem;
+	min-height: 7.5rem;
 }
 
 .partner-strip__inner {
