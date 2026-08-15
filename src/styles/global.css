@@ -3291,8 +3291,14 @@ body.upload-modal-open {
 
 .catalog-related__track {
 	display: flex;
-	gap: 0.45rem;
+	gap: 0.5rem;
+	width: 100%;
+	max-width: 100%;
 	overflow-x: auto;
+	overflow-y: hidden;
+	touch-action: pan-x;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior-x: contain;
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
@@ -3302,16 +3308,20 @@ body.upload-modal-open {
 }
 
 .catalog-related__track a {
+	display: inline-flex;
+	align-items: center;
 	flex: 0 0 auto;
-	padding: 0.42rem 0.78rem;
+	min-height: 2.45rem;
+	padding: 0.62rem 0.95rem;
 	border-radius: 4px;
 	background: color-mix(in srgb, var(--text) 7.5%, var(--bg));
 	color: var(--text);
-	font-size: 0.82rem;
-	font-weight: 550;
+	font-size: 0.92rem;
+	font-weight: 600;
 	line-height: 1.2;
 	white-space: nowrap;
 	text-decoration: none;
+	touch-action: pan-x;
 }
 
 .catalog-related__track a:hover {
