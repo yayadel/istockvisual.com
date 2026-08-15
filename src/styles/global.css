@@ -8074,6 +8074,69 @@ body.image-editor-modal-open {
 	margin: 0;
 }
 
+.partner-strip {
+	background: #ffffff;
+	color: #111111;
+	border-top: 1px solid #ececec;
+	padding: 2.35rem 0 2.2rem;
+}
+
+.partner-strip__inner {
+	width: min(100% - 2.5rem, var(--content-wide));
+	margin-inline: auto;
+	display: grid;
+	gap: 1.35rem;
+	justify-items: center;
+}
+
+.partner-strip__kicker {
+	margin: 0;
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: #8a8a8a;
+}
+
+.partner-strip__logos {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 1.6rem 2.75rem;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.partner-strip__mark {
+	display: inline-flex;
+	align-items: center;
+	color: #2a2a2a;
+	opacity: 0.72;
+}
+
+.partner-strip__mark svg {
+	display: block;
+	height: 22px;
+	width: auto;
+}
+
+@media (max-width: 720px) {
+	.partner-strip {
+		padding: 1.7rem 0 1.55rem;
+	}
+
+	.partner-strip__logos {
+		gap: 1.15rem 1.5rem;
+	}
+
+	.partner-strip__mark svg {
+		height: 18px;
+	}
+}
+
 .site-footer {
 	margin-top: auto;
 	background: #0b0b0b;
