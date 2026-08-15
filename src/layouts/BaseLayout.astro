@@ -72,7 +72,7 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 		</noscript>
 		{
 			lcpImage && (
-				<link rel="preload" as="image" href={lcpImage} fetchpriority="high" />
+				<link rel="preload" as="image" href={lcpImage} type="image/avif" fetchpriority="high" />
 			)
 		}
 		<title>{pageTitle}</title>
