@@ -72,28 +72,31 @@ def list_keys(account_id: str, token: str) -> set[str]:
 
 
 def put_object(account_id: str, token: str, key: str, body: bytes, content_type: str) -> None:
-	req = urllib.request.Request(
-		object_url(account_id, key),
-		data=body,
-		method="PUT",
-		headers={
-			"Authorization": f"Bearer {token}",
-			"Content-Type": content_type or "application/octet-stream",
-		},
-	)
 	last_error: Exception | None = None
 	for attempt in range(6):
+		req = urllib.request.Request(
+			object_url(account_id, key),
+			data=body,
+			method="PUT",
+			headers={
+				"Authorization": f"Bearer {token}",
+				"Content-Type": content_type or "application/octet-stream",
+			},
+		)
 		try:
 			with urllib.request.urlopen(req, timeout=180) as resp:
 				payload = json.loads(resp.read().decode("utf-8"))
 			if not payload.get("success"):
 				raise RuntimeError(f"{key}: {payload}")
 			return
-		except (urllib.error.URLError, TimeoutError, urllib.error.HTTPError) as exc:
-			last_error = exc
-			if isinstance(exc, urllib.error.HTTPError) and exc.code in {400, 401, 403, 404}:
-				detail = exc.read().decode("utf-8", errors="replace")
+		except urllib.error.HTTPError as exc:
+			detail = exc.read().decode("utf-8", errors="replace")
+			if exc.code in {400, 401, 403, 404}:
 				raise RuntimeError(f"{exc.code} {key}: {detail}") from exc
+			last_error = RuntimeError(f"{exc.code} {key}: {detail}")
+			time.sleep(min(2 ** attempt, 20))
+		except (urllib.error.URLError, TimeoutError, OSError) as exc:
+			last_error = exc
 			time.sleep(min(2 ** attempt, 20))
 	raise RuntimeError(f"{key}: {last_error}") from last_error
 
@@ -112,6 +115,12 @@ def main() -> None:
 	).fetchall()
 	con.close()
 	print("objects", len(rows))
+	existing = list_keys(account_id, token)
+	print("already remote", len(existing))
+	pending = [row for row in rows if row[0] not in existing]
+	print("pending", len(pending))
+	if not pending:
+		return
 
 	def upload(row: tuple[str, str, str | None]) -> str:
 		key, blob_id, meta_raw = row
@@ -128,13 +137,13 @@ def main() -> None:
 		return key
 
 	ok = 0
-	with ThreadPoolExecutor(max_workers=8) as pool:
-		futures = [pool.submit(upload, row) for row in rows]
+	with ThreadPoolExecutor(max_workers=4) as pool:
+		futures = [pool.submit(upload, row) for row in pending]
 		for future in as_completed(futures):
 			key = future.result()
 			ok += 1
-			if ok % 25 == 0 or ok == len(rows):
-				print(f"uploaded {ok}/{len(rows)} {key}")
+			if ok % 25 == 0 or ok == len(pending):
+				print(f"uploaded {ok}/{len(pending)} {key}")
 
 
 if __name__ == "__main__":
