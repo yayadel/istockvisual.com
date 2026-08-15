@@ -139,10 +139,6 @@ export default function PromptBlock({ prompt }: { prompt: string }) {
 
 	return (
 		<div className="prompt-block">
-			<aside className="prompt-block__art" aria-hidden="true">
-				<p>From prompt to picture</p>
-				<PromptArt />
-			</aside>
 			<div className="prompt-block__composer">
 				<div className="prompt-block__field">
 					<pre>
@@ -151,8 +147,8 @@ export default function PromptBlock({ prompt }: { prompt: string }) {
 				</div>
 				<div className="prompt-block__dock">
 					<span className="prompt-block__model">
-						<SparkIcon />
 						AI Image Model
+						<ChevronIcon />
 					</span>
 					<div className="prompt-block__actions">
 						<button
