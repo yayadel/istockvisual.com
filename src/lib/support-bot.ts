@@ -155,8 +155,6 @@ async function askGemma(env: SupportEnv, messages: SupportMessage[]): Promise<st
 				messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...turns],
 				temperature: 0.25,
 				max_tokens: 480,
-				enable_thinking: false,
-				chat_template_kwargs: { enable_thinking: false },
 			}),
 		});
 		const data = (await res.json()) as {
