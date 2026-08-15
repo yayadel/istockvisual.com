@@ -452,27 +452,12 @@ export async function importGeneratedAsset(
 	if (existingLink) {
 		const existing = await getGeneratedAssetById(env.DB, existingLink.contentId);
 		if (existing) {
-			const title = formatAssetTitle(input.meta.imagePageTitle.trim() || keyword);
-			const contentCategories = resolveContentCategories({
-				stored: [
-					...(input.meta.contentCategories || []),
-					...(input.meta.depictedElements || []),
-				],
-				title,
-				keyword,
-			});
-			const meta: GeneratedAssetMeta = {
-				...input.meta,
-				imagePageTitle: existing.title,
-				pageShortDescription: formatAcronymsInText(input.meta.pageShortDescription),
-				imageCreationDescription: formatAcronymsInText(input.meta.imageCreationDescription),
-				tags: normalizeTags(input.meta.tags),
-				contentCategories,
-				depictedElements: contentCategories,
-			};
 			return {
 				asset: generatedToDetail(existing, origin),
-				meta,
+				meta: {
+					...input.meta,
+					imagePageTitle: existing.title,
+				},
 				keyword,
 				keywordId,
 			};
