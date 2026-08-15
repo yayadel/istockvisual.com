@@ -396,22 +396,56 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 
 <script>
 	const STORAGE_KEY = 'istockvisual-catalog-filters';
+	const filterQuery = window.matchMedia('(max-width: 860px)');
+
+	function isMobileCatalog() {
+		return filterQuery.matches;
+	}
+
+	function setMobileFiltersOpen(open) {
+		document.body.classList.toggle('catalog-filters-open', open);
+		const toggle = document.querySelector('[data-catalog-filter-toggle]');
+		if (toggle) {
+			toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+			toggle.setAttribute('aria-label', open ? 'Close filters' : 'Open filters');
+		}
+		document.querySelectorAll('[data-catalog-filter-backdrop]').forEach(function (el) {
+			el.hidden = !open;
+		});
+	}
 
 	function applyCatalogFold(root, collapsed) {
+		if (isMobileCatalog()) {
+			setMobileFiltersOpen(!collapsed);
+			return;
+		}
 		root.classList.toggle('is-filters-hidden', collapsed);
 	}
 
 	document.querySelectorAll('[data-catalog]').forEach(function (root) {
 		if (!(root instanceof HTMLElement)) return;
-		try {
-			applyCatalogFold(root, localStorage.getItem(STORAGE_KEY) === 'hidden');
-		} catch (e) {}
+		if (isMobileCatalog()) {
+			root.classList.remove('is-filters-hidden');
+			setMobileFiltersOpen(false);
+		} else {
+			try {
+				applyCatalogFold(root, localStorage.getItem(STORAGE_KEY) === 'hidden');
+			} catch (e) {}
+		}
 
 		root.querySelector('[data-catalog-collapse]')?.addEventListener('click', function () {
 			applyCatalogFold(root, true);
 			try {
 				localStorage.setItem(STORAGE_KEY, 'hidden');
 			} catch (e) {}
+		});
+
+		root.querySelector('[data-catalog-filter-close]')?.addEventListener('click', function () {
+			setMobileFiltersOpen(false);
+		});
+
+		root.querySelector('[data-catalog-filter-backdrop]')?.addEventListener('click', function () {
+			setMobileFiltersOpen(false);
 		});
 
 		root.querySelectorAll('[data-catalog-expand]').forEach(function (btn) {
@@ -461,5 +495,27 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			updateRelated();
 			requestAnimationFrame(updateRelated);
 		}
+	});
+
+	document.addEventListener('click', function (event) {
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		if (!target.closest('[data-catalog-filter-toggle]')) return;
+		event.preventDefault();
+		setMobileFiltersOpen(!document.body.classList.contains('catalog-filters-open'));
+	});
+
+	filterQuery.addEventListener('change', function () {
+		setMobileFiltersOpen(false);
+		document.querySelectorAll('[data-catalog]').forEach(function (root) {
+			if (!(root instanceof HTMLElement)) return;
+			if (filterQuery.matches) {
+				root.classList.remove('is-filters-hidden');
+				return;
+			}
+			try {
+				root.classList.toggle('is-filters-hidden', localStorage.getItem(STORAGE_KEY) === 'hidden');
+			} catch (e) {}
+		});
 	});
 </script>
