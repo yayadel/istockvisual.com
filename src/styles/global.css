@@ -1924,32 +1924,7 @@ body.upload-modal-open {
 
 @media (max-width: 639px) {
 	.home-featured .asset-grid {
-		column-count: 2;
-		column-gap: 8px;
-	}
-
-	.home-featured .asset-card:nth-child(6n + 1) {
-		aspect-ratio: 3 / 4;
-	}
-
-	.home-featured .asset-card:nth-child(6n + 2) {
-		aspect-ratio: 16 / 9;
-	}
-
-	.home-featured .asset-card:nth-child(6n + 3) {
-		aspect-ratio: 1 / 1;
-	}
-
-	.home-featured .asset-card:nth-child(6n + 4) {
-		aspect-ratio: 4 / 5;
-	}
-
-	.home-featured .asset-card:nth-child(6n + 5) {
-		aspect-ratio: 5 / 4;
-	}
-
-	.home-featured .asset-card:nth-child(6n + 6) {
-		aspect-ratio: 2 / 3;
+		gap: 8px;
 	}
 }
 

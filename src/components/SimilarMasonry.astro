@@ -1,6 +1,6 @@
 ---
 import type { AssetDetail } from '../lib/asset-types';
-import AssetCard from './AssetCard.astro';
+import AssetGrid from './AssetGrid.astro';
 
 interface Props {
 	assets: AssetDetail[];
@@ -21,11 +21,7 @@ const { assets, viewAllHref, viewAllLabel } = Astro.props;
 						{viewAllLabel} <span aria-hidden="true">›</span>
 					</a>
 				</div>
-				<div class="asset-grid" data-asset-grid>
-					{assets.map((asset, index) => (
-						<AssetCard asset={asset} index={index} />
-					))}
-				</div>
+				<AssetGrid assets={assets} />
 			</div>
 		</section>
 	)
