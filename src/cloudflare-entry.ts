@@ -1,6 +1,13 @@
 import astro from '@astrojs/cloudflare/entrypoints/server';
 import { sitemapResponse, sitemapXmlForPath } from './lib/sitemap';
 import { purgeExpiredVisualSearchUploads } from './lib/visual-search-storage';
+import {
+	gzipResponse,
+	htmlCachePolicy,
+	mergeVary,
+	setExpiresHeaders,
+	shouldGzip,
+} from './lib/http-cache';
 
 type WorkerEnv = {
 	MEDIA?: R2Bucket;
@@ -26,6 +33,24 @@ function cacheKeyFor(request: Request) {
 	return new Request(url.toString(), { method: 'GET' });
 }
 
+function decoratePageResponse(request: Request, response: Response) {
+	const type = response.headers.get('Content-Type') || '';
+	if (!response.ok) return response;
+	const headers = new Headers(response.headers);
+	if (type.includes('text/html')) {
+		const policy = htmlCachePolicy(new URL(request.url).pathname);
+		setExpiresHeaders(headers, policy.maxAge, policy.cacheControl);
+		headers.set('Vary', mergeVary(headers.get('Vary'), 'Cookie'));
+		headers.set('Vary', mergeVary(headers.get('Vary'), 'Accept-Encoding'));
+	}
+	const next = new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers,
+	});
+	return shouldGzip(request, next) ? gzipResponse(next) : next;
+}
+
 async function withEdgeCache(
 	request: Request,
 	ctx: WaitCtx,
@@ -37,20 +62,24 @@ async function withEdgeCache(
 	if (hit) {
 		const headers = new Headers(hit.headers);
 		headers.set('X-Worker-Cache', 'HIT');
-		if (request.method === 'HEAD') {
-			return new Response(null, { status: hit.status, headers });
+		let cached = new Response(request.method === 'HEAD' ? null : hit.body, {
+			status: hit.status,
+			headers,
+		});
+		if (request.method !== 'HEAD' && shouldGzip(request, cached)) {
+			cached = gzipResponse(cached);
 		}
-		return new Response(hit.body, { status: hit.status, headers });
+		return cached;
 	}
 
 	const response = await produce();
 	const headers = new Headers(response.headers);
 	headers.set('X-Worker-Cache', 'MISS');
 	if (!response.ok) {
-		if (request.method === 'HEAD') {
-			return new Response(null, { status: response.status, headers });
-		}
-		return new Response(response.body, { status: response.status, headers });
+		return new Response(request.method === 'HEAD' ? null : response.body, {
+			status: response.status,
+			headers,
+		});
 	}
 
 	const body = await response.arrayBuffer();
@@ -61,10 +90,14 @@ async function withEdgeCache(
 		});
 		ctx.waitUntil(cache.put(key, stored));
 	}
-	if (request.method === 'HEAD') {
-		return new Response(null, { status: response.status, headers });
+	let outgoing = new Response(request.method === 'HEAD' ? null : body, {
+		status: response.status,
+		headers,
+	});
+	if (request.method !== 'HEAD' && shouldGzip(request, outgoing)) {
+		outgoing = gzipResponse(outgoing);
 	}
-	return new Response(body, { status: response.status, headers });
+	return outgoing;
 }
 
 export default {
@@ -75,27 +108,20 @@ export default {
 			if (shouldEdgeCache(pathname)) {
 				return withEdgeCache(request, ctx, async () => {
 					const xml = await sitemapXmlForPath(pathname, env);
-					if (xml) {
-						const response = sitemapResponse(xml);
-						if (method === 'HEAD') {
-							return new Response(null, { status: 200, headers: response.headers });
-						}
-						return response;
-					}
+					if (xml) return sitemapResponse(xml);
 					return astro.fetch(request, env, ctx);
 				});
 			}
 
 			const xml = await sitemapXmlForPath(pathname, env);
-			if (xml) {
-				const response = sitemapResponse(xml);
-				if (method === 'HEAD') {
-					return new Response(null, { status: 200, headers: response.headers });
-				}
-				return response;
-			}
+			if (xml) return sitemapResponse(xml);
 		}
-		return astro.fetch(request, env, ctx);
+
+		const response = await astro.fetch(request, env, ctx);
+		if (method === 'GET' || method === 'HEAD') {
+			return decoratePageResponse(request, response);
+		}
+		return response;
 	},
 	scheduled(_event: unknown, env: WorkerEnv, ctx: WaitCtx) {
 		ctx.waitUntil(purgeExpiredVisualSearchUploads(env.MEDIA));
