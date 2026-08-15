@@ -41,7 +41,8 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 ---
 
 <div class="catalog" data-catalog>
-	<aside class="catalog-filter" data-catalog-filter>
+	<button class="catalog-filter-backdrop" type="button" hidden data-catalog-filter-backdrop aria-label="Close filters"></button>
+	<aside class="catalog-filter" id="catalog-filter-panel" data-catalog-filter>
 		<div class="catalog-filter__head">
 			<p>
 				<svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
@@ -52,6 +53,11 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			<button class="catalog-filter__fold" type="button" data-catalog-collapse aria-label="Hide filters">
 				<svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
 					<path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+				</svg>
+			</button>
+			<button class="catalog-filter__close" type="button" data-catalog-filter-close aria-label="Close filters">
+				<svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+					<path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
 				</svg>
 			</button>
 		</div>

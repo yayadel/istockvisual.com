@@ -36,7 +36,31 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 
 <header class="site-header">
 	<div class="site-header__inner">
-		<a class="brand" href="/">iStock<span>Visual</span></a>
+		<div class="header-brand">
+			<a class="brand" href="/">iStock<span>Visual</span></a>
+			{
+				isCatalogPage ? (
+					<button
+						class="header-filter-toggle"
+						type="button"
+						aria-label="Open filters"
+						aria-expanded="false"
+						aria-controls="catalog-filter-panel"
+						data-catalog-filter-toggle
+					>
+						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+							<path
+								d="M4 7h16M7 12h10M10 17h4"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+							></path>
+						</svg>
+						<span>Filters</span>
+					</button>
+				) : null
+			}
+		</div>
 		<div class="header-auth">
 			{
 				user ? (
@@ -521,6 +545,14 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 		if (event.key === 'Escape') {
 			closeAllNavDropdowns();
 			setMobileNavOpen(false);
+			document.body.classList.remove('catalog-filters-open');
+			var filterToggle = document.querySelector('[data-catalog-filter-toggle]');
+			if (filterToggle) {
+				filterToggle.setAttribute('aria-expanded', 'false');
+				filterToggle.setAttribute('aria-label', 'Open filters');
+			}
+			var filterBackdrop = document.querySelector('[data-catalog-filter-backdrop]');
+			if (filterBackdrop) filterBackdrop.hidden = true;
 		}
 	});
 
