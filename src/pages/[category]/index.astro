@@ -4,6 +4,7 @@ import CatalogView from '../../components/CatalogView.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
 import { applyCatalogFilters, parseCatalogQuery } from '../../lib/catalog';
 import { listAllAssets } from '../../lib/generate-asset';
+import { collectionPageJsonLd } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
 
 const { category: categorySlug } = Astro.params;

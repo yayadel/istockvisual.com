@@ -58,6 +58,16 @@ const popularColumns = [0, 1, 2, 3]
 
 const proVisual = featured[0]?.previewUrl || categoryFallback;
 
+const homeTitle = 'iStockVisual';
+const homeDescription = SITE_HOME_DESCRIPTION;
+const jsonLd = homeJsonLd({
+	origin,
+	title: homeTitle,
+	description: homeDescription,
+	assets: featured,
+	categories: categoryTiles.map((tile) => ({ name: tile.label, path: tile.href })),
+});
+
 const toolCover = (index: number) =>
 	featured[index]?.previewUrl || pool[index]?.previewUrl || categoryFallback;
 
@@ -120,7 +130,7 @@ const proPerks = [
 ];
 ---
 
-<BaseLayout title="iStockVisual" description="Stock photos, illustrations, vectors, and 3D — with AI editing tools.">
+<BaseLayout title={homeTitle} description={homeDescription} jsonLd={jsonLd}>
 	<section class="hero" aria-label="Hero">
 		<div class="hero__media" aria-hidden="true"></div>
 		<div class="hero__content">
