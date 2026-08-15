@@ -157,7 +157,7 @@ export default function PromptBlock({ prompt }: { prompt: string }) {
 						<button
 							type="button"
 							className={`prompt-block__copy${copied ? ' is-copied' : ''}`}
-							onClick={() => void copyPrompt()}
+							onClick={copyPrompt}
 							aria-label={copied ? 'Copied' : 'Copy prompt'}
 							title={copied ? 'Copied' : 'Copy prompt'}
 						>
@@ -167,7 +167,7 @@ export default function PromptBlock({ prompt }: { prompt: string }) {
 						<button
 							type="button"
 							className={`prompt-block__send${copied ? ' is-copied' : ''}`}
-							onClick={() => void copyPrompt()}
+							onClick={copyPrompt}
 							aria-label={copied ? 'Copied' : 'Copy prompt'}
 							title={copied ? 'Copied' : 'Copy prompt'}
 						>

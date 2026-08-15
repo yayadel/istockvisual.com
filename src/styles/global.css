@@ -5387,6 +5387,7 @@ body.download-auth-modal-open {
 	border-radius: 1.15rem;
 	background: transparent;
 	overflow: hidden;
+	isolation: isolate;
 }
 
 .prompt-block__field {
@@ -5440,23 +5441,34 @@ body.download-auth-modal-open {
 }
 
 .prompt-block__actions {
+	position: relative;
+	z-index: 2;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
+	flex: 0 0 auto;
+}
+
+.prompt-block__copy,
+.prompt-block__send {
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: rgba(31, 79, 69, 0.18);
 }
 
 .prompt-block__copy {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: 0.35rem;
 	margin: 0;
-	padding: 0.38rem 0.7rem;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.9rem;
 	border: 1px solid var(--line);
 	border-radius: 999px;
 	background: transparent;
 	color: var(--text-muted);
 	font: inherit;
-	font-size: 0.72rem;
+	font-size: 0.78rem;
 	font-weight: 650;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
