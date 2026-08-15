@@ -2912,11 +2912,18 @@ body.upload-modal-open {
 
 .asset-grid {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
+	align-items: stretch;
 	gap: 12px;
 	max-width: 100%;
 	min-width: 0;
+}
+
+.asset-grid__col {
+	display: flex;
+	flex: 1 1 0;
+	flex-direction: column;
+	min-width: 0;
+	gap: 12px;
 }
 
 .catalog-visual {
