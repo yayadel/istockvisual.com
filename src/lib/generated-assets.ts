@@ -309,17 +309,36 @@ export async function slugExists(
 	return Boolean(row);
 }
 
+export const SITEMAP_CONTENT_PAGE_SIZE = 10_000;
+
+export async function countSitemapAssets(db: D1Database): Promise<number> {
+	const row = await db
+		.prepare(
+			`SELECT COUNT(*) AS total
+			 FROM generated_asset
+			 WHERE category IS NOT NULL AND TRIM(category) != ''
+			   AND slug IS NOT NULL AND TRIM(slug) != ''`,
+		)
+		.first<{ total: number }>();
+	return Number(row?.total ?? 0);
+}
+
 export async function listSitemapAssets(
 	db: D1Database,
+	options: { limit?: number; offset?: number } = {},
 ): Promise<Array<{ category: CategorySlug; slug: string; publishedAt: string }>> {
+	const limit = Math.max(1, Math.min(options.limit ?? SITEMAP_CONTENT_PAGE_SIZE, SITEMAP_CONTENT_PAGE_SIZE));
+	const offset = Math.max(0, options.offset ?? 0);
 	const result = await db
 		.prepare(
 			`SELECT category, slug, publishedAt
 			 FROM generated_asset
 			 WHERE category IS NOT NULL AND TRIM(category) != ''
 			   AND slug IS NOT NULL AND TRIM(slug) != ''
-			 ORDER BY publishedAt DESC`,
+			 ORDER BY publishedAt DESC
+			 LIMIT ? OFFSET ?`,
 		)
+		.bind(limit, offset)
 		.all<{ category: string; slug: string; publishedAt: string }>();
 
 	return (result.results ?? []).flatMap((row) => {
