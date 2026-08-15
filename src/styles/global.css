@@ -208,6 +208,10 @@ textarea {
 }
 
 .brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 0;
 	font-family: var(--font-display);
 	font-size: 1.25rem;
 	font-weight: 600;
@@ -216,7 +220,21 @@ textarea {
 	white-space: nowrap;
 }
 
-.brand span {
+.brand__mark {
+	flex: 0 0 auto;
+	width: 1.75rem;
+	height: 1.75rem;
+	border-radius: 0.42rem;
+}
+
+.brand__name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #ffffff;
+}
+
+.brand__name span {
 	color: #c4f04b;
 }
 
