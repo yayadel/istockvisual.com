@@ -207,6 +207,17 @@ textarea {
 	display: none;
 }
 
+.header-brand {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	min-width: 0;
+}
+
+.header-filter-toggle {
+	display: none;
+}
+
 .brand {
 	font-family: var(--font-display);
 	font-size: 1.25rem;
@@ -2760,7 +2771,8 @@ body.upload-modal-open {
 	color: var(--text);
 }
 
-.catalog-filter__fold {
+.catalog-filter__fold,
+.catalog-filter__close {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -2773,6 +2785,10 @@ body.upload-modal-open {
 	color: var(--text-muted);
 	cursor: pointer;
 	flex-shrink: 0;
+}
+
+.catalog-filter__close {
+	display: none;
 }
 
 .catalog-filter__fold:hover {
