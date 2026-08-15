@@ -363,12 +363,9 @@ export function assetJsonLd(input: {
 	contentCategories?: string[];
 }): Record<string, unknown> {
 	const pageUrl = absoluteUrl(input.pagePath, input.origin);
-	const homeUrl = `${input.origin}/`;
 	const licenseUrl = absoluteUrl(LICENSE_PATH, input.origin);
 	const imageId = `${pageUrl}#image`;
 	const breadcrumbId = `${pageUrl}#breadcrumb`;
-	const websiteId = `${input.origin}/#website`;
-	const orgId = `${input.origin}/#organization`;
 	const imageUrl = input.imageUrl ? absoluteUrl(input.imageUrl, input.origin) : undefined;
 	const thumbnailUrl = input.thumbnailUrl
 		? absoluteUrl(input.thumbnailUrl, input.origin)
