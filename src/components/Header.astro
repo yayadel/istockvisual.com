@@ -66,14 +66,14 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 						{user.name || 'Account'}
 					</a>
 				) : (
-					<>
-						<a class="header-auth__login" href="/login">
-							Log in
-						</a>
-						<a class="header-auth__signup" href="/signup">
-							Sign up
-						</a>
-					</>
+						<>
+							<a class="header-auth__signup" href="/signup">
+								Sign up
+							</a>
+							<a class="header-auth__login" href="/login">
+								Log in
+							</a>
+						</>
 				)
 			}
 		</div>
@@ -329,11 +329,11 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 						</a>
 					) : (
 						<>
-							<a class="nav__signin" href="/login">
-								Log in
-							</a>
 							<a class="nav__signup" href="/signup">
 								Sign up
+							</a>
+							<a class="nav__signin" href="/login">
+								Log in
 							</a>
 						</>
 					)

@@ -760,7 +760,7 @@ textarea {
 }
 
 .nav__signup {
-	display: none;
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	padding: 0.45rem 0.95rem;
@@ -768,6 +768,10 @@ textarea {
 	background: #ffffff;
 	color: #0b0b0b !important;
 	font-weight: 600;
+}
+
+.nav__signup:hover {
+	background: #e8e8e8;
 }
 
 .nav__auth {
