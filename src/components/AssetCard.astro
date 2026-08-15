@@ -1,27 +1,35 @@
 ---
 import type { AssetDetail } from '../lib/asset-types';
+import { fitWidth } from '../lib/download-sizes';
 
 interface Props {
 	asset: AssetDetail;
 	index?: number;
 }
 
-/** Mild height mix — avoid 3:5 full-viewport tiles. */
 const TILES = ['short', 'landscape', 'square', 'portrait', 'landscape', 'square', 'short', 'landscape'] as const;
 
 const { asset, index = 0 } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
 const tile = TILES[index % TILES.length];
+const preview = asset.previewUrl || '';
+const src500 = preview
+	? preview.includes('?')
+		? `${preview}&size=500`
+		: `${preview}?size=500`
+	: '';
+const box = fitWidth(asset.width || 1536, asset.height || 1024, 500);
 ---
 
 <a class={`asset-card asset-card--${tile}`} href={href}>
 	{
-		asset.previewUrl ? (
+		src500 ? (
 			<img
-				src={asset.previewUrl}
+				src={src500}
 				alt={asset.title}
-				width={asset.width}
-				height={asset.height}
+				width={box.width}
+				height={box.height}
+				sizes="(max-width: 639px) 50vw, (max-width: 899px) 33vw, 25vw"
 				loading="lazy"
 				decoding="async"
 			/>

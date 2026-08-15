@@ -2911,23 +2911,37 @@ body.upload-modal-open {
 }
 
 .asset-grid {
-	display: flex;
-	align-items: stretch;
-	gap: 12px;
+	column-count: 2;
+	column-gap: 8px;
 	max-width: 100%;
 	min-width: 0;
 }
 
-.asset-grid__col {
-	display: flex;
-	flex: 1 1 0;
-	flex-direction: column;
-	min-width: 0;
-	gap: 12px;
+@media (min-width: 640px) {
+	.asset-grid {
+		column-count: 3;
+		column-gap: 12px;
+	}
 }
 
-.asset-grid__col .asset-card {
-	aspect-ratio: auto;
+@media (min-width: 900px) {
+	.asset-grid {
+		column-count: 4;
+	}
+}
+
+.asset-grid .asset-card {
+	break-inside: avoid;
+	display: inline-block;
+	width: 100%;
+	margin: 0 0 8px;
+	flex: none;
+}
+
+@media (min-width: 640px) {
+	.asset-grid .asset-card {
+		margin-bottom: 12px;
+	}
 }
 
 .catalog-visual {

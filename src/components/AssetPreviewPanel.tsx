@@ -73,7 +73,10 @@ export default function AssetPreviewPanel({
 		event.preventDefault();
 		event.stopPropagation();
 		dismissEditHint();
-		setEditing(true);
+		void import('./ImageEditor').then((mod) => {
+			setEditor(() => mod.default);
+			setEditing(true);
+		});
 	}, [dismissEditHint]);
 
 	const hideLens = useCallback(() => {
@@ -127,6 +130,7 @@ export default function AssetPreviewPanel({
 			<div
 				ref={wrapRef}
 				className="asset-preview__image-wrap wm-protected wm-protected--lock"
+				style={wrapRatio}
 				onContextMenu={(event) => event.preventDefault()}
 				onPointerMove={moveLens}
 				onPointerLeave={hideLens}
