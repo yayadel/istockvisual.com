@@ -1,0 +1,7 @@
+{
+	"count": 10,
+	"meta": "gemini",
+	"baseUrl": "http://localhost:4325",
+	"stopOnError": true,
+	"commit": false
+}
