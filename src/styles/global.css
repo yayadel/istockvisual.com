@@ -3826,43 +3826,17 @@ body.upload-modal-open {
 .asset-card {
 	position: relative;
 	display: block;
-	width: 100%;
+	flex: 0 0 auto;
+	width: calc(220px * var(--w, 3) / var(--h, 2));
+	height: 220px;
 	max-width: 100%;
 	min-width: 0;
-	margin: 0 0 10px;
+	margin: 0;
 	overflow: hidden;
-	contain: inline-size;
-	break-inside: avoid;
 	border: 0;
 	border-radius: 0;
 	background: #e6e6e6;
 	color: inherit;
-}
-
-@media (min-width: 640px) {
-	.asset-card {
-		margin-bottom: 12px;
-	}
-}
-
-.asset-card--short {
-	aspect-ratio: 16 / 9;
-}
-
-.asset-card--landscape {
-	aspect-ratio: 5 / 4;
-}
-
-.asset-card--square {
-	aspect-ratio: 1 / 1;
-}
-
-.asset-card--portrait {
-	aspect-ratio: 4 / 5;
-}
-
-.asset-card--tall {
-	aspect-ratio: 3 / 5;
 }
 
 .asset-card:hover,
