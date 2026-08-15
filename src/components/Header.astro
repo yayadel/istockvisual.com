@@ -35,7 +35,10 @@ const topCategories = (await listTopContentCategoriesByCount(env.DB, 10)).map((i
 <header class="site-header">
 	<div class="site-header__inner">
 		<div class="header-brand">
-			<a class="brand" href="/">iStock<span>Visual</span></a>
+			<a class="brand" href="/">
+				<img class="brand__mark" src="/favicon.svg" width="28" height="28" alt="" />
+				<span class="brand__name">iStock<span>Visual</span></span>
+			</a>
 			{
 				isCatalogPage ? (
 					<button
