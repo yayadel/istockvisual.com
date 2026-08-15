@@ -68,12 +68,6 @@ export async function buildPagesSitemapXml(env: SitemapEnv): Promise<string> {
 	const urls: SitemapUrl[] = [
 		{ path: '/', changefreq: 'daily', priority: '1.0' },
 		{ path: '/price', changefreq: 'monthly', priority: '0.6' },
-		{ path: '/tools/image', changefreq: 'monthly', priority: '0.5' },
-		{ path: '/tools/convert', changefreq: 'monthly', priority: '0.5' },
-		{ path: '/tools/vectorize', changefreq: 'monthly', priority: '0.5' },
-		{ path: '/tools/social', changefreq: 'monthly', priority: '0.5' },
-		{ path: '/tools/watermark', changefreq: 'monthly', priority: '0.5' },
-		{ path: '/tools/palette', changefreq: 'monthly', priority: '0.5' },
 		...LEGAL_PAGES.map((page) => ({
 			path: page.href,
 			changefreq: 'yearly',

@@ -12,6 +12,7 @@
 			"/sitemap.xml/",
 			"/sitemap-pages.xml",
 			"/sitemap-categories.xml",
+			"/sitemap-tools.xml",
 			"/sitemap-content-*.xml"
 		]
 	},
