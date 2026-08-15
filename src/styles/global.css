@@ -3909,15 +3909,6 @@ body.upload-modal-open {
 	opacity: 1;
 }
 
-.asset-grid.is-enhanced .asset-card img {
-	opacity: 0;
-	transition: opacity 0.32s ease;
-}
-
-.asset-grid.is-enhanced .asset-card img.is-ready {
-	opacity: 1;
-}
-
 .asset-card::after {
 	content: '';
 	position: absolute;

@@ -139,8 +139,6 @@ export default function AssetPreviewPanel({
 				<img
 					ref={imageRef}
 					src={src500}
-					srcSet={srcSet}
-					sizes="(max-width: 720px) 100vw, min(100vw - 2rem, 720px)"
 					alt={title}
 					width={width}
 					height={height}
@@ -192,8 +190,8 @@ export default function AssetPreviewPanel({
 					<ShareBar title={title} url={shareUrl} compact inlineChannels />
 				</div>
 			</div>
-			{editing ? (
-				<ImageEditor
+			{editing && Editor ? (
+				<Editor
 					imageUrl={imageUrl}
 					title={title}
 					onClose={closeEditor}
