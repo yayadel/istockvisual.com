@@ -255,33 +255,54 @@ export function collectionPageJsonLd(input: {
 	assets: JsonLdListAsset[];
 	totalCount?: number;
 	crumbs: BreadcrumbCrumb[];
+	collections?: Array<{ name: string; path: string }>;
 }): Record<string, unknown> {
 	const pageUrl = absoluteUrl(input.pagePath, input.origin);
 	const listId = `${pageUrl}#items`;
 	const breadcrumb = breadcrumbList(input.origin, pageUrl, input.crumbs);
 	const first = input.assets[0];
-	return {
-		'@context': 'https://schema.org',
-		'@graph': [
-			organizationJsonLd(input.origin),
-			websiteJsonLd(input.origin),
-			{
-				'@type': 'CollectionPage',
-				'@id': pageUrl,
-				url: pageUrl,
-				name: input.title,
-				description: input.description,
-				inLanguage: 'en',
-				isPartOf: { '@id': websiteId(input.origin) },
-				breadcrumb: { '@id': breadcrumb['@id'] },
-				mainEntity: { '@id': listId },
-				primaryImageOfPage: first
-					? {
-							'@id': `${absoluteUrl(`/${first.category}/${first.slug}`, input.origin)}#image`,
-						}
-					: undefined,
-			},
-			breadcrumb,
+	const graph: unknown[] = [
+		organizationJsonLd(input.origin),
+		websiteJsonLd(input.origin),
+		{
+			'@type': 'CollectionPage',
+			'@id': pageUrl,
+			url: pageUrl,
+			name: input.title,
+			description: input.description,
+			inLanguage: 'en',
+			isPartOf: { '@id': websiteId(input.origin) },
+			breadcrumb: { '@id': breadcrumb['@id'] },
+			mainEntity: { '@id': listId },
+			primaryImageOfPage: first
+				? {
+						'@id': `${absoluteUrl(`/${first.category}/${first.slug}`, input.origin)}#image`,
+					}
+				: undefined,
+		},
+		breadcrumb,
+	];
+
+	if (input.collections?.length && input.assets.length === 0) {
+		graph.push({
+			'@type': 'ItemList',
+			'@id': listId,
+			name: input.title,
+			numberOfItems: input.collections.length,
+			itemListElement: input.collections.map((collection, index) => ({
+				'@type': 'ListItem',
+				position: index + 1,
+				name: collection.name,
+				url: absoluteUrl(collection.path, input.origin),
+				item: {
+					'@type': 'CollectionPage',
+					name: collection.name,
+					url: absoluteUrl(collection.path, input.origin),
+				},
+			})),
+		});
+	} else {
+		graph.push(
 			itemListNode(
 				listId,
 				input.title,
@@ -289,8 +310,10 @@ export function collectionPageJsonLd(input: {
 				input.assets,
 				input.totalCount ?? input.assets.length,
 			),
-		],
-	};
+		);
+	}
+
+	return { '@context': 'https://schema.org', '@graph': graph };
 }
 
 export function searchResultsJsonLd(input: {
