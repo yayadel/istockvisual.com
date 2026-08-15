@@ -5682,6 +5682,8 @@ body.download-auth-modal-open {
 	padding: 0.32rem 0.7rem 0.32rem 0.55rem;
 	border: 1px solid var(--line);
 	border-radius: 0;
+	color: var(--text);
+	font-size: 0.78rem;
 	font-weight: 650;
 	letter-spacing: 0.01em;
 	line-height: 1;
