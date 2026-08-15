@@ -1,13 +1,7 @@
 import astro from '@astrojs/cloudflare/entrypoints/server';
 import { sitemapResponse, sitemapXmlForPath } from './lib/sitemap';
 import { purgeExpiredVisualSearchUploads } from './lib/visual-search-storage';
-import {
-	gzipResponse,
-	htmlCachePolicy,
-	mergeVary,
-	setExpiresHeaders,
-	shouldGzip,
-} from './lib/http-cache';
+import { htmlCachePolicy, mergeVary, setExpiresHeaders } from './lib/http-cache';
 
 type WorkerEnv = {
 	MEDIA?: R2Bucket;
@@ -35,20 +29,17 @@ function cacheKeyFor(request: Request) {
 
 function decoratePageResponse(request: Request, response: Response) {
 	const type = response.headers.get('Content-Type') || '';
-	if (!response.ok) return response;
+	if (!response.ok || !type.includes('text/html')) return response;
 	const headers = new Headers(response.headers);
-	if (type.includes('text/html')) {
-		const policy = htmlCachePolicy(new URL(request.url).pathname);
-		setExpiresHeaders(headers, policy.maxAge, policy.cacheControl);
-		headers.set('Vary', mergeVary(headers.get('Vary'), 'Cookie'));
-		headers.set('Vary', mergeVary(headers.get('Vary'), 'Accept-Encoding'));
-	}
-	const next = new Response(response.body, {
+	const policy = htmlCachePolicy(new URL(request.url).pathname);
+	setExpiresHeaders(headers, policy.maxAge, policy.cacheControl);
+	headers.set('Vary', mergeVary(headers.get('Vary'), 'Cookie'));
+	headers.set('Vary', mergeVary(headers.get('Vary'), 'Accept-Encoding'));
+	return new Response(response.body, {
 		status: response.status,
 		statusText: response.statusText,
 		headers,
 	});
-	return shouldGzip(request, next) ? gzipResponse(next) : next;
 }
 
 async function withEdgeCache(
@@ -62,14 +53,10 @@ async function withEdgeCache(
 	if (hit) {
 		const headers = new Headers(hit.headers);
 		headers.set('X-Worker-Cache', 'HIT');
-		let cached = new Response(request.method === 'HEAD' ? null : hit.body, {
+		return new Response(request.method === 'HEAD' ? null : hit.body, {
 			status: hit.status,
 			headers,
 		});
-		if (request.method !== 'HEAD' && shouldGzip(request, cached)) {
-			cached = gzipResponse(cached);
-		}
-		return cached;
 	}
 
 	const response = await produce();
@@ -90,14 +77,10 @@ async function withEdgeCache(
 		});
 		ctx.waitUntil(cache.put(key, stored));
 	}
-	let outgoing = new Response(request.method === 'HEAD' ? null : body, {
+	return new Response(request.method === 'HEAD' ? null : body, {
 		status: response.status,
 		headers,
 	});
-	if (request.method !== 'HEAD' && shouldGzip(request, outgoing)) {
-		outgoing = gzipResponse(outgoing);
-	}
-	return outgoing;
 }
 
 export default {
