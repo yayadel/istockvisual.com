@@ -133,8 +133,8 @@ const jsonLd = assetJsonLd({
 								client:load
 								imageUrl={asset.previewUrl}
 								title={asset.title}
-								width={asset.width}
-								height={asset.height}
+								width={previewBox.width}
+								height={previewBox.height}
 								shareUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
 								loggedIn={Boolean(user)}
 								isPro={user?.plan === 'pro'}
