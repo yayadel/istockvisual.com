@@ -173,12 +173,7 @@ const heroTopics = catalog.slice(0, 10);
 							</span>
 							<span class="cats-tile__copy">
 								<span class="cats-tile__name">{category.label}</span>
-								<span class="cats-tile__meta">
-									{category.hint}
-									{category.count > 0
-										? ` · ${category.count.toLocaleString('en-US')}`
-										: ''}
-								</span>
+								<span class="cats-tile__meta">{category.hint}</span>
 							</span>
 						</a>
 					</li>
