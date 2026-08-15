@@ -29,7 +29,7 @@ function fallbackCover(slug: string) {
 	return COVER_FALLBACKS[hash % COVER_FALLBACKS.length];
 }
 
-const origin = Astro.url.origin;
+const origin = siteOrigin(Astro.url.origin);
 const pool = await listFeaturedAssets(env.DB, origin, 120);
 const ranked = await listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length);
 const totalAssets = ranked.reduce((sum, item) => sum + item.count, 0);
