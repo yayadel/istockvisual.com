@@ -413,7 +413,7 @@ export function assetJsonLd(input: {
 	}
 
 	const crumbs: Array<{ '@type': string; position: number; name: string; item: string }> = [
-		{ '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl },
+		{ '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl(input.origin) },
 		{
 			'@type': 'ListItem',
 			position: 2,
