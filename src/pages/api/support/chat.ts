@@ -38,7 +38,8 @@ export const POST: APIRoute = async ({ request }) => {
 		const result = await answerSupportChat(
 			{
 				TOGETHER_API_KEY: env.TOGETHER_API_KEY || import.meta.env.TOGETHER_API_KEY,
-				TOGETHER_MODEL: env.TOGETHER_MODEL || import.meta.env.TOGETHER_MODEL,
+				TOGETHER_SUPPORT_MODEL:
+					env.TOGETHER_SUPPORT_MODEL || import.meta.env.TOGETHER_SUPPORT_MODEL,
 				GEMINI_API_KEY: env.GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY,
 				GEMINI_MODEL: env.GEMINI_MODEL || import.meta.env.GEMINI_MODEL,
 			},

@@ -8,6 +8,7 @@ export type SupportSource = 'gemma' | 'gemini' | 'faq';
 type SupportEnv = {
 	TOGETHER_API_KEY?: string;
 	TOGETHER_MODEL?: string;
+	TOGETHER_SUPPORT_MODEL?: string;
 	GEMINI_API_KEY?: string;
 	GEMINI_MODEL?: string;
 };

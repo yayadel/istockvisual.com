@@ -10,6 +10,7 @@ type CloudflareEnv = {
 	GEMINI_MODEL?: string;
 	TOGETHER_API_KEY?: string;
 	TOGETHER_MODEL?: string;
+	TOGETHER_SUPPORT_MODEL?: string;
 	SANITY_PROJECT_ID?: string;
 	SANITY_DATASET?: string;
 	SANITY_API_TOKEN?: string;
