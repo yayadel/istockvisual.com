@@ -2721,30 +2721,227 @@ body.upload-modal-open {
 	}
 }
 
-.content-category-grid {
+.cats-index {
+	padding: 2.4rem 0 4.5rem;
+}
+
+.cats-index__head {
+	margin: 2.4rem 0 1.15rem;
+}
+
+.cats-stats {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
-	gap: 0.65rem;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1rem;
+	margin: 2.1rem 0 0;
+	padding: 1.25rem 0 1.35rem;
+	border-top: 1px solid var(--line);
+	border-bottom: 1px solid var(--line);
+}
+
+.cats-stats strong {
+	display: block;
+	font-family: var(--font-display);
+	font-size: clamp(1.6rem, 3vw, 2.15rem);
+	font-weight: 650;
+	letter-spacing: -0.04em;
+	line-height: 1.1;
+	color: var(--text);
+}
+
+.cats-stats span {
+	display: block;
+	margin-top: 0.35rem;
+	color: var(--text-muted);
+	font-size: 0.82rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.cats-bento {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.cats-cover {
+	position: relative;
+	display: block;
+	min-height: 16.5rem;
+	overflow: hidden;
+	border-radius: 4px;
+	color: #fff;
+	text-decoration: none;
+	isolation: isolate;
+}
+
+.cats-cover:nth-child(1) {
+	grid-column: span 7;
+	min-height: 22.5rem;
+}
+
+.cats-cover:nth-child(2) {
+	grid-column: span 5;
+	min-height: 22.5rem;
+}
+
+.cats-cover:nth-child(3),
+.cats-cover:nth-child(4),
+.cats-cover:nth-child(5) {
+	grid-column: span 4;
+}
+
+.cats-cover:nth-child(6) {
+	grid-column: span 4;
+}
+
+.cats-cover img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform: scale(1.04);
+	transition: transform 0.55s ease;
+}
+
+.cats-cover::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(8, 10, 12, 0.08) 20%, rgba(8, 10, 12, 0.78) 100%);
+	z-index: 1;
+}
+
+.cats-cover__index {
+	position: absolute;
+	top: 0.85rem;
+	left: 0.95rem;
+	z-index: 2;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	color: #c4f04b;
+}
+
+.cats-cover__body {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 2;
+	display: grid;
+	gap: 0.28rem;
+	padding: 1.15rem 1.05rem 1.05rem;
+}
+
+.cats-cover__label {
+	font-family: var(--font-display);
+	font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+	font-weight: 650;
+	letter-spacing: -0.03em;
+	line-height: 1.12;
+}
+
+.cats-cover__hint,
+.cats-cover__count {
+	color: rgba(255, 255, 255, 0.82);
+	font-size: 0.8rem;
+	line-height: 1.35;
+}
+
+.cats-cover__count {
+	color: #c4f04b;
+	font-weight: 650;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	font-size: 0.68rem;
+}
+
+.cats-cover:hover img {
+	transform: scale(1.1);
+}
+
+.cats-dir {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(16.25rem, 1fr));
+	gap: 0.75rem;
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.content-category-grid a {
-	display: block;
-	padding: 0.75rem 0.9rem;
+.cats-tile {
+	display: grid;
+	grid-template-rows: 8.75rem auto;
+	overflow: hidden;
 	border: 1px solid var(--line);
-	border-radius: var(--radius);
+	border-radius: 4px;
+	background: var(--bg);
 	color: var(--text);
 	text-decoration: none;
-	font-size: 0.95rem;
-	line-height: 1.3;
+	min-height: 0;
+	transition: border-color 0.18s ease, transform 0.18s ease;
 }
 
-.content-category-grid a:hover {
-	border-color: transparent;
-	background: var(--accent);
-	color: var(--accent-ink);
+.cats-tile__media {
+	display: block;
+	min-width: 0;
+	overflow: hidden;
+	background: #111;
+}
+
+.cats-tile__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform: scale(1.03);
+	transition: transform 0.45s ease;
+}
+
+.cats-tile__copy {
+	display: grid;
+	gap: 0.2rem;
+	padding: 0.78rem 0.85rem 0.9rem;
+}
+
+.cats-tile__name {
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	font-size: 0.98rem;
+}
+
+.cats-tile__meta {
+	color: var(--text-muted);
+	font-size: 0.78rem;
+	line-height: 1.35;
+}
+
+.cats-tile:hover {
+	border-color: color-mix(in srgb, var(--text) 22%, var(--line));
+}
+
+.cats-tile:hover img {
+	transform: scale(1.08);
+}
+
+@media (max-width: 860px) {
+	.cats-stats {
+		grid-template-columns: 1fr;
+		gap: 0.85rem;
+	}
+
+	.cats-cover,
+	.cats-cover:nth-child(1),
+	.cats-cover:nth-child(2),
+	.cats-cover:nth-child(3),
+	.cats-cover:nth-child(4),
+	.cats-cover:nth-child(5),
+	.cats-cover:nth-child(6) {
+		grid-column: span 12;
+		min-height: 15.5rem;
+	}
 }
 
 .asset-grid {

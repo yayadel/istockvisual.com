@@ -1,23 +1,194 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { CONTENT_CATEGORY_PAGES, contentCategoryPath } from '../../lib/content-categories';
+import SearchBar from '../../components/SearchBar.astro';
+import {
+	CONTENT_CATEGORY_PAGES,
+	assetMatchesContentCategory,
+	contentCategoryPath,
+	getContentCategoryIntro,
+} from '../../lib/content-categories';
+import { listFeaturedAssets } from '../../lib/generate-asset';
+import { listTopContentCategoriesByCount } from '../../lib/generated-assets';
+import { env } from 'cloudflare:workers';
+
+const COVER_FALLBACKS = [
+	'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1400&q=80',
+	'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1400&q=80',
+	'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80',
+	'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80',
+	'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1400&q=80',
+	'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1400&q=80',
+	'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1400&q=80',
+	'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1400&q=80',
+];
+
+function fallbackCover(slug: string) {
+	let hash = 0;
+	for (let i = 0; i < slug.length; i += 1) hash += slug.charCodeAt(i);
+	return COVER_FALLBACKS[hash % COVER_FALLBACKS.length];
+}
+
+const origin = Astro.url.origin;
+const pool = await listFeaturedAssets(env.DB, origin, 120);
+const ranked = await listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length);
+const totalAssets = ranked.reduce((sum, item) => sum + item.count, 0);
+const liveCount = ranked.filter((item) => item.count > 0).length;
+
+const catalog = ranked.map((category, index) => {
+	const intro = getContentCategoryIntro(category.label);
+	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
+	return {
+		...category,
+		...intro,
+		href: contentCategoryPath(category.slug),
+		index: String(index + 1).padStart(2, '0'),
+		image: cover?.previewUrl || fallbackCover(category.slug),
+	};
+});
+
+const featured = catalog.slice(0, 6);
+const directory = catalog.slice(6);
+const marqueeTiles = (() => {
+	const withStock = catalog.filter((item) => item.count > 0).slice(0, 12);
+	const source = withStock.length >= 6 ? withStock : catalog.slice(0, 12);
+	const padded = [...source];
+	while (padded.length > 0 && padded.length < 8) padded.push(...source);
+	return padded;
+})();
+const heroTopics = catalog.slice(0, 10);
 ---
 
-<BaseLayout title="Categories" description="Browse fixed topical categories on iStockVisual.">
-	<div class="section-head">
-		<div>
-			<h1>Categories</h1>
-			<p>Fixed topical categories — browse by subject.</p>
+<BaseLayout
+	title="Categories"
+	description="Browse every topical collection on iStockVisual — photography, business, nature, 3D, and more."
+>
+	<section class="hero" aria-label="Categories hero">
+		<div class="hero__media" aria-hidden="true"></div>
+		<div class="hero__content">
+			<p class="home-kicker">Collections</p>
+			<h1 class="hero__brand">Browse the full category library</h1>
+			<p class="hero__lead">
+				Curated topical collections for campaigns, products, and editorial work — each built from
+				the same high-resolution stock library.
+			</p>
+			<SearchBar variant="hero" placeholder="Search images, vectors and 3D" />
+			{
+				heroTopics.length > 0 && (
+					<p class="hero__popular">
+						Popular topics:{' '}
+						{heroTopics.map((topic, index) => (
+							<>
+								<a href={topic.href}>{topic.label}</a>
+								{index < heroTopics.length - 1 ? ', ' : '.'}
+							</>
+						))}
+					</p>
+				)
+			}
 		</div>
-	</div>
+	</section>
 
-	<ul class="content-category-grid">
-		{
-			CONTENT_CATEGORY_PAGES.map((item) => (
-				<li>
-					<a href={contentCategoryPath(item.slug)}>{item.label}</a>
-				</li>
-			))
-		}
-	</ul>
+	{
+		marqueeTiles.length > 0 && (
+			<section class="home-bleed home-cats" aria-label="Featured category films">
+				<div class="home-cats__viewport">
+					<div
+						class="home-cats__track"
+						style={`--home-cats-duration: ${Math.max(32, marqueeTiles.length * 4.5)}s`}
+					>
+						{[0, 1].map((copy) => (
+							<div class="home-cats__group" aria-hidden={copy === 1 ? 'true' : undefined}>
+								{marqueeTiles.map((category) => (
+									<a
+										class="home-cats__card"
+										href={category.href}
+										tabindex={copy === 1 ? -1 : undefined}
+									>
+										<img src={category.image} alt="" draggable="false" />
+										<span class="home-cats__label">{category.label}</span>
+									</a>
+								))}
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	<section class="cats-index" aria-labelledby="cats-featured-title">
+		<div class="cats-stats" aria-label="Library snapshot">
+			<div>
+				<strong>{CONTENT_CATEGORY_PAGES.length}</strong>
+				<span>Fixed collections</span>
+			</div>
+			<div>
+				<strong>{liveCount}</strong>
+				<span>With published assets</span>
+			</div>
+			<div>
+				<strong>{totalAssets.toLocaleString('en-US')}</strong>
+				<span>Assets tagged in topics</span>
+			</div>
+		</div>
+
+		<div class="section-head cats-index__head">
+			<div>
+				<p class="home-kicker home-kicker--on-light">Editorial picks</p>
+				<h2 id="cats-featured-title">Signature collections</h2>
+				<p>Large-format covers from the most populated topics in the library.</p>
+			</div>
+		</div>
+
+		<div class="cats-bento">
+			{
+				featured.map((category) => (
+					<a class="cats-cover" href={category.href}>
+						<img src={category.image} alt="" />
+						<span class="cats-cover__index">{category.index}</span>
+						<span class="cats-cover__body">
+							<span class="cats-cover__label">{category.label}</span>
+							<span class="cats-cover__hint">{category.hint}</span>
+							<span class="cats-cover__count">
+								{category.count > 0
+									? `${category.count.toLocaleString('en-US')} assets`
+									: 'Collection'}
+							</span>
+						</span>
+					</a>
+				))
+			}
+		</div>
+
+		<div class="section-head cats-index__head">
+			<div>
+				<p class="home-kicker home-kicker--on-light">Directory</p>
+				<h2 id="cats-dir-title">All topics</h2>
+				<p>Every fixed category, arranged for fast scanning — open any collection to filter the library.</p>
+			</div>
+		</div>
+
+		<ul class="cats-dir" aria-labelledby="cats-dir-title">
+			{
+				directory.map((category) => (
+					<li>
+						<a class="cats-tile" href={category.href}>
+							<span class="cats-tile__media">
+								<img src={category.image} alt="" />
+							</span>
+							<span class="cats-tile__copy">
+								<span class="cats-tile__name">{category.label}</span>
+								<span class="cats-tile__meta">
+									{category.hint}
+									{category.count > 0
+										? ` · ${category.count.toLocaleString('en-US')}`
+										: ''}
+								</span>
+							</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
 </BaseLayout>
