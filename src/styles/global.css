@@ -5486,8 +5486,8 @@ body.download-auth-modal-open {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.15rem;
-	height: 2.15rem;
+	width: 2.75rem;
+	height: 2.75rem;
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -5566,6 +5566,23 @@ body.download-auth-modal-open {
 
 	.prompt-block__svg {
 		width: min(100%, 9.5rem);
+	}
+
+	.prompt-block__dock {
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.55rem 0.65rem 0.7rem;
+	}
+
+	.prompt-block__actions {
+		margin-left: auto;
+	}
+
+	.prompt-block__copy,
+	.prompt-block__send {
+		min-width: 2.75rem;
+		min-height: 2.75rem;
 	}
 }
 
