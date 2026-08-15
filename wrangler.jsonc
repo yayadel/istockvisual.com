@@ -40,9 +40,5 @@
 		"GEMINI_MODEL": "gemini-3.6-flash",
 		"TOGETHER_MODEL": "google/gemma-4-31B-it",
 		"TOGETHER_SUPPORT_MODEL": "deepseek-ai/DeepSeek-V4-Flash-0731"
-	},
-	"routes": [
-		{ "pattern": "istockvisual.com", "custom_domain": true },
-		{ "pattern": "www.istockvisual.com", "custom_domain": true }
-	]
+	}
 }
