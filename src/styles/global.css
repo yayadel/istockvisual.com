@@ -3821,10 +3821,6 @@ body.upload-modal-open {
 		padding: 0.72rem 1.05rem;
 		font-size: 0.98rem;
 	}
-
-	.catalog .asset-grid {
-		column-count: 2;
-	}
 }
 
 .asset-card {
