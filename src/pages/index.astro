@@ -10,6 +10,7 @@ import { formatAssetTitle } from '../lib/asset-types';
 import { searchPath } from '../lib/paths';
 import { LIFETIME_PLAN } from '../lib/pricing';
 import { env } from 'cloudflare:workers';
+import { homeJsonLd, SITE_HOME_DESCRIPTION } from '../lib/seo';
 
 const origin = Astro.url.origin;
 const seenTitles = new Set<string>();

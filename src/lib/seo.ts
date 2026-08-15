@@ -99,7 +99,7 @@ export function organizationId(origin: string) {
 	return `${origin.replace(/\/$/, '')}/#organization`;
 }
 
-type BreadcrumbCrumb = { name: string; path: string };
+export type BreadcrumbCrumb = { name: string; path: string };
 
 function breadcrumbList(origin: string, pageUrl: string, crumbs: BreadcrumbCrumb[]) {
 	const breadcrumbId = `${pageUrl}#breadcrumb`;
