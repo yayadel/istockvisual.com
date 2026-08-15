@@ -9,7 +9,7 @@ export const PREVIEW_SIZE_ID = 'preview';
 export const PREVIEW_LONG_EDGE = 1280;
 
 export const DOWNLOAD_SIZES = [
-	{ id: '500', label: '500', longEdge: 500, free: true, fit: 'width' },
+	{ id: '500', label: '512', longEdge: FREE_DOWNLOAD_EDGE, free: true, fit: 'long-edge' },
 	{ id: '1k', label: '1K', longEdge: 1024, free: true, fit: 'long-edge' },
 	{ id: '2k', label: '2K', longEdge: 2048, free: false, fit: 'long-edge' },
 	{ id: '4k', label: '4K', longEdge: MASTER_LONG_EDGE, free: false, fit: 'long-edge' },
