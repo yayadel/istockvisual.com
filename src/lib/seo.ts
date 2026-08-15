@@ -191,7 +191,17 @@ function assetListItems(origin: string, assets: JsonLdListAsset[]) {
 	});
 }
 
-function itemListNode(
+function collectionListItems(origin: string, collections: Array<{ name: string; path: string }>) {
+	return collections.map((collection, index) => ({
+		'@type': 'ListItem',
+		position: index + 1,
+		item: {
+			'@type': 'CollectionPage',
+			name: collection.name,
+			url: absoluteUrl(collection.path, origin),
+		},
+	}));
+}
 	listId: string,
 	name: string,
 	origin: string,
@@ -249,17 +259,7 @@ export function homeJsonLd(input: {
 			'@id': `${pageUrl}#categories`,
 			name: 'Popular categories',
 			numberOfItems: input.categories.length,
-			itemListElement: input.categories.map((category, index) => ({
-				'@type': 'ListItem',
-				position: index + 1,
-				name: category.name,
-				url: absoluteUrl(category.path, input.origin),
-				item: {
-					'@type': 'CollectionPage',
-					name: category.name,
-					url: absoluteUrl(category.path, input.origin),
-				},
-			})),
+			itemListElement: collectionListItems(input.origin, input.categories),
 		});
 	}
 
