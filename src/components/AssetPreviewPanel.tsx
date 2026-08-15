@@ -40,6 +40,14 @@ export default function AssetPreviewPanel({
 	assetId,
 }: Props) {
 	const [editing, setEditing] = useState(false);
+	const [Editor, setEditor] = useState<ComponentType<{
+		imageUrl: string;
+		title: string;
+		onClose: () => void;
+		loggedIn?: boolean;
+		isPro?: boolean;
+		assetId?: string;
+	}> | null>(null);
 	const [editHint, setEditHint] = useState<'in' | 'out' | 'gone'>('in');
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
