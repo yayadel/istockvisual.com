@@ -73,6 +73,276 @@ export function stringifyJsonLd(data: unknown): string {
 	return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
+export const SITE_TAGLINE =
+	'Stock photos, illustrations, vectors, and 3D assets — plus AI editing tools.';
+export const SITE_HOME_DESCRIPTION =
+	'Stock photos, illustrations, vectors, and 3D — with AI editing tools.';
+
+const JSON_LD_LIST_LIMIT = 24;
+
+export type JsonLdListAsset = {
+	title: string;
+	slug: string;
+	category: CategorySlug;
+	previewUrl?: string;
+};
+
+function homeUrl(origin: string) {
+	return `${origin.replace(/\/$/, '')}/`;
+}
+
+export function websiteId(origin: string) {
+	return `${origin.replace(/\/$/, '')}/#website`;
+}
+
+export function organizationId(origin: string) {
+	return `${origin.replace(/\/$/, '')}/#organization`;
+}
+
+type BreadcrumbCrumb = { name: string; path: string };
+
+function breadcrumbList(origin: string, pageUrl: string, crumbs: BreadcrumbCrumb[]) {
+	const breadcrumbId = `${pageUrl}#breadcrumb`;
+	return {
+		'@type': 'BreadcrumbList',
+		'@id': breadcrumbId,
+		itemListElement: crumbs.map((crumb, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: crumb.name,
+			item: absoluteUrl(crumb.path, origin),
+		})),
+	};
+}
+
+export function organizationJsonLd(origin: string) {
+	const root = homeUrl(origin);
+	return {
+		'@type': 'Organization',
+		'@id': organizationId(origin),
+		name: SITE_BRAND,
+		url: root,
+		email: LEGAL_CONTACT_EMAIL,
+		logo: {
+			'@type': 'ImageObject',
+			url: absoluteUrl('/favicon.svg', origin),
+		},
+	};
+}
+
+export function websiteJsonLd(origin: string) {
+	const root = homeUrl(origin);
+	return {
+		'@type': 'WebSite',
+		'@id': websiteId(origin),
+		name: SITE_BRAND,
+		url: root,
+		description: SITE_TAGLINE,
+		inLanguage: 'en',
+		publisher: { '@id': organizationId(origin) },
+		potentialAction: {
+			'@type': 'SearchAction',
+			target: {
+				'@type': 'EntryPoint',
+				urlTemplate: `${origin.replace(/\/$/, '')}/s/{search_term_string}`,
+			},
+			'query-input': 'required name=search_term_string',
+		},
+	};
+}
+
+function assetListItems(origin: string, assets: JsonLdListAsset[]) {
+	return assets.slice(0, JSON_LD_LIST_LIMIT).map((asset, index) => {
+		const url = absoluteUrl(`/${asset.category}/${asset.slug}`, origin);
+		const item: Record<string, unknown> = {
+			'@type': 'ImageObject',
+			'@id': `${url}#image`,
+			name: asset.title,
+			url,
+			contentUrl: asset.previewUrl ? absoluteUrl(asset.previewUrl, origin) : url,
+		};
+		if (asset.previewUrl) item.thumbnailUrl = absoluteUrl(asset.previewUrl, origin);
+		return {
+			'@type': 'ListItem',
+			position: index + 1,
+			url,
+			name: asset.title,
+			item,
+		};
+	});
+}
+
+function itemListNode(
+	listId: string,
+	name: string,
+	origin: string,
+	assets: JsonLdListAsset[],
+	numberOfItems?: number,
+) {
+	return {
+		'@type': 'ItemList',
+		'@id': listId,
+		name,
+		numberOfItems: numberOfItems ?? assets.length,
+		itemListOrder: 'https://schema.org/ItemListOrderDescending',
+		itemListElement: assetListItems(origin, assets),
+	};
+}
+
+export function homeJsonLd(input: {
+	origin: string;
+	title: string;
+	description: string;
+	assets: JsonLdListAsset[];
+	categories?: Array<{ name: string; path: string }>;
+}): Record<string, unknown> {
+	const pageUrl = homeUrl(input.origin);
+	const listId = `${pageUrl}#featured`;
+	const breadcrumb = breadcrumbList(input.origin, pageUrl, [{ name: 'Home', path: '/' }]);
+	const first = input.assets[0];
+	const graph: unknown[] = [
+		organizationJsonLd(input.origin),
+		websiteJsonLd(input.origin),
+		{
+			'@type': 'WebPage',
+			'@id': pageUrl,
+			url: pageUrl,
+			name: input.title,
+			description: input.description,
+			inLanguage: 'en',
+			isPartOf: { '@id': websiteId(input.origin) },
+			about: { '@id': organizationId(input.origin) },
+			breadcrumb: { '@id': breadcrumb['@id'] },
+			mainEntity: { '@id': listId },
+			primaryImageOfPage: first
+				? {
+						'@id': `${absoluteUrl(`/${first.category}/${first.slug}`, input.origin)}#image`,
+					}
+				: undefined,
+		},
+		breadcrumb,
+		itemListNode(listId, 'Featured stock images', input.origin, input.assets),
+	];
+
+	if (input.categories?.length) {
+		graph.push({
+			'@type': 'ItemList',
+			'@id': `${pageUrl}#categories`,
+			name: 'Popular categories',
+			numberOfItems: input.categories.length,
+			itemListElement: input.categories.map((category, index) => ({
+				'@type': 'ListItem',
+				position: index + 1,
+				name: category.name,
+				url: absoluteUrl(category.path, input.origin),
+				item: {
+					'@type': 'CollectionPage',
+					name: category.name,
+					url: absoluteUrl(category.path, input.origin),
+				},
+			})),
+		});
+	}
+
+	return { '@context': 'https://schema.org', '@graph': graph };
+}
+
+export function collectionPageJsonLd(input: {
+	origin: string;
+	pagePath: string;
+	title: string;
+	description: string;
+	assets: JsonLdListAsset[];
+	totalCount?: number;
+	crumbs: BreadcrumbCrumb[];
+}): Record<string, unknown> {
+	const pageUrl = absoluteUrl(input.pagePath, input.origin);
+	const listId = `${pageUrl}#items`;
+	const breadcrumb = breadcrumbList(input.origin, pageUrl, input.crumbs);
+	const first = input.assets[0];
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			organizationJsonLd(input.origin),
+			websiteJsonLd(input.origin),
+			{
+				'@type': 'CollectionPage',
+				'@id': pageUrl,
+				url: pageUrl,
+				name: input.title,
+				description: input.description,
+				inLanguage: 'en',
+				isPartOf: { '@id': websiteId(input.origin) },
+				breadcrumb: { '@id': breadcrumb['@id'] },
+				mainEntity: { '@id': listId },
+				primaryImageOfPage: first
+					? {
+							'@id': `${absoluteUrl(`/${first.category}/${first.slug}`, input.origin)}#image`,
+						}
+					: undefined,
+			},
+			breadcrumb,
+			itemListNode(
+				listId,
+				input.title,
+				input.origin,
+				input.assets,
+				input.totalCount ?? input.assets.length,
+			),
+		],
+	};
+}
+
+export function searchResultsJsonLd(input: {
+	origin: string;
+	pagePath: string;
+	title: string;
+	description: string;
+	query?: string;
+	assets: JsonLdListAsset[];
+	totalCount?: number;
+}): Record<string, unknown> {
+	const pageUrl = absoluteUrl(input.pagePath, input.origin);
+	const listId = `${pageUrl}#results`;
+	const crumbs: BreadcrumbCrumb[] = [
+		{ name: 'Home', path: '/' },
+		{ name: input.query ? `Search: ${input.query}` : 'Search', path: input.pagePath },
+	];
+	const breadcrumb = breadcrumbList(input.origin, pageUrl, crumbs);
+	const first = input.assets[0];
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			organizationJsonLd(input.origin),
+			websiteJsonLd(input.origin),
+			{
+				'@type': input.query ? 'SearchResultsPage' : 'CollectionPage',
+				'@id': pageUrl,
+				url: pageUrl,
+				name: input.title,
+				description: input.description,
+				inLanguage: 'en',
+				isPartOf: { '@id': websiteId(input.origin) },
+				breadcrumb: { '@id': breadcrumb['@id'] },
+				mainEntity: { '@id': listId },
+				primaryImageOfPage: first
+					? {
+							'@id': `${absoluteUrl(`/${first.category}/${first.slug}`, input.origin)}#image`,
+						}
+					: undefined,
+			},
+			breadcrumb,
+			itemListNode(
+				listId,
+				input.query ? `Results for ${input.query}` : 'Search results',
+				input.origin,
+				input.assets,
+				input.totalCount ?? input.assets.length,
+			),
+		],
+	};
+}
+
 export function assetJsonLd(input: {
 	origin: string;
 	pagePath: string;
