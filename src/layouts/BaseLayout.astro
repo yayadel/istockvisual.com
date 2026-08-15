@@ -23,7 +23,7 @@ interface Props {
 
 const {
 	title = 'iStockVisual',
-	description = 'Stock photos, illustrations, vectors, and 3D assets — plus AI editing tools.',
+	description = 'Royalty-free stock photos, illustrations, vectors, and 3D for commercial and personal use.',
 	canonicalUrl,
 	ogImage,
 	ogImageAlt,
@@ -37,8 +37,9 @@ const {
 
 const pageTitle =
 	exactTitle || title === 'iStockVisual' ? title : `${title} · iStockVisual`;
-const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.url.origin).href;
+const canonical = canonicalUrl ?? canonicalHref(Astro.url.pathname, Astro.url.origin);
 const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
+const origin = siteOrigin(Astro.url.origin);
 ---
 
 <!doctype html>
