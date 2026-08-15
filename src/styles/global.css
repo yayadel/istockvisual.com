@@ -3862,12 +3862,9 @@ body.upload-modal-open {
 	aspect-ratio: 1 / 1;
 }
 
-.asset-card--portrait {
-	aspect-ratio: 4 / 5;
-}
-
+.asset-card--portrait,
 .asset-card--tall {
-	aspect-ratio: 3 / 5;
+	aspect-ratio: 4 / 5;
 }
 
 .asset-card:hover,

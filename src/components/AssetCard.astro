@@ -6,8 +6,8 @@ interface Props {
 	index?: number;
 }
 
-/** Height variety for column masonry. No column-span, so the waterfall has no holes. */
-const TILES = ['tall', 'landscape', 'square', 'short', 'portrait', 'tall', 'landscape', 'square'] as const;
+/** Mild height mix — avoid 3:5 full-viewport tiles. */
+const TILES = ['short', 'landscape', 'square', 'portrait', 'landscape', 'square', 'short', 'landscape'] as const;
 
 const { asset, index = 0 } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
