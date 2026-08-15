@@ -13,16 +13,15 @@ type WaitCtx = {
 
 export default {
 	async fetch(request: Request, env: WorkerEnv, ctx: WaitCtx) {
-		if (request.method === 'GET') {
-			try {
-				const xml = await sitemapXmlForPath(new URL(request.url).pathname, env);
-				if (xml) return sitemapResponse(xml);
-			} catch (error) {
-				const message = error instanceof Error ? error.stack || error.message : String(error);
-				return new Response(message, {
-					status: 500,
-					headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-				});
+		const method = request.method;
+		if (method === 'GET' || method === 'HEAD') {
+			const xml = await sitemapXmlForPath(new URL(request.url).pathname, env);
+			if (xml) {
+				const response = sitemapResponse(xml);
+				if (method === 'HEAD') {
+					return new Response(null, { status: 200, headers: response.headers });
+				}
+				return response;
 			}
 		}
 		return astro.fetch(request, env, ctx);
