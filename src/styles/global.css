@@ -776,7 +776,10 @@ textarea {
 }
 
 .nav__auth {
-	display: contents;
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+	gap: 0.4rem;
 }
 
 .theme-toggle {
