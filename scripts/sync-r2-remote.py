@@ -1,18 +1,16 @@
-"""Upload local Miniflare R2 objects to the remote istockvisual-media bucket."""
+"""Upload local Miniflare R2 objects to remote via Cloudflare API."""
 
 from __future__ import annotations
 
-import hashlib
-import hmac
 import json
 import os
 import sqlite3
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 R2_DB = (
@@ -36,112 +34,40 @@ def load_dev_vars() -> dict[str, str]:
 	return env
 
 
-def sign(key: bytes, msg: str) -> bytes:
-	return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).digest()
+def object_url(account_id: str, key: str) -> str:
+	encoded = urllib.parse.quote(key, safe="/")
+	return (
+		f"https://api.cloudflare.com/client/v4/accounts/{account_id}"
+		f"/r2/buckets/{BUCKET}/objects/{encoded}"
+	)
 
 
-def authorization(
-	*,
-	method: str,
-	url_path: str,
-	host: str,
-	region: str,
-	access_key: str,
-	secret_key: str,
-	payload_hash: str,
-	now: datetime,
-	content_type: str,
-) -> dict[str, str]:
-	amz_date = now.strftime("%Y%m%dT%H%M%SZ")
-	date_stamp = now.strftime("%Y%m%d")
-	canonical_headers = (
-		f"content-type:{content_type}\n"
-		f"host:{host}\n"
-		f"x-amz-content-sha256:{payload_hash}\n"
-		f"x-amz-date:{amz_date}\n"
-	)
-	signed_headers = "content-type;host;x-amz-content-sha256;x-amz-date"
-	canonical_request = "\n".join(
-		[
-			method,
-			url_path,
-			"",
-			canonical_headers,
-			signed_headers,
-			payload_hash,
-		]
-	)
-	credential_scope = f"{date_stamp}/{region}/s3/aws4_request"
-	string_to_sign = "\n".join(
-		[
-			"AWS4-HMAC-SHA256",
-			amz_date,
-			credential_scope,
-			hashlib.sha256(canonical_request.encode("utf-8")).hexdigest(),
-		]
-	)
-	k_date = sign(("AWS4" + secret_key).encode("utf-8"), date_stamp)
-	k_region = hmac.new(k_date, region.encode("utf-8"), hashlib.sha256).digest()
-	k_service = hmac.new(k_region, b"s3", hashlib.sha256).digest()
-	k_signing = hmac.new(k_service, b"aws4_request", hashlib.sha256).digest()
-	signature = hmac.new(k_signing, string_to_sign.encode("utf-8"), hashlib.sha256).hexdigest()
-	return {
-		"Authorization": (
-			f"AWS4-HMAC-SHA256 Credential={access_key}/{credential_scope}, "
-			f"SignedHeaders={signed_headers}, Signature={signature}"
-		),
-		"x-amz-date": amz_date,
-		"x-amz-content-sha256": payload_hash,
-		"content-type": content_type,
-	}
-
-
-def put_object(
-	*,
-	endpoint: str,
-	access_key: str,
-	secret_key: str,
-	key: str,
-	body: bytes,
-	content_type: str,
-) -> None:
-	host = endpoint.split("://", 1)[1].rstrip("/")
-	encoded_key = quote(key, safe="/")
-	url_path = f"/{BUCKET}/{encoded_key}"
-	payload_hash = hashlib.sha256(body).hexdigest()
-	now = datetime.now(timezone.utc)
-	headers = authorization(
-		method="PUT",
-		url_path=url_path,
-		host=host,
-		region="auto",
-		access_key=access_key,
-		secret_key=secret_key,
-		payload_hash=payload_hash,
-		now=now,
-		content_type=content_type or "application/octet-stream",
-	)
+def put_object(account_id: str, token: str, key: str, body: bytes, content_type: str) -> None:
 	req = urllib.request.Request(
-		f"{endpoint.rstrip('/')}{url_path}",
+		object_url(account_id, key),
 		data=body,
 		method="PUT",
-		headers=headers,
+		headers={
+			"Authorization": f"Bearer {token}",
+			"Content-Type": content_type or "application/octet-stream",
+		},
 	)
 	try:
-		with urllib.request.urlopen(req) as resp:
-			resp.read()
+		with urllib.request.urlopen(req, timeout=120) as resp:
+			payload = json.loads(resp.read().decode("utf-8"))
 	except urllib.error.HTTPError as exc:
 		detail = exc.read().decode("utf-8", errors="replace")
 		raise RuntimeError(f"{exc.code} {key}: {detail}") from exc
+	if not payload.get("success"):
+		raise RuntimeError(f"{key}: {payload}")
 
 
 def main() -> None:
 	env = load_dev_vars()
-	access_key = env.get("R2_ACCESS_KEY_ID") or os.environ.get("R2_ACCESS_KEY_ID")
-	secret_key = env.get("R2_SECRET_ACCESS_KEY") or os.environ.get("R2_SECRET_ACCESS_KEY")
-	endpoint = env.get("R2_ENDPOINT") or os.environ.get("R2_ENDPOINT")
-	if not access_key or not secret_key or not endpoint:
-		print("Missing R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_ENDPOINT", file=sys.stderr)
+	account_id = env.get("CLOUDFLARE_ACCOUNT_ID") or os.environ.get("CLOUDFLARE_ACCOUNT_ID")
+	token = env.get("CLOUDFLARE_API_TOKEN") or os.environ.get("CLOUDFLARE_API_TOKEN")
+	if not account_id or not token:
+		print("Missing CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN", file=sys.stderr)
 		sys.exit(1)
 
 	con = sqlite3.connect(f"file:{R2_DB}?mode=ro", uri=True)
@@ -150,8 +76,9 @@ def main() -> None:
 	).fetchall()
 	con.close()
 	print("objects", len(rows))
-	ok = 0
-	for key, blob_id, meta_raw in rows:
+
+	def upload(row: tuple[str, str, str | None]) -> str:
+		key, blob_id, meta_raw = row
 		blob_path = BLOBS / blob_id
 		if not blob_path.is_file():
 			raise FileNotFoundError(blob_path)
@@ -161,18 +88,17 @@ def main() -> None:
 				content_type = json.loads(meta_raw).get("contentType") or content_type
 			except json.JSONDecodeError:
 				pass
-		body = blob_path.read_bytes()
-		put_object(
-			endpoint=endpoint,
-			access_key=access_key,
-			secret_key=secret_key,
-			key=key,
-			body=body,
-			content_type=content_type,
-		)
-		ok += 1
-		if ok % 25 == 0 or ok == len(rows):
-			print(f"uploaded {ok}/{len(rows)} {key}")
+		put_object(account_id, token, key, blob_path.read_bytes(), content_type)
+		return key
+
+	ok = 0
+	with ThreadPoolExecutor(max_workers=8) as pool:
+		futures = [pool.submit(upload, row) for row in rows]
+		for future in as_completed(futures):
+			key = future.result()
+			ok += 1
+			if ok % 25 == 0 or ok == len(rows):
+				print(f"uploaded {ok}/{len(rows)} {key}")
 
 
 if __name__ == "__main__":
