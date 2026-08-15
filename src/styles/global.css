@@ -1084,6 +1084,10 @@ body.nav-open .nav-toggle span:nth-child(3) {
 	padding: 0.85rem 0;
 }
 
+html[data-page='categories-hub'] .search-strip {
+	display: none !important;
+}
+
 .search-strip__inner {
 	width: min(100% - 2rem, var(--max));
 	margin-inline: auto;
