@@ -199,17 +199,6 @@ textarea {
 .header-brand {
 	display: flex;
 	align-items: center;
-	gap: 0.55rem;
-	min-width: 0;
-}
-
-.header-filter-toggle {
-	display: none;
-}
-
-.header-brand {
-	display: flex;
-	align-items: center;
 	gap: 0.45rem;
 	min-width: 0;
 }
