@@ -38,6 +38,7 @@ const {
 	lcpImage,
 } = Astro.props;
 
+const pagePath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const pageTitle =
 	exactTitle || title === 'iStockVisual' ? title : `${title} · iStockVisual`;
 const canonical = canonicalUrl ?? canonicalHref(Astro.url.pathname, Astro.url.origin);
