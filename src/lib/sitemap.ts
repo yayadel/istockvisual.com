@@ -34,7 +34,6 @@ export async function buildSitemapXml(env: SitemapEnv): Promise<string> {
 		{ path: '/tools/palette', changefreq: 'monthly', priority: '0.5' },
 		...LEGAL_PAGES.map((page) => ({
 			path: page.href,
- mar: 'yearly' as const,
 			changefreq: 'yearly',
 			priority: '0.3',
 		})),
