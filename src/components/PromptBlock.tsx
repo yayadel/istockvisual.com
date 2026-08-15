@@ -139,6 +139,10 @@ export default function PromptBlock({ prompt }: { prompt: string }) {
 
 	return (
 		<div className="prompt-block">
+			<aside className="prompt-block__art" aria-hidden="true">
+				<p>From prompt to picture</p>
+				<PromptArt />
+			</aside>
 			<div className="prompt-block__composer">
 				<div className="prompt-block__field">
 					<pre>
