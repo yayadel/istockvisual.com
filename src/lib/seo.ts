@@ -169,14 +169,6 @@ export function websiteJsonLd(origin: string) {
 		description: SITE_TAGLINE,
 		inLanguage: 'en',
 		publisher: { '@id': organizationId(origin) },
-		potentialAction: {
-			'@type': 'SearchAction',
-			target: {
-				'@type': 'EntryPoint',
-				urlTemplate: `${origin.replace(/\/$/, '')}/s/{search_term_string}`,
-			},
-			'query-input': 'required name=search_term_string',
-		},
 	};
 }
 

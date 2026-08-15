@@ -1,5 +1,14 @@
 # https://istockvisual.com/robots.txt
 User-agent: *
+Allow: /
 Disallow: /admin
 Disallow: /api/admin
+Disallow: /api/generate
 Disallow: /s/
+Disallow: /t/
+Disallow: /account
+Disallow: /login
+Disallow: /signup
+Disallow: /tools/generate
+
+Sitemap: https://istockvisual.com/sitemap.xml
