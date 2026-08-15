@@ -444,6 +444,41 @@ export async function importGeneratedAsset(
 
 	const keyword = keywordRow.keyword;
 	const keywordId = keywordRow.id;
+	const existingLink = await getPrimaryContentLink(
+		env.DB,
+		keywordId,
+		KEYWORD_CONTENT_TYPES.GENERATED_ASSET,
+	);
+	if (existingLink) {
+		const existing = await getGeneratedAssetById(env.DB, existingLink.contentId);
+		if (existing) {
+			const title = formatAssetTitle(input.meta.imagePageTitle.trim() || keyword);
+			const contentCategories = resolveContentCategories({
+				stored: [
+					...(input.meta.contentCategories || []),
+					...(input.meta.depictedElements || []),
+				],
+				title,
+				keyword,
+			});
+			const meta: GeneratedAssetMeta = {
+				...input.meta,
+				imagePageTitle: existing.title,
+				pageShortDescription: formatAcronymsInText(input.meta.pageShortDescription),
+				imageCreationDescription: formatAcronymsInText(input.meta.imageCreationDescription),
+				tags: normalizeTags(input.meta.tags),
+				contentCategories,
+				depictedElements: contentCategories,
+			};
+			return {
+				asset: generatedToDetail(existing, origin),
+				meta,
+				keyword,
+				keywordId,
+			};
+		}
+	}
+
 	const title = formatAssetTitle(input.meta.imagePageTitle.trim() || keyword);
 	const contentCategories = resolveContentCategories({
 		stored: [
