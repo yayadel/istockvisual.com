@@ -19,6 +19,7 @@ interface Props {
 	/** Use `title` as the full document title (no " · iStockVisual"). */
 	exactTitle?: boolean;
 	robots?: string;
+	lcpImage?: string;
 }
 
 const {
@@ -33,6 +34,7 @@ const {
 	jsonLd,
 	exactTitle = false,
 	robots = 'index, follow, max-image-preview:large',
+	lcpImage,
 } = Astro.props;
 
 const pageTitle =
@@ -53,13 +55,35 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 		<link rel="apple-touch-icon" href="/favicon.svg" />
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="theme-color" content="#0b0b0b" />
-		<link rel="stylesheet" href={globalCss} />
+		<link rel="preload" href={globalCss} as="style" />
+		<link rel="stylesheet" href={globalCss} media="print" onload="this.media='all'" />
+		<noscript>
+			<link rel="stylesheet" href={globalCss} />
+		</noscript>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600&display=swap"
+		/>
+		<link
 			href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600&display=swap"
 			rel="stylesheet"
+			media="print"
+			onload="this.media='all'"
 		/>
+		<noscript>
+			<link
+				href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600&display=swap"
+				rel="stylesheet"
+			/>
+		</noscript>
+		{
+			lcpImage && (
+				<link rel="preload" as="image" href={lcpImage} fetchpriority="high" />
+			)
+		}
 		<title>{pageTitle}</title>
 		<meta property="og:site_name" content="iStockVisual" />
 		<meta property="og:type" content={ogType} />

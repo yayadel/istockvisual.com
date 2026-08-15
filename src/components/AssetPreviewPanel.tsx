@@ -18,6 +18,11 @@ type Props = {
 	assetId?: string;
 };
 
+function sizedPreview(url: string, size: '500' | '1k') {
+	if (!url) return url;
+	return url.includes('?') ? `${url}&size=${size}` : `${url}?size=${size}`;
+}
+
 function canHoverZoom() {
 	return (
 		window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
@@ -107,6 +112,10 @@ export default function AssetPreviewPanel({
 		wrap.classList.add('asset-preview__image-wrap--zooming');
 	}, [hideLens]);
 
+	const src500 = sizedPreview(imageUrl, '500');
+	const src1k = sizedPreview(imageUrl, '1k');
+	const srcSet = `${src500} 500w, ${src1k} 1024w, ${imageUrl} 1280w`;
+
 	return (
 		<div className="asset-preview">
 			<div
@@ -119,7 +128,9 @@ export default function AssetPreviewPanel({
 			>
 				<img
 					ref={imageRef}
-					src={imageUrl}
+					src={src500}
+					srcSet={srcSet}
+					sizes="(max-width: 720px) 100vw, min(100vw - 2rem, 720px)"
 					alt={title}
 					width={width}
 					height={height}
