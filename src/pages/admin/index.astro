@@ -14,7 +14,7 @@ if (!isAdminUser(user, env)) {
 const initialStatus = Astro.url.searchParams.get('status') ?? '';
 ---
 
-<BaseLayout title="Admin" description="Content management dashboard">
+<BaseLayout title="Admin" description="Content management dashboard" robots="noindex, nofollow">
 	<AdminLayout
 		title="Dashboard"
 		description="Overview of imported keywords and generated assets."

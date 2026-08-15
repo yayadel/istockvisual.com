@@ -10,7 +10,7 @@ if (Astro.locals.user) {
 const next = Astro.url.searchParams.get('next') ?? '';
 ---
 
-<BaseLayout title="Log in">
+<BaseLayout title="Log in" robots="noindex, nofollow">
 	<div class="auth-panel">
 		<h1>Log in</h1>
 		<p class="hint">Access downloads and your membership plan.</p>

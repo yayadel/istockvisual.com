@@ -50,9 +50,9 @@ const similar = findSimilarAssets(
 	18,
 );
 
-const origin = Astro.url.origin;
+const origin = siteOrigin(Astro.url.origin);
 const pagePath = `/${category.slug}/${asset.slug}`;
-const pageUrl = absoluteUrl(pagePath, origin);
+const pageUrl = canonicalHref(pagePath, origin);
 const seoTitle = assetSearchTitle(asset.title);
 const seoDescription = assetSearchDescription({
 	title: asset.title,
