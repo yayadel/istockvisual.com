@@ -14,7 +14,7 @@ type SupportEnv = {
 };
 
 const CONTACT = LEGAL_CONTACT_EMAIL;
-const GEMMA_MODEL = 'google/gemma-4-31B-it';
+const SUPPORT_TOGETHER_MODEL = 'deepseek-ai/DeepSeek-V4-Flash-0731';
 const GEMINI_MODEL = 'gemini-3.6-flash';
 
 const SYSTEM_PROMPT = `You are the customer-support assistant for ${SITE_BRAND} (iStockVisual).
