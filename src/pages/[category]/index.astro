@@ -17,12 +17,13 @@ const category = getCategory(categorySlug)!;
 const query = parseCatalogQuery(Astro.url, { type: category.slug });
 const pool = await listAllAssets(env.DB, Astro.url.origin, 600);
 const assets = applyCatalogFilters(pool, query);
-const origin = Astro.url.origin;
-const description = `Browse ${category.label} on iStockVisual.`;
+const origin = siteOrigin(Astro.url.origin);
+const title = libraryPageTitle(category.label);
+const description = `Royalty-free ${category.label.toLowerCase()} for commercial and personal use. Free download on iStockVisual.`;
 const jsonLd = collectionPageJsonLd({
 	origin,
 	pagePath: `/${category.slug}`,
-	title: category.label,
+	title,
 	description,
 	assets,
 	totalCount: assets.length,
@@ -33,7 +34,12 @@ const jsonLd = collectionPageJsonLd({
 });
 ---
 
-<BaseLayout title={category.label} description={description} jsonLd={jsonLd}>
+<BaseLayout
+	title={title}
+	description={description}
+	jsonLd={jsonLd}
+	robots={assets.length === 0 ? 'noindex, follow' : undefined}
+>
 	<CatalogView
 		assets={assets}
 		facetPool={pool}
