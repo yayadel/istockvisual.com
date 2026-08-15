@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { createAuth, type AppUser } from '../../../lib/auth';
 import {
-	FREE_DOWNLOAD_WIDTH,
+	FREE_DOWNLOAD_EDGE,
 	isDownloadSizeId,
 	isFreeDownloadSize,
 	sizeFileLabel,

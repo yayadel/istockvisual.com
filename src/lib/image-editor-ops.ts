@@ -191,19 +191,17 @@ export function resolveEditorCanvasSize(
 	};
 }
 
-/** Free asset-editor exports: 500px or 1000px wide, never the 4K master. */
+/** Free asset-editor exports: 512 or 1024 on the long edge, never the 4K master. */
 export function clampFreeEditorOutput(
 	sizeId: DownloadSizeId,
 	size: { width: number; height: number },
 ): { width: number; height: number } {
 	if (!isFreeDownloadSize(sizeId)) return size;
-	const maxW = sizeId === '500' ? 500 : 1000;
-	if (size.width <= maxW) return size;
-	const scale = maxW / size.width;
-	return {
-		width: maxW,
-		height: Math.max(1, Math.round(size.height * scale)),
-	};
+	const sizeDef = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
+	const maxEdge = sizeDef?.longEdge ?? 1024;
+	const longest = Math.max(size.width, size.height);
+	if (longest <= maxEdge) return size;
+	return outputSizeForDownload(size.width, size.height, sizeDef ?? DOWNLOAD_SIZES[1]!);
 }
 
 /** Tiny rectangle dims inside a fixed box for aspect chips. */

@@ -1,4 +1,6 @@
-export const FREE_DOWNLOAD_WIDTH = 500;
+/** Smallest free download: 512 on the long edge. API/R2 id stays `500`. */
+export const FREE_DOWNLOAD_EDGE = 512;
+export const FREE_DOWNLOAD_WIDTH = FREE_DOWNLOAD_EDGE;
 
 /** Only this size is stored in R2. Other download sizes are drawn in the browser. */
 export const MASTER_DOWNLOAD_SIZE = '4k' as const;
