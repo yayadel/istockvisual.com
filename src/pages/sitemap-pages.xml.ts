@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { buildSitemapIndexXml, sitemapResponse } from '../lib/sitemap';
+import { buildPagesSitemapXml, sitemapResponse } from '../lib/sitemap';
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
-	return sitemapResponse(await buildSitemapIndexXml(env));
+	return sitemapResponse(await buildPagesSitemapXml(env));
 };
