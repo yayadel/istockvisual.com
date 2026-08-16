@@ -1,5 +1,10 @@
-const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
-const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
+import { resolveGenerateEnv } from './lib/generate-env.mjs';
+
+const { baseUrl, secret } = resolveGenerateEnv();
+if (!secret) {
+	console.error('GENERATE_API_SECRET missing (Cloud: Cursor Secrets; local: .dev.vars)');
+	process.exit(1);
+}
 
 const res = await fetch(`${baseUrl}/api/generate/prepare`, {
 	method: 'POST',

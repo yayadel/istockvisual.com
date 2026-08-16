@@ -1,8 +1,12 @@
 import fs from 'node:fs';
 import { buildPreviewAvif, masterJpegInfo } from './build-image-variants.mjs';
+import { resolveGenerateEnv } from './lib/generate-env.mjs';
 
-const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
-const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
+const { baseUrl, secret } = resolveGenerateEnv();
+if (!secret) {
+	console.error('GENERATE_API_SECRET missing (Cloud: Cursor Secrets; local: .dev.vars)');
+	process.exit(1);
+}
 
 const metaPath = process.argv[2];
 const imagePath = process.argv[3];
