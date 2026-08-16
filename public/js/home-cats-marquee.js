@@ -125,7 +125,7 @@
 			pointerId = event.pointerId;
 			startX = event.clientX;
 			startY = event.clientY;
-			startOff = x;
+			lastX = event.clientX;
 			userUntil = Number.POSITIVE_INFINITY;
 			root.classList.add('is-grabbing');
 			try {
