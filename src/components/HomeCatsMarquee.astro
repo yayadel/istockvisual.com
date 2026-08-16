@@ -41,10 +41,11 @@ const duration = Math.max(32, tiles.length * 4.5);
 
 <script is:inline>
 	(function () {
-		var script = document.currentScript;
-		var root = script && script.previousElementSibling;
-		if (!root || !root.classList || !root.classList.contains('home-cats')) return;
+		var nodes = document.querySelectorAll('.home-cats:not([data-cats-loop])');
+		for (var n = 0; n < nodes.length; n += 1) bindMarquee(nodes[n]);
 
+		function bindMarquee(root) {
+		root.setAttribute('data-cats-loop', '1');
 		var viewport = root.querySelector('.home-cats__viewport');
 		var track = root.querySelector('.home-cats__track');
 		if (!viewport || !track) return;
