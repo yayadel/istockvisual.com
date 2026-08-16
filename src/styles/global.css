@@ -4209,6 +4209,7 @@ body.upload-modal-open {
 	background: #f4f5f6;
 	display: grid;
 	place-items: center;
+	width: 100%;
 	overflow: hidden;
 	border: 1px solid var(--line);
 	border-radius: var(--radius);

@@ -129,7 +129,6 @@ export default function AssetPreviewPanel({
 			<div
 				ref={wrapRef}
 				className="asset-preview__image-wrap wm-protected wm-protected--lock"
-				style={wrapRatio}
 				onContextMenu={(event) => event.preventDefault()}
 				onPointerMove={moveLens}
 				onPointerLeave={hideLens}
