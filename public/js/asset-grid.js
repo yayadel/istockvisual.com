@@ -96,12 +96,6 @@
 			window.clearTimeout(timer);
 			timer = window.setTimeout(run, 80);
 		});
-		if (typeof ResizeObserver !== 'undefined') {
-			new ResizeObserver(function () {
-				window.clearTimeout(timer);
-				timer = window.setTimeout(run, 40);
-			}).observe(grid);
-		}
 	}
 
 	function boot() {
