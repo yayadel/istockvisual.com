@@ -42,10 +42,6 @@
 	"triggers": {
 		"crons": ["0 * * * *"]
 	},
-	"routes": [
-		{ "pattern": "istockvisual.com/*", "zone_name": "istockvisual.com" },
-		{ "pattern": "www.istockvisual.com/*", "zone_name": "istockvisual.com" }
-	],
 	"vars": {
 		"BETTER_AUTH_URL": "https://istockvisual.com",
 		"ADMIN_EMAILS": "278202347@qq.com",
