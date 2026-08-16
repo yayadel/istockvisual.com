@@ -45,13 +45,13 @@ export default function BasicInfoPanel({
 						<span>
 							{licenseHref ? (
 								<a className="meta-list__license" href={licenseHref}>
-									<span>Free to Use — Commercial OK</span>
-									<span>Attribution Required</span>
+									<span>CC0 — Free to Use</span>
+									<span>Commercial OK, No Attribution</span>
 								</a>
 							) : (
 								<span className="meta-list__license">
-									<span>Free to Use — Commercial OK</span>
-									<span>Attribution Required</span>
+									<span>CC0 — Free to Use</span>
+									<span>Commercial OK, No Attribution</span>
 								</span>
 							)}
 						</span>

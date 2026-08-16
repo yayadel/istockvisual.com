@@ -145,7 +145,7 @@ export async function insertGeneratedAsset(
 			input.fileType,
 			input.width,
 			input.height,
-			'Free to Use — Commercial OK, Attribution Required',
+			'CC0 — Free to Use, Commercial OK',
 			0,
 			publishedAt,
 		)
