@@ -1873,29 +1873,31 @@ body.upload-modal-open {
 }
 
 .home-cats__viewport {
-	overflow: hidden;
+	overflow-x: auto;
+	overflow-y: hidden;
 	cursor: grab;
-	touch-action: pan-y;
+	touch-action: pan-x;
+	scrollbar-width: none;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior-x: contain;
+}
+
+.home-cats__viewport::-webkit-scrollbar {
+	display: none;
 }
 
 .home-cats.is-grabbing .home-cats__viewport {
 	cursor: grabbing;
-	touch-action: none;
 }
 
 .home-cats.is-dragging a {
 	pointer-events: none;
 }
 
-.home-cats.is-manual .home-cats__track {
-	animation: none;
-}
-
 .home-cats__track {
 	display: flex;
 	flex-wrap: nowrap;
 	width: max-content;
-	animation: home-cats-marquee var(--home-cats-duration, 48s) linear infinite;
 }
 
 .home-cats__group {

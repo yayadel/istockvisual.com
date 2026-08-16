@@ -16,9 +16,9 @@ const duration = Math.max(48, tiles.length * 3.2);
 
 {
 	tiles.length > 0 && (
-		<section class="home-bleed home-cats" aria-label={label}>
-			<div class="home-cats__viewport">
-				<div class="home-cats__track" style={`--home-cats-duration: ${duration}s`}>
+		<section class="home-bleed home-cats" aria-label={label} data-cats-duration={duration}>
+			<div class="home-cats__viewport" data-cats-scroller>
+				<div class="home-cats__track">
 					<div class="home-cats__group">
 						{tiles.map((category) => (
 							<a class="home-cats__card" href={category.href}>
@@ -43,172 +43,137 @@ const duration = Math.max(48, tiles.length * 3.2);
 
 <script is:inline>
 	(function () {
-		function boot() {
-			var roots = document.querySelectorAll('.home-cats:not([data-cats-drag])');
-			for (var i = 0; i < roots.length; i += 1) bind(roots[i]);
-		}
+		if (window.__istockCatsMarquee) return;
+		window.__istockCatsMarquee = true;
 
-		function bind(root) {
-			root.setAttribute('data-cats-drag', '1');
-			var viewport = root.querySelector('.home-cats__viewport');
-			var track = root.querySelector('.home-cats__track');
-			var group = track && track.querySelector('.home-cats__group');
-			if (!viewport || !track || !group) return;
+		function setup(root) {
+			if (root.getAttribute('data-cats-ready')) return;
+			root.setAttribute('data-cats-ready', '1');
 
-			var offset = 0;
-			var loopW = 0;
+			var scroller = root.querySelector('[data-cats-scroller]');
+			var group = root.querySelector('.home-cats__group');
+			if (!scroller || !group) return;
+
+			var duration = parseFloat(root.getAttribute('data-cats-duration')) || 48;
+			var paused = false;
 			var dragging = false;
-			var captured = false;
+			var moved = 0;
 			var pointerId = null;
 			var startX = 0;
-			var startY = 0;
-			var startOffset = 0;
-			var moved = 0;
-			var axis = '';
-			var anim = null;
-			var durationMs =
-				(parseFloat(getComputedStyle(track).getPropertyValue('--home-cats-duration')) || 48) * 1000;
+			var startScroll = 0;
+			var wrapping = false;
 
-			function measure() {
-				loopW = Math.round(group.scrollWidth || group.offsetWidth || 0);
-				return loopW;
+			function loopW() {
+				return group.scrollWidth || group.offsetWidth || 0;
 			}
 
-			function wrap(value) {
-				if (loopW <= 0) measure();
-				if (loopW <= 0) return value;
-				value %= loopW;
-				if (value > 0) value -= loopW;
-				return value;
-			}
-
-			function readTx() {
-				var t = getComputedStyle(track).transform;
-				if (!t || t === 'none') return 0;
-				try {
-					return new DOMMatrix(t).m41;
-				} catch (err) {
-					var parts = t.match(/-?\d+\.?\d*/g);
-					return parts && parts.length >= 6 ? parseFloat(parts[4]) : 0;
+			function wrap() {
+				var w = loopW();
+				if (w < 8 || wrapping) return;
+				var x = scroller.scrollLeft;
+				if (x >= w) {
+					wrapping = true;
+					scroller.scrollLeft = x - w;
+					wrapping = false;
+				} else if (x < 0) {
+					wrapping = true;
+					scroller.scrollLeft = x + w;
+					wrapping = false;
 				}
 			}
 
-			function stopAnim() {
-				if (anim) {
-					try {
-						anim.cancel();
-					} catch (err) {}
-					anim = null;
+			function tick(now) {
+				if (!paused && !dragging) {
+					var w = loopW();
+					if (w > 8) {
+						scroller.scrollLeft += Math.max(0.35, w / duration / 60);
+						wrap();
+					}
 				}
-				if (typeof track.getAnimations === 'function') {
-					track.getAnimations().forEach(function (item) {
-						try {
-							item.cancel();
-						} catch (err) {}
-					});
-				}
-				track.style.animation = 'none';
+				requestAnimationFrame(tick);
 			}
+			requestAnimationFrame(tick);
 
-			function apply(value) {
-				offset = wrap(value);
-				track.style.transform = 'translate3d(' + offset + 'px,0,0)';
-			}
+			scroller.addEventListener(
+				'scroll',
+				function () {
+					wrap();
+				},
+				{ passive: true }
+			);
 
-			function play() {
-				measure();
-				if (loopW <= 0) return;
-				offset = wrap(offset);
-				root.classList.add('is-manual');
-				stopAnim();
-				track.style.transform = 'translate3d(' + offset + 'px,0,0)';
-				if (typeof track.animate !== 'function') return;
-				anim = track.animate(
-					[
-						{ transform: 'translate3d(' + offset + 'px,0,0)' },
-						{ transform: 'translate3d(' + (offset - loopW) + 'px,0,0)' },
-					],
-					{ duration: durationMs, iterations: Infinity, easing: 'linear' }
-				);
-			}
-
-			function takeOver() {
-				measure();
-				offset = wrap(readTx());
-				root.classList.add('is-manual');
-				stopAnim();
-				apply(offset);
-			}
-
-			viewport.addEventListener('pointerdown', function (event) {
+			scroller.addEventListener('pointerdown', function (event) {
 				if (event.button !== 0) return;
-				dragging = true;
-				captured = false;
-				axis = '';
+				paused = true;
 				moved = 0;
+				if (event.pointerType === 'touch' || event.pointerType === 'pen') return;
+
+				dragging = true;
 				pointerId = event.pointerId;
 				startX = event.clientX;
-				startY = event.clientY;
-				takeOver();
-				startOffset = offset;
+				startScroll = scroller.scrollLeft;
 				root.classList.add('is-grabbing');
-				root.classList.remove('is-dragging');
+				try {
+					scroller.setPointerCapture(event.pointerId);
+				} catch (err) {}
 			});
 
-			viewport.addEventListener('pointermove', function (event) {
+			scroller.addEventListener('pointermove', function (event) {
 				if (!dragging || event.pointerId !== pointerId) return;
 				var dx = event.clientX - startX;
-				var dy = event.clientY - startY;
-				moved = Math.max(moved, Math.abs(dx), Math.abs(dy));
-				if (!axis && moved > 8) {
-					axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
-				}
-				if (axis !== 'x') return;
-				if (!captured) {
-					captured = true;
-					root.classList.add('is-dragging');
-					try {
-						viewport.setPointerCapture(event.pointerId);
-					} catch (err) {}
-				}
-				if (event.cancelable) event.preventDefault();
-				apply(startOffset + dx);
+				moved = Math.max(moved, Math.abs(dx));
+				if (moved < 3) return;
+				root.classList.add('is-dragging');
+				scroller.scrollLeft = startScroll - dx;
+				wrap();
 			});
 
 			function endDrag(event) {
-				if (!dragging) return;
-				if (event && pointerId != null && event.pointerId !== pointerId) return;
-				var didDrag = captured;
-				dragging = false;
-				captured = false;
-				pointerId = null;
-				axis = '';
-				root.classList.remove('is-grabbing');
-				if (didDrag) {
-					root.classList.add('is-dragging');
-					window.setTimeout(function () {
-						root.classList.remove('is-dragging');
-					}, 80);
-				} else {
-					root.classList.remove('is-dragging');
+				if (pointerId != null && event && event.pointerId !== pointerId && event.type !== 'pointercancel') {
+					return;
 				}
-				play();
+				dragging = false;
+				pointerId = null;
+				root.classList.remove('is-grabbing');
+				window.setTimeout(function () {
+					root.classList.remove('is-dragging');
+					paused = false;
+				}, 80);
 			}
 
-			window.addEventListener('pointerup', endDrag);
-			window.addEventListener('pointercancel', endDrag);
-			viewport.addEventListener(
+			scroller.addEventListener('pointerup', endDrag);
+			scroller.addEventListener('pointercancel', endDrag);
+			scroller.addEventListener('pointerleave', function (event) {
+				if (dragging) endDrag(event);
+			});
+
+			scroller.addEventListener('touchstart', function () {
+				paused = true;
+			}, { passive: true });
+			scroller.addEventListener('touchend', function () {
+				paused = false;
+				wrap();
+			}, { passive: true });
+			scroller.addEventListener('touchcancel', function () {
+				paused = false;
+			}, { passive: true });
+
+			scroller.addEventListener(
 				'click',
 				function (event) {
-					if (!root.classList.contains('is-dragging')) return;
+					if (moved < 6) return;
 					event.preventDefault();
 					event.stopPropagation();
 				},
 				true
 			);
-			track.addEventListener('dragstart', function (event) {
+			scroller.addEventListener('dragstart', function (event) {
 				event.preventDefault();
 			});
+		}
+
+		function boot() {
+			document.querySelectorAll('.home-cats').forEach(setup);
 		}
 
 		if (document.readyState === 'loading') {
@@ -216,5 +181,6 @@ const duration = Math.max(48, tiles.length * 3.2);
 		} else {
 			boot();
 		}
+		document.addEventListener('astro:page-load', boot);
 	})();
 </script>
