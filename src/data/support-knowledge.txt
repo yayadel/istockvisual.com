@@ -13,7 +13,7 @@ This chat does not require an account.
 ## What the site is
 iStockVisual is a stock-visual library plus in-browser studio tools.
 Library: photos, illustrations, vectors, and 3D stills. Search, filter, download.
-Most library images are generated or prepared for this site. Licensed, not sold, not public domain. Download does not transfer copyright.
+Most library images are generated or prepared for this site and released under CC0.
 Hosting: Cloudflare. Accounts in D1. Files and short-lived visual-search uploads in R2.
 
 ## Downloads and sizes
