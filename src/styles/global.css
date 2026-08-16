@@ -6477,8 +6477,9 @@ body.download-auth-modal-open {
 }
 
 .detail__preview img {
-	width: 100%;
+	width: auto;
 	height: auto;
+	max-width: 100%;
 }
 
 .asset-preview {
@@ -6492,8 +6493,9 @@ body.download-auth-modal-open {
 
 .asset-preview__image {
 	display: block;
-	width: 100%;
+	width: auto;
 	height: auto;
+	max-width: 100%;
 }
 
 .asset-preview__image-wrap--zooming {
