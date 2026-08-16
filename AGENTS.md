@@ -40,6 +40,6 @@ If `python3` is required, prefer `python3` then `python`. `npm install` is alrea
 
 ```
 Generate and import exactly 1 stock asset for istockvisual.com.
-Follow AGENTS.md: claim one keyword, npm run agent:meta, generate one image from imagePrompt, then agent-import.mjs.
+Follow AGENTS.md: claim one keyword, npm run agent:meta:gemma, generate one image from imagePrompt, then agent-import.mjs.
 Do not batch. Do not commit images. Do not open a PR. Reply with the live asset URL when import succeeds.
 ```
