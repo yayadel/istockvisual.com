@@ -1873,21 +1873,15 @@ body.upload-modal-open {
 }
 
 .home-cats__viewport {
-	overflow-x: auto;
-	overflow-y: hidden;
+	overflow: hidden;
 	cursor: grab;
-	touch-action: pan-x;
-	scrollbar-width: none;
-	-webkit-overflow-scrolling: touch;
-	overscroll-behavior-x: contain;
+	touch-action: pan-y;
 }
 
-.home-cats__viewport::-webkit-scrollbar {
-	display: none;
-}
-
-.home-cats.is-grabbing .home-cats__viewport {
+.home-cats.is-grabbing .home-cats__viewport,
+.home-cats.is-dragging .home-cats__viewport {
 	cursor: grabbing;
+	touch-action: none;
 }
 
 .home-cats.is-dragging a {
@@ -1898,6 +1892,7 @@ body.upload-modal-open {
 	display: flex;
 	flex-wrap: nowrap;
 	width: max-content;
+	will-change: transform;
 }
 
 .home-cats__group {
