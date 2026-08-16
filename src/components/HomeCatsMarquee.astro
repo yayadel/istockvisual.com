@@ -210,5 +210,11 @@ const duration = Math.max(48, tiles.length * 3.2);
 				event.preventDefault();
 			});
 		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', boot);
+		} else {
+			boot();
+		}
 	})();
 </script>
