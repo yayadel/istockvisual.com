@@ -161,9 +161,12 @@ const duration = Math.max(32, tiles.length * 4.5);
 		});
 
 		if (typeof ResizeObserver !== 'undefined') {
-			new ResizeObserver(function () {
-				measure();
-			}).observe(track.querySelector('.home-cats__group'));
+			var groupEl = track.querySelector('.home-cats__group');
+			if (groupEl) {
+				new ResizeObserver(function () {
+					measure();
+				}).observe(groupEl);
+			}
 		}
 
 		if (!finePointer) return;
@@ -243,5 +246,6 @@ const duration = Math.max(32, tiles.length * 4.5);
 		track.addEventListener('dragstart', function (event) {
 			event.preventDefault();
 		});
+		}
 	})();
 </script>
