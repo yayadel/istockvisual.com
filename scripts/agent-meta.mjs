@@ -143,8 +143,8 @@ function runPython(scriptPath, args, env) {
 
 const py = runPython(pyScript, [keyword, '--out', metaPath], env);
 
-if (py.status !== 0) {
-	console.error(py.stderr || py.stdout || `${path.basename(pyScript)} failed`);
+if (!py || py.status !== 0) {
+	console.error((py && (py.stderr || py.stdout)) || `${path.basename(pyScript)} failed`);
 	if (claimedByThisRun && keywordId) {
 		await fetch(`${baseUrl}/api/generate/release`, {
 			method: 'POST',
