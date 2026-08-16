@@ -28,7 +28,7 @@ const jsonLd = collectionPageJsonLd({
 	pagePath: `/c/${topic.slug}`,
 	title,
 	description,
-	assets,
+	assets: assets.slice(0, 50),
 	totalCount: assets.length,
 	crumbs: [
 		{ name: 'Home', path: '/' },

@@ -3673,6 +3673,22 @@ body.upload-modal-open {
 	font-weight: 600;
 }
 
+.catalog-infinite {
+	min-height: 1px;
+	padding: 1.5rem 0 2.5rem;
+}
+
+.catalog-infinite__status {
+	margin: 0;
+	text-align: center;
+	font-size: 0.9rem;
+	color: var(--muted, #6b716e);
+}
+
+.catalog-infinite__status.is-end {
+	color: var(--text);
+}
+
 .catalog-chips {
 	display: flex;
 	flex-wrap: wrap;

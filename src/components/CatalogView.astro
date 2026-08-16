@@ -23,9 +23,17 @@ interface Props {
 	facetPool: AssetDetail[];
 	query: CatalogQuery;
 	emptyMessage?: string;
+	visualSearch?: { mode: string; colors: string; key: string };
 }
 
-const { assets, facetPool, query, emptyMessage = 'No assets matched these filters.' } = Astro.props;
+const {
+	assets,
+	facetPool,
+	query,
+	emptyMessage = 'No assets matched these filters.',
+	visualSearch,
+} = Astro.props;
+const firstPage = paginateCatalog(assets, 1);
 const facets = catalogFacets(facetPool, query);
 const heading = catalogHeading(query);
 const chips = catalogChips(query);

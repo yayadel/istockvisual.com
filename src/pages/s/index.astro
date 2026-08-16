@@ -56,6 +56,11 @@ const description =
 		assets={assets}
 		facetPool={pool}
 		query={query}
+		visualSearch={
+			isVisual
+				? { mode: 'visual', colors: Astro.url.searchParams.get('c') || '', key: queryKey }
+				: undefined
+		}
 		emptyMessage={
 			isVisual ? 'No palette matches yet. Try another photo.' : 'No assets matched these filters.'
 		}
