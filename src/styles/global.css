@@ -1892,10 +1892,11 @@ body.upload-modal-open {
 	width: max-content;
 	will-change: transform;
 	transform: translate3d(0, 0, 0);
-	animation: home-cats-marquee var(--home-cats-duration, 40s) linear infinite;
+	animation: home-cats-marquee-fallback var(--home-cats-duration, 40s) linear infinite;
 }
 
-.home-cats.is-ready .home-cats__track {
+.home-cats.is-ready .home-cats__track,
+.home-cats--interactive .home-cats__track {
 	animation: none;
 }
 
