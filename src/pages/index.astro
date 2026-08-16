@@ -4,7 +4,7 @@ import AssetGrid from '../components/AssetGrid.astro';
 import SearchBar from '../components/SearchBar.astro';
 import HomeMarkIcon from '../components/HomeMarkIcon.astro';
 import HomeCatsMarquee from '../components/HomeCatsMarquee.astro';
-import { assetMatchesContentCategory, contentCategoryPath } from '../lib/content-categories';
+import { assetMatchesContentCategory, contentCategoryPath, CONTENT_CATEGORY_PAGES } from '../lib/content-categories';
 import { listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
 import { listTopContentCategoriesByCount } from '../lib/generated-assets';
 import { formatAssetTitle } from '../lib/asset-types';
