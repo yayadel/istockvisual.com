@@ -48,8 +48,8 @@ const catalog = ranked.map((category, index) => {
 	};
 });
 
-const featured = catalog.slice(0, 6);
-const directory = catalog.slice(6);
+const featured = catalog.slice(0, 8);
+const directory = catalog.slice(8);
 const marqueeTiles = (() => {
 	const withStock = catalog.filter((item) => item.count > 0).slice(0, 12);
 	const source = withStock.length >= 6 ? withStock : catalog.slice(0, 12);
