@@ -124,6 +124,10 @@
 				root.setAttribute('data-has-more', hasMore ? '1' : '0');
 				if (!hasMore) finish();
 				else setStatus('', false);
+				requestAnimationFrame(function () {
+					packGrid(grid);
+					if (hasMore && inLowerHalf()) loadNext();
+				});
 			} catch (err) {
 				setStatus('Could not load more. Scroll to try again.', false);
 			} finally {
