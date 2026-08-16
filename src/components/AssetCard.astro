@@ -7,11 +7,19 @@ interface Props {
 	index?: number;
 }
 
-const TILES = ['short', 'landscape', 'square', 'portrait', 'landscape', 'square', 'short', 'landscape'] as const;
+const TILES = ['portrait', 'short', 'square', 'landscape', 'tall', 'short', 'portrait', 'landscape'] as const;
+const TILE_RATIO: Record<(typeof TILES)[number], number> = {
+	short: 9 / 16,
+	landscape: 4 / 5,
+	square: 1,
+	portrait: 5 / 4,
+	tall: 5 / 3,
+};
 
 const { asset, index = 0 } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
 const tile = TILES[index % TILES.length];
+const ratio = TILE_RATIO[tile];
 const preview = asset.previewUrl || '';
 const src500 = preview
 	? preview.includes('?')

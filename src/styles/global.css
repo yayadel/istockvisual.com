@@ -2941,10 +2941,21 @@ body.upload-modal-open {
 }
 
 .asset-grid {
+	position: relative;
 	column-count: 2;
 	column-gap: 8px;
 	max-width: 100%;
 	min-width: 0;
+}
+
+.asset-grid.is-packed {
+	column-count: auto;
+	display: block;
+}
+
+.asset-grid.is-packed .asset-card {
+	display: block;
+	break-inside: auto;
 }
 
 @media (min-width: 640px) {
