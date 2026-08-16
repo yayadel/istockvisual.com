@@ -1907,7 +1907,7 @@ body.upload-modal-open {
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.home-cats:hover .home-cats__track {
+	.home-cats:hover:not(.is-manual) .home-cats__track {
 		animation-play-state: paused;
 	}
 }
