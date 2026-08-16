@@ -131,6 +131,8 @@ const duration = Math.max(48, tiles.length * 3.2);
 				requestAnimationFrame(tick);
 			}
 			requestAnimationFrame(tick);
+			seed();
+			window.addEventListener('load', seed);
 
 			scroller.addEventListener(
 				'scroll',
