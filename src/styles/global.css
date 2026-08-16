@@ -2698,7 +2698,7 @@ body.upload-modal-open {
 	}
 
 	.home-cats__card {
-		flex-basis: 11.5rem;
+		flex: 0 0 11.5rem;
 	}
 
 	.home-top-search__cols ul,
