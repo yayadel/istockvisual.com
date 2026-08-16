@@ -3,7 +3,6 @@ import {
 	LIFETIME_WHY,
 	LONG_PLANS,
 	PRICING_COPY,
-	PRICING_FEATURES,
 	PRICING_TRUST,
 	SHORT_PLANS,
 	type PricingPlan,
@@ -13,25 +12,37 @@ import {
 function PlanCard({ plan }: { plan: PricingPlan }) {
 	return (
 		<article className={`pricing-card${plan.featured ? ' is-featured' : ''}`}>
-			{plan.badge ? <p className="pricing-card__badge">🔥 {plan.badge}</p> : null}
+			<p className={`pricing-card__badge${plan.badge ? '' : ' is-empty'}`}>
+				{plan.badge || '\u00a0'}
+			</p>
 			<h2>{plan.name}</h2>
 			<p className="pricing-card__amount">
-				{plan.price}
 				{plan.originalPrice ? (
 					<del aria-label={`Was ${plan.originalPrice}`}>{plan.originalPrice}</del>
 				) : null}
-				{plan.period ? <span> {plan.period}</span> : null}
+				<strong>{plan.price}</strong>
+				{plan.period ? <span>{plan.period}</span> : null}
 			</p>
 			<p className="pricing-card__rate">{plan.rate}</p>
-			{plan.highlight ? <p className="pricing-card__highlight">{plan.highlight}</p> : null}
-			<ul className="pricing-card__features">
-				{PRICING_FEATURES.map((item) => (
-					<li key={item}>{item}</li>
-				))}
-			</ul>
+			<p className="pricing-card__desc">{plan.description}</p>
+			{plan.highlight ? <p className="pricing-card__highlight">{plan.highlight}</p> : <p className="pricing-card__highlight is-empty">&nbsp;</p>}
 			<a className={plan.featured ? 'btn btn--primary' : 'btn btn--ghost'} href={plan.href}>
 				{plan.cta}
 			</a>
+			<p className="pricing-card__includes">Plan Includes:</p>
+			<ul className="pricing-card__features">
+				{plan.features.map((item) => (
+					<li key={item.label}>
+						<span className="pricing-card__check" aria-hidden="true">
+							✓
+						</span>
+						<span>{item.label}</span>
+						<span className="pricing-card__info" title={item.tip} aria-label={item.tip}>
+							i
+						</span>
+					</li>
+				))}
+			</ul>
 			{plan.note ? <p className="pricing-card__note">* {plan.note}</p> : null}
 		</article>
 	);

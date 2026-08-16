@@ -162,51 +162,6 @@ export const SHORT_PLANS: PricingPlan[] = [
 	},
 ];
 
-const CORE_FEATURES: PricingFeature[] = [
-	{
-		label: '2K, 4K, and 8K downloads',
-		tip: 'HD files while the plan is active. 512 and 1K previews stay free.',
-	},
-	{
-		label: 'JPG, PNG, WEBP, and SVG',
-		tip: 'Export the format your project needs. Same CC0 terms on every file.',
-	},
-	{
-		label: 'CC0 commercial and personal use',
-		tip: 'Use in ads, sites, and products. Attribution is not required.',
-	},
-	{
-		label: '512 and 1K previews stay free',
-		tip: 'Preview sizes remain available after a term plan ends.',
-	},
-	{
-		label: 'In-browser studio tools',
-		tip: 'Editor, convert, vectorize, social resize, watermark, and palette.',
-	},
-	{
-		label: 'No auto-renewal',
-		tip: 'One-time charge. Plans and passes end on their own.',
-	},
-];
-
-const LIFETIME_FEATURES: PricingFeature[] = [
-	...CORE_FEATURES,
-	{
-		label: 'Pay once, download forever',
-		tip: 'Keep Pro download access for as long as the library is offered.',
-	},
-	{
-		label: '7-day no-questions refund',
-		tip: 'Refund within 7 days even if you already downloaded files.',
-	},
-	{
-		label: 'Launch pricing',
-		tip: 'Early supporter rate. The listed original price is the later list price.',
-	},
-];
-
-export const PRICING_FEATURES = CORE_FEATURES.map((item) => item.label);
-
 export const PRICING_TRUST = [
 	{
 		title: 'Commercial License Included',
