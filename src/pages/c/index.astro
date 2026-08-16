@@ -50,13 +50,7 @@ const catalog = ranked.map((category, index) => {
 
 const featured = catalog.slice(0, 8);
 const directory = catalog.slice(8);
-const marqueeTiles = (() => {
-	const withStock = catalog.filter((item) => item.count > 0).slice(0, 12);
-	const source = withStock.length >= 6 ? withStock : catalog.slice(0, 12);
-	const padded = [...source];
-	while (padded.length > 0 && padded.length < 8) padded.push(...source);
-	return padded;
-})();
+const marqueeTiles = catalog;
 const heroTopics = catalog.slice(0, 10);
 const description =
 	'Browse every topical collection on iStockVisual — photography, business, nature, 3D, and more.';

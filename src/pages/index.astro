@@ -26,31 +26,21 @@ const topKeywords = await listTopSearchKeywords(env.DB, 16);
 const heroKeywords = topKeywords.slice(0, 10);
 
 const categoryFallback = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80';
-const rankedCategories = await listTopContentCategoriesByCount(env.DB, 10);
-const topCategories = (
-	rankedCategories.some((item) => item.count > 0)
-		? rankedCategories.filter((item) => item.count > 0)
-		: rankedCategories
-).slice(0, 10);
+const rankedCategories = await listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length);
+const topCategories = rankedCategories.some((item) => item.count > 0)
+	? rankedCategories
+	: rankedCategories;
 
-const categoryTiles = topCategories.flatMap((category) => {
+const categoryTiles = topCategories.map((category) => {
 	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
-	if (!cover?.previewUrl) return [];
-	return [
-		{
-			label: category.label,
-			href: contentCategoryPath(category.slug),
-			image: cover.previewUrl,
-		},
-	];
+	return {
+		label: category.label,
+		href: contentCategoryPath(category.slug),
+		image: cover?.previewUrl || categoryFallback,
+	};
 });
 
-const marqueeTiles = (() => {
-	if (categoryTiles.length === 0) return [];
-	const padded = [...categoryTiles];
-	while (padded.length < 8) padded.push(...categoryTiles);
-	return padded;
-})();
+const marqueeTiles = categoryTiles;
 
 const columnSize = Math.ceil(topKeywords.length / 4) || 1;
 const popularColumns = [0, 1, 2, 3]
