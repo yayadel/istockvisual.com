@@ -1909,17 +1909,8 @@ body.upload-modal-open {
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.home-cats:hover:not(.is-manual) .home-cats__track {
-		animation-play-state: paused;
-	}
-}
-
-@keyframes home-cats-marquee {
-	from {
-		transform: translate3d(0, 0, 0);
-	}
-	to {
-		transform: translate3d(-50%, 0, 0);
+	.home-cats:hover .home-cats__viewport {
+		cursor: grab;
 	}
 }
 
