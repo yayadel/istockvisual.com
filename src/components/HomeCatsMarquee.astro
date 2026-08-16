@@ -54,9 +54,12 @@ const duration = Math.max(48, tiles.length * 3.2);
 				return Math.round(group.scrollWidth || group.offsetWidth || group.getBoundingClientRect().width);
 			}
 
+			var lastW = 0;
 			function start() {
 				var w = loopWidth();
 				if (w < 8) return false;
+				if (w === lastW && root.classList.contains('is-looping')) return true;
+				lastW = w;
 				track.style.setProperty('--home-cats-loop', w + 'px');
 				root.classList.remove('is-looping');
 				void track.offsetWidth;
