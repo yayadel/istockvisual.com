@@ -14,7 +14,7 @@ export const LEGAL_UPDATED = 'August 16, 2026';
 export const LEGAL_PAGES = [
 	{ href: ABOUT_PATH, label: 'About' },
 	{ href: HELP_PATH, label: 'Help' },
-	{ href: LICENSE_PATH, label: 'License' },
+	{ href: LICENSE_PATH, label: 'CC0 License' },
 	{ href: TERMS_PATH, label: 'Terms' },
 	{ href: PRIVACY_PATH, label: 'Privacy' },
 	{ href: COOKIES_PATH, label: 'Cookies' },
