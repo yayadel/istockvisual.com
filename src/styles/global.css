@@ -1639,6 +1639,17 @@ body.upload-modal-open {
 	max-width: 40rem;
 }
 
+.hero__lead a {
+	color: #ffffff;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 0.18em;
+}
+
+.hero__lead a:hover {
+	color: #d7fff6;
+}
+
 .hero__popular {
 	margin: 1.05rem 0 0;
 	color: rgba(255, 255, 255, 0.92);
