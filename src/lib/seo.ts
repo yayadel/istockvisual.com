@@ -9,7 +9,7 @@ export const PRIVACY_PATH = '/info/privacy';
 export const COOKIES_PATH = '/info/cookies';
 export const REFUNDS_PATH = '/info/refunds';
 export const LEGAL_CONTACT_EMAIL = 'hello@istockvisual.com';
-export const LEGAL_UPDATED = 'August 15, 2026';
+export const LEGAL_UPDATED = 'August 16, 2026';
 
 export const LEGAL_PAGES = [
 	{ href: ABOUT_PATH, label: 'About' },
@@ -22,9 +22,8 @@ export const LEGAL_PAGES = [
 ] as const;
 
 export const SITE_BRAND = 'iStockVisual.com';
-export const USAGE_TERMS = 'Free for commercial and personal use. Attribution required.';
-export const COPYRIGHT_NOTICE =
-	'Free to use — commercial and personal use allowed, attribution required.';
+export const USAGE_TERMS = 'CC0. Free for commercial and personal use. Attribution not required.';
+export const COPYRIGHT_NOTICE = 'CC0 1.0 Universal. No attribution required.';
 
 const DESC_MAX = 160;
 

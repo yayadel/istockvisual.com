@@ -50,7 +50,7 @@ function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 		fileType: String(row.fileType ?? 'image/jpeg'),
 		width: Number(row.width ?? 0),
 		height: Number(row.height ?? 0),
-		license: String(row.license ?? 'Free to Use — Commercial OK, Attribution Required'),
+		license: String(row.license ?? 'CC0 — Free to Use, Commercial OK'),
 		isPremium: Boolean(row.isPremium),
 		publishedAt: String(row.publishedAt),
 		createdAt: String(row.createdAt),

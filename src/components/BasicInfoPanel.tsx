@@ -19,7 +19,7 @@ type Props = {
 const FORMAT_LABELS = DOWNLOAD_FORMATS.map((format) => format.toUpperCase()).join(', ');
 
 export default function BasicInfoPanel({
-	license: _license = 'Free to Use — Commercial OK, Attribution Required',
+	license: _license = 'CC0 — Free to Use, Commercial OK',
 	licenseHref = '/info/license',
 	categories,
 	categoryLabel,
