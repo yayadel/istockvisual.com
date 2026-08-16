@@ -43,8 +43,10 @@ const duration = Math.max(48, tiles.length * 3.2);
 
 <script is:inline>
 	(function () {
-		var roots = document.querySelectorAll('.home-cats:not([data-cats-drag])');
-		for (var i = 0; i < roots.length; i += 1) bind(roots[i]);
+		function boot() {
+			var roots = document.querySelectorAll('.home-cats:not([data-cats-drag])');
+			for (var i = 0; i < roots.length; i += 1) bind(roots[i]);
+		}
 
 		function bind(root) {
 			root.setAttribute('data-cats-drag', '1');
