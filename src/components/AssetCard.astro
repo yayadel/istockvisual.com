@@ -29,7 +29,7 @@ const src500 = preview
 const box = fitWidth(asset.width || 1536, asset.height || 1024, 500);
 ---
 
-<a class={`asset-card asset-card--${tile}`} href={href}>
+<a class={`asset-card asset-card--${tile}`} href={href} data-ratio={ratio}>
 	{
 		src500 ? (
 			<img
