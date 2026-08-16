@@ -8,7 +8,7 @@ When making assets (image + meta + import), do **one keyword at a time**. Never 
 
 For each asset:
 
-1. Claim **1** keyword and generate meta: `npm run agent:meta` (Gemini) or `npm run agent:meta:gemma` (Together Gemma 4).
+1. Claim **1** keyword and generate meta with Together Gemma 4: `npm run agent:meta:gemma`. Only use `npm run agent:meta` (Gemini) if the user explicitly asks.
 2. Generate **one** image from `meta.imagePrompt`. Save the file using `meta.imagePageTitle` (Title Case; strip `<>:"/\|?*`).
 3. Import: `node scripts/agent-import.mjs <meta.json> <image.jpg> <keywordId>`
 4. Confirm success, then start the next keyword.
