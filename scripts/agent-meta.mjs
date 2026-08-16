@@ -156,7 +156,7 @@ if (!py || py.status !== 0) {
 			body: JSON.stringify({ keywordId }),
 		}).catch(() => undefined);
 	}
-	process.exit(py.status || 1);
+	process.exit((py && py.status) || 1);
 }
 
 if (py.stderr) console.error(py.stderr.trim());
