@@ -101,33 +101,7 @@ const jsonLd = collectionPageJsonLd({
 		</div>
 	</section>
 
-	{
-		marqueeTiles.length > 0 && (
-			<section class="home-bleed home-cats" aria-label="Featured category films">
-				<div class="home-cats__viewport">
-					<div
-						class="home-cats__track"
-						style={`--home-cats-duration: ${Math.max(32, marqueeTiles.length * 4.5)}s`}
-					>
-						{[0, 1].map((copy) => (
-							<div class="home-cats__group" aria-hidden={copy === 1 ? 'true' : undefined}>
-								{marqueeTiles.map((category) => (
-									<a
-										class="home-cats__card"
-										href={category.href}
-										tabindex={copy === 1 ? -1 : undefined}
-									>
-										<img src={category.image} alt="" draggable="false" />
-										<span class="home-cats__label">{category.label}</span>
-									</a>
-								))}
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-		)
-	}
+	<HomeCatsMarquee tiles={marqueeTiles} label="Featured category films" />
 
 	<section class="cats-index" aria-labelledby="cats-featured-title">
 		<div class="cats-stats" aria-label="Library snapshot">

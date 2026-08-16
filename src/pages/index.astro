@@ -165,29 +165,7 @@ const proPerks = [
 		</div>
 	</section>
 
-	<section class="home-bleed home-cats" aria-label="Popular categories">
-		{
-			marqueeTiles.length > 0 && (
-				<div class="home-cats__viewport">
-					<div
-						class="home-cats__track"
-						style={`--home-cats-duration: ${Math.max(32, marqueeTiles.length * 4.5)}s`}
-					>
-						{[0, 1].map((copy) => (
-							<div class="home-cats__group" aria-hidden={copy === 1 ? 'true' : undefined}>
-								{marqueeTiles.map((category) => (
-									<a class="home-cats__card" href={category.href} tabindex={copy === 1 ? -1 : undefined}>
-										<img src={category.image} alt="" draggable="false" />
-										<span class="home-cats__label">{category.label}</span>
-									</a>
-								))}
-							</div>
-						))}
-					</div>
-				</div>
-			)
-		}
-	</section>
+	<HomeCatsMarquee tiles={marqueeTiles} label="Popular categories" />
 
 	<section class="home-featured" aria-labelledby="home-featured-title">
 		<div class="section-head">
@@ -341,14 +319,7 @@ const proPerks = [
 		)
 	}
 
-	<script is:inline>
-		(function () {
-			var root = document.querySelector('.home-cats');
-			var viewport = root && root.querySelector('.home-cats__viewport');
-			var track = root && root.querySelector('.home-cats__track');
-			if (!root || !viewport || !track) return;
-
-			root.classList.add('home-cats--interactive');
+	<script is:inline data-removed-home-cats>
 
 			var offset = 0;
 			var velocity = 0;
