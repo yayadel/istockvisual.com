@@ -1,0 +1,243 @@
+---
+type Tile = {
+	href: string;
+	image: string;
+	label: string;
+};
+
+type Props = {
+	tiles: Tile[];
+	label: string;
+};
+
+const { tiles, label } = Astro.props;
+const duration = Math.max(32, tiles.length * 4.5);
+---
+
+{
+	tiles.length > 0 && (
+		<section class="home-bleed home-cats" aria-label={label}>
+			<div class="home-cats__viewport">
+				<div class="home-cats__track" style={`--home-cats-duration: ${duration}s`}>
+					{[0, 1, 2].map((copy) => (
+						<div class="home-cats__group" aria-hidden={copy === 0 ? undefined : 'true'}>
+							{tiles.map((category) => (
+								<a
+									class="home-cats__card"
+									href={category.href}
+									tabindex={copy === 0 ? undefined : -1}
+								>
+									<img src={category.image} alt="" draggable="false" decoding="async" />
+									<span class="home-cats__label">{category.label}</span>
+								</a>
+							))}
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+	)
+}
+
+<script is:inline>
+	(function () {
+		var script = document.currentScript;
+		var root = script && script.previousElementSibling;
+		if (!root || !root.classList || !root.classList.contains('home-cats')) return;
+
+		var viewport = root.querySelector('.home-cats__viewport');
+		var track = root.querySelector('.home-cats__track');
+		if (!viewport || !track) return;
+
+		var offset = 0;
+		var velocity = 0;
+		var dragging = false;
+		var hovering = false;
+		var captured = false;
+		var pointerId = null;
+		var startX = 0;
+		var startOffset = 0;
+		var lastX = 0;
+		var lastT = 0;
+		var moved = 0;
+		var loopW = 0;
+		var dragThreshold = 8;
+		var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+		var duration = parseFloat(getComputedStyle(track).getPropertyValue('--home-cats-duration')) || 40;
+		var ticking = false;
+
+		function measure() {
+			var group = track.querySelector('.home-cats__group');
+			var next = loopW;
+			if (group) {
+				next = Math.round(group.getBoundingClientRect().width) || group.offsetWidth;
+			}
+			if (next > 8) {
+				loopW = next;
+				track.style.setProperty('--home-cats-loop', loopW + 'px');
+				root.classList.add('is-ready');
+			}
+			return loopW;
+		}
+
+		function wrap(value) {
+			if (loopW <= 0) return 0;
+			value %= loopW;
+			if (value > 0) value -= loopW;
+			return value;
+		}
+
+		function apply() {
+			if (loopW <= 0) {
+				track.style.transform = 'translate3d(0,0,0)';
+				return;
+			}
+			offset = wrap(offset);
+			track.style.transform = 'translate3d(' + offset + 'px,0,0)';
+		}
+
+		function waitImages(done) {
+			var imgs = track.querySelectorAll('img');
+			var left = 0;
+			function one() {
+				left -= 1;
+				if (left <= 0) done();
+			}
+			for (var i = 0; i < imgs.length; i += 1) {
+				if (imgs[i].complete) continue;
+				left += 1;
+				imgs[i].addEventListener('load', one, { once: true });
+				imgs[i].addEventListener('error', one, { once: true });
+			}
+			if (left === 0) done();
+		}
+
+		function enableJsLoop() {
+			root.classList.add('home-cats--interactive');
+			measure();
+			apply();
+			if (ticking) return;
+			ticking = true;
+			var lastFrame = performance.now();
+			function tick(now) {
+				var dt = Math.min(0.048, (now - lastFrame) / 1000);
+				lastFrame = now;
+				if (!dragging) {
+					if (Math.abs(velocity) > 8) {
+						offset += velocity * dt;
+						velocity *= Math.pow(0.92, dt * 60);
+						if (Math.abs(velocity) < 8) velocity = 0;
+						apply();
+					} else if (!reduceMotion && !hovering && !document.hidden && loopW > 0) {
+						offset -= (loopW / duration) * dt;
+						apply();
+					}
+				}
+				requestAnimationFrame(tick);
+			}
+			requestAnimationFrame(tick);
+		}
+
+		waitImages(function () {
+			measure();
+			if (reduceMotion) return;
+			enableJsLoop();
+		});
+		window.addEventListener('load', function () {
+			measure();
+			apply();
+		});
+		window.addEventListener('resize', function () {
+			var previous = loopW;
+			measure();
+			if (previous > 0 && loopW > 0) offset = wrap(offset * (loopW / previous));
+			apply();
+		});
+
+		if (typeof ResizeObserver !== 'undefined') {
+			new ResizeObserver(function () {
+				measure();
+			}).observe(track.querySelector('.home-cats__group'));
+		}
+
+		if (!finePointer) return;
+
+		root.addEventListener('mouseenter', function () {
+			hovering = true;
+		});
+		root.addEventListener('mouseleave', function () {
+			hovering = false;
+		});
+
+		viewport.addEventListener('pointerdown', function (event) {
+			if (event.button !== 0 || loopW <= 0) return;
+			dragging = true;
+			captured = false;
+			velocity = 0;
+			moved = 0;
+			pointerId = event.pointerId;
+			startX = lastX = event.clientX;
+			startOffset = offset;
+			lastT = performance.now();
+			root.classList.add('is-grabbing');
+			root.classList.remove('is-dragging');
+		});
+
+		viewport.addEventListener('pointermove', function (event) {
+			if (!dragging || event.pointerId !== pointerId) return;
+			var now = performance.now();
+ marqueeDx = event.clientX - startX;
+			var dx = event.clientX - startX;
+			moved = Math.max(moved, Math.abs(dx));
+			if (moved <= dragThreshold) return;
+			if (!captured) {
+				captured = true;
+				root.classList.add('is-dragging');
+				try {
+					viewport.setPointerCapture(event.pointerId);
+				} catch (err) {}
+			}
+			offset = startOffset + dx;
+			if (now > lastT) velocity = ((event.clientX - lastX) / (now - lastT)) * 1000;
+			lastX = event.clientX;
+			lastT = now;
+			apply();
+		});
+
+		function endDrag(event) {
+			if (!dragging) return;
+			if (event && pointerId != null && event.pointerId !== pointerId) return;
+			var didDrag = moved > dragThreshold;
+			dragging = false;
+			captured = false;
+			pointerId = null;
+			root.classList.remove('is-grabbing');
+			if (didDrag) {
+				root.classList.add('is-dragging');
+				window.setTimeout(function () {
+					root.classList.remove('is-dragging');
+				}, 80);
+			} else {
+				velocity = 0;
+				root.classList.remove('is-dragging');
+			}
+		}
+
+		window.addEventListener('pointerup', endDrag);
+		window.addEventListener('pointercancel', endDrag);
+		viewport.addEventListener('lostpointercapture', endDrag);
+		root.addEventListener(
+			'click',
+			function (event) {
+				if (!root.classList.contains('is-dragging')) return;
+				event.preventDefault();
+				event.stopPropagation();
+			},
+			true
+		);
+		track.addEventListener('dragstart', function (event) {
+			event.preventDefault();
+		});
+	})();
+</script>
