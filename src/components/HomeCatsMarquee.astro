@@ -55,13 +55,16 @@ const duration = Math.max(48, tiles.length * 3.2);
 			if (!scroller || !group) return;
 
 			var duration = parseFloat(root.getAttribute('data-cats-duration')) || 48;
-			var paused = false;
+			var userHold = false;
+			var resumeAt = 0;
 			var dragging = false;
 			var moved = 0;
 			var pointerId = null;
 			var startX = 0;
 			var startScroll = 0;
 			var wrapping = false;
+			var fromAuto = false;
+			var IDLE_MS = 4000;
 
 			function loopW() {
 				return group.scrollWidth || group.offsetWidth || 0;
@@ -82,12 +85,28 @@ const duration = Math.max(48, tiles.length * 3.2);
 				}
 			}
 
-			function tick(now) {
-				if (!paused && !dragging) {
+			function hold() {
+				userHold = true;
+				resumeAt = Number.POSITIVE_INFINITY;
+			}
+
+			function release() {
+				userHold = false;
+				resumeAt = Date.now() + IDLE_MS;
+			}
+
+			function canAutoMove() {
+				return !userHold && !dragging && Date.now() >= resumeAt;
+			}
+
+			function tick() {
+				if (canAutoMove()) {
 					var w = loopW();
 					if (w > 8) {
+						fromAuto = true;
 						scroller.scrollLeft += Math.max(0.35, w / duration / 60);
 						wrap();
+						fromAuto = false;
 					}
 				}
 				requestAnimationFrame(tick);
@@ -97,6 +116,7 @@ const duration = Math.max(48, tiles.length * 3.2);
 			scroller.addEventListener(
 				'scroll',
 				function () {
+					if (!fromAuto && !wrapping) resumeAt = Date.now() + IDLE_MS;
 					wrap();
 				},
 				{ passive: true }
@@ -104,7 +124,7 @@ const duration = Math.max(48, tiles.length * 3.2);
 
 			scroller.addEventListener('pointerdown', function (event) {
 				if (event.button !== 0) return;
-				paused = true;
+				hold();
 				moved = 0;
 				if (event.pointerType === 'touch' || event.pointerType === 'pen') return;
 
@@ -124,8 +144,10 @@ const duration = Math.max(48, tiles.length * 3.2);
 				moved = Math.max(moved, Math.abs(dx));
 				if (moved < 3) return;
 				root.classList.add('is-dragging');
+				fromAuto = true;
 				scroller.scrollLeft = startScroll - dx;
 				wrap();
+				fromAuto = false;
 			});
 
 			function endDrag(event) {
@@ -137,26 +159,36 @@ const duration = Math.max(48, tiles.length * 3.2);
 				root.classList.remove('is-grabbing');
 				window.setTimeout(function () {
 					root.classList.remove('is-dragging');
-					paused = false;
 				}, 80);
+				release();
 			}
 
 			scroller.addEventListener('pointerup', endDrag);
 			scroller.addEventListener('pointercancel', endDrag);
-			scroller.addEventListener('pointerleave', function (event) {
-				if (dragging) endDrag(event);
-			});
+			scroller.addEventListener('lostpointercapture', endDrag);
 
-			scroller.addEventListener('touchstart', function () {
-				paused = true;
-			}, { passive: true });
-			scroller.addEventListener('touchend', function () {
-				paused = false;
-				wrap();
-			}, { passive: true });
-			scroller.addEventListener('touchcancel', function () {
-				paused = false;
-			}, { passive: true });
+			scroller.addEventListener(
+				'touchstart',
+				function () {
+					hold();
+				},
+				{ passive: true }
+			);
+			scroller.addEventListener(
+				'touchend',
+				function () {
+					release();
+					wrap();
+				},
+				{ passive: true }
+			);
+			scroller.addEventListener(
+				'touchcancel',
+				function () {
+					release();
+				},
+				{ passive: true }
+			);
 
 			scroller.addEventListener(
 				'click',
