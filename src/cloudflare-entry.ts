@@ -26,7 +26,10 @@ function canonicalRedirect(request: Request): Response | null {
 		return null;
 	}
 
-	const needsHost = host !== CANONICAL_HOST;
+	const isSiteHost = host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`;
+	if (!isSiteHost) return null;
+
+	const needsHost = host === `www.${CANONICAL_HOST}`;
 	const needsHttps = url.protocol === 'http:';
 	if (!needsHost && !needsHttps) return null;
 
@@ -115,6 +118,9 @@ async function withEdgeCache(
 
 export default {
 	async fetch(request: Request, env: WorkerEnv, ctx: WaitCtx) {
+		const redirected = canonicalRedirect(request);
+		if (redirected) return redirected;
+
 		const method = request.method;
 		if (method === 'GET' || method === 'HEAD') {
 			const pathname = new URL(request.url).pathname;
