@@ -142,7 +142,8 @@
 			if (axis !== 'x') return;
 			if (event.cancelable) event.preventDefault();
 			root.classList.add('is-dragging');
-			x = startOff + dx;
+			x += event.clientX - lastX;
+			lastX = event.clientX;
 			normalize();
 		}
 
