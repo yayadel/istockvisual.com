@@ -90,11 +90,11 @@ if (!keywordId) {
 }
 
 if (provider === 'gemini' && !geminiKey) {
-	console.error('GEMINI_API_KEY missing in .dev.vars');
+	console.error('GEMINI_API_KEY missing (Cloud: Cursor Secrets; local: .dev.vars)');
 	process.exit(1);
 }
 if (provider === 'together' && !togetherKey) {
-	console.error('TOGETHER_API_KEY missing in .dev.vars');
+	console.error('TOGETHER_API_KEY missing (Cloud: Cursor Secrets; local: .dev.vars)');
 	process.exit(1);
 }
 
