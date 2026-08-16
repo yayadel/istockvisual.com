@@ -1875,7 +1875,7 @@ body.upload-modal-open {
 .home-cats__viewport {
 	overflow: hidden;
 	cursor: grab;
-	touch-action: none;
+	touch-action: pan-y;
 }
 
 .home-cats.is-grabbing .home-cats__viewport {
@@ -1888,9 +1888,15 @@ body.upload-modal-open {
 
 .home-cats__track {
 	display: flex;
+	flex-wrap: nowrap;
 	width: max-content;
 	will-change: transform;
+	transform: translate3d(0, 0, 0);
 	animation: home-cats-marquee var(--home-cats-duration, 40s) linear infinite;
+}
+
+.home-cats.is-ready .home-cats__track {
+	animation: none;
 }
 
 .home-cats--interactive .home-cats__track,
@@ -1900,20 +1906,24 @@ body.upload-modal-open {
 
 .home-cats__group {
 	display: flex;
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
 	gap: 0.75rem;
 	padding-right: 0.75rem;
 }
 
-.home-cats:hover .home-cats__track {
-	animation-play-state: paused;
+@media (hover: hover) and (pointer: fine) {
+	.home-cats:hover:not(.is-ready) .home-cats__track {
+		animation-play-state: paused;
+	}
 }
 
 @keyframes home-cats-marquee {
 	from {
-		transform: translateX(0);
+		transform: translate3d(0, 0, 0);
 	}
 	to {
-		transform: translateX(-50%);
+		transform: translate3d(calc(-1 * var(--home-cats-loop, 0px)), 0, 0);
 	}
 }
 
@@ -2704,7 +2714,8 @@ body.upload-modal-open {
 @media (prefers-reduced-motion: reduce) {
 	.home-cats__track,
 	.home-cats:hover .home-cats__track,
-	.home-cats--interactive .home-cats__track {
+	.home-cats--interactive .home-cats__track,
+	.home-cats.is-ready .home-cats__track {
 		animation: none;
 	}
 
