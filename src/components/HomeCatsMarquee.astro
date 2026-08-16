@@ -140,9 +140,13 @@ const duration = Math.max(32, tiles.length * 4.5);
 		}
 
 		waitImages(function () {
-			measure();
-			if (reduceMotion) return;
-			enableJsLoop();
+			requestAnimationFrame(function () {
+				requestAnimationFrame(function () {
+					measure();
+					if (reduceMotion) return;
+					enableJsLoop();
+				});
+			});
 		});
 		window.addEventListener('load', function () {
 			measure();

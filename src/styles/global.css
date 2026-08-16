@@ -1896,10 +1896,6 @@ body.upload-modal-open {
 }
 
 .home-cats.is-ready .home-cats__track,
-.home-cats--interactive .home-cats__track {
-	animation: none;
-}
-
 .home-cats--interactive .home-cats__track,
 .home-cats--interactive:hover .home-cats__track {
 	animation: none;
