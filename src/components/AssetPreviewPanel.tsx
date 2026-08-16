@@ -123,7 +123,6 @@ export default function AssetPreviewPanel({
 	}, [hideLens]);
 
 	const src500 = sizedPreview(imageUrl, '500');
-	const wrapRatio = width && height ? { aspectRatio: `${width} / ${height}` } : undefined;
 
 	return (
 		<div className="asset-preview">
