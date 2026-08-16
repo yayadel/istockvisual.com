@@ -12,6 +12,36 @@ type WaitCtx = {
 	waitUntil: (promise: Promise<unknown>) => void;
 };
 
+const CANONICAL_HOST = 'istockvisual.com';
+
+function canonicalRedirect(request: Request): Response | null {
+	const url = new URL(request.url);
+	const host = url.hostname.replace(/\.$/, '').toLowerCase();
+	if (
+		host === 'localhost' ||
+		host.endsWith('.localhost') ||
+		host.endsWith('.workers.dev') ||
+		host.endsWith('.local')
+	) {
+		return null;
+	}
+
+	const needsHost = host !== CANONICAL_HOST;
+	const needsHttps = url.protocol === 'http:';
+	if (!needsHost && !needsHttps) return null;
+
+	url.protocol = 'https:';
+	url.hostname = CANONICAL_HOST;
+	url.port = '';
+	return new Response(null, {
+		status: 301,
+		headers: {
+			Location: url.toString(),
+			'Cache-Control': 'public, max-age=3600',
+		},
+	});
+}
+
 function shouldEdgeCache(pathname: string) {
 	return (
 		pathname.startsWith('/api/preview/') ||
