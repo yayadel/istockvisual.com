@@ -536,3 +536,22 @@ export function catalogChips(query: CatalogQuery) {
 	}
 	return chips;
 }
+
+export const CATALOG_PAGE_SIZE = 50;
+export const CATALOG_MAX_PAGES = 10;
+export const CATALOG_MAX_ITEMS = CATALOG_PAGE_SIZE * CATALOG_MAX_PAGES;
+
+export function paginateCatalog<T>(items: T[], page: number) {
+	const capped = items.slice(0, CATALOG_MAX_ITEMS);
+	const p = Math.max(1, Math.min(Math.floor(page) || 1, CATALOG_MAX_PAGES));
+	const start = (p - 1) * CATALOG_PAGE_SIZE;
+	const slice = capped.slice(start, start + CATALOG_PAGE_SIZE);
+	const nextStart = start + slice.length;
+	return {
+		items: slice,
+		page: p,
+		hasMore: p < CATALOG_MAX_PAGES && nextStart < capped.length,
+		totalCapped: capped.length,
+		indexOffset: start,
+	};
+}
