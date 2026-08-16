@@ -399,7 +399,30 @@ const colorForm = catalogPathAndParams({ ...query, color: '' });
 			}
 		</header>
 
-		<AssetGrid assets={assets} emptyMessage={emptyMessage} />
+		<AssetGrid assets={firstPage.items} emptyMessage={emptyMessage} />
+		{
+			firstPage.items.length > 0 && (
+				<div
+					class="catalog-infinite"
+					data-catalog-infinite
+					data-page={String(firstPage.page)}
+					data-has-more={firstPage.hasMore ? '1' : '0'}
+					data-q={query.q}
+					data-type={query.type}
+					data-topic={query.topic}
+					data-color={query.color}
+					data-orient={query.orient}
+					data-exclude={query.exclude}
+					data-sort={query.sort}
+					data-mode={visualSearch?.mode || ''}
+					data-c={visualSearch?.colors || ''}
+					data-key={visualSearch?.key || ''}
+				>
+					<p class="catalog-infinite__status" data-catalog-status hidden></p>
+				</div>
+			)
+		}
+		<script src="/js/catalog-infinite.js?v=1" defer></script>
 	</div>
 </div>
 

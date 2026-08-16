@@ -84,6 +84,8 @@
 		});
 	}
 
+	window.istockPackAssetGrid = pack;
+
 	function bind(grid) {
 		if (grid.getAttribute('data-grid-bound')) return;
 		grid.setAttribute('data-grid-bound', '1');

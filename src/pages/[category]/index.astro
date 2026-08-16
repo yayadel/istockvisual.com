@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CatalogView from '../../components/CatalogView.astro';
 import { getCategory, isCategorySlug } from '../../config/categories';
-import { applyCatalogFilters, parseCatalogQuery } from '../../lib/catalog';
+import { applyCatalogFilters, CATALOG_PAGE_SIZE, parseCatalogQuery } from '../../lib/catalog';
 import { listAllAssets } from '../../lib/generate-asset';
 import { collectionPageJsonLd, libraryPageTitle, siteOrigin } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
