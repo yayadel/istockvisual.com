@@ -1,13 +1,20 @@
 export type PricingTab = 'long' | 'short';
 
+export type PricingFeature = {
+	label: string;
+	tip: string;
+};
+
 export type PricingPlan = {
 	id: string;
 	name: string;
 	price: string;
 	period: string;
 	rate: string;
+	description: string;
 	cta: string;
 	href: string;
+	features: PricingFeature[];
 	featured?: boolean;
 	badge?: string;
 	note?: string;
