@@ -19,22 +19,20 @@ const duration = Math.max(48, tiles.length * 3.2);
 		<section class="home-bleed home-cats" aria-label={label} data-cats-duration={duration}>
 			<div class="home-cats__viewport" data-cats-scroller>
 				<div class="home-cats__track">
-					<div class="home-cats__group">
-						{tiles.map((category) => (
-							<a class="home-cats__card" href={category.href}>
-								<img src={category.image} alt="" draggable="false" decoding="async" />
-								<span class="home-cats__label">{category.label}</span>
-							</a>
-						))}
-					</div>
-					<div class="home-cats__group" aria-hidden="true">
-						{tiles.map((category) => (
-							<a class="home-cats__card" href={category.href} tabindex={-1}>
-								<img src={category.image} alt="" draggable="false" decoding="async" />
-								<span class="home-cats__label">{category.label}</span>
-							</a>
-						))}
-					</div>
+					{[0, 1, 2].map((copy) => (
+						<div class="home-cats__group" aria-hidden={copy === 0 ? undefined : 'true'}>
+							{tiles.map((category) => (
+								<a
+									class="home-cats__card"
+									href={category.href}
+									tabindex={copy === 0 ? undefined : -1}
+								>
+									<img src={category.image} alt="" draggable="false" decoding="async" />
+									<span class="home-cats__label">{category.label}</span>
+								</a>
+							))}
+						</div>
+					))}
 				</div>
 			</div>
 		</section>
