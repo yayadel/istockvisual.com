@@ -1874,27 +1874,13 @@ body.upload-modal-open {
 
 .home-cats__viewport {
 	overflow: hidden;
-	cursor: grab;
 	touch-action: pan-y;
-}
-
-.home-cats.is-grabbing .home-cats__viewport {
-	cursor: grabbing;
-}
-
-.home-cats.is-dragging a {
-	pointer-events: none;
 }
 
 .home-cats__track {
 	display: flex;
 	flex-wrap: nowrap;
 	width: max-content;
-	transform: translate3d(0, 0, 0);
-	backface-visibility: hidden;
-}
-
-.home-cats.is-looping .home-cats__track {
 	animation: home-cats-marquee var(--home-cats-duration, 48s) linear infinite;
 }
 
@@ -1907,7 +1893,7 @@ body.upload-modal-open {
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.home-cats.is-looping:hover .home-cats__track {
+	.home-cats:hover .home-cats__track {
 		animation-play-state: paused;
 	}
 }
@@ -1917,7 +1903,7 @@ body.upload-modal-open {
 		transform: translate3d(0, 0, 0);
 	}
 	to {
-		transform: translate3d(calc(-1 * var(--home-cats-loop, 0px)), 0, 0);
+		transform: translate3d(-50%, 0, 0);
 	}
 }
 

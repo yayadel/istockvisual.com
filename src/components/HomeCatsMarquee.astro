@@ -19,81 +19,24 @@ const duration = Math.max(48, tiles.length * 3.2);
 		<section class="home-bleed home-cats" aria-label={label}>
 			<div class="home-cats__viewport">
 				<div class="home-cats__track" style={`--home-cats-duration: ${duration}s`}>
-					{[0, 1].map((copy) => (
-						<div class="home-cats__group" aria-hidden={copy === 0 ? undefined : 'true'}>
-							{tiles.map((category) => (
-								<a
-									class="home-cats__card"
-									href={category.href}
-									tabindex={copy === 0 ? undefined : -1}
-								>
-									<img src={category.image} alt="" draggable="false" decoding="async" />
-									<span class="home-cats__label">{category.label}</span>
-								</a>
-							))}
-						</div>
-					))}
+					<div class="home-cats__group">
+						{tiles.map((category) => (
+							<a class="home-cats__card" href={category.href}>
+								<img src={category.image} alt="" draggable="false" decoding="async" />
+								<span class="home-cats__label">{category.label}</span>
+							</a>
+						))}
+					</div>
+					<div class="home-cats__group" aria-hidden="true">
+						{tiles.map((category) => (
+							<a class="home-cats__card" href={category.href} tabindex={-1}>
+								<img src={category.image} alt="" draggable="false" decoding="async" />
+								<span class="home-cats__label">{category.label}</span>
+							</a>
+						))}
+					</div>
 				</div>
 			</div>
 		</section>
 	)
 }
-
-<script is:inline>
-	(function () {
-		var nodes = document.querySelectorAll('.home-cats:not([data-cats-loop])');
-		for (var i = 0; i < nodes.length; i += 1) bind(nodes[i]);
-
-		function bind(root) {
-			root.setAttribute('data-cats-loop', '1');
-			var track = root.querySelector('.home-cats__track');
-			var group = track && track.querySelector('.home-cats__group');
-			if (!track || !group) return;
-
-			function loopWidth() {
-				return Math.round(group.scrollWidth || group.offsetWidth || group.getBoundingClientRect().width);
-			}
-
-			var lastW = 0;
-			function start() {
-				var w = loopWidth();
-				if (w < 8) return false;
-				if (w === lastW && root.classList.contains('is-looping')) return true;
-				lastW = w;
-				track.style.setProperty('--home-cats-loop', w + 'px');
-				root.classList.remove('is-looping');
-				void track.offsetWidth;
-				root.classList.add('is-looping');
-				return true;
-			}
-
-			function whenReady(fn) {
-				var imgs = track.querySelectorAll('img');
-				var left = 0;
-				function one() {
-					left -= 1;
-					if (left <= 0) fn();
-				}
-				for (var n = 0; n < imgs.length; n += 1) {
-					if (imgs[n].complete) continue;
-					left += 1;
-					imgs[n].addEventListener('load', one, { once: true });
-					imgs[n].addEventListener('error', one, { once: true });
-				}
-				if (left === 0) fn();
-			}
-
-			whenReady(function () {
-				requestAnimationFrame(function () {
-					if (start()) return;
-					window.setTimeout(start, 300);
-				});
-			});
-			window.addEventListener('load', start);
-			window.addEventListener('resize', start);
-			if (typeof ResizeObserver !== 'undefined') {
-				new ResizeObserver(start).observe(group);
-			}
-		}
-	})();
-</script>
