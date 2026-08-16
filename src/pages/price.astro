@@ -598,10 +598,17 @@ const jsonLd = {
 	@media (max-width: 860px) {
 		.pricing-grid {
 			grid-template-columns: 1fr;
+			grid-template-rows: none;
+			align-items: stretch;
+		}
+
+		.pricing-card {
+			display: flex;
+			flex-direction: column;
+			grid-row: auto;
 		}
 
 		.pricing-card.is-featured {
-			transform: none;
 			order: -1;
 		}
 
