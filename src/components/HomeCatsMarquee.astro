@@ -187,7 +187,6 @@ const duration = Math.max(32, tiles.length * 4.5);
 		viewport.addEventListener('pointermove', function (event) {
 			if (!dragging || event.pointerId !== pointerId) return;
 			var now = performance.now();
- marqueeDx = event.clientX - startX;
 			var dx = event.clientX - startX;
 			moved = Math.max(moved, Math.abs(dx));
 			if (moved <= dragThreshold) return;
