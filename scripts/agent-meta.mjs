@@ -122,12 +122,26 @@ if (provider === 'together') {
 if (devVars.HTTPS_PROXY && !env.HTTPS_PROXY) env.HTTPS_PROXY = devVars.HTTPS_PROXY;
 if (devVars.HTTP_PROXY && !env.HTTP_PROXY) env.HTTP_PROXY = devVars.HTTP_PROXY;
 
-const py = spawnSync('python', [pyScript, keyword, '--out', metaPath], {
-	cwd: root,
-	env,
-	encoding: 'utf8',
-	maxBuffer: 16 * 1024 * 1024,
-});
+function runPython(scriptPath, args, env) {
+	const bins = process.platform === 'win32' ? ['python', 'python3'] : ['python3', 'python'];
+	let last = null;
+	for (const bin of bins) {
+		const py = spawnSync(bin, [scriptPath, ...args], {
+			cwd: root,
+			env,
+			encoding: 'utf8',
+			maxBuffer: 16 * 1024 * 1024,
+		});
+		if (py.error && py.error.code === 'ENOENT') {
+			last = py;
+			continue;
+		}
+		return py;
+	}
+	return last;
+}
+
+const py = runPython(pyScript, [keyword, '--out', metaPath], env);
 
 if (py.status !== 0) {
 	console.error(py.stderr || py.stdout || `${path.basename(pyScript)} failed`);
