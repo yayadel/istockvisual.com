@@ -1874,7 +1874,21 @@ body.upload-modal-open {
 
 .home-cats__viewport {
 	overflow: hidden;
+	cursor: grab;
 	touch-action: pan-y;
+}
+
+.home-cats.is-grabbing .home-cats__viewport {
+	cursor: grabbing;
+	touch-action: none;
+}
+
+.home-cats.is-dragging a {
+	pointer-events: none;
+}
+
+.home-cats.is-manual .home-cats__track {
+	animation: none;
 }
 
 .home-cats__track {
