@@ -49,8 +49,9 @@ const duration = Math.max(48, tiles.length * 3.2);
 			root.setAttribute('data-cats-ready', '1');
 
 			var scroller = root.querySelector('[data-cats-scroller]');
-			var group = root.querySelector('.home-cats__group');
-			if (!scroller || !group) return;
+			var groups = root.querySelectorAll('.home-cats__group');
+			var group = groups[0];
+			if (!scroller || !group || groups.length < 2) return;
 
 			var duration = parseFloat(root.getAttribute('data-cats-duration')) || 48;
 			var userHold = false;
@@ -65,20 +66,38 @@ const duration = Math.max(48, tiles.length * 3.2);
 			var IDLE_MS = 2500;
 
 			function loopW() {
-				return group.scrollWidth || group.offsetWidth || 0;
+				if (groups.length > 1) {
+					var gap = Math.round(groups[1].offsetLeft - groups[0].offsetLeft);
+					if (gap > 8) return gap;
+				}
+				return Math.round(group.offsetWidth);
 			}
 
 			function wrap() {
 				var w = loopW();
 				if (w < 8 || wrapping) return;
 				var x = scroller.scrollLeft;
-				if (x >= w) {
-					wrapping = true;
-					scroller.scrollLeft = x - w;
-					wrapping = false;
+				var next = x;
+				if (groups.length > 2) {
+					if (x >= w * 2) next = x - w;
+					else if (x < w) next = x + w;
+				} else if (x >= w) {
+					next = x - w;
 				} else if (x < 0) {
+					next = x + w;
+				}
+				if (next !== x) {
 					wrapping = true;
-					scroller.scrollLeft = x + w;
+					scroller.scrollLeft = next;
+					wrapping = false;
+				}
+			}
+
+			function seed() {
+				var w = loopW();
+				if (w > 8 && groups.length > 2 && scroller.scrollLeft < w * 0.5) {
+					wrapping = true;
+					scroller.scrollLeft = w;
 					wrapping = false;
 				}
 			}
