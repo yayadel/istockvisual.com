@@ -2706,10 +2706,8 @@ body.upload-modal-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.home-cats__track,
-	.home-cats:hover .home-cats__track,
-	.home-cats--interactive .home-cats__track,
-	.home-cats.is-ready .home-cats__track {
+	.home-cats.is-looping .home-cats__track,
+	.home-cats:hover .home-cats__track {
 		animation: none;
 	}
 
