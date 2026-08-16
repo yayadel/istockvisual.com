@@ -106,7 +106,9 @@ const duration = Math.max(48, tiles.length * 3.2);
 						fromAuto = true;
 						scroller.scrollLeft += Math.max(0.35, w / duration / 60);
 						wrap();
-						fromAuto = false;
+						requestAnimationFrame(function () {
+							fromAuto = false;
+						});
 					}
 				}
 				requestAnimationFrame(tick);
@@ -116,7 +118,6 @@ const duration = Math.max(48, tiles.length * 3.2);
 			scroller.addEventListener(
 				'scroll',
 				function () {
-					if (!fromAuto && !wrapping) resumeAt = Date.now() + IDLE_MS;
 					wrap();
 				},
 				{ passive: true }
