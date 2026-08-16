@@ -4221,8 +4221,9 @@ body.upload-modal-open {
 
 .detail__preview .asset-preview__image {
 	display: block;
-	width: 100%;
+	width: auto;
 	height: auto;
+	max-width: 100%;
 	max-height: min(72vh, 720px);
 	object-fit: contain;
 }

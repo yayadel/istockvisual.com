@@ -141,6 +141,7 @@ export default function AssetPreviewPanel({
 					width={width}
 					height={height}
 					className="asset-preview__image"
+					style={width && height ? { aspectRatio: `${width} / ${height}` } : undefined}
 					fetchPriority="high"
 					decoding="async"
 					draggable={false}
