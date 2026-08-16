@@ -1892,7 +1892,7 @@ body.upload-modal-open {
 	display: flex;
 	flex-wrap: nowrap;
 	width: max-content;
-	will-change: transform;
+	gap: 0.75rem;
 }
 
 .home-cats__group {
