@@ -48,7 +48,7 @@
 		var pointerId = null;
 		var startX = 0;
 		var startY = 0;
-		var startOff = 0;
+		var lastX = 0;
 		var userUntil = 0;
 		var lastTs = 0;
 		var IDLE_MS = 2500;
