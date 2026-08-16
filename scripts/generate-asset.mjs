@@ -1,5 +1,6 @@
-const baseUrl = process.env.GENERATE_BASE_URL || 'http://localhost:4325';
-const secret = process.env.GENERATE_API_SECRET || 'dev-generate-secret';
+import { resolveGenerateEnv } from './lib/generate-env.mjs';
+
+const { baseUrl, secret } = resolveGenerateEnv();
 
 console.log('Use Cursor Agent mode instead:');
 console.log('  npm run agent:prepare');

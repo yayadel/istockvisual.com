@@ -3,12 +3,14 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadDevVars, slugifyKeyword } from './lib/gemini-node.mjs';
+import { resolveGenerateEnv } from './lib/generate-env.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const devVars = loadDevVars();
-const baseUrl = process.env.GENERATE_BASE_URL || devVars.BETTER_AUTH_URL || 'http://localhost:4325';
-const secret =
-	process.env.GENERATE_API_SECRET || devVars.GENERATE_API_SECRET || 'dev-generate-secret';
+const { baseUrl, secret, devVars } = resolveGenerateEnv();
+if (!secret) {
+	console.error('GENERATE_API_SECRET missing (Cloud: Cursor Secrets; local: .dev.vars)');
+	process.exit(1);
+}
 
 function parseCli(argv) {
 	const flags = {};
