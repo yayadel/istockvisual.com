@@ -166,7 +166,9 @@ const duration = Math.max(48, tiles.length * 3.2);
 
 			scroller.addEventListener('pointerup', endDrag);
 			scroller.addEventListener('pointercancel', endDrag);
-			scroller.addEventListener('lostpointercapture', endDrag);
+			scroller.addEventListener('lostpointercapture', function (event) {
+				if (dragging) endDrag(event);
+			});
 
 			scroller.addEventListener(
 				'touchstart',
