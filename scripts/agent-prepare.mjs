@@ -39,7 +39,9 @@ if (!secret) {
 }
 
 const count = Math.max(1, Number(flags.count || flags.n || positional[0] || 1) || 1);
-const batchPath = resolveBatchPath(flags['batch-file'] || flags.batchfile || '');
+const batchPath = resolveBatchPath(
+	flags['batch-file'] || flags.batchfile || positional[1] || '',
+);
 
 const res = await fetch(`${baseUrl}/api/generate/prepare`, {
 	method: 'POST',
