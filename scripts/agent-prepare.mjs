@@ -31,7 +31,7 @@ function parseCli(argv) {
 	return { flags, positional };
 }
 
-const { flags } = parseCli(process.argv.slice(2));
+const { flags, positional } = parseCli(process.argv.slice(2));
 const { baseUrl, secret } = resolveGenerateEnv();
 if (!secret) {
 	console.error('GENERATE_API_SECRET missing (Cloud: Cursor Secrets; local: .dev.vars GENERATE_API_SECRET_REMOTE)');
