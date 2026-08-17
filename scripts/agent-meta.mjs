@@ -4,11 +4,18 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadDevVars, slugifyKeyword } from './lib/gemini-node.mjs';
 import { resolveGenerateEnv } from './lib/generate-env.mjs';
+import {
+	createKeywordBatch,
+	markBatchKeywordStatus,
+	pendingCount,
+	resolveBatchPath,
+	takeNextPendingKeyword,
+} from './lib/keyword-batch.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { baseUrl, secret, devVars } = resolveGenerateEnv();
 if (!secret) {
-	console.error('GENERATE_API_SECRET missing (Cloud: Cursor Secrets; local: .dev.vars)');
+	console.error('GENERATE_API_SECRET missing (Cloud: Cursor Secrets; local: .dev.vars GENERATE_API_SECRET_REMOTE)');
 	process.exit(1);
 }
 
@@ -57,33 +64,58 @@ const togetherModel =
 const keywordIdArg = Number(positional[0]);
 const tmpDir = path.join(root, '.tmp');
 fs.mkdirSync(tmpDir, { recursive: true });
+const batchPath = resolveBatchPath(flags['batch-file'] || flags.batchfile || '');
 
 let keywordId = Number.isFinite(keywordIdArg) && keywordIdArg > 0 ? keywordIdArg : null;
 let keyword = '';
 let claimedByThisRun = false;
+let fromBatch = false;
+let batchId = null;
 
 if (!keywordId) {
-	const prepareRes = await fetch(`${baseUrl}/api/generate/prepare`, {
-		method: 'POST',
-		headers: {
-			'x-generate-secret': secret,
-			Origin: baseUrl,
-			'Content-Type': 'application/json',
-		},
-	});
-	const prepared = await prepareRes.json();
-	if (!prepareRes.ok) {
-		console.error(prepared.error || 'Prepare failed');
-		process.exit(1);
+	const pending = takeNextPendingKeyword(batchPath);
+	if (pending) {
+		keywordId = pending.item.keywordId;
+		keyword = pending.item.keyword;
+		batchId = pending.batch.batchId;
+		fromBatch = true;
+	} else {
+		const prepareRes = await fetch(`${baseUrl}/api/generate/prepare`, {
+			method: 'POST',
+			headers: {
+				'x-generate-secret': secret,
+				Origin: baseUrl,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ count: 1 }),
+		});
+		const prepared = await prepareRes.json();
+		if (!prepareRes.ok) {
+			console.error(prepared.error || 'Prepare failed');
+			process.exit(1);
+		}
+		keywordId = prepared.keywordId;
+		keyword = prepared.keyword;
+		batchId = prepared.batchId || prepared.lockBatchId || null;
+		claimedByThisRun = true;
+		if (batchId && keywordId && keyword) {
+			createKeywordBatch(
+				{
+					batchId,
+					baseUrl,
+					keywords: [{ keywordId, keyword }],
+				},
+				batchPath,
+			);
+			fromBatch = true;
+		}
 	}
-	keywordId = prepared.keywordId;
-	keyword = prepared.keyword;
-	claimedByThisRun = true;
 } else {
 	keyword = positional[1] || '';
 	if (!keyword) {
 		console.error('Usage: npm run agent:meta');
 		console.error('   or: npm run agent:meta:gemma');
+		console.error('   or: npm run agent:prepare -- --count 10');
 		console.error('   or: node scripts/agent-meta.mjs [--provider gemini|together] <keywordId> "<keyword>"');
 		process.exit(1);
 	}

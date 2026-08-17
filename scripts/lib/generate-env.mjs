@@ -11,30 +11,17 @@ function isLocalHost(url) {
 	}
 }
 
-function looksLikeCloudAgent() {
-	return Boolean(
-		process.env.CURSOR_AGENT ||
-			process.env.CURSOR_CLOUD ||
-			process.env.CLOUD_AGENT ||
-			process.env.CURSOR_CLOUD_AGENT,
-	);
-}
-
 /**
  * Resolve where generate/import scripts should POST.
- * Cloud Agent VMs have no .dev.vars → production Worker.
- * Local .dev.vars with localhost stays local unless GENERATE_BASE_URL is set.
+ * Default is always production (D1/R2 live catalog). Local code is for debugging only.
+ * Override with GENERATE_BASE_URL when you intentionally need a non-prod Worker.
  */
 export function resolveGenerateEnv() {
 	const devVars = loadDevVars();
 	const explicit = (process.env.GENERATE_BASE_URL || '').trim();
-	const fromAuth = (devVars.BETTER_AUTH_URL || '').trim();
-	const cloud = looksLikeCloudAgent() || !Object.keys(devVars).length;
 
 	let baseUrl = PRODUCTION_SITE;
 	if (explicit) baseUrl = explicit.replace(/\/$/, '');
-	else if (!cloud && fromAuth) baseUrl = fromAuth.replace(/\/$/, '');
-	else if (cloud) baseUrl = PRODUCTION_SITE;
 
 	const production = !isLocalHost(baseUrl);
 	const secret = production
