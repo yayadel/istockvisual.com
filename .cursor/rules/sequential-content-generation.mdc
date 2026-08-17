@@ -11,16 +11,19 @@ alwaysApply: true
 
 ## 强制流程
 
-对每一个素材，独立走完整闭环，确认完成后再开始下一个：
+接到「做 N 个」时（N 为变量）：
 
-1. 认领 **1** 个关键词，并用 **Gemini Interactions API**（`scripts/gemini_meta.py` / `npm run agent:meta`，模型默认 `gemini-3.6-flash` + `google_search`）生成元数据。可选替代：Together **Gemma 4**（`npm run agent:meta:gemma`，模型 `google/gemma-4-31B-it`，需 `TOGETHER_API_KEY`）
-2. 使用返回的 `meta.imagePrompt` **单独**生成该素材图片（一次只调一次图像生成）。保存文件名必须与 `meta.imagePageTitle` 一致（去掉 `<>:"/\|?*` 等非法字符，保留 Title Case；不要用关键词当文件名）
-3. 导入该素材（含尺寸变体等）：`node scripts/agent-import.mjs …`
-4. 确认成功后，再开始下一条
+1. **先锁定 N 个话题**（线上 D1）：`node scripts/agent-prepare.mjs --count=N`  
+   同一批写入 `used=1` + 共用 `lockBatchId`，另开进程认领时看不到这批。本地默认已指向线上。
+2. 对批次里每一个 pending 关键词，独立走完整闭环，确认完成后再开始下一个：
+   - 用 Together **Gemma 4**（`npm run agent:meta:gemma`）生成元数据；仅当用户明确要求时才用 Gemini（`npm run agent:meta`）
+   - 使用返回的 `meta.imagePrompt` **单独**生成该素材图片（一次只调一次图像生成）。保存文件名必须与 `meta.imagePageTitle` 一致（去掉 `<>:"/\|?*` 等非法字符，保留 Title Case；不要用关键词当文件名）
+   - 导入该素材（含尺寸变体等）：`node scripts/agent-import.mjs …`
+3. 中途放弃整批未完成话题：`node scripts/agent-release.mjs`（按 batchId 释放无内容锁）
 
 用户从站点下载的文件名同样使用内容标题（`imagePageTitle` / `asset.title`），不要用带随机码的 slug。
 
-N 个素材 = N 轮独立任务，不是一轮里做 N 个。
+N 个素材 = 1 次批量锁定 + N 轮串行制作，不是一轮里并行做 N 个。
 
 ## 禁止
 
@@ -31,7 +34,7 @@ N 个素材 = N 轮独立任务，不是一轮里做 N 个。
 
 ## 允许
 
-- 用户明确要求「再生成 N 个」时：仍按上面流程 **串行做完 N 个**
+- 用户明确要求「再生成 N 个」时：先 `agent-prepare --count=N`，再串行做完 N 个
 - 仅查询关键词列表等只读准备步骤可先做，但 meta / 出图 / 导入仍一次一条
 
 Cloud Agent：导入打线上 Worker，密钥走 Cursor Secrets，详见仓库根目录 `AGENTS.md`。

@@ -37,7 +37,7 @@ Required **Cursor Dashboard → Cloud Agents → Secrets** (Runtime Secrets, nev
 
 Do **not** start `astro dev` or Wrangler for content jobs. Do **not** git-commit generated JPEGs or `.tmp` meta unless the user asks. Do **not** open a PR just to import an asset — success is a live page on istockvisual.com.
 
-Default mobile/cloud task: **generate and import exactly 1 asset**, then stop and report the public URL (`/{category}/{slug}`).
+Default mobile/cloud task: **generate and import exactly 1 asset**, then stop and report the public URL (`/{category}/{slug}`). For N>1, lock with `node scripts/agent-prepare.mjs --count=N` first, then serial loops.
 
 If `python3` is required, prefer `python3` then `python`. `npm install` is already in `.cursor/environment.json`.
 
@@ -45,6 +45,6 @@ If `python3` is required, prefer `python3` then `python`. `npm install` is alrea
 
 ```
 Generate and import exactly 1 stock asset for istockvisual.com.
-Follow AGENTS.md: claim one keyword, npm run agent:meta:gemma, generate one image from imagePrompt, then agent-import.mjs.
-Do not batch. Do not commit images. Do not open a PR. Reply with the live asset URL when import succeeds.
+Follow AGENTS.md: agent-prepare --count=1 (or claim via meta), npm run agent:meta:gemma, generate one image from imagePrompt, then agent-import.mjs.
+Do not batch images. Do not commit images. Do not open a PR. Reply with the live asset URL when import succeeds.
 ```
