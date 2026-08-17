@@ -32,7 +32,6 @@ import { tagMatches, toPathSlug } from './paths';
 import {
 	claimKeywords,
 	claimNextKeyword,
-	clearKeywordLockBatch,
 	getKeywordById,
 	releaseKeywordById,
 } from './keywords';
