@@ -75,11 +75,12 @@ const jsonLd = assetJsonLd({
 	seoTitle,
 	seoDescription,
 	imageDescription: asset.creationDescription || asset.description || asset.shortDescription,
-	imageUrl: ogImage,
-	thumbnailUrl: ogImage,
+	contentUrl: assetJsonLdContentUrl(origin, asset._id),
+	thumbnailUrl: asset.previewUrl
+		? assetJsonLdThumbnailUrl(origin, asset.previewUrl)
+		: undefined,
 	width: asset.width,
 	height: asset.height,
-	fileType: asset.fileType,
 	medium: asset.medium,
 	tags,
 	publishedAt: asset.publishedAt,
