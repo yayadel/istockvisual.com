@@ -326,6 +326,17 @@ export function collectionPageJsonLd(input: {
 	return { '@context': 'https://schema.org', '@graph': graph };
 }
 
+/** JSON-LD 主图：免费 1K JPEG，Google 可直接 GET */
+export function assetJsonLdContentUrl(origin: string, assetId: string): string {
+	return absoluteUrl(`/api/download/${encodeURIComponent(assetId)}?size=1k`, origin);
+}
+
+/** JSON-LD 缩略图：AVIF 预览 500px */
+export function assetJsonLdThumbnailUrl(origin: string, previewUrl: string): string {
+	const base = absoluteUrl(previewUrl, origin);
+	return base.includes('?') ? `${base}&size=500` : `${base}?size=500`;
+}
+
 export function assetJsonLd(input: {
 	origin: string;
 	pagePath: string;
@@ -333,11 +344,12 @@ export function assetJsonLd(input: {
 	seoTitle: string;
 	seoDescription: string;
 	imageDescription?: string;
-	imageUrl?: string;
+	/** 主资源 URL（JPEG download） */
+	contentUrl?: string;
+	/** 缩略图 URL（AVIF preview） */
 	thumbnailUrl?: string;
 	width?: number;
 	height?: number;
-	fileType?: string;
 	medium?: string;
 	tags?: string[];
 	publishedAt?: string;
@@ -349,16 +361,14 @@ export function assetJsonLd(input: {
 	const licenseUrl = absoluteUrl(LICENSE_PATH, input.origin);
 	const imageId = `${pageUrl}#image`;
 	const breadcrumbId = `${pageUrl}#breadcrumb`;
-	const imageUrl = input.imageUrl ? absoluteUrl(input.imageUrl, input.origin) : undefined;
+	const contentUrl = input.contentUrl
+		? absoluteUrl(input.contentUrl, input.origin)
+		: undefined;
 	const thumbnailUrl = input.thumbnailUrl
 		? absoluteUrl(input.thumbnailUrl, input.origin)
-		: imageUrl;
-	const encodingFormat =
-		input.fileType && input.fileType.includes('/')
-			? input.fileType
-			: input.fileType
-				? `image/${input.fileType.replace(/^\./, '')}`
-				: 'image/jpeg';
+		: contentUrl;
+	// contentUrl 固定为 download API → JPEG
+	const encodingFormat = 'image/jpeg';
 	const imageDescription = (
 		input.imageDescription ||
 		input.seoDescription ||
@@ -372,7 +382,8 @@ export function assetJsonLd(input: {
 		'@id': imageId,
 		name: input.title,
 		description: imageDescription,
-		contentUrl: imageUrl,
+		url: pageUrl,
+		contentUrl,
 		thumbnailUrl,
 		license: licenseUrl,
 		acquireLicensePage: licenseUrl,
