@@ -5,12 +5,12 @@ export const POST: APIRoute = async () => {
 	return new Response(
 		JSON.stringify({
 			error: 'Use stepwise generate APIs instead of auto pipeline.',
-			prepare: 'POST /api/generate/prepare (reserve keyword)',
-			meta: 'npm run agent:meta (Gemini step-1 metadata in Node) or POST /api/generate/meta',
-			release: 'POST /api/generate/release (free keyword if meta fails)',
+			prepare: 'POST /api/generate/prepare { count?: N } — lock N unused keywords in one batch',
+			meta: 'npm run agent:meta:gemma (or agent:meta) — next pending from batch / single claim',
+			release: 'POST /api/generate/release { keywordId | batchId } — free unused locks',
 			import: 'POST /api/generate/import',
-			cli: 'npm run agent:meta  →  generate image  →  npm run agent:import',
-			hint: 'One asset at a time. Metadata via Gemini; image via Cursor. Set HTTPS_PROXY if Google is unreachable.',
+			cli: 'npm run agent:prepare -- --count N  →  agent:meta:gemma  →  image  →  agent:import',
+			hint: 'Lock a batch first so other workers cannot claim the same topics. One image at a time.',
 		}),
 		{
 			status: 410,
