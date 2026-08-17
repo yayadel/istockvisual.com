@@ -18,6 +18,7 @@
 		"keywords:import:remote": "node scripts/import-keywords.mjs --remote",
 		"generate:asset": "node scripts/generate-asset.mjs",
 		"agent:prepare": "node scripts/agent-prepare.mjs",
+		"agent:release": "node scripts/agent-release.mjs",
 		"agent:meta": "node scripts/agent-meta.mjs",
 		"agent:meta:py": "python scripts/gemini_meta.py",
 		"agent:meta:gemma": "node scripts/agent-meta.mjs --provider=together",

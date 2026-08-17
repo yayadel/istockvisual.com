@@ -6,16 +6,21 @@ Content lives on the **Cloudflare Worker** (`https://istockvisual.com`, D1 + R2)
 
 When making assets (image + meta + import), do **one keyword at a time**. Never batch image prompts or parallel image jobs.
 
-For each asset:
+For a job of **N** assets (N is the demand count for this process):
 
-1. Claim **1** keyword and generate meta with Together Gemma 4: `npm run agent:meta:gemma`. Only use `npm run agent:meta` (Gemini) if the user explicitly asks.
-2. Generate **one** image from `meta.imagePrompt`. Save the file using `meta.imagePageTitle` (Title Case; strip `<>:"/\|?*`).
-3. Import: `node scripts/agent-import.mjs <meta.json> <image.jpg> <keywordId>`
-4. Confirm success, then start the next keyword.
+1. Lock N topics on production first: `npm run agent:prepare -- --count N`  
+   This writes `.tmp/keyword-batch.json` and sets `used=1` + `lockBatchId` on those rows so another process claiming M topics cannot see them.
+2. For each pending keyword in the batch (serial):
+   - Meta: `npm run agent:meta:gemma` (takes next pending from the batch file). Only use `npm run agent:meta` (Gemini) if the user explicitly asks.
+   - Generate **one** image from `meta.imagePrompt`. Save using `meta.imagePageTitle` (Title Case; strip `<>:"/\|?*`).
+   - Import: `node scripts/agent-import.mjs <meta.json> <image.jpg> <keywordId>`
+3. Confirm success, then start the next pending keyword in the same batch.
+
+Generate/import scripts default to **https://istockvisual.com** (production D1/R2). Override only with `GENERATE_BASE_URL` when intentionally hitting another Worker.
 
 Title/tag casing: English title case; acronyms (PDF, UAE, AI, UI, 3D, 4K…) stay uppercase. Titles name the scene, not a search-query sentence. No “Stock Image” / “Free Download” in the title.
 
-If the user asks for N assets, still run N serial loops.
+If the user asks for N assets, still run N serial loops inside one locked batch.
 
 ## Cursor Cloud specific instructions
 

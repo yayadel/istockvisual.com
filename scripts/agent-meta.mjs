@@ -241,15 +241,26 @@ if (fs.existsSync(usagePath)) {
 		usage = null;
 	}
 }
+
+let remainingPending = null;
+if (fromBatch && keywordId) {
+	const updated = markBatchKeywordStatus(batchPath, keywordId, 'done');
+	remainingPending = pendingCount(updated);
+}
+
 console.log(
 	JSON.stringify(
 		{
 			ok: true,
 			provider: provider === 'together' ? 'together-gemma' : 'gemini-interactions',
 			model: modelLabel,
+			baseUrl,
+			batchId,
 			keywordId,
 			keyword,
 			metaPath: relativeMeta,
+			batchFile: fromBatch ? batchPath.replaceAll('\\', '/') : null,
+			pendingInBatch: remainingPending,
 			usage,
 			imagePageTitle: meta.imagePageTitle,
 			contentCategories: meta.contentCategories,
@@ -257,6 +268,9 @@ console.log(
 			next: [
 				'Generate ONE image from imagePrompt (do not batch).',
 				`Import: node scripts/agent-import.mjs ${relativeMeta} <image.jpg> ${keywordId} [w] [h]`,
+				remainingPending > 0
+					? `Then run agent:meta:gemma again for the next pending keyword (${remainingPending} left).`
+					: 'Batch complete (or single claim).',
 			],
 		},
 		null,
