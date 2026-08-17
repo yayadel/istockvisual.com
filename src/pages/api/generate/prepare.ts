@@ -1,6 +1,11 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { prepareNextKeyword } from '../../../lib/generate-asset';
+import { prepareKeywords } from '../../../lib/generate-asset';
+import { MAX_KEYWORD_CLAIM_COUNT } from '../../../lib/keywords';
+
+type PrepareBody = {
+	count?: number;
+};
 
 export const POST: APIRoute = async (context) => {
 	const secret =
@@ -24,24 +29,49 @@ export const POST: APIRoute = async (context) => {
 	}
 
 	try {
-		const prepared = await prepareNextKeyword(env.DB);
+		const body = (await context.request.json().catch(() => ({}))) as PrepareBody;
+		const rawCount = Number(body.count ?? 1);
+		const count = Number.isFinite(rawCount) && rawCount > 0 ? Math.floor(rawCount) : 1;
+		if (count > MAX_KEYWORD_CLAIM_COUNT) {
+			return new Response(
+				JSON.stringify({
+					error: `count must be between 1 and ${MAX_KEYWORD_CLAIM_COUNT}`,
+				}),
+				{ status: 400, headers: { 'Content-Type': 'application/json' } },
+			);
+		}
+
+		const prepared = await prepareKeywords(env.DB, count);
+		const first = prepared.keywords[0];
 		const hasGemini = Boolean(env.GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY);
+
 		return new Response(
 			JSON.stringify({
 				ok: true,
 				mode: 'prepare-keyword',
-				...prepared,
+				batchId: prepared.batchId,
+				count: prepared.count,
+				keywords: prepared.keywords.map((item) => ({
+					keywordId: item.keywordId,
+					keyword: item.keyword,
+					lockBatchId: item.lockBatchId,
+				})),
+				// Backward-compatible single-claim fields (first reserved topic).
+				keywordId: first?.keywordId,
+				keyword: first?.keyword,
+				hostPrompt: first?.hostPrompt,
+				jsonInstruction: first?.jsonInstruction,
+				fullPrompt: first?.fullPrompt,
+				lockBatchId: prepared.batchId,
 				geminiConfigured: hasGemini,
-				instructions: hasGemini
-					? [
-							'Keyword reserved.',
-							'Run `npm run agent:meta` to generate step-1 metadata with Gemini (Node), or POST /api/generate/meta.',
-							'Then generate ONE image from meta.imagePrompt and import.',
-						]
-					: [
-							'Keyword reserved, but GEMINI_API_KEY is missing in .dev.vars.',
-							'Add the key, then run `npm run agent:meta`.',
-						],
+				instructions: [
+					`Reserved ${prepared.count} keyword(s) in lock batch ${prepared.batchId}.`,
+					'Other workers will not receive these topics until released or completed.',
+					'Process keywords one-by-one (meta → one image → import). Do not batch image generation.',
+					hasGemini
+						? 'Run `npm run agent:meta:gemma` (or agent:meta) per keyword, then import.'
+						: 'Add GEMINI_API_KEY / TOGETHER_API_KEY, then run agent meta per keyword.',
+				],
 			}),
 			{ headers: { 'Content-Type': 'application/json' } },
 		);

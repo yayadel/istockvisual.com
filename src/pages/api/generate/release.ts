@@ -1,9 +1,11 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { releaseKeywordById } from '../../../lib/keywords';
+import { releaseKeywordBatch, releaseKeywordById } from '../../../lib/keywords';
 
 type ReleaseBody = {
 	keywordId?: number;
+	batchId?: string;
+	lockBatchId?: string;
 };
 
 export const POST: APIRoute = async (context) => {
@@ -29,15 +31,40 @@ export const POST: APIRoute = async (context) => {
 
 	try {
 		const body = (await context.request.json().catch(() => ({}))) as ReleaseBody;
-		const keywordId = Number(body.keywordId);
-		if (!Number.isFinite(keywordId) || keywordId <= 0) {
-			return new Response(JSON.stringify({ error: 'keywordId is required' }), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' },
-			});
+		const batchId = String(body.batchId || body.lockBatchId || '').trim();
+
+		if (batchId) {
+			const result = await releaseKeywordBatch(env.DB, batchId);
+			return new Response(
+				JSON.stringify({
+					ok: true,
+					batchId,
+					releasedIds: result.releasedIds,
+					skippedIds: result.skippedIds,
+				}),
+				{ headers: { 'Content-Type': 'application/json' } },
+			);
 		}
 
-		await releaseKeywordById(env.DB, keywordId);
+		const keywordId = Number(body.keywordId);
+		if (!Number.isFinite(keywordId) || keywordId <= 0) {
+			return new Response(
+				JSON.stringify({ error: 'keywordId or batchId is required' }),
+				{ status: 400, headers: { 'Content-Type': 'application/json' } },
+			);
+		}
+
+		const released = await releaseKeywordById(env.DB, keywordId);
+		if (!released) {
+			return new Response(
+				JSON.stringify({
+					error: 'Keyword not released (missing, already free, or has linked content)',
+					keywordId,
+				}),
+				{ status: 409, headers: { 'Content-Type': 'application/json' } },
+			);
+		}
+
 		return new Response(JSON.stringify({ ok: true, keywordId }), {
 			headers: { 'Content-Type': 'application/json' },
 		});

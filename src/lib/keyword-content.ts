@@ -111,7 +111,7 @@ export async function attachKeywordContent(
 		db
 			.prepare(
 				`UPDATE keyword
-				 SET used = 1, usedAt = ?, updatedAt = ?
+				 SET used = 1, usedAt = ?, updatedAt = ?, lockBatchId = NULL
 				 WHERE id = ?`,
 			)
 			.bind(now, now, input.keywordId),

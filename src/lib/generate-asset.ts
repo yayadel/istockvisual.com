@@ -62,6 +62,13 @@ export type PrepareKeywordResult = {
 	hostPrompt: string;
 	jsonInstruction: string;
 	fullPrompt: string;
+	lockBatchId?: string | null;
+};
+
+export type PrepareKeywordsResult = {
+	batchId: string;
+	count: number;
+	keywords: PrepareKeywordResult[];
 };
 
 export type ImportGeneratedAssetInput = {
@@ -406,22 +413,45 @@ async function uniqueSlug(
 	return `${base}-${randomSlugCode(6)}${Date.now().toString().slice(-4)}`;
 }
 
-/** Reserve the next keyword and return prompts for Cursor Agent (built-in text/image models). */
-export async function prepareNextKeyword(db: D1Database): Promise<PrepareKeywordResult> {
-	const keywordRow = await claimNextKeyword(db);
-	if (!keywordRow) {
-		throw new Error('No unused keywords left in the database');
-	}
-
+function toPrepareResult(keywordRow: {
+	id: number;
+	keyword: string;
+	lockBatchId?: string | null;
+}): PrepareKeywordResult {
 	const hostPrompt = buildHostPrompt(keywordRow.keyword);
 	const fullPrompt = `${hostPrompt}\n\n${JSON_OUTPUT_INSTRUCTION}`;
-
 	return {
 		keywordId: keywordRow.id,
 		keyword: keywordRow.keyword,
 		hostPrompt,
 		jsonInstruction: JSON_OUTPUT_INSTRUCTION,
 		fullPrompt,
+		lockBatchId: keywordRow.lockBatchId ?? null,
+	};
+}
+
+/** Reserve the next keyword and return prompts for Cursor Agent (built-in text/image models). */
+export async function prepareNextKeyword(db: D1Database): Promise<PrepareKeywordResult> {
+	const keywordRow = await claimNextKeyword(db);
+	if (!keywordRow) {
+		throw new Error('No unused keywords left in the database');
+	}
+	return toPrepareResult(keywordRow);
+}
+
+/**
+ * Reserve `count` unused keywords in one atomic lock batch.
+ * Other workers only see unused rows, so they cannot pick these topics.
+ */
+export async function prepareKeywords(
+	db: D1Database,
+	count = 1,
+): Promise<PrepareKeywordsResult> {
+	const { batchId, keywords } = await claimKeywords(db, count);
+	return {
+		batchId,
+		count: keywords.length,
+		keywords: keywords.map(toPrepareResult),
 	};
 }
 
