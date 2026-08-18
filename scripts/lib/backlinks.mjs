@@ -190,9 +190,7 @@ export function insertListEntry(markdown, spec) {
 	}
 
 	const prefix = source[insertAt - 1] === '\n' ? '' : '\n';
-	const nextChunk = source.slice(insertAt);
-	const suffix = nextChunk.startsWith('\n') || nextChunk.startsWith('#') ? '' : '\n';
-	const nextMarkdown = `${source.slice(0, insertAt)}${prefix}${line}\n${suffix}${source.slice(insertAt)}`;
+	const nextMarkdown = `${source.slice(0, insertAt)}${prefix}${line}\n${source.slice(insertAt)}`;
 	return { already: false, markdown: nextMarkdown };
 }
 
