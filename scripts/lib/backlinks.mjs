@@ -228,7 +228,27 @@ async function wait(ms) {
 	await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function submitGithubPr({ token, spec, dryRun = false }) {
+export function writePatch(id, spec, previewLines) {
+	fs.mkdirSync(PATCHES_DIR, { recursive: true });
+	const file = path.join(PATCHES_DIR, `${id}.txt`);
+	const body = [
+		`Repo: https://github.com/${spec.repo}`,
+		`File: ${spec.file || 'README.md'}`,
+		`Heading: ${spec.heading}`,
+		`PR title: ${spec.prTitle}`,
+		'',
+		'Entry to add (alphabetical, brand-name anchor):',
+		spec.line,
+		'',
+		spec.prBody || '',
+		previewLines?.length ? `\nMatched lines:\n${previewLines.join('\n')}` : '',
+		'',
+		'If API submit fails, open a PR from a fork with a classic GitHub PAT (public_repo scope). Fine-grained tokens usually cannot fork third-party repos.',
+		'',
+	].join('\n');
+	fs.writeFileSync(file, `${body.trim()}\n`);
+	return file;
+}
 	const [owner, repo] = spec.repo.split('/');
 	const filePath = spec.file || 'README.md';
 	const fileMeta = await githubFetch(
