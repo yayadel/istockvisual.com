@@ -7,6 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export const BACKLINKS_DIR = path.join(root, '.tmp', 'backlinks');
 export const STATUS_PATH = path.join(BACKLINKS_DIR, 'status.json');
 export const PACKETS_DIR = path.join(BACKLINKS_DIR, 'packets');
+export const PATCHES_DIR = path.join(BACKLINKS_DIR, 'patches');
 export const CATALOG_PATH = path.join(root, 'src', 'data', 'backlink-targets.json');
 
 export function loadCatalog() {
