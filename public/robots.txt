@@ -2,11 +2,25 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /api/admin
-Disallow: /api/generate
+Disallow: /api/
 Disallow: /s/
 Disallow: /account
 Disallow: /login
 Disallow: /signup
+Allow: /preview/
+Allow: /images/
+Allow: /api/preview/
+
+User-agent: Googlebot-Image
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /s/
+Disallow: /account
+Disallow: /login
+Disallow: /signup
+Allow: /preview/
+Allow: /images/
+Allow: /api/preview/
 
 Sitemap: https://istockvisual.com/sitemap.xml

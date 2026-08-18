@@ -2,6 +2,7 @@
 import type { AssetDetail } from '../lib/asset-types';
 import { assetTileAt } from '../lib/asset-tiles';
 import { fitWidth } from '../lib/download-sizes';
+import { sizedPreviewUrl } from '../lib/public-image';
 
 interface Props {
 	asset: AssetDetail;
@@ -12,11 +13,7 @@ const { asset, index = 0 } = Astro.props;
 const href = `/${asset.category}/${asset.slug}`;
 const { tile, ratio } = assetTileAt(index);
 const preview = asset.previewUrl || '';
-const src500 = preview
-	? preview.includes('?')
-		? `${preview}&size=500`
-		: `${preview}?size=500`
-	: '';
+const src500 = preview ? sizedPreviewUrl(preview, '500') : '';
 const box = fitWidth(asset.width || 1536, asset.height || 1024, 500);
 ---
 

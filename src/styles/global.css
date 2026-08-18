@@ -4229,7 +4229,7 @@ body.upload-modal-open {
 
 .detail__preview .asset-preview__image {
 	display: block;
-	width: auto;
+	width: 100%;
 	height: auto;
 	max-width: 100%;
 	max-height: min(72vh, 720px);
@@ -6485,7 +6485,7 @@ body.download-auth-modal-open {
 }
 
 .detail__preview img {
-	width: auto;
+	width: 100%;
 	height: auto;
 	max-width: 100%;
 }
@@ -6493,6 +6493,7 @@ body.download-auth-modal-open {
 .asset-preview {
 	display: grid;
 	gap: 0;
+	margin: 0;
 }
 
 .asset-preview__image-wrap {

@@ -106,7 +106,7 @@ export default function AdminContentPanel() {
 										<td>
 											<a href={`/${row.category}/${row.slug}`}>View</a>
 											{' · '}
-											<a href={`/api/preview/${row.id}`} target="_blank" rel="noreferrer">
+											<a href={`/preview/${encodeURIComponent(row.id)}_1000w.avif`} target="_blank" rel="noreferrer">
 												Preview
 											</a>
 										</td>

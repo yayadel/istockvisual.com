@@ -1,5 +1,6 @@
 import astro from '@astrojs/cloudflare/entrypoints/server';
 import { sitemapResponse, sitemapXmlForPath } from './lib/sitemap';
+import { resolvePublicPreviewRoute } from './lib/public-image';
 import { purgeExpiredVisualSearchUploads } from './lib/visual-search-storage';
 import { htmlCachePolicy, mergeVary, setExpiresHeaders } from './lib/http-cache';
 
@@ -47,6 +48,8 @@ function canonicalRedirect(request: Request): Response | null {
 
 function shouldEdgeCache(pathname: string) {
 	return (
+		pathname.startsWith('/preview/') ||
+		pathname.startsWith('/images/preview/') ||
 		pathname.startsWith('/api/preview/') ||
 		pathname === '/sitemap.xml' ||
 		pathname === '/sitemap.xml/' ||
@@ -128,6 +131,27 @@ export default {
 				return withEdgeCache(request, ctx, async () => {
 					const xml = await sitemapXmlForPath(pathname, env);
 					if (xml) return sitemapResponse(xml);
+
+					const imageRoute = resolvePublicPreviewRoute(pathname);
+					if (imageRoute?.kind === 'redirect') {
+						return new Response(null, {
+							status: 301,
+							headers: {
+								Location: imageRoute.location,
+								'Cache-Control': 'public, max-age=86400',
+							},
+						});
+					}
+					if (imageRoute?.kind === 'serve') {
+						const dest = new URL(
+							`/api/preview/${encodeURIComponent(imageRoute.id)}`,
+							request.url,
+						);
+						if (imageRoute.size) dest.searchParams.set('size', imageRoute.size);
+						dest.searchParams.set('v', imageRoute.variant);
+						return astro.fetch(new Request(dest, request), env, ctx);
+					}
+
 					return astro.fetch(request, env, ctx);
 				});
 			}

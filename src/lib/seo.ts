@@ -1,5 +1,6 @@
 import type { CategorySlug } from '../config/categories';
 import { contentCategoryPath } from './content-categories';
+import { publicImageUrl, sizedPreviewUrl, imageMimeFromUrl } from './public-image';
 
 export const ABOUT_PATH = '/info/about';
 export const HELP_PATH = '/info/help';
@@ -175,14 +176,22 @@ export function websiteJsonLd(origin: string) {
 function assetListItems(origin: string, assets: JsonLdListAsset[]) {
 	return assets.slice(0, JSON_LD_LIST_LIMIT).map((asset, index) => {
 		const url = absoluteUrl(`/${asset.category}/${asset.slug}`, origin);
+		const content = asset.previewUrl
+			? sizedPreviewUrl(absoluteUrl(asset.previewUrl, origin), '1k')
+			: undefined;
+		const thumb = asset.previewUrl
+			? sizedPreviewUrl(absoluteUrl(asset.previewUrl, origin), '500')
+			: undefined;
 		const item: Record<string, unknown> = {
 			'@type': 'ImageObject',
 			'@id': `${url}#image`,
 			name: asset.title,
 			url,
-			contentUrl: asset.previewUrl ? absoluteUrl(asset.previewUrl, origin) : url,
+			contentUrl: content || url,
 		};
-		if (asset.previewUrl) item.thumbnailUrl = absoluteUrl(asset.previewUrl, origin);
+		const format = imageMimeFromUrl(content);
+		if (format) item.encodingFormat = format;
+		if (thumb) item.thumbnailUrl = thumb;
 		return {
 			'@type': 'ListItem',
 			position: index + 1,
@@ -327,15 +336,14 @@ export function collectionPageJsonLd(input: {
 	return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-/** JSON-LD 主图：免费 1K JPEG，Google 可直接 GET */
+/** JSON-LD 主图：公开 1K AVIF（静态扩展名，可被 Google Images 抓取） */
 export function assetJsonLdContentUrl(origin: string, assetId: string): string {
-	return absoluteUrl(`/api/download/${encodeURIComponent(assetId)}?size=1k`, origin);
+	return publicImageUrl(origin, assetId, '1k');
 }
 
-/** JSON-LD 缩略图：AVIF 预览 500px */
-export function assetJsonLdThumbnailUrl(origin: string, previewUrl: string): string {
-	const base = absoluteUrl(previewUrl, origin);
-	return base.includes('?') ? `${base}&size=500` : `${base}?size=500`;
+/** JSON-LD 缩略图：500px AVIF */
+export function assetJsonLdThumbnailUrl(origin: string, assetId: string): string {
+	return publicImageUrl(origin, assetId, '500');
 }
 
 export function assetJsonLd(input: {
@@ -345,9 +353,9 @@ export function assetJsonLd(input: {
 	seoTitle: string;
 	seoDescription: string;
 	imageDescription?: string;
-	/** 主资源 URL（JPEG download） */
+	/** 主资源 URL（公开 1K AVIF） */
 	contentUrl?: string;
-	/** 缩略图 URL（AVIF preview） */
+	/** 缩略图 URL（500px AVIF） */
 	thumbnailUrl?: string;
 	width?: number;
 	height?: number;
@@ -368,8 +376,7 @@ export function assetJsonLd(input: {
 	const thumbnailUrl = input.thumbnailUrl
 		? absoluteUrl(input.thumbnailUrl, input.origin)
 		: contentUrl;
-	// contentUrl 固定为 download API → JPEG
-	const encodingFormat = 'image/jpeg';
+	const encodingFormat = imageMimeFromUrl(contentUrl) || 'image/avif';
 	const imageDescription = (
 		input.imageDescription ||
 		input.seoDescription ||

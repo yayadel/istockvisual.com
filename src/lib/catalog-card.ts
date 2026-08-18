@@ -1,6 +1,7 @@
 import type { AssetDetail } from './asset-types';
 import { assetTileAt } from './asset-tiles';
 import { fitWidth } from './download-sizes';
+import { sizedPreviewUrl } from './public-image';
 
 export type CatalogCardPayload = {
 	href: string;
@@ -16,11 +17,7 @@ export type CatalogCardPayload = {
 export function catalogCardPayload(asset: AssetDetail, index: number): CatalogCardPayload {
 	const { tile, ratio } = assetTileAt(index);
 	const preview = asset.previewUrl || '';
-	const src500 = preview
-		? preview.includes('?')
-			? `${preview}&size=500`
-			: `${preview}?size=500`
-		: '';
+	const src500 = preview ? sizedPreviewUrl(preview, '500') : '';
 	const box = fitWidth(asset.width || 1536, asset.height || 1024, 500);
 	return {
 		href: `/${asset.category}/${asset.slug}`,

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import AssetPreviewPanel from '../../components/AssetPreviewPanel';
+import AssetPreview from '../../components/AssetPreview.astro';
 import ColorPalette from '../../components/ColorPalette';
 import PromptBlock from '../../components/PromptBlock';
 import BasicInfoPanel from '../../components/BasicInfoPanel';
@@ -12,7 +12,6 @@ import { findSimilarAssets, listAllAssets, resolveAssetBySlug } from '../../lib/
 import { resolveContentCategories, contentCategoryPath } from '../../lib/content-categories';
 import { searchPath } from '../../lib/paths';
 import {
-	absoluteUrl,
 	assetJsonLd,
 	assetJsonLdContentUrl,
 	assetJsonLdThumbnailUrl,
@@ -22,8 +21,9 @@ import {
 	LICENSE_PATH,
 	siteOrigin,
 } from '../../lib/seo';
+import { publicImageUrl } from '../../lib/public-image';
 import { env } from 'cloudflare:workers';
-import { fitWidth } from '../../lib/download-sizes';
+import { fitLongEdge } from '../../lib/download-sizes';
 
 const { category: categorySlug, slug } = Astro.params;
 
@@ -63,11 +63,11 @@ const seoDescription = assetSearchDescription({
 	description: asset.description,
 	category: category.slug,
 });
-const ogImage = asset.previewUrl ? absoluteUrl(asset.previewUrl, origin) : undefined;
-const previewBox = fitWidth(asset.width || 1536, asset.height || 1024, 500);
-const lcpImage = asset.previewUrl
-	? `${asset.previewUrl}${asset.previewUrl.includes('?') ? '&' : '?'}size=500`
-	: undefined;
+const ogImage = publicImageUrl(origin, asset._id, '1k');
+const ogBox = fitLongEdge(asset.width || 1536, asset.height || 1024, 1024);
+const lcpImage = publicImageUrl(origin, asset._id, '1k');
+const sourceWidth = asset.width || 1536;
+const sourceHeight = asset.height || 1024;
 const jsonLd = assetJsonLd({
 	origin,
 	pagePath,
@@ -76,11 +76,9 @@ const jsonLd = assetJsonLd({
 	seoDescription,
 	imageDescription: asset.creationDescription || asset.description || asset.shortDescription,
 	contentUrl: assetJsonLdContentUrl(origin, asset._id),
-	thumbnailUrl: asset.previewUrl
-		? assetJsonLdThumbnailUrl(origin, asset.previewUrl)
-		: undefined,
-	width: asset.width,
-	height: asset.height,
+	thumbnailUrl: assetJsonLdThumbnailUrl(origin, asset._id),
+	width: ogBox.width,
+	height: ogBox.height,
 	medium: asset.medium,
 	tags,
 	publishedAt: asset.publishedAt,
@@ -98,8 +96,8 @@ const jsonLd = assetJsonLd({
 	ogType="article"
 	ogImage={ogImage}
 	ogImageAlt={asset.title}
-	ogImageWidth={asset.width}
-	ogImageHeight={asset.height}
+	ogImageWidth={ogBox.width}
+	ogImageHeight={ogBox.height}
 	jsonLd={jsonLd}
 	lcpImage={lcpImage}
 >
@@ -132,16 +130,14 @@ const jsonLd = assetJsonLd({
 				<div class="detail__preview">
 					{
 						asset.previewUrl ? (
-							<AssetPreviewPanel
-								client:idle
-								imageUrl={asset.previewUrl}
+							<AssetPreview
+								assetId={asset._id}
 								title={asset.title}
-								width={previewBox.width}
-								height={previewBox.height}
+								width={sourceWidth}
+								height={sourceHeight}
 								shareUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
 								loggedIn={Boolean(user)}
 								isPro={user?.plan === 'pro'}
-								assetId={asset._id}
 							/>
 						) : (
 							<div class="empty">No preview available</div>

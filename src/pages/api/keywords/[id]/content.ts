@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { getGeneratedAssetById } from '../../../../lib/generated-assets';
 import { getKeywordWithContent } from '../../../../lib/keyword-content';
+import { publicImageUrl } from '../../../../lib/public-image';
 
 export const GET: APIRoute = async (context) => {
 	const idParam = context.params.id;
@@ -41,7 +42,7 @@ export const GET: APIRoute = async (context) => {
 								slug: asset.slug,
 								category: asset.category,
 								pageUrl: `/${asset.category}/${asset.slug}`,
-								previewUrl: `${context.url.origin}/api/preview/${asset.id}`,
+								previewUrl: publicImageUrl(context.url.origin, asset.id, '1k'),
 							}
 						: null,
 				};

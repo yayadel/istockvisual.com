@@ -7,6 +7,7 @@ import {
 	listSitemapAssets,
 	listTopContentCategoriesByCount,
 } from './generated-assets';
+import { publicImageUrl } from './public-image';
 import { LEGAL_PAGES, PRESS_PATH, siteOrigin } from './seo';
 
 type SitemapEnv = {
@@ -18,6 +19,7 @@ type SitemapUrl = {
 	lastmod?: string;
 	changefreq?: string;
 	priority?: string;
+	images?: Array<{ loc: string; title?: string; caption?: string }>;
 };
 
 function xmlEscape(value: string) {
@@ -29,15 +31,26 @@ function loc(origin: string, path: string) {
 	return `${origin}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-function urlsetXml(origin: string, urls: SitemapUrl[]) {
+function urlsetXml(origin: string, urls: SitemapUrl[], options: { images?: boolean } = {}) {
+	const xmlns = options.images
+		? 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'
+		: 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
 	return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset ${xmlns}>
 ${urls
 	.map((item) => {
 		const bits = [`<loc>${xmlEscape(loc(origin, item.path))}</loc>`];
 		if (item.lastmod) bits.push(`<lastmod>${xmlEscape(item.lastmod)}</lastmod>`);
 		if (item.changefreq) bits.push(`<changefreq>${item.changefreq}</changefreq>`);
 		if (item.priority) bits.push(`<priority>${item.priority}</priority>`);
+		for (const image of item.images || []) {
+			const imageBits = [`<image:loc>${xmlEscape(image.loc)}</image:loc>`];
+			if (image.title) imageBits.push(`<image:title>${xmlEscape(image.title)}</image:title>`);
+			if (image.caption) {
+				imageBits.push(`<image:caption>${xmlEscape(image.caption)}</image:caption>`);
+			}
+			bits.push(`<image:image>\n      ${imageBits.join('\n      ')}\n    </image:image>`);
+		}
 		return `  <url>\n    ${bits.join('\n    ')}\n  </url>`;
 	})
 	.join('\n')}
@@ -135,7 +148,17 @@ export async function buildContentSitemapXml(env: SitemapEnv, page: number): Pro
 			lastmod: asset.publishedAt ? asset.publishedAt.slice(0, 10) : undefined,
 			changefreq: 'weekly',
 			priority: '0.9',
+			images: asset.id
+				? [
+						{
+							loc: publicImageUrl(origin, asset.id, '1k'),
+							title: asset.title || undefined,
+							caption: asset.shortDescription || asset.title || undefined,
+						},
+					]
+				: undefined,
 		})),
+		{ images: true },
 	);
 }
 

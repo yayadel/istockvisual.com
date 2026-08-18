@@ -13,7 +13,9 @@
 			"/sitemap-pages.xml",
 			"/sitemap-categories.xml",
 			"/sitemap-tools.xml",
-			"/sitemap-content-*.xml"
+			"/sitemap-content-*.xml",
+			"/images/preview/*",
+			"/preview/*"
 		]
 	},
 	"observability": {

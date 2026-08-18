@@ -2,9 +2,21 @@ import { defineMiddleware } from 'astro:middleware';
 import { env } from 'cloudflare:workers';
 import { createAuth, type AppUser } from './lib/auth';
 
+function isPublicImagePath(pathname: string) {
+	return (
+		pathname.startsWith('/preview/') ||
+		pathname.startsWith('/images/preview/') ||
+		pathname.startsWith('/api/preview/')
+	);
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
 	context.locals.user = null;
 	context.locals.session = null;
+
+	if (isPublicImagePath(context.url.pathname)) {
+		return next();
+	}
 
 	try {
 		const secret = env.BETTER_AUTH_SECRET || import.meta.env.BETTER_AUTH_SECRET;

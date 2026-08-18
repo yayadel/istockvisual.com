@@ -1,6 +1,7 @@
 import { isCategorySlug, type CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
 import { normalizeTags } from './asset-types';
+import { publicImageUrl } from './public-image';
 import {
 	CONTENT_CATEGORY_PAGES,
 	normalizeContentCategories,
@@ -66,7 +67,7 @@ export function generatedToDetail(record: GeneratedAssetRecord, origin: string):
 		description: record.description,
 		shortDescription: record.shortDescription,
 		tags: record.tags,
-		previewUrl: `${origin}/api/preview/${record.id}?v=avif`,
+		previewUrl: publicImageUrl(origin, record.id, '1k'),
 		r2ObjectKey: record.r2ObjectKey,
 		fileType: record.fileType,
 		width: record.width,
@@ -323,15 +324,24 @@ export async function countSitemapAssets(db: D1Database): Promise<number> {
 	return Number(row?.total ?? 0);
 }
 
+export type SitemapAsset = {
+	id: string;
+	category: CategorySlug;
+	slug: string;
+	title: string;
+	shortDescription: string;
+	publishedAt: string;
+};
+
 export async function listSitemapAssets(
 	db: D1Database,
 	options: { limit?: number; offset?: number } = {},
-): Promise<Array<{ category: CategorySlug; slug: string; publishedAt: string }>> {
+): Promise<SitemapAsset[]> {
 	const limit = Math.max(1, Math.min(options.limit ?? SITEMAP_CONTENT_PAGE_SIZE, SITEMAP_CONTENT_PAGE_SIZE));
 	const offset = Math.max(0, options.offset ?? 0);
 	const result = await db
 		.prepare(
-			`SELECT category, slug, publishedAt
+			`SELECT id, category, slug, title, shortDescription, publishedAt
 			 FROM generated_asset
 			 WHERE category IS NOT NULL AND TRIM(category) != ''
 			   AND slug IS NOT NULL AND TRIM(slug) != ''
@@ -339,14 +349,24 @@ export async function listSitemapAssets(
 			 LIMIT ? OFFSET ?`,
 		)
 		.bind(limit, offset)
-		.all<{ category: string; slug: string; publishedAt: string }>();
+		.all<{
+			id: string;
+			category: string;
+			slug: string;
+			title: string;
+			shortDescription: string | null;
+			publishedAt: string;
+		}>();
 
 	return (result.results ?? []).flatMap((row) => {
-		if (!isCategorySlug(row.category) || !row.slug) return [];
+		if (!isCategorySlug(row.category) || !row.slug || !row.id) return [];
 		return [
 			{
+				id: String(row.id),
 				category: row.category,
 				slug: String(row.slug),
+				title: String(row.title || ''),
+				shortDescription: String(row.shortDescription || ''),
 				publishedAt: String(row.publishedAt || ''),
 			},
 		];

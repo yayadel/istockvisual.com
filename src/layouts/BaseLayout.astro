@@ -6,7 +6,8 @@ import SiteFooter from '../components/SiteFooter.astro';
 import UploadModal from '../components/UploadModal.astro';
 import PrivacyNotice from '../components/PrivacyNotice.astro';
 import SupportChat from '../components/SupportChat';
-import { stringifyJsonLd, canonicalHref } from '../lib/seo';
+import { stringifyJsonLd, canonicalHref, siteOrigin } from '../lib/seo';
+import { canonicalizePublicImageUrl, imageMimeFromUrl } from '../lib/public-image';
 
 interface Props {
 	title?: string;
@@ -44,6 +45,11 @@ const pageTitle =
 	exactTitle || title === 'iStockVisual' ? title : `${title} · iStockVisual`;
 const canonical = canonicalUrl ?? canonicalHref(Astro.url.pathname, Astro.url.origin);
 const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
+const origin = siteOrigin(Astro.url.origin);
+const resolvedOgImage = ogImage ? canonicalizePublicImageUrl(ogImage, origin, '1k') : undefined;
+const resolvedLcpImage = lcpImage ? canonicalizePublicImageUrl(lcpImage, origin, '1k') : undefined;
+const lcpType = imageMimeFromUrl(resolvedLcpImage);
+const ogImageType = imageMimeFromUrl(resolvedOgImage);
 ---
 
 <!doctype html>
@@ -74,8 +80,14 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 			/>
 		</noscript>
 		{
-			lcpImage && (
-				<link rel="preload" as="image" href={lcpImage} type="image/avif" fetchpriority="high" />
+			resolvedLcpImage && (
+				<link
+					rel="preload"
+					as="image"
+					href={resolvedLcpImage}
+					type={lcpType}
+					fetchpriority="high"
+				/>
 			)
 		}
 		<title>{pageTitle}</title>
@@ -84,13 +96,14 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 		<meta property="og:title" content={pageTitle} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
-		<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+		<meta name="twitter:card" content={resolvedOgImage ? 'summary_large_image' : 'summary'} />
 		<meta name="twitter:title" content={pageTitle} />
 		<meta name="twitter:description" content={description} />
 		{
-			ogImage && (
+			resolvedOgImage && (
 				<>
-					<meta property="og:image" content={ogImage} />
+					<meta property="og:image" content={resolvedOgImage} />
+					{ogImageType ? <meta property="og:image:type" content={ogImageType} /> : null}
 					<meta property="og:image:alt" content={ogImageAlt || pageTitle} />
 					{ogImageWidth ? (
 						<meta property="og:image:width" content={String(ogImageWidth)} />
@@ -98,7 +111,7 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 					{ogImageHeight ? (
 						<meta property="og:image:height" content={String(ogImageHeight)} />
 					) : null}
-					<meta name="twitter:image" content={ogImage} />
+					<meta name="twitter:image" content={resolvedOgImage} />
 					<meta name="twitter:image:alt" content={ogImageAlt || pageTitle} />
 				</>
 			)
