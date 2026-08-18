@@ -13,8 +13,8 @@ const pool = await listAllAssets(env.DB, Astro.url.origin, 600);
 const assets = applyCatalogFilters(pool, query);
 const title = q ? `Search: ${q}` : 'Search';
 const description = q
-	? `Stock photos and graphics matching “${q}” on iStockVisual.`
-	: 'Browse stock photos, illustrations, vectors, and 3D by category, type, color, and keyword.';
+	? `AI-generated stock photos and graphics matching “${q}” on iStockVisual.`
+	: 'Browse AI-generated stock photos, illustrations, vectors, and 3D by category, type, color, and keyword. All images on this site are AI-generated.';
 ---
 
 <BaseLayout title={title} description={description} robots="noindex, nofollow">

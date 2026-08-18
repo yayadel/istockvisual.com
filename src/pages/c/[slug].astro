@@ -22,7 +22,7 @@ const pool = await listAllAssets(env.DB, Astro.url.origin, 600);
 const assets = applyCatalogFilters(pool, query);
 const origin = siteOrigin(Astro.url.origin);
 const title = libraryPageTitle(topic.label);
-const description = `Royalty-free ${topic.label} stock images for commercial and personal use. Free download on iStockVisual.`;
+const description = `Royalty-free AI-generated ${topic.label} stock images for commercial and personal use. All images on this site are AI-generated. Free download on iStockVisual.`;
 const jsonLd = collectionPageJsonLd({
 	origin,
 	pagePath: `/c/${topic.slug}`,

@@ -1,20 +1,20 @@
 ---
 import LegalLayout from '../../layouts/LegalLayout.astro';
-import { PRIVACY_PATH, REFUNDS_PATH, SITE_BRAND, TERMS_PATH } from '../../lib/seo';
+import { IMAGE_SOURCE_NOTICE, PRIVACY_PATH, REFUNDS_PATH, SITE_BRAND, TERMS_PATH } from '../../lib/seo';
 ---
 
 <LegalLayout
 	title="CC0 License"
-	description="iStockVisual.com library images are released under CC0. Commercial and personal use, no attribution required, all sizes and formats."
+	description={`iStockVisual.com library images are AI-generated and released under CC0. Commercial and personal use, no attribution required, all sizes and formats. ${IMAGE_SOURCE_NOTICE}`}
 	heading="CC0 License"
-	lede="Library images are dedicated to the public under Creative Commons Zero (CC0). Commercial and personal use are allowed. Attribution is not required on any size — including 512, 1K, and Pro downloads."
+	lede={`${IMAGE_SOURCE_NOTICE} Library images are dedicated to the public under Creative Commons Zero (CC0). Commercial and personal use are allowed. Attribution is not required on any size — including 512, 1K, and Pro downloads.`}
 >
 	<h2>1. What this license covers</h2>
 	<p>
 		This license applies to photos, illustrations, vectors, and 3D stills published in the
 		{SITE_BRAND} library (“Library Content”), including files you download from a detail page and
-		recognizable derivatives you make with the on-page editor or the studio tools. Most Library
-		Content is generated or prepared for this site.
+		recognizable derivatives you make with the on-page editor or the studio tools.
+		{IMAGE_SOURCE_NOTICE} They are produced for this site.
 	</p>
 	<p>
 		To the extent we hold copyright in Library Content, we waive those rights under
@@ -88,13 +88,13 @@ import { PRIVACY_PATH, REFUNDS_PATH, SITE_BRAND, TERMS_PATH } from '../../lib/se
 		the <a href={PRIVACY_PATH}>Privacy Policy</a> and is not added to the public library.
 	</p>
 
-	<h2>6. Trademarks, people, and generated scenes</h2>
+	<h2>6. Trademarks, people, and AI-generated scenes</h2>
 	<p>
-		Library Content is produced for general creative use. Scenes may be generated or stylized. CC0
-		covers our copyright in the file; it does not clear real trademarks, logos, or identifiable
-		people that you add, or regulated claims you make next to an image. Do not treat a generated
-		interior, product, or skyline as a photo of a specific real property or brand unless you have
-		independently verified that.
+		{IMAGE_SOURCE_NOTICE} Library Content is produced for general creative use. Scenes may be
+		stylized or fictional. CC0 covers our copyright in the file; it does not clear real trademarks,
+		logos, or identifiable people that you add, or regulated claims you make next to an image. Do
+		not treat a generated interior, product, or skyline as a photo of a specific real property or
+		brand unless you have independently verified that.
 	</p>
 
 	<h2>7. Fair use, refunds, and changes</h2>

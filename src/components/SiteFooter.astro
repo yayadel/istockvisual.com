@@ -1,6 +1,6 @@
 ---
 import { visibleNavCategories } from '../config/categories';
-import { LEGAL_PAGES, LICENSE_PATH, PRESS_PATH } from '../lib/seo';
+import { IMAGE_SOURCE_NOTICE, LEGAL_PAGES, LICENSE_PATH, PRESS_PATH } from '../lib/seo';
 import { listPopulatedMediaTypes } from '../lib/generated-assets';
 import { env } from 'cloudflare:workers';
 
@@ -39,7 +39,7 @@ const platform = [
 				<a class="brand" href="/">iStock<span>Visual</span></a>
 				<p class="site-footer__lede">
 					Stock photos, illustrations, vectors, and 3D — with a commercial license and in-browser
-					studio tools for campaigns, products, and creative teams.
+					studio tools for campaigns, products, and creative teams. {IMAGE_SOURCE_NOTICE}
 				</p>
 				<ul class="site-footer__facts">
 					<li>Free 512 &amp; 1K downloads</li>
@@ -100,7 +100,7 @@ const platform = [
 		<div class="site-footer__bar">
 			<p class="site-footer__copy">© {year} iStockVisual. All rights reserved.</p>
 			<p class="site-footer__note">
-				Free for commercial and personal use.
+				{IMAGE_SOURCE_NOTICE} Free for commercial and personal use.
 				<a href={LICENSE_PATH}>CC0 License</a> — no attribution required.
 			</p>
 		</div>

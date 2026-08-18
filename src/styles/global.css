@@ -4867,6 +4867,11 @@ body.upload-modal-open {
 	text-decoration: none;
 }
 
+.attribution-bar__source {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+}
+
 .attribution-bar__copy {
 	display: inline-flex;
 	align-items: center;

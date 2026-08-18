@@ -11,7 +11,7 @@ import { formatAssetTitle } from '../lib/asset-types';
 import { searchPath } from '../lib/paths';
 import { LIFETIME_PLAN } from '../lib/pricing';
 import { env } from 'cloudflare:workers';
-import { homeJsonLd, LICENSE_PATH, SITE_HOME_DESCRIPTION, SITE_HOME_TITLE, siteOrigin } from '../lib/seo';
+import { homeJsonLd, IMAGE_SOURCE_NOTICE, LICENSE_PATH, SITE_HOME_DESCRIPTION, SITE_HOME_TITLE, siteOrigin } from '../lib/seo';
 import { sizedPreviewUrl } from '../lib/public-image';
 
 const origin = siteOrigin(Astro.url.origin);
@@ -136,7 +136,7 @@ const proPerks = [
 			<h1 class="hero__brand">Huge Collections of Stock Photos, Illustrations &amp; 3D</h1>
 			<p class="hero__lead">
 				High-quality stock images shared for campaigns, products, and creative teams.
-				Free under a <a href={LICENSE_PATH}>CC0 License</a>.
+				{IMAGE_SOURCE_NOTICE} Free under a <a href={LICENSE_PATH}>CC0 License</a>.
 			</p>
 			<SearchBar variant="hero" placeholder="Search images, vectors and 3D" />
 			{
@@ -161,7 +161,7 @@ const proPerks = [
 		<div class="section-head">
 			<div>
 				<h2 id="home-featured-title">Free stock photos</h2>
-				<p>Latest published assets from the library.</p>
+				<p>Latest published assets from the library. {IMAGE_SOURCE_NOTICE}</p>
 			</div>
 			<a class="home-section-cta" href="/photos">
 				View all

@@ -25,9 +25,12 @@ export const LEGAL_PAGES = [
 
 export const SITE_BRAND = 'iStockVisual.com';
 export const ORG_NAME = 'iStockVisual';
-export const USAGE_TERMS = 'CC0. Free for commercial and personal use. Attribution not required.';
-export const COPYRIGHT_NOTICE = 'CC0 1.0 Universal. No attribution required.';
-export const SCHEMA_COPYRIGHT_NOTICE = 'Free for commercial and personal use';
+/** Public image-source disclosure. Library files only — not user uploads in studio tools. */
+export const IMAGE_SOURCE_NOTICE = 'All images on this site are AI-generated.';
+export const USAGE_TERMS =
+	'CC0. Free for commercial and personal use. Attribution not required. All images on this site are AI-generated.';
+export const COPYRIGHT_NOTICE = 'CC0 1.0 Universal. No attribution required. All images on this site are AI-generated.';
+export const SCHEMA_COPYRIGHT_NOTICE = 'Free for commercial and personal use. All images on this site are AI-generated.';
 
 const DESC_MAX = 160;
 
@@ -47,7 +50,7 @@ export function assetSearchDescription(input: {
 }): string {
 	const heading = assetSearchTitle(input.title);
 	const lead = (input.shortDescription || input.description || '').trim();
-	const closer = 'Royalty-free for commercial use.';
+	const closer = 'Royalty-free AI-generated image for commercial use.';
 
 	if (!lead) {
 		return clipDescription(`${heading}. ${closer}`);
@@ -77,9 +80,9 @@ export function stringifyJsonLd(data: unknown): string {
 }
 
 export const SITE_TAGLINE =
-	'Stock photos, illustrations, vectors, and 3D assets — plus AI editing tools.';
+	'AI-generated stock photos, illustrations, vectors, and 3D assets — plus AI editing tools.';
 export const SITE_HOME_DESCRIPTION =
-	'Royalty-free stock photos, illustrations, vectors, and 3D for commercial and personal use. Free downloads on iStockVisual.';
+	'Royalty-free AI-generated stock photos, illustrations, vectors, and 3D. All images on this site are AI-generated. Free downloads on iStockVisual.';
 export const SITE_HOME_TITLE = 'Free Stock Photos, Illustrations & 3D';
 
 export function siteOrigin(fallback?: string): string {
@@ -416,6 +419,11 @@ export function assetJsonLd(input: {
 		creditText: ORG_NAME,
 		encodingFormat,
 		usageTerms: USAGE_TERMS,
+		additionalProperty: {
+			'@type': 'PropertyValue',
+			name: 'Image source',
+			value: IMAGE_SOURCE_NOTICE,
+		},
 		isAccessibleForFree: true,
 		isFamilyFriendly: true,
 		representativeOfPage: true,

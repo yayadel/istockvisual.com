@@ -6,7 +6,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import UploadModal from '../components/UploadModal.astro';
 import PrivacyNotice from '../components/PrivacyNotice.astro';
 import SupportChat from '../components/SupportChat';
-import { stringifyJsonLd, canonicalHref, siteOrigin } from '../lib/seo';
+import { stringifyJsonLd, canonicalHref, siteOrigin, SITE_HOME_DESCRIPTION } from '../lib/seo';
 import { canonicalizePublicImageUrl, imageMimeFromUrl } from '../lib/public-image';
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
 
 const {
 	title = 'iStockVisual',
-	description = 'Royalty-free stock photos, illustrations, vectors, and 3D for commercial and personal use.',
+	description = SITE_HOME_DESCRIPTION,
 	canonicalUrl,
 	ogImage,
 	ogImageAlt,

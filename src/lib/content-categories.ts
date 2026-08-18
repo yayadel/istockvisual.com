@@ -328,7 +328,7 @@ const CONTENT_CATEGORY_INTROS: Record<string, ContentCategoryIntro> = {
 };
 
 const DEFAULT_CATEGORY_INTRO: ContentCategoryIntro = {
-	lede: 'Browse topical stock visuals in this category — ready for commercial and editorial use.',
+	lede: 'Browse topical AI-generated stock visuals in this category — ready for commercial and editorial use.',
 	hint: 'Browse · Stock · Topics',
 };
 

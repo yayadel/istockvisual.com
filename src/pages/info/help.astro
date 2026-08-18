@@ -3,6 +3,7 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 import SupportChat from '../../components/SupportChat';
 import {
 	LEGAL_CONTACT_EMAIL,
+	IMAGE_SOURCE_NOTICE,
 	LICENSE_PATH,
 	PRIVACY_PATH,
 	REFUNDS_PATH,
@@ -15,7 +16,7 @@ import {
 	title="Help"
 	description="iStockVisual.com help: downloads, CC0 license, Pro sizes, visual search, and in-browser studio tools."
 	heading="Help"
-	lede="Short answers for the live library and studio. The assistant below uses the same facts. Refunds and account fixes go by email."
+	lede={`Short answers for the live library and studio. ${IMAGE_SOURCE_NOTICE} The assistant below uses the same facts. Refunds and account fixes go by email.`}
 >
 	<p>
 		For a refund or an account issue, email{' '}
@@ -39,7 +40,8 @@ import {
 		</li>
 		<li>
 			<strong>License:</strong> <a href={LICENSE_PATH}>CC0</a> — commercial and personal use,
-			attribution not required. Optional copy-ready credit is on each asset page.
+			attribution not required. {IMAGE_SOURCE_NOTICE} Optional copy-ready credit is on each asset
+			page.
 		</li>
 		<li>
 			The on-page preview watermark is not in your download. The on-page editor can adjust, crop,

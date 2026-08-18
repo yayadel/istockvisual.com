@@ -6,15 +6,16 @@ import {
 	LICENSE_PATH,
 	PRIVACY_PATH,
 	REFUNDS_PATH,
+	IMAGE_SOURCE_NOTICE,
 	SITE_BRAND,
 } from '../../lib/seo';
 ---
 
 <LegalLayout
 	title="Terms of Use"
-	description="Terms of Use for iStockVisual.com: library downloads, Pro sizes, fair use, visual search, and on-device studio tools."
+	description={`Terms of Use for iStockVisual.com: library downloads, Pro sizes, fair use, visual search, and on-device studio tools. ${IMAGE_SOURCE_NOTICE}`}
 	heading="Terms of Use"
-	lede="These terms govern iStockVisual.com — the library, accounts, paid plans, visual search, and the in-browser studio."
+	lede={`These terms govern iStockVisual.com — the library, accounts, paid plans, visual search, and the in-browser studio. ${IMAGE_SOURCE_NOTICE}`}
 >
 	<h2>1. Agreement</h2>
 	<p>
@@ -30,7 +31,7 @@ import {
 		<li>
 			<strong>Library.</strong> Searchable stock visuals (photos, illustrations, vectors, 3D) with
 			detail pages, palettes, similar images, and downloads in JPG, PNG, WEBP, or SVG at 512, 1K,
-			2K, 4K, and 8K.
+			2K, 4K, and 8K. {IMAGE_SOURCE_NOTICE}
 		</li>
 		<li>
 			<strong>Studio tools.</strong> Image Editor, Image Convert, Image Vectorizer, Social Resizer,
@@ -106,7 +107,8 @@ import {
 	<h2>7. Library Content, editor, and your files</h2>
 	<p>
 		Library Content is released under the
-		<a href={LICENSE_PATH}>CC0 License</a>. Attribution is not required on any size, including Pro.
+		<a href={LICENSE_PATH}>CC0 License</a>. {IMAGE_SOURCE_NOTICE} Attribution is not required on any
+		size, including Pro.
 	</p>
 	<p>
 		The on-page editor and the Tools studio process pixels in your browser. Files you pick from disk

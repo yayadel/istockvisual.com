@@ -56,6 +56,10 @@ export default function BasicInfoPanel({
 							)}
 						</span>
 					</li>
+					<li>
+						<span>Source</span>
+						<span>AI-generated</span>
+					</li>
 					{categoryLinks.length > 0 && (
 						<li>
 							<span>Category</span>

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PricingPlans from '../components/PricingPlans';
-import { LICENSE_PATH, REFUNDS_PATH } from '../lib/seo';
+import { IMAGE_SOURCE_NOTICE, LICENSE_PATH, REFUNDS_PATH } from '../lib/seo';
 import { FAIR_USE_POLICY, LIFETIME_PLAN, MONTH_PLAN, YEAR_PLAN } from '../lib/pricing';
 
 const origin = Astro.url.origin;
@@ -10,7 +10,7 @@ const pageUrl = new URL('/price', origin).href;
 const faqs = [
 	{
 		q: 'What’s included with every paid plan?',
-		a: 'Every paid plan unlocks 2K, 4K, and 8K downloads in JPG, PNG, WEBP, and SVG for the duration of that plan. License terms are the same on every size: CC0, commercial and personal use, no attribution required.',
+		a: `Every paid plan unlocks 2K, 4K, and 8K downloads in JPG, PNG, WEBP, and SVG for the duration of that plan. License terms are the same on every size: CC0, commercial and personal use, no attribution required. ${IMAGE_SOURCE_NOTICE}`,
 	},
 	{
 		q: 'What’s free without paying?',
@@ -25,8 +25,12 @@ const faqs = [
 		a: 'A pass gives you the same Pro downloads as a longer plan, but only for that window. It is meant for a single project or a tight deadline. If you expect to come back, Lifetime is usually cheaper than stacking several short passes.',
 	},
 	{
+		q: 'Are the images AI-generated?',
+		a: IMAGE_SOURCE_NOTICE,
+	},
+	{
 		q: 'Do I have to credit iStockVisual?',
-		a: 'No. Library images are CC0. Attribution is optional. Full terms are on the license page.',
+		a: `No. Library images are CC0. Attribution is optional. ${IMAGE_SOURCE_NOTICE} Full terms are on the license page.`,
 	},
 	{
 		q: 'Can I use images in ads, websites, and products?',
@@ -104,7 +108,7 @@ const jsonLd = {
 				<strong>Commercial use</strong>
 				<span>
 					Use in ads, sites, and products.{' '}
-					<a href={LICENSE_PATH}>CC0 License</a> — no attribution required.
+					<a href={LICENSE_PATH}>CC0 License</a> — no attribution required. {IMAGE_SOURCE_NOTICE}
 				</span>
 			</li>
 			<li>

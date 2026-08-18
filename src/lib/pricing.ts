@@ -36,7 +36,7 @@ const CORE_FEATURES: PricingFeature[] = [
 	},
 	{
 		label: 'CC0 commercial and personal use',
-		tip: 'Use in ads, sites, and products. Attribution is not required.',
+		tip: 'Use in ads, sites, and products. Attribution is not required. All images on this site are AI-generated.',
 	},
 	{
 		label: '512 and 1K previews stay free',

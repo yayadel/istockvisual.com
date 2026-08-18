@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { buildPhotoAttribution } from '../lib/attribution';
 import { copyTextSafe } from '../lib/clipboard';
-import { LICENSE_PATH } from '../lib/seo';
+import { IMAGE_SOURCE_NOTICE, LICENSE_PATH } from '../lib/seo';
 
 function CopyIcon() {
 	return (
@@ -54,6 +54,7 @@ export default function AttributionBar({ pageUrl }: Props) {
 			<a className="attribution-bar__license" href={LICENSE_PATH}>
 				Free to Use (CC0)
 			</a>
+			<span className="attribution-bar__source">{IMAGE_SOURCE_NOTICE}</span>
 			<button
 				type="button"
 				className={`attribution-bar__copy${copied ? ' is-copied' : ''}`}
