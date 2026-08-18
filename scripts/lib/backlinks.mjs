@@ -166,7 +166,8 @@ export function insertListEntry(markdown, spec) {
 	const next = after.search(/\n#{1,6} /);
 	const end = next === -1 ? source.length : start + next;
 	const sectionBody = source.slice(start, end);
-	const itemRe = new RegExp(`^\\s*\\${marker === '*' ? '*' : '-'} \\[([^\\]]+)\\]`, 'gm');
+	const markerEsc = marker === '*' ? '\\*' : '-';
+	const itemRe = new RegExp(`^\\s*${markerEsc} \\[([^\\]]+)\\]`, 'gm');
 	const items = [];
 	let itemMatch;
 	while ((itemMatch = itemRe.exec(sectionBody))) {
