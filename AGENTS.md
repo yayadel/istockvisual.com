@@ -22,6 +22,17 @@ Title/tag casing: English title case; acronyms (PDF, UAE, AI, UI, 3D, 4K…) sta
 
 If the user asks for N assets, still run N serial loops inside one locked batch.
 
+## Backlinks (serial, official submit only)
+
+Do **not** spam comments, forums, Reddit threads, or guestbooks. Run the operator one target at a time:
+
+1. `npm run backlinks:list` — show catalog + status (`.tmp/backlinks/status.json`)
+2. `npm run backlinks:run` — next automatable target (GitHub Awesome PR). Needs `GITHUB_TOKEN` in `.dev.vars` or a gitignored `github_token` file. Preview: `npm run backlinks:run -- --dry-run`
+3. Dev.to draft (optional): `npm run backlinks:run -- --id=devto-resource-index` with `DEV_TO_API_KEY`; add `--publish` only when the article should go live
+4. Directory forms (AlternativeTo, Product Hunt, …): `npm run backlinks:kit` then `npm run backlinks:run -- --id=alternativeto --include-manual --open`. After the live listing exists: `npm run backlinks:done -- --id=alternativeto --url=<listing-url>`
+
+Packets land in `.tmp/backlinks/packets/`. Public press kit: `https://istockvisual.com/info/press`. Anchors stay brand / URL / “source” — never “Free Stock Photos”. Skip AI directories until a public AI tool ships. Skip lists that ban AI-generated photography.
+
 ## Cursor Cloud specific instructions
 
 Cloud Agents clone this GitHub repo. There is **no** `.dev.vars` on the VM. Import targets production unless `GENERATE_BASE_URL` is set.

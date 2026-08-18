@@ -90,4 +90,4 @@ Visual search: camera icon on the search bar. Query photo is stored briefly and 
 Essential cookies for sign-in. Theme (light/dark) is localStorage only (istockvisual-theme).
 Visual-search uploads deleted ~1 hour. Browser-tool files never uploaded.
 Contact / legal: hello@istockvisual.com
-Policies: /info/about /info/license /info/terms /info/privacy /info/cookies /info/refunds /info/help /price
+Policies: /info/about /info/license /info/terms /info/privacy /info/cookies /info/refunds /info/help /info/press /price

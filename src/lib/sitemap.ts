@@ -73,7 +73,7 @@ export async function buildPagesSitemapXml(env: SitemapEnv): Promise<string> {
 			changefreq: 'yearly',
 			priority: '0.3',
 		})),
-		{ path: '/info/press', changefreq: 'monthly', priority: '0.5' },
+		{ path: PRESS_PATH, changefreq: 'monthly', priority: '0.5' },
 	];
 	void env;
 	return urlsetXml(origin, urls);

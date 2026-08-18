@@ -8481,6 +8481,22 @@ body.image-editor-modal-open {
 	color: var(--text);
 }
 
+.legal-copy pre {
+	margin: 0.7rem 0 1.1rem;
+	padding: 0.85rem 1rem;
+	overflow-x: auto;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	background: var(--bg-elevated);
+}
+
+.legal-copy pre code {
+	padding: 0;
+	border: 0;
+	font-size: 0.82rem;
+	white-space: pre-wrap;
+}
+
 .legal-updated {
 	margin: 2rem 0 0;
 	font-size: 0.82rem;
