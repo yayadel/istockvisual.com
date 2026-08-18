@@ -1,95 +1,97 @@
 # iStockVisual
 
-Astro + Cloudflare（Pages / D1 / R2）素材站基础框架。Sanity 承载内容元数据，Better Auth + D1 做会员，GitHub 连接 Cloudflare 自动发布。
+Astro + Cloudflare (Pages / D1 / R2) stock-visual site. Sanity holds content metadata, Better Auth + D1 handles membership, and GitHub connects to Cloudflare for deploys.
 
-## 技术栈
+Live site: [https://istockvisual.com](https://istockvisual.com)
 
-- **前端 / SSR**：Astro 7 + `@astrojs/cloudflare`
-- **分类**：前端配置 `Photos / Illustrations / Vectors / 3D`（[`src/config/categories.ts`](src/config/categories.ts)）
-- **CMS**：Sanity（[`sanity/`](sanity/)）
-- **对象存储**：Cloudflare R2（binding：`MEDIA`）
-- **数据库 / 会员**：Cloudflare D1 + Better Auth（binding：`DB`）
-- **AI 修图**：[`/tools/ai-edit`](src/pages/tools/ai-edit.astro) 占位页（尚未接真实模型）
+## Stack
 
-未配置 Sanity 时，站点会自动使用本地 demo 素材，方便先跑通 UI。
+- **Frontend / SSR**: Astro 7 + `@astrojs/cloudflare`
+- **Categories**: `Photos / Illustrations / Vectors / 3D` in [`src/config/categories.ts`](src/config/categories.ts)
+- **CMS**: Sanity ([`sanity/`](sanity/))
+- **Object storage**: Cloudflare R2 (binding: `MEDIA`)
+- **Database / membership**: Cloudflare D1 + Better Auth (binding: `DB`)
+- **AI edit**: [`/tools/ai-edit`](src/pages/tools/ai-edit.astro) placeholder (no live model yet)
 
-## 快速开始
+If Sanity is not configured, the site falls back to local demo assets so the UI can run first.
 
-### 1. 安装依赖
+## Quick start
+
+### 1. Install dependencies
 
 ```bash
 npm install
 npm install --prefix sanity
 ```
 
-### 2. 本地环境变量
+### 2. Local environment variables
 
 ```bash
 copy .dev.vars.example .dev.vars
 ```
 
-编辑 `.dev.vars`：
+Edit `.dev.vars`:
 
-- `BETTER_AUTH_SECRET`：长随机字符串（可用 `openssl rand -hex 32`）
-- `BETTER_AUTH_URL`：`http://localhost:4325`
-- Sanity 相关变量可先留空（将使用 demo 素材）
+- `BETTER_AUTH_SECRET`: a long random string (`openssl rand -hex 32`)
+- `BETTER_AUTH_URL`: `http://localhost:4325`
+- Sanity variables can stay empty (demo assets will be used)
 
-### 3. 本地 D1 迁移
+### 3. Local D1 migrations
 
 ```bash
 npm run db:migrate:local
 ```
 
-### 4. 导入关键词（本地 CSV → D1）
+### 4. Import keywords (local CSV → D1)
 
-`keyword_store/kwdata_172-ok.csv` 仅导入 **KEYWORD** 列（第 3 列），并跳过 **VALUE = 0** 的行。数据库表 `keyword` 含 `used` 字段（0=未使用，1=已使用）。
+`keyword_store/kwdata_172-ok.csv` imports only the **KEYWORD** column (column 3) and skips rows where **VALUE = 0**. The `keyword` table has a `used` field (`0` = unused, `1` = used).
 
 ```bash
-npm run keywords:import          # 本地 D1
-npm run keywords:import:remote   # 线上 D1（需先创建远程库）
+npm run keywords:import          # local D1
+npm run keywords:import:remote   # production D1 (create the remote DB first)
 ```
 
-可选参数：`node scripts/import-keywords.mjs --dry-run`（只生成 SQL 不执行）、`--limit=1000`（限制条数）。
+Optional flags: `node scripts/import-keywords.mjs --dry-run` (SQL only) and `--limit=1000`.
 
-### 5. 关键词 → 生成素材
+### 5. Keywords → generated assets
 
-根提示词在 [`host_prompt.txt`](host_prompt.txt)（运行时读取 [`src/data/host-prompt.txt`](src/data/host-prompt.txt)）。流程：
+The host prompt lives in [`host_prompt.txt`](host_prompt.txt) (runtime copy: [`src/data/host-prompt.txt`](src/data/host-prompt.txt)). Flow:
 
-1. 从 D1 取下一个未使用关键词（`POST /api/generate/prepare`）  
-2. **Cursor Agent 内置文字模型** 根据 `host_prompt.txt` + 关键词生成 JSON 元数据  
-3. **Cursor Agent 内置图片模型** 根据 `imagePrompt` 生成图片  
-4. Agent 调用 `POST /api/generate/import` 写入 R2 + `generated_asset` + `keyword_content`  
-5. 详情页展示标题、描述、配色、标签、相关搜索、用法提示等  
+1. Claim the next unused keyword from D1 (`POST /api/generate/prepare`)
+2. A **Cursor Agent text model** builds JSON metadata from `host_prompt.txt` + the keyword
+3. A **Cursor Agent image model** generates the image from `imagePrompt`
+4. The agent calls `POST /api/generate/import` to write R2 + `generated_asset` + `keyword_content`
+5. The detail page shows title, description, palette, tags, related searches, and usage notes
 
 ```bash
 npm run dev
-npm run agent:prepare          # 预留关键词，输出 prompt
-# 在 Cursor 对话中说：用内置模型生成一条素材并导入
-# 或手动：npm run agent:import -- meta.json image.jpg <keywordId>
+npm run agent:prepare          # lock a keyword and print the prompt
+# In Cursor: generate one asset with the built-in models and import it
+# Or by hand: npm run agent:import -- meta.json image.jpg <keywordId>
 ```
 
-浏览器打开 `/tools/generate` 可点击 **Prepare keyword**，然后在 Cursor 里让 Agent 完成生成与导入。
+Open `/tools/generate` in the browser, click **Prepare keyword**, then finish generation and import in Cursor.
 
-**数据库关联（可扩展）**
+**Database relations (extensible)**
 
-| 表 | 说明 |
+| Table | Purpose |
 |---|---|
-| `keyword` | 关键词词库，`used` / `usedAt` 标记是否已消费 |
-| `generated_asset` | 生成素材，含 `keywordId` 外键 |
-| `keyword_content` | 通用关联表，未来可挂 `sanity_asset` 等类型 |
+| `keyword` | Keyword library; `used` / `usedAt` mark consumption |
+| `generated_asset` | Generated asset, with `keywordId` foreign key |
+| `keyword_content` | Generic join table (can attach `sanity_asset` later) |
 
-代码接口：`src/lib/keyword-content.ts`  
-HTTP：`GET /api/keywords/stats`、`GET /api/keywords/:id/content`、`GET /api/content/:type/:id/keyword`
+Code: `src/lib/keyword-content.ts`  
+HTTP: `GET /api/keywords/stats`, `GET /api/keywords/:id/content`, `GET /api/content/:type/:id/keyword`
 
 ```bash
-npm run dev                    # 先启动开发服务器
-npm run generate:asset         # CLI 触发生成一条
-# 或浏览器打开 /tools/generate 点击按钮
+npm run dev                    # start the dev server first
+npm run generate:asset         # CLI: generate one asset
+# or open /tools/generate and use the button
 ```
 
-### 本地 AI 配置（`.dev.vars`）
+### Local AI (`.dev.vars`)
 
-默认使用 **Ollama**，不依赖 Cloudflare AI：
+Default is **Ollama** (not Cloudflare AI):
 
 ```env
 LOCAL_AI_TEXT_URL=http://127.0.0.1:11434/v1
@@ -99,92 +101,92 @@ LOCAL_AI_IMAGE_MODEL=flux
 LOCAL_AI_IMAGE_PROVIDER=ollama
 ```
 
-启动 Ollama 并拉取模型：
+Start Ollama and pull models:
 
 ```bash
 ollama pull qwen2.5:7b
 ollama pull flux
 ```
 
-若用 **Automatic1111**，改 `LOCAL_AI_IMAGE_PROVIDER=sdwebui` 和 `LOCAL_AI_IMAGE_URL=http://127.0.0.1:7860`。
+For **Automatic1111**, set `LOCAL_AI_IMAGE_PROVIDER=sdwebui` and `LOCAL_AI_IMAGE_URL=http://127.0.0.1:7860`.
 
-环境变量见 [`.dev.vars.example`](.dev.vars.example)：`GENERATE_API_SECRET`、`ADMIN_EMAILS`。
+See [`.dev.vars.example`](.dev.vars.example) for `GENERATE_API_SECRET` and `ADMIN_EMAILS`.
 
-> `wrangler.jsonc` 里的 `database_id` 先是占位符。本地 `migrations apply --local` 可用；上线前请用 `wrangler d1 create istockvisual-db` 创建真实库并替换 ID。
+> `database_id` in `wrangler.jsonc` starts as a placeholder. Local `migrations apply --local` works; before production, run `wrangler d1 create istockvisual-db` and replace the ID.
 
-### 4. 启动站点
+### 6. Start the site
 
 ```bash
 npm run dev
 ```
 
-打开 <http://localhost:4325>。
+Open <http://localhost:4325>.
 
-### 5.（可选）启动 Sanity Studio
+### 7. (Optional) Sanity Studio
 
-1. 在 [sanity.io](https://www.sanity.io) 创建项目
-2. 设置环境变量 `SANITY_STUDIO_PROJECT_ID` / `SANITY_STUDIO_DATASET`
-3. 把同一 `projectId` / `dataset` 写入根目录 `.dev.vars`（`SANITY_PROJECT_ID` 等）
-4. 运行：
+1. Create a project on [sanity.io](https://www.sanity.io)
+2. Set `SANITY_STUDIO_PROJECT_ID` / `SANITY_STUDIO_DATASET`
+3. Put the same `projectId` / `dataset` in root `.dev.vars` (`SANITY_PROJECT_ID`, etc.)
+4. Run:
 
 ```bash
 npm run sanity:dev
 ```
 
-在 Studio 中创建 `asset` 文档，填入 `r2ObjectKey`（对应 R2 中的对象 key）。
+Create an `asset` document in Studio and set `r2ObjectKey` to the matching R2 object key.
 
-## 主要路由
+## Main routes
 
-| 路径 | 说明 |
+| Path | Description |
 |---|---|
-| `/` | 首页 |
-| `/photos` `/illustrations` `/vectors` `/3d` | 分类列表 |
-| `/:category/:slug` | 素材详情 |
-| `/login` `/signup` `/account` | 会员 |
-| `/tools/ai-edit` | AI 修图占位 |
+| `/` | Home |
+| `/photos` `/illustrations` `/vectors` `/3d` | Category indexes |
+| `/:category/:slug` | Asset detail |
+| `/login` `/signup` `/account` | Membership |
+| `/tools/ai-edit` | AI edit placeholder |
 | `/api/auth/*` | Better Auth |
-| `/api/download/:id` | 受控下载（需登录；Pro 素材需 `plan=pro`） |
+| `/api/download/:id` | Controlled download (login required; Pro assets need `plan=pro`) |
 
-## Cloudflare 资源（免费层起步）
+## Cloudflare resources (free-tier start)
 
-在 Cloudflare Dashboard / Wrangler 中创建：
+Create these in the Cloudflare Dashboard / Wrangler:
 
-1. **D1**：`istockvisual-db` → 把 `database_id` 写入 [`wrangler.jsonc`](wrangler.jsonc)
-2. **R2**：`istockvisual-media` → binding `MEDIA`
-3. 应用远程迁移：
+1. **D1**: `istockvisual-db` → write `database_id` into [`wrangler.jsonc`](wrangler.jsonc)
+2. **R2**: `istockvisual-media` → binding `MEDIA`
+3. Apply remote migrations:
 
 ```bash
 npm run db:migrate:remote
 ```
 
-推荐环境变量（Pages / Workers）：
+Recommended env vars (Pages / Workers):
 
 - `BETTER_AUTH_SECRET`
-- `BETTER_AUTH_URL`（生产域名，如 `https://istockvisual.com`）
+- `BETTER_AUTH_URL` (production origin, e.g. `https://istockvisual.com`)
 - `SANITY_PROJECT_ID`
 - `SANITY_DATASET`
-- `SANITY_API_TOKEN`（只读 token，可选）
-- `PUBLIC_SANITY_PROJECT_ID` / `PUBLIC_SANITY_DATASET`（若希望构建期也能读公开配置）
+- `SANITY_API_TOKEN` (read-only, optional)
+- `PUBLIC_SANITY_PROJECT_ID` / `PUBLIC_SANITY_DATASET` (if the build should read public config)
 
-## GitHub → Cloudflare 发布
+## GitHub → Cloudflare deploy
 
-1. 推送本仓库到 GitHub
-2. Cloudflare Dashboard → **Workers & Pages** → Create → 连接该 GitHub 仓库
-3. 构建设置：
-   - Build command：`npm run build`
-   - Deploy command / 输出：按 Astro Cloudflare adapter（本仓库使用 `wrangler.jsonc` + `npm run build`，可用 `npx wrangler deploy` 或 Pages 的 Workers 集成）
-4. 绑定同一 D1、R2，并配置上面的环境变量
-5. 首次部署前执行 `npm run db:migrate:remote`
+1. Push this repo to GitHub
+2. Cloudflare Dashboard → **Workers & Pages** → Create → connect the GitHub repo
+3. Build settings:
+   - Build command: `npm run build`
+   - Deploy / output: Astro Cloudflare adapter (this repo uses `wrangler.jsonc` + `npm run build`; `npx wrangler deploy` or the Pages Workers integration)
+4. Bind the same D1 and R2, and set the env vars above
+5. Run `npm run db:migrate:remote` before the first production deploy
 
-## 下载权限逻辑
+## Download access
 
-1. 必须已登录
-2. 若 Sanity 中 `isPremium === true`，则要求用户 `plan === 'pro'`
-3. 从 R2 `MEDIA` 按 `r2ObjectKey` 流式返回文件
+1. User must be signed in
+2. If Sanity `isPremium === true`, the user must have `plan === 'pro'`
+3. Stream the file from R2 `MEDIA` by `r2ObjectKey`
 
-`plan` / `planExpiresAt` 已写入 D1 `user` 表，支付（Stripe 等）可后续接入，不必改表结构。
+`plan` / `planExpiresAt` already live on the D1 `user` table. Payments (Stripe, etc.) can be added later without a schema change.
 
-## 目录结构（核心）
+## Core layout
 
 ```
 src/
@@ -192,30 +194,30 @@ src/
   lib/auth.ts | sanity.ts | r2.ts
   pages/...
   components/...
-sanity/                 # 无头 CMS Studio
+sanity/                 # headless CMS Studio
 migrations/0001_init.sql
 wrangler.jsonc
 ```
 
-## GitHub 自动备份
+## GitHub auto-backup
 
-仓库地址：**https://github.com/yayadel/istockvisual.com**
+Repo: **https://github.com/yayadel/istockvisual.com**
 
-- 使用项目根目录的 `github_token`（已在 `.gitignore`，不会上传）
-- 手动备份：`npm run backup`
-- **持续自动备份**（文件改动后约 10 秒提交并推送）：
+- Uses a root `github_token` file (listed in `.gitignore`, not committed)
+- Manual backup: `npm run backup`
+- **Watch backup** (commit and push about 10 seconds after file changes):
 
 ```bash
 npm run backup:watch
 ```
 
-Cursor 里 Agent 改完文件也会触发备份（`.cursor/hooks.json`）。
+Cursor Agent file edits also trigger backup (`.cursor/hooks.json`).
 
-> `keyword_store/` 体积过大已排除在 Git 之外，仅保留在本地。
+> `keyword_store/` is gitignored because of size; it stays local only.
 
-## 本期不做
+## Out of scope for now
 
-- Stripe / 订阅支付闭环
-- 真实 AI 推理与计费
-- OAuth 社交登录
-- 素材批量导入流水线
+- Stripe / subscription billing loop
+- Live AI inference and metering
+- OAuth social login
+- Bulk asset import pipeline
