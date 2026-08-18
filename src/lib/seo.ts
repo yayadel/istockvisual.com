@@ -9,7 +9,7 @@ export const PRIVACY_PATH = '/info/privacy';
 export const COOKIES_PATH = '/info/cookies';
 export const REFUNDS_PATH = '/info/refunds';
 export const LEGAL_CONTACT_EMAIL = 'hello@istockvisual.com';
-export const LEGAL_UPDATED = 'August 16, 2026';
+export const LEGAL_UPDATED = 'August 18, 2026';
 
 export const LEGAL_PAGES = [
 	{ href: ABOUT_PATH, label: 'About' },

@@ -1,0 +1,146 @@
+---
+import { COOKIES_PATH, PRIVACY_PATH } from '../lib/seo';
+import {
+	PRIVACY_NOTICE_COOKIE,
+	PRIVACY_NOTICE_STORAGE_KEY,
+	PRIVACY_NOTICE_TTL_SECONDS,
+} from '../lib/privacy-notice';
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const skip = path.startsWith('/admin') || path === PRIVACY_PATH;
+---
+
+{
+	!skip && (
+		<div
+			class="privacy-notice"
+			hidden
+			data-privacy-notice
+			data-cookie={PRIVACY_NOTICE_COOKIE}
+			data-storage={PRIVACY_NOTICE_STORAGE_KEY}
+			data-ttl={String(PRIVACY_NOTICE_TTL_SECONDS)}
+			role="region"
+			aria-label="Privacy notice"
+		>
+			<p>
+				We use essential cookies to sign you in and keep the library running. Studio tools stay on
+				your device.
+				<a href={PRIVACY_PATH}>Privacy Policy</a>
+				{' · '}
+				<a href={COOKIES_PATH}>Cookies</a>
+			</p>
+			<button class="btn btn--primary" type="button" data-privacy-accept>
+				Got it
+			</button>
+		</div>
+	)
+}
+
+{
+	!skip && (
+		<script>
+			const root = document.querySelector<HTMLElement>('[data-privacy-notice]');
+			if (root) {
+				const cookieName = root.dataset.cookie || 'istockvisual-privacy-ok';
+				const storageKey = root.dataset.storage || 'istockvisual-privacy-ok';
+				const ttlSeconds = Number(root.dataset.ttl || 86400);
+				const ttlMs = ttlSeconds * 1000;
+				const sessionKey = `${storageKey}:session`;
+
+				function hasCookie(): boolean {
+					return document.cookie.split(';').some((part) => part.trim().startsWith(`${cookieName}=`));
+				}
+
+				function localFresh(): boolean {
+					try {
+						const raw = localStorage.getItem(storageKey);
+						if (!raw) return false;
+						const stamped = Number(raw);
+						if (!Number.isFinite(stamped) || Date.now() - stamped > ttlMs) {
+							localStorage.removeItem(storageKey);
+							return false;
+						}
+						return true;
+					} catch {
+						return false;
+					}
+				}
+
+				function stampComputer() {
+					const now = String(Date.now());
+					try {
+						localStorage.setItem(storageKey, now);
+					} catch {
+						/* private mode */
+					}
+					document.cookie = `${cookieName}=1; Max-Age=${ttlSeconds}; Path=/; SameSite=Lax`;
+				}
+
+				function hide() {
+					root.hidden = true;
+					document.body.classList.remove('has-privacy-notice');
+					try {
+						sessionStorage.setItem(sessionKey, 'hide');
+					} catch {
+						/* ignore */
+					}
+				}
+
+				function show() {
+					root.hidden = false;
+					document.body.classList.add('has-privacy-notice');
+					try {
+						sessionStorage.setItem(sessionKey, 'show');
+					} catch {
+						/* ignore */
+					}
+				}
+
+				async function acknowledge() {
+					stampComputer();
+					hide();
+					try {
+						await fetch('/api/privacy-notice', { method: 'POST', credentials: 'same-origin' });
+					} catch {
+						/* offline: computer stamp still holds for 24h */
+					}
+				}
+
+				root.querySelector('[data-privacy-accept]')?.addEventListener('click', () => {
+					void acknowledge();
+				});
+
+				if (hasCookie() || localFresh()) {
+					hide();
+				} else {
+					const session = (() => {
+						try {
+							return sessionStorage.getItem(sessionKey);
+						} catch {
+							return null;
+						}
+					})();
+					if (session === 'show') {
+						show();
+					} else if (session === 'hide') {
+						hide();
+					} else {
+						void fetch('/api/privacy-notice', { credentials: 'same-origin' })
+							.then((response) => (response.ok ? response.json() : { acknowledged: false }))
+							.then((data: { acknowledged?: boolean }) => {
+								if (data?.acknowledged) {
+									stampComputer();
+									hide();
+									return;
+								}
+								show();
+							})
+							.catch(() => {
+								show();
+							});
+					}
+				}
+			}
+		</script>
+	)
+}
