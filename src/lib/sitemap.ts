@@ -7,7 +7,7 @@ import {
 	listSitemapAssets,
 	listTopContentCategoriesByCount,
 } from './generated-assets';
-import { LEGAL_PAGES, siteOrigin } from './seo';
+import { LEGAL_PAGES, PRESS_PATH, siteOrigin } from './seo';
 
 type SitemapEnv = {
 	DB?: D1Database;
