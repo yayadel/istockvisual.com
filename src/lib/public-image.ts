@@ -24,7 +24,7 @@ function widthToken(size: PublicImageSize) {
 export function publicImagePath(
 	assetId: string,
 	size: PublicImageSize = '500',
-	ext: 'avif' | 'jpg' = 'avif',
+	ext: 'avif' | 'jpg' = 'jpg',
 ): string {
 	const id = encodeURIComponent(assetId);
 	return `/preview/${id}_${widthToken(size)}.${ext}`;
@@ -34,12 +34,12 @@ export function publicImageUrl(
 	origin: string,
 	assetId: string,
 	size: PublicImageSize = '500',
-	ext: 'avif' | 'jpg' = 'avif',
+	ext: 'avif' | 'jpg' = 'jpg',
 ): string {
 	return `${originOf(origin)}${publicImagePath(assetId, size, ext)}`;
 }
 
-export function previewSrcset(assetId: string, ext: 'avif' | 'jpg' = 'avif') {
+export function previewSrcset(assetId: string, ext: 'avif' | 'jpg' = 'jpg') {
 	return `${publicImagePath(assetId, '500', ext)} 500w, ${publicImagePath(assetId, '1k', ext)} 1000w`;
 }
 
@@ -92,20 +92,16 @@ export function resolvePublicPreviewRoute(pathname: string): PublicPreviewRoute 
 	const parsed = parsePublicPreviewFile(filename);
 	if (!parsed) return null;
 
-	const canonical = publicImagePath(
-		parsed.id,
-		parsed.size || (parsed.format === 'jpeg' ? '1k' : '500'),
-		parsed.format === 'jpeg' ? 'jpg' : 'avif',
-	);
-	if (pathname.startsWith('/images/preview/') || parsed.ext === 'webp' || parsed.ext === 'jpeg') {
+	const canonical = publicImagePath(parsed.id, parsed.size || '1k', 'jpg');
+	if (pathname.startsWith('/images/preview/')) {
 		return { kind: 'redirect', location: canonical };
 	}
 
 	return {
 		kind: 'serve',
 		id: parsed.id,
-		size: parsed.size || '',
-		variant: parsed.format === 'jpeg' ? 'jpg' : 'avif',
+		size: parsed.size || '1k',
+		variant: 'jpg',
 	};
 }
 
@@ -129,7 +125,7 @@ export function parseAssetIdFromImageUrl(url: string): string | null {
 export function sizedPreviewUrl(
 	url: string,
 	size: Exclude<PublicImageSize, 'preview'>,
-	ext: 'avif' | 'jpg' = 'avif',
+	ext: 'avif' | 'jpg' = 'jpg',
 ): string {
 	const id = parseAssetIdFromImageUrl(url);
 	if (!id) {
@@ -155,7 +151,7 @@ export function imageMimeFromUrl(url: string | undefined): string | undefined {
 	return undefined;
 }
 
-/** Rewrite legacy `/api/preview/...` URLs to canonical `/preview/{id}_{width}w.avif`. */
+/** Rewrite legacy `/api/preview/...` and `.avif` URLs to canonical `/preview/{id}_{width}w.jpg`. */
 export function canonicalizePublicImageUrl(
 	url: string | undefined,
 	origin: string,
@@ -172,11 +168,10 @@ export function canonicalizePublicImageUrl(
 		if (qSize === '500' || qSize === '512') resolvedSize = '500';
 		if (qSize === '1000' || qSize === '1k') resolvedSize = '1k';
 
-		const ext = parsed.pathname.endsWith('.jpg') || parsed.pathname.endsWith('.jpeg') ? 'jpg' : 'avif';
-		return publicImageUrl(origin, id, resolvedSize, ext);
+		return publicImageUrl(origin, id, resolvedSize, 'jpg');
 	} catch {
 		const id = parseAssetIdFromImageUrl(url);
-		if (id) return publicImageUrl(origin, id, size);
+		if (id) return publicImageUrl(origin, id, size, 'jpg');
 		return url;
 	}
 }

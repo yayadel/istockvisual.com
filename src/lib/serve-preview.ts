@@ -72,14 +72,18 @@ export async function servePreviewImage(
 	}
 
 	const size = (input.size || '').toLowerCase();
-	const variant = (input.variant || '').toLowerCase();
-	const sizedJpegRequest = size === '500' || size === '512' || size === '1k';
-	const wantAvif =
-		variant === 'avif' || (!sizedJpegRequest && variant !== 'jpg' && variant !== 'jpeg');
-	const wantJpeg = !wantAvif;
 	const method = input.method || 'GET';
 
-	if (wantJpeg && sizedJpegRequest) {
+	const previewKey = previewObjectKey(r2ObjectKey);
+	const preview = await bucket.get(previewKey);
+	if (preview) {
+		const headers = new Headers();
+		preview.writeHttpMetadata(headers);
+		withImageHeaders(headers, PREVIEW_CACHE, 'image/jpeg', preview.httpEtag);
+		return new Response(bodyFor(method, preview.body), { headers });
+	}
+
+	if (size === '500' || size === '512' || size === '1k') {
 		const variantId = size === '512' ? '500' : size;
 		const sized = await bucket.get(variantObjectKey(r2ObjectKey, variantId));
 		if (sized) {
@@ -90,17 +94,6 @@ export async function servePreviewImage(
 		}
 	}
 
-	if (wantAvif || !wantJpeg) {
-		const previewKey = previewObjectKey(r2ObjectKey);
-		const preview = await bucket.get(previewKey);
-		if (preview) {
-			const headers = new Headers();
-			preview.writeHttpMetadata(headers);
-			withImageHeaders(headers, PREVIEW_CACHE, 'image/avif', preview.httpEtag);
-			return new Response(bodyFor(method, preview.body), { headers });
-		}
-	}
-
 	const object = await bucket.get(r2ObjectKey);
 	if (!object) {
 		return new Response('Preview not found in R2', { status: 404 });
@@ -108,11 +101,6 @@ export async function servePreviewImage(
 
 	const headers = new Headers();
 	object.writeHttpMetadata(headers);
-	withImageHeaders(
-		headers,
-		FALLBACK_CACHE,
-		wantJpeg ? 'image/jpeg' : fileType,
-		object.httpEtag,
-	);
+	withImageHeaders(headers, FALLBACK_CACHE, fileType || 'image/jpeg', object.httpEtag);
 	return new Response(bodyFor(method, object.body), { headers });
 }

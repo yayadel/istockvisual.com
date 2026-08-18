@@ -2,7 +2,7 @@ import sharp from 'sharp';
 
 export const MASTER_LONG_EDGE = 4096;
 
-/** Listing / detail display AVIF. Not used for paid downloads. */
+/** Listing / detail display JPEG. Not used for paid downloads. */
 export const PREVIEW_LONG_EDGE = 1280;
 
 export async function buildJpegVariant(input, longEdge, quality = 86, mode = 'inside') {
@@ -38,7 +38,7 @@ export async function masterJpegInfo(input) {
 	};
 }
 
-export async function buildPreviewAvif(input) {
+export async function buildPreviewJpeg(input) {
 	return sharp(input, { failOn: 'none' })
 		.resize({
 			width: PREVIEW_LONG_EDGE,
@@ -47,6 +47,6 @@ export async function buildPreviewAvif(input) {
 			withoutEnlargement: false,
 			kernel: 'lanczos3',
 		})
-		.avif({ quality: 50, effort: 4 })
+		.jpeg({ quality: 78, mozjpeg: true, chromaSubsampling: '4:2:0' })
 		.toBuffer();
 }

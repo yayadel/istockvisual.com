@@ -57,9 +57,18 @@ function shouldEdgeCache(pathname: string) {
 	);
 }
 
+const PREVIEW_CACHE_VERSION = 'jpg2';
+
 function cacheKeyFor(request: Request) {
 	const url = new URL(request.url);
 	url.hash = '';
+	if (
+		url.pathname.startsWith('/preview/') ||
+		url.pathname.startsWith('/images/preview/') ||
+		url.pathname.startsWith('/api/preview/')
+	) {
+		url.searchParams.set('_cfv', PREVIEW_CACHE_VERSION);
+	}
 	return new Request(url.toString(), { method: 'GET' });
 }
 

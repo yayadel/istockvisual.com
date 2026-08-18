@@ -75,7 +75,14 @@ export function variantObjectKey(originalKey: string, sizeId: string) {
 	return `${base}-${sizeId}.jpg`;
 }
 
+/** Listing / detail display JPEG (1280 long edge). Not a paid download. */
 export function previewObjectKey(originalKey: string) {
+	const dot = originalKey.lastIndexOf('.');
+	const base = dot >= 0 ? originalKey.slice(0, dot) : originalKey;
+	return `${base}-preview.jpg`;
+}
+
+export function legacyAvifPreviewObjectKey(originalKey: string) {
 	const dot = originalKey.lastIndexOf('.');
 	const base = dot >= 0 ? originalKey.slice(0, dot) : originalKey;
 	return `${base}-preview.avif`;

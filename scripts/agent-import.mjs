@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { buildPreviewAvif, masterJpegInfo } from './build-image-variants.mjs';
+import { buildPreviewJpeg, masterJpegInfo } from './build-image-variants.mjs';
 import { resolveGenerateEnv } from './lib/generate-env.mjs';
 
 const { baseUrl, secret } = resolveGenerateEnv();
@@ -49,8 +49,8 @@ if (!res.ok) {
 
 const assetId = data.asset?.id;
 if (assetId) {
-	console.log('Building AVIF display preview…');
-	const preview = await buildPreviewAvif(imageBuffer);
+	console.log('Building JPEG display preview…');
+	const preview = await buildPreviewJpeg(imageBuffer);
 	const previewRes = await fetch(`${baseUrl}/api/generate/variants`, {
 		method: 'POST',
 		headers: {

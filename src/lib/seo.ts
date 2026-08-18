@@ -349,12 +349,12 @@ export function collectionPageJsonLd(input: {
 	return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-/** JSON-LD 主图：公开 1K AVIF（静态扩展名，可被 Google Images 抓取） */
+/** JSON-LD 主图：公开 1K JPEG（静态扩展名，可被 Google Images 抓取） */
 export function assetJsonLdContentUrl(origin: string, assetId: string): string {
 	return publicImageUrl(origin, assetId, '1k');
 }
 
-/** JSON-LD 缩略图：500px AVIF */
+/** JSON-LD 缩略图：500px JPEG */
 export function assetJsonLdThumbnailUrl(origin: string, assetId: string): string {
 	return publicImageUrl(origin, assetId, '500');
 }
@@ -366,9 +366,9 @@ export function assetJsonLd(input: {
 	seoTitle: string;
 	seoDescription: string;
 	imageDescription?: string;
-	/** 主资源 URL（公开 1K AVIF） */
+	/** 主资源 URL（公开 1K JPEG） */
 	contentUrl?: string;
-	/** 缩略图 URL（500px AVIF） */
+	/** 缩略图 URL（500px JPEG） */
 	thumbnailUrl?: string;
 	width?: number;
 	height?: number;
@@ -389,7 +389,7 @@ export function assetJsonLd(input: {
 	const thumbnailUrl = input.thumbnailUrl
 		? absoluteUrl(input.thumbnailUrl, input.origin)
 		: contentUrl;
-	const encodingFormat = imageMimeFromUrl(contentUrl) || 'image/avif';
+	const encodingFormat = imageMimeFromUrl(contentUrl) || 'image/jpeg';
 	const imageDescription = (
 		input.imageDescription ||
 		input.seoDescription ||

@@ -1,6 +1,12 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { legacyPreviewObjectKey, previewObjectKey, STORED_VARIANT_IDS, variantObjectKey } from '../../../lib/download-sizes';
+import {
+	legacyAvifPreviewObjectKey,
+	legacyPreviewObjectKey,
+	previewObjectKey,
+	STORED_VARIANT_IDS,
+	variantObjectKey,
+} from '../../../lib/download-sizes';
 import {
 	getGeneratedAssetById,
 	updateGeneratedAssetImageMeta,
@@ -97,7 +103,7 @@ export const POST: APIRoute = async (context) => {
 		if (body.sizeId && body.sizeId !== '4k' && body.sizeId !== 'preview') {
 			return new Response(
 				JSON.stringify({
-					error: 'Only a 4K master and an AVIF display preview are stored.',
+					error: 'Only a 4K master and a JPEG display preview are stored.',
 				}),
 				{ status: 400, headers: { 'Content-Type': 'application/json' } },
 			);
@@ -116,9 +122,10 @@ export const POST: APIRoute = async (context) => {
 		if (body.sizeId === 'preview') {
 			const key = previewObjectKey(asset.r2ObjectKey);
 			await env.MEDIA.put(key, bytes, {
-				httpMetadata: { contentType: 'image/avif' },
+				httpMetadata: { contentType: 'image/jpeg' },
 			});
 			await env.MEDIA.delete(legacyPreviewObjectKey(asset.r2ObjectKey));
+			await env.MEDIA.delete(legacyAvifPreviewObjectKey(asset.r2ObjectKey));
 			return new Response(JSON.stringify({ ok: true, key, bytes: bytes.byteLength }), {
 				headers: { 'Content-Type': 'application/json' },
 			});
