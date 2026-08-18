@@ -249,6 +249,8 @@ export function writePatch(id, spec, previewLines) {
 	fs.writeFileSync(file, `${body.trim()}\n`);
 	return file;
 }
+
+export async function submitGithubPr({ token, spec, dryRun = false, id = 'github' }) {
 	const [owner, repo] = spec.repo.split('/');
 	const filePath = spec.file || 'README.md';
 	const fileMeta = await githubFetch(
