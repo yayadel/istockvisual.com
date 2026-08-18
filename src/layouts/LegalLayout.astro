@@ -17,7 +17,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 <BaseLayout title={title} description={description}>
 	<section class="legal-page">
 		<header class="legal-page__head">
-			<p class="asset-card__meta">Legal</p>
+			<p class="asset-card__meta">{kicker}</p>
 			<h1>{heading}</h1>
 			<p>{lede}</p>
 			<nav class="legal-nav" aria-label="Legal pages">
