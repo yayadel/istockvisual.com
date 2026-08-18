@@ -8497,6 +8497,11 @@ body.image-editor-modal-open {
 	white-space: pre-wrap;
 }
 
+.legal-copy img {
+	display: block;
+	margin: 0.4rem 0 1rem;
+}
+
 .legal-updated {
 	margin: 2rem 0 0;
 	font-size: 0.82rem;

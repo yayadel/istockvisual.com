@@ -7,9 +7,10 @@ interface Props {
 	description: string;
 	heading: string;
 	lede: string;
+	kicker?: string;
 }
 
-const { title, description, heading, lede } = Astro.props;
+const { title, description, heading, lede, kicker = 'Legal' } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 

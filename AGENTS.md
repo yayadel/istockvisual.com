@@ -45,6 +45,8 @@ Required **Cursor Dashboard → Cloud Agents → Secrets** (Runtime Secrets, nev
 | `GENERATE_API_SECRET` | Same value as the Worker secret `GENERATE_API_SECRET` (local `.dev.vars` key `GENERATE_API_SECRET_REMOTE`) |
 | `TOGETHER_API_KEY` | Required for default meta (`npm run agent:meta:gemma`) |
 | `GEMINI_API_KEY` | Only if the user asks for Gemini meta |
+| `GITHUB_TOKEN` | Optional. Enables `npm run backlinks:run` GitHub Awesome PRs |
+| `DEV_TO_API_KEY` | Optional. Enables Dev.to drafts via the backlink operator |
 
 Do **not** start `astro dev` or Wrangler for content jobs. Do **not** git-commit generated JPEGs or `.tmp` meta unless the user asks. Do **not** open a PR just to import an asset — success is a live page on istockvisual.com.
 
