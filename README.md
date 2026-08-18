@@ -199,21 +199,7 @@ migrations/0001_init.sql
 wrangler.jsonc
 ```
 
-## GitHub auto-backup
-
-Repo: **https://github.com/yayadel/istockvisual.com**
-
-- Uses a root `github_token` file (listed in `.gitignore`, not committed)
-- Manual backup: `npm run backup`
-- **Watch backup** (commit and push about 10 seconds after file changes):
-
-```bash
-npm run backup:watch
-```
-
-Cursor Agent file edits also trigger backup (`.cursor/hooks.json`).
-
-> `keyword_store/` is gitignored because of size; it stays local only.
+`keyword_store/` is gitignored because of size; it stays local only.
 
 ## Out of scope for now
 

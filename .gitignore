@@ -21,7 +21,6 @@ pnpm-debug.log*
 github_token
 keyword_store/
 .tmp/
-.git/auto-backup.lock
 
 # macOS-specific files
 .DS_Store

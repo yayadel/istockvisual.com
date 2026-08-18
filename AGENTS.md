@@ -27,7 +27,7 @@ If the user asks for N assets, still run N serial loops inside one locked batch.
 Do **not** spam comments, forums, Reddit threads, or guestbooks. Run the operator one target at a time:
 
 1. `npm run backlinks:list` — show catalog + status (`.tmp/backlinks/status.json`)
-2. `npm run backlinks:preview` then `npm run backlinks:run` — next automatable target (GitHub Awesome PR). Needs a **classic** `GITHUB_TOKEN` with `public_repo` (fine-grained tokens usually cannot fork + PR). Store it in `.dev.vars` or a gitignored `github_token` file.
+2. `npm run backlinks:preview` then `npm run backlinks:run` — next automatable target (GitHub Awesome PR). Needs a **classic** `GITHUB_TOKEN` with `public_repo` (fine-grained tokens usually cannot fork + PR). Store it in `.dev.vars`.
 3. Dev.to draft (optional): `npm run backlinks:run -- --id=devto-resource-index` with `DEV_TO_API_KEY`; add `--publish` only when the article should go live
 4. Directory forms (AlternativeTo, Product Hunt, …): `npm run backlinks:kit` then `npm run backlinks:run -- --id=alternativeto --include-manual --open`. After the live listing exists: `npm run backlinks:done -- --id=alternativeto --url=<listing-url>`
 
