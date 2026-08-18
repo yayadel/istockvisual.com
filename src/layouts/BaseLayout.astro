@@ -109,6 +109,12 @@ const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 				try {
 					var theme = localStorage.getItem('istockvisual-theme');
 					document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+					var privacy = localStorage.getItem('istockvisual-privacy-ok');
+					var stamped = Number(privacy);
+					var fresh = privacy && isFinite(stamped) && Date.now() - stamped < 86400000;
+					if (document.cookie.indexOf('istockvisual-privacy-ok=') !== -1 || fresh) {
+						document.documentElement.setAttribute('data-privacy-ok', '1');
+					}
 				} catch (e) {
 					document.documentElement.setAttribute('data-theme', 'light');
 				}

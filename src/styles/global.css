@@ -8650,26 +8650,26 @@ body.image-editor-modal-open {
 	position: fixed;
 	left: 1rem;
 	bottom: 1rem;
-	z-index: 65;
+	z-index: 80;
 	display: flex;
 	align-items: center;
 	gap: 0.85rem;
 	max-width: min(34rem, calc(100vw - 2rem));
-	padding: 0.85rem 0.95rem;
+	padding: 0.95rem 1rem;
 	border: 1px solid var(--line);
-	background: var(--panel-bg);
+	background: var(--bg);
 	color: var(--text);
-	box-shadow: 0 16px 40px rgba(15, 20, 18, 0.16);
-	backdrop-filter: blur(10px);
+	box-shadow: 0 16px 40px rgba(15, 20, 18, 0.18);
 }
 
+html[data-privacy-ok] .privacy-notice,
 .privacy-notice[hidden] {
 	display: none;
 }
 
 .privacy-notice p {
 	margin: 0;
-	font-size: 0.82rem;
+	font-size: 0.84rem;
 	line-height: 1.45;
 	color: var(--text-muted);
 }
@@ -8701,7 +8701,7 @@ body.image-editor-modal-open {
 		width: 100%;
 	}
 
-	body.has-privacy-notice .support-chat-dock {
+	html:not([data-privacy-ok]) .support-chat-dock {
 		bottom: 8.5rem;
 	}
 }
