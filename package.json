@@ -26,6 +26,7 @@
 		"agent:import": "node scripts/agent-import.mjs",
 		"backlinks:list": "node scripts/agent-backlinks.mjs list",
 		"backlinks:kit": "node scripts/agent-backlinks.mjs kit",
+		"backlinks:preview": "node scripts/agent-backlinks.mjs run --dry-run",
 		"backlinks:run": "node scripts/agent-backlinks.mjs run",
 		"backlinks:done": "node scripts/agent-backlinks.mjs done",
 		"images:variants": "node scripts/backfill-size-variants.mjs",

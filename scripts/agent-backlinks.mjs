@@ -83,10 +83,12 @@ async function runOne(target, { dryRun, publish, open }) {
 			token,
 			spec: target.github,
 			dryRun,
+			id: target.id,
 		});
 		if (result.dryRun) {
 			console.log(`[dry-run] ${target.id}`);
 			for (const line of result.preview || []) console.log(`  ${line}`);
+			if (result.patch) console.log(`  Patch: ${result.patch}`);
 			return result;
 		}
 		if (result.skipped) {

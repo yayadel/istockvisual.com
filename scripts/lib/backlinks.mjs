@@ -269,12 +269,23 @@ export async function submitGithubPr({ token, spec, dryRun = false, id = 'github
 			.split(/\r?\n/)
 			.filter((line) => /iStockVisual/i.test(line))
 			.slice(0, 3);
-		return { dryRun: true, preview };
+		const patch = writePatch(id, spec, preview);
+		return { dryRun: true, preview, patch };
 	}
 
 	const me = await githubFetch(token, 'GET', 'https://api.github.com/user');
 	const login = me.login;
-	await githubFetch(token, 'POST', `https://api.github.com/repos/${owner}/${repo}/forks`, {});
+	try {
+		await githubFetch(token, 'POST', `https://api.github.com/repos/${owner}/${repo}/forks`, {});
+	} catch (error) {
+		writePatch(id, spec);
+		if (error.status === 403 || /not accessible/i.test(error.message || '')) {
+			throw new Error(
+				'GitHub token cannot fork third-party repos. Use a classic PAT with public_repo scope (fine-grained tokens usually fail). Patch written under .tmp/backlinks/patches/.',
+			);
+		}
+		throw error;
+	}
 
 	let forkReady = null;
 	for (let i = 0; i < 20; i += 1) {
