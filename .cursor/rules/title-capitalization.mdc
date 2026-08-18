@@ -21,6 +21,7 @@ alwaysApply: true
 - 关键词 `how to size a magnetic motor starter` → `Electrician Sizing a Magnetic Motor Starter on a Workbench`
 - 不要写成 `Guide on How to Size a Magnetic Motor Starter`
 - 不要加 Stock Image / Free Download（页面拼装时再加）
-- 描述和标签里保留原始关键词；标题只保留核心主语（产品、场景、动作）
+- 描述、图片介绍、标签必须和标题画面一致；不要把已脱离画面的原始搜索词（人名、盗版下载句、词典释义等）塞回描述或标签
+- 标题只保留核心主语（产品、场景、动作）
 
 描述字段用 sentence case，但缩写与专有名词仍要正确（PDF、Colorado、Kentucky 等）。

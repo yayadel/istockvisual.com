@@ -42,11 +42,14 @@ class ColorSwatch(BaseModel):
 class AssetMeta(BaseModel):
 	imagePrompt: str = Field(description="Detailed English prompt for image generation")
 	imageCreationDescription: str = Field(
-		description="English description containing the topic keyword"
+		description="English description of the titled visible scene; must match imagePageTitle, not the raw keyword"
 	)
 	assetUsageTips: str = Field(description="English usage tips for designers/marketers")
 	colorPalette: List[ColorSwatch] = Field(description="Palette with HEX codes")
-	tags: List[str] = Field(min_length=40, description=">=40 unique title-case tags")
+	tags: List[str] = Field(
+		min_length=40,
+		description=">=40 unique title-case tags matching the titled scene and visible objects",
+	)
 	contentCategories: List[str] = Field(
 		min_length=1,
 		max_length=1,
@@ -56,7 +59,7 @@ class AssetMeta(BaseModel):
 		description="Natural title-case stock caption of the visible scene; core subject from keyword, not a stuffed query"
 	)
 	pageShortDescription: str = Field(
-		description="Sentence-case short description containing the keyword"
+		description="Sentence-case short description of the titled scene; must match imagePageTitle, not the raw keyword"
 	)
 	medium: str = Field(description="Photograph | Illustration | 3D Graphic")
 
