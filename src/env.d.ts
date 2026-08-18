@@ -1,7 +1,7 @@
 type CloudflareEnv = {
 	DB: D1Database;
 	MEDIA: R2Bucket;
-	SESSION: KVNamespace;
+	SESSION?: KVNamespace;
 	ASSETS: Fetcher;
 	BETTER_AUTH_SECRET: string;
 	BETTER_AUTH_URL: string;

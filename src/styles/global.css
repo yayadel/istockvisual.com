@@ -8646,6 +8646,66 @@ body.image-editor-modal-open {
 	gap: 0.65rem;
 }
 
+.privacy-notice {
+	position: fixed;
+	left: 1rem;
+	bottom: 1rem;
+	z-index: 65;
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	max-width: min(34rem, calc(100vw - 2rem));
+	padding: 0.85rem 0.95rem;
+	border: 1px solid var(--line);
+	background: var(--panel-bg);
+	color: var(--text);
+	box-shadow: 0 16px 40px rgba(15, 20, 18, 0.16);
+	backdrop-filter: blur(10px);
+}
+
+.privacy-notice[hidden] {
+	display: none;
+}
+
+.privacy-notice p {
+	margin: 0;
+	font-size: 0.82rem;
+	line-height: 1.45;
+	color: var(--text-muted);
+}
+
+.privacy-notice a {
+	color: var(--text);
+	text-decoration: underline;
+	text-underline-offset: 0.14em;
+}
+
+.privacy-notice .btn {
+	flex: none;
+	height: 2.35rem;
+	padding: 0 0.95rem;
+	font-size: 0.82rem;
+}
+
+@media (max-width: 720px) {
+	.privacy-notice {
+		left: 0.75rem;
+		right: 0.75rem;
+		bottom: 0.75rem;
+		max-width: none;
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.privacy-notice .btn {
+		width: 100%;
+	}
+
+	body.has-privacy-notice .support-chat-dock {
+		bottom: 8.5rem;
+	}
+}
+
 .support-chat-launch {
 	display: inline-flex;
 	align-items: center;
