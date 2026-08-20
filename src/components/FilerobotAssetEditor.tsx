@@ -40,6 +40,11 @@ const FREE_LONG_EDGE = 1024;
 const CUTOUT_WHEEL_HINT =
 	'Scroll to resize the circle or brush. Ctrl + scroll to zoom the canvas.';
 const CANVAS_ZOOM_HINT = 'Ctrl + scroll to zoom the canvas.';
+const RESIZE_PRO_HINT =
+	'Sizes above 1024 px need Pro. Upgrade to unlock 2K, 4K, and 8K exports.';
+const RESIZE_TOOL_SELECTOR =
+	'.FIE_resize-tool-options, .FIE_resize-tool-option, .FIE_resize-width-option, .FIE_resize-height-option';
+const RESIZE_INPUT_SELECTOR = `${RESIZE_TOOL_SELECTOR} input`;
 
 const EDITOR_TABS = [
 	TABS.ADJUST,
@@ -135,12 +140,14 @@ export default function FilerobotAssetEditor({
 	const [barSlot, setBarSlot] = useState<Element | null>(null);
 	const [cutoutBusy, setCutoutBusy] = useState(false);
 	const [wheelHint, setWheelHint] = useState<string | null>(null);
+	const [resizeProHint, setResizeProHint] = useState(false);
 	const frameRef = useRef<HTMLDivElement>(null);
 	const sizePickerRef = useRef<HTMLDivElement>(null);
 	const updateStateFnRef = useRef<((part: Record<string, unknown>) => void) | undefined>(undefined);
 	const clampingResizeRef = useRef(false);
 	const cutoutUrlRef = useRef<string | null>(null);
 	const wheelHintTimer = useRef<number>(0);
+	const resizeHintTimer = useRef<number>(0);
 	const savedName = filenameFromTitle(title);
 	const nextPath = typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search;
 	const loginHref = `/login?next=${encodeURIComponent(nextPath)}`;
@@ -268,8 +275,17 @@ export default function FilerobotAssetEditor({
 		wheelHintTimer.current = window.setTimeout(() => setWheelHint(null), 2800);
 	}, []);
 
+	const showResizeProHint = useCallback(() => {
+		setResizeProHint(true);
+		window.clearTimeout(resizeHintTimer.current);
+		resizeHintTimer.current = window.setTimeout(() => setResizeProHint(false), 4200);
+	}, []);
+
 	useEffect(() => {
-		return () => window.clearTimeout(wheelHintTimer.current);
+		return () => {
+			window.clearTimeout(wheelHintTimer.current);
+			window.clearTimeout(resizeHintTimer.current);
+		};
 	}, []);
 
 	useEffect(() => {
@@ -478,17 +494,19 @@ export default function FilerobotAssetEditor({
 			const value = Number(input.value);
 			if (!Number.isFinite(value) || value <= FREE_LONG_EDGE) return false;
 			input.value = String(FREE_LONG_EDGE);
+			input.dispatchEvent(new Event('input', { bubbles: true }));
+			input.dispatchEvent(new Event('change', { bubbles: true }));
 			return true;
 		};
 		const onResizeField = (event: Event) => {
 			const target = event.target;
 			if (!(target instanceof HTMLInputElement)) return;
-			if (!target.closest('.FIE_resize-tool-options')) return;
+			if (!target.closest(RESIZE_TOOL_SELECTOR)) return;
 			if (!limitResizeInput(target)) return;
-			requestPro('2K+');
+			showResizeProHint();
 		};
 		const bindMax = () => {
-			root.querySelectorAll<HTMLInputElement>('.FIE_resize-tool-options input').forEach((input) => {
+			root.querySelectorAll<HTMLInputElement>(RESIZE_INPUT_SELECTOR).forEach((input) => {
 				input.max = String(FREE_LONG_EDGE);
 			});
 		};
@@ -502,7 +520,25 @@ export default function FilerobotAssetEditor({
 			root.removeEventListener('input', onResizeField, true);
 			observer.disconnect();
 		};
-	}, [isPro, requestPro, source]);
+	}, [isPro, showResizeProHint, source]);
+
+	useEffect(() => {
+		const root = frameRef.current;
+		if (!root) return;
+		const syncResizeHint = () => {
+			const onResizeTab = root.querySelector('[data-testid="FIE-tab-resize"][aria-selected="true"]');
+			if (!onResizeTab) setResizeProHint(false);
+		};
+		syncResizeHint();
+		const observer = new MutationObserver(syncResizeHint);
+		observer.observe(root, {
+			childList: true,
+			subtree: true,
+			attributes: true,
+			attributeFilter: ['aria-selected'],
+		});
+		return () => observer.disconnect();
+	}, [source]);
 
 	const onCutoutExecute = useCallback(
 		async (payload: {
@@ -577,12 +613,12 @@ export default function FilerobotAssetEditor({
 					height: clamped.height,
 				},
 			});
-			requestPro('2K+');
+			showResizeProHint();
 			window.setTimeout(() => {
 				clampingResizeRef.current = false;
 			}, 0);
 		},
-		[isPro, requestPro],
+		[isPro, showResizeProHint],
 	);
 
 	const onSave = useCallback(
@@ -733,6 +769,20 @@ export default function FilerobotAssetEditor({
 					<p className="filerobot-zoom-hint" role="status">
 						{wheelHint}
 					</p>
+				) : null}
+				{resizeProHint ? (
+					<div className="filerobot-resize-pro-hint" role="status">
+						<p>{RESIZE_PRO_HINT}</p>
+						<button
+							type="button"
+							onClick={() => {
+								setResizeProHint(false);
+								requestPro('2K+');
+							}}
+						>
+							Go Pro
+						</button>
+					</div>
 				) : null}
 			</div>
 

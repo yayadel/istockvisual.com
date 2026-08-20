@@ -6930,7 +6930,8 @@ body.download-auth-modal-open {
 .filerobot-studio__frame .FIE_watermark-add-wrapper,
 .filerobot-studio__frame .FIE_tools-wrapper,
 .filerobot-studio__frame .FIE_tools-item,
-.filerobot-studio__frame .FIE_resize-tool-options {
+.filerobot-studio__frame .FIE_resize-tool-options,
+.filerobot-studio__frame .FIE_resize-tool-option {
 	justify-content: center !important;
 	margin-inline: auto;
 }
@@ -7159,6 +7160,63 @@ body.download-auth-modal-open {
 	text-align: center;
 	pointer-events: none;
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.filerobot-resize-pro-hint {
+	position: absolute;
+	left: 50%;
+	bottom: 78px;
+	z-index: 24;
+	transform: translateX(-50%);
+	display: grid;
+	gap: 0.55rem;
+	justify-items: center;
+	margin: 0;
+	padding: 10px 14px 12px;
+	max-width: min(360px, calc(100% - 32px));
+	border: 1px solid rgba(196, 240, 75, 0.35);
+	border-radius: 8px;
+	background: #16382f;
+	color: #f4faf7;
+	font-family: Roboto, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 1.45;
+	text-align: center;
+	box-shadow: 0 10px 28px rgba(22, 56, 47, 0.28);
+	pointer-events: auto;
+}
+
+.filerobot-resize-pro-hint::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: -7px;
+	width: 14px;
+	height: 14px;
+	transform: translateX(-50%) rotate(45deg);
+	background: #16382f;
+	border-right: 1px solid rgba(196, 240, 75, 0.35);
+	border-bottom: 1px solid rgba(196, 240, 75, 0.35);
+}
+
+.filerobot-resize-pro-hint p {
+	margin: 0;
+}
+
+.filerobot-resize-pro-hint button {
+	border: 0;
+	border-radius: 3px;
+	padding: 0.45rem 0.85rem;
+	background: #c4f04b;
+	color: #14352d;
+	font-family: inherit;
+	font-size: 12px;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.filerobot-resize-pro-hint button:hover {
+	background: #d2f66a;
 }
 
 .filerobot-keep {
