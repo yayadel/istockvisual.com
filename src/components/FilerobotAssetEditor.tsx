@@ -37,14 +37,12 @@ type Props = {
 };
 
 const FREE_LONG_EDGE = 1024;
-const CUTOUT_WHEEL_HINT =
-	'Scroll to resize the circle or brush. Ctrl + scroll to zoom the canvas.';
-const CANVAS_ZOOM_HINT = 'Ctrl + scroll to zoom the canvas.';
 const RESIZE_PRO_HINT =
 	'Sizes above 1024 px need Pro. Upgrade to unlock 2K, 4K, and 8K exports.';
 const RESIZE_TOOL_SELECTOR =
-	'.FIE_resize-tool-options, .FIE_resize-tool-option, .FIE_resize-width-option, .FIE_resize-height-option';
+	'.FIE_resize-tool-options, .FIE_resize-tool-option, .FIE_resize-width-option, .FIE_resize-height-option, .FIE_save-modal, .FIE_save-resize-wrapper';
 const RESIZE_INPUT_SELECTOR = `${RESIZE_TOOL_SELECTOR} input`;
+const SAVE_MODAL_SELECTOR = '.FIE_save-modal';
 
 const EDITOR_TABS = [
 	TABS.ADJUST,
@@ -139,20 +137,30 @@ export default function FilerobotAssetEditor({
 	const [canvasSlot, setCanvasSlot] = useState<Element | null>(null);
 	const [barSlot, setBarSlot] = useState<Element | null>(null);
 	const [cutoutBusy, setCutoutBusy] = useState(false);
-	const [wheelHint, setWheelHint] = useState<string | null>(null);
 	const [resizeProHint, setResizeProHint] = useState(false);
+	const [saveModalHost, setSaveModalHost] = useState<Element | null>(null);
+	const [saveModalResizeHost, setSaveModalResizeHost] = useState<Element | null>(null);
 	const frameRef = useRef<HTMLDivElement>(null);
 	const sizePickerRef = useRef<HTMLDivElement>(null);
 	const updateStateFnRef = useRef<((part: Record<string, unknown>) => void) | undefined>(undefined);
 	const clampingResizeRef = useRef(false);
 	const cutoutUrlRef = useRef<string | null>(null);
-	const wheelHintTimer = useRef<number>(0);
 	const resizeHintTimer = useRef<number>(0);
 	const savedName = filenameFromTitle(title);
 	const nextPath = typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search;
 	const loginHref = `/login?next=${encodeURIComponent(nextPath)}`;
 	const signupHref = `/signup?next=${encodeURIComponent(nextPath)}`;
-	const [source, setSource] = useState(imageUrl);
+	const editorSource = useMemo(() => {
+		// Local dev serves preview URLs from production (cross-origin). Filerobot needs same-origin bytes.
+		if (assetId && import.meta.env.DEV) {
+			return `/api/editor-image/${encodeURIComponent(assetId)}`;
+		}
+		if (assetId && isPro && !import.meta.env.DEV) {
+			return `/api/download/${assetId}?size=4k`;
+		}
+		return imageUrl;
+	}, [assetId, imageUrl, isPro]);
+	const [source, setSource] = useState(editorSource);
 
 	const sizes = useMemo(
 		() =>
@@ -173,8 +181,8 @@ export default function FilerobotAssetEditor({
 	const selected = sizes.find((size) => size.id === selectedSize) || sizes[1];
 
 	useEffect(() => {
-		setSource((prev) => (prev.startsWith('blob:') ? prev : imageUrl));
-	}, [imageUrl]);
+		setSource((prev) => (prev.startsWith('blob:') ? prev : editorSource));
+	}, [editorSource]);
 
 	useEffect(() => {
 		const preview = document.getElementById('preview');
@@ -269,12 +277,6 @@ export default function FilerobotAssetEditor({
 		return () => observer.disconnect();
 	}, [source]);
 
-	const showWheelHint = useCallback((cutout: boolean) => {
-		setWheelHint(cutout ? CUTOUT_WHEEL_HINT : CANVAS_ZOOM_HINT);
-		window.clearTimeout(wheelHintTimer.current);
-		wheelHintTimer.current = window.setTimeout(() => setWheelHint(null), 2800);
-	}, []);
-
 	const showResizeProHint = useCallback(() => {
 		setResizeProHint(true);
 		window.clearTimeout(resizeHintTimer.current);
@@ -283,30 +285,9 @@ export default function FilerobotAssetEditor({
 
 	useEffect(() => {
 		return () => {
-			window.clearTimeout(wheelHintTimer.current);
 			window.clearTimeout(resizeHintTimer.current);
 		};
 	}, []);
-
-	useEffect(() => {
-		const root = frameRef.current;
-		if (!root) return;
-		const onWheel = (event: WheelEvent) => {
-			const canvas =
-				root.querySelector('.FIE_canvas-container') || root.querySelector('.FIE_canvas-node');
-			if (!canvas || !(event.target instanceof Node) || !canvas.contains(event.target)) return;
-			if (root.classList.contains('is-cutout-tab')) return;
-			if (event.ctrlKey || event.metaKey) {
-				showWheelHint(false);
-				return;
-			}
-			event.preventDefault();
-			event.stopPropagation();
-			showWheelHint(false);
-		};
-		root.addEventListener('wheel', onWheel, { capture: true, passive: false });
-		return () => root.removeEventListener('wheel', onWheel, { capture: true });
-	}, [showWheelHint, source]);
 
 	useEffect(() => {
 		if (!sizeMenuOpen) return;
@@ -487,47 +468,53 @@ export default function FilerobotAssetEditor({
 
 	useEffect(() => {
 		if (isPro) return;
-		const root = frameRef.current;
-		if (!root) return;
-		const limitResizeInput = (input: HTMLInputElement) => {
+		const limitResizeInput = (input: HTMLInputElement, silent = false) => {
 			input.max = String(FREE_LONG_EDGE);
 			const value = Number(input.value);
 			if (!Number.isFinite(value) || value <= FREE_LONG_EDGE) return false;
 			input.value = String(FREE_LONG_EDGE);
 			input.dispatchEvent(new Event('input', { bubbles: true }));
 			input.dispatchEvent(new Event('change', { bubbles: true }));
+			if (!silent) showResizeProHint();
 			return true;
 		};
 		const onResizeField = (event: Event) => {
 			const target = event.target;
 			if (!(target instanceof HTMLInputElement)) return;
 			if (!target.closest(RESIZE_TOOL_SELECTOR)) return;
-			if (!limitResizeInput(target)) return;
-			showResizeProHint();
+			limitResizeInput(target);
 		};
 		const bindMax = () => {
-			root.querySelectorAll<HTMLInputElement>(RESIZE_INPUT_SELECTOR).forEach((input) => {
-				input.max = String(FREE_LONG_EDGE);
+			document.querySelectorAll<HTMLInputElement>(RESIZE_INPUT_SELECTOR).forEach((input) => {
+				limitResizeInput(input, true);
 			});
 		};
-		root.addEventListener('change', onResizeField, true);
-		root.addEventListener('input', onResizeField, true);
+		document.addEventListener('change', onResizeField, true);
+		document.addEventListener('input', onResizeField, true);
 		const observer = new MutationObserver(bindMax);
-		observer.observe(root, { childList: true, subtree: true });
+		observer.observe(document.body, { childList: true, subtree: true });
 		bindMax();
 		return () => {
-			root.removeEventListener('change', onResizeField, true);
-			root.removeEventListener('input', onResizeField, true);
+			document.removeEventListener('change', onResizeField, true);
+			document.removeEventListener('input', onResizeField, true);
 			observer.disconnect();
 		};
-	}, [isPro, showResizeProHint, source]);
+	}, [isPro, showResizeProHint]);
 
 	useEffect(() => {
 		const root = frameRef.current;
 		if (!root) return;
 		const syncResizeHint = () => {
 			const onResizeTab = root.querySelector('[data-testid="FIE-tab-resize"][aria-selected="true"]');
-			if (!onResizeTab) setResizeProHint(false);
+			const saveModalOpen = document.querySelector(SAVE_MODAL_SELECTOR);
+			const host =
+				saveModalOpen?.querySelector('.FIE_save-resize-wrapper')?.parentElement ||
+				saveModalOpen?.querySelector('.SfxModalContent-root') ||
+				saveModalOpen;
+			const resizeHost = saveModalOpen?.querySelector('.FIE_save-resize-wrapper') || null;
+			setSaveModalHost(host instanceof Element ? host : null);
+			setSaveModalResizeHost(resizeHost instanceof Element ? resizeHost : null);
+			if (!onResizeTab && !saveModalOpen) setResizeProHint(false);
 		};
 		syncResizeHint();
 		const observer = new MutationObserver(syncResizeHint);
@@ -537,6 +524,7 @@ export default function FilerobotAssetEditor({
 			attributes: true,
 			attributeFilter: ['aria-selected'],
 		});
+		observer.observe(document.body, { childList: true, subtree: true });
 		return () => observer.disconnect();
 	}, [source]);
 
@@ -695,6 +683,31 @@ export default function FilerobotAssetEditor({
 		</div>
 	) : null;
 
+	const resizeProHintUi = (
+		<div
+			className={`filerobot-resize-pro-hint${saveModalHost ? ' filerobot-resize-pro-hint--modal' : ''}`}
+			role="status"
+		>
+			<p>{RESIZE_PRO_HINT}</p>
+			<button
+				type="button"
+				onClick={() => {
+					setResizeProHint(false);
+					requestPro('2K+');
+				}}
+			>
+				Go Pro
+			</button>
+		</div>
+	);
+
+	const saveModalProBadgeUi = !isPro ? (
+		<div className="filerobot-save-pro-badge" role="note" aria-label="Pro up to 8K">
+			<span className="filerobot-save-pro-badge__pill">PRO</span>
+			<span className="filerobot-save-pro-badge__text">Up to 8K</span>
+		</div>
+	) : null;
+
 	return (
 		<div className="filerobot-studio">
 			{gateMessage ? (
@@ -727,6 +740,7 @@ export default function FilerobotAssetEditor({
 					avoidChangesNotSavedAlertOnLeave
 					observePluginContainerSize
 					keepZoomOnSourceChange
+					disableZooming
 					useAiTab
 					useBackendTranslations={false}
 					language="en"
@@ -761,29 +775,16 @@ export default function FilerobotAssetEditor({
 						toolsHost={cutoutSlot}
 						barHost={barSlot}
 						busy={cutoutBusy}
-						onWheelHint={() => showWheelHint(true)}
 						onExecute={onCutoutExecute}
 					/>
 				) : null}
-				{wheelHint ? (
-					<p className="filerobot-zoom-hint" role="status">
-						{wheelHint}
-					</p>
-				) : null}
-				{resizeProHint ? (
-					<div className="filerobot-resize-pro-hint" role="status">
-						<p>{RESIZE_PRO_HINT}</p>
-						<button
-							type="button"
-							onClick={() => {
-								setResizeProHint(false);
-								requestPro('2K+');
-							}}
-						>
-							Go Pro
-						</button>
-					</div>
-				) : null}
+				{saveModalResizeHost && saveModalProBadgeUi
+					? createPortal(saveModalProBadgeUi, saveModalResizeHost)
+					: null}
+				{resizeProHint && !saveModalHost ? resizeProHintUi : null}
+				{resizeProHint && saveModalHost
+					? createPortal(resizeProHintUi, saveModalHost)
+					: null}
 			</div>
 
 			{authModalOpen && (

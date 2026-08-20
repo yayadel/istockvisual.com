@@ -14,7 +14,6 @@ type Props = {
 	toolsHost: Element;
 	barHost?: Element | null;
 	busy: boolean;
-	onWheelHint?: () => void;
 	onExecute: (payload: {
 		keepCircle: KeepCircle;
 		frameW: number;
@@ -61,7 +60,6 @@ export default function CutoutKeepOverlay({
 	canvasHost,
 	toolsHost,
 	busy,
-	onWheelHint,
 	onExecute,
 }: Props) {
 	const overlayRef = useRef<HTMLDivElement>(null);
@@ -222,58 +220,6 @@ export default function CutoutKeepOverlay({
 		}
 		lastPaint.current = null;
 	};
-
-	useEffect(() => {
-		const overlay = overlayRef.current;
-		if (!overlay) return;
-		const onWheel = (event: WheelEvent) => {
-			if (busy) return;
-			onWheelHint?.();
-			if (event.ctrlKey || event.metaKey) {
-				event.preventDefault();
-				const target =
-					canvasHost.querySelector('.FIE_canvas-node') ||
-					canvasHost.querySelector('.konvajs-content') ||
-					canvasHost.querySelector('canvas:not(.filerobot-keep__paint)');
-				if (target) {
-					target.dispatchEvent(
-						new WheelEvent('wheel', {
-							deltaY: event.deltaY,
-							deltaX: event.deltaX,
-							deltaMode: event.deltaMode,
-							clientX: event.clientX,
-							clientY: event.clientY,
-							bubbles: true,
-							cancelable: true,
-						}),
-					);
-				}
-				return;
-			}
-			event.preventDefault();
-			event.stopPropagation();
-			const shrink = event.deltaY > 0;
-			if (mode === 'circle') {
-				setKeepCircle((current) => {
-					const nextR = clamp(current.r * (shrink ? 0.94 : 1.06), 0.06, 0.48);
-					const radii = keepCircleNormRadii(
-						{ ...current, r: nextR },
-						frame.width,
-						frame.height,
-					);
-					return {
-						cx: clamp(current.cx, radii.rx, 1 - radii.rx),
-						cy: clamp(current.cy, radii.ry, 1 - radii.ry),
-						r: nextR,
-					};
-				});
-				return;
-			}
-			setBrushSize((size) => clamp(size + (shrink ? -4 : 4), 8, 72));
-		};
-		overlay.addEventListener('wheel', onWheel, { passive: false });
-		return () => overlay.removeEventListener('wheel', onWheel);
-	}, [busy, canvasHost, frame.height, frame.width, mode, onWheelHint]);
 
 	const runExecute = async () => {
 		const overlay = overlayRef.current;
