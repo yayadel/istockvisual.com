@@ -82,18 +82,6 @@ const FILEROBOT_THEME = {
 	},
 };
 
-function scaleToLongEdge(image: HTMLImageElement, longEdge: number) {
-	const current = Math.max(image.naturalWidth, image.naturalHeight) || 1;
-	const scale = longEdge / current;
-	const canvas = document.createElement('canvas');
-	canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-	canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-	const ctx = canvas.getContext('2d');
-	if (!ctx) return null;
-	ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-	return canvas;
-}
-
 function scaleCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
 	if (canvas.width === width && canvas.height === height) return canvas;
 	const out = document.createElement('canvas');
@@ -157,14 +145,7 @@ export default function FilerobotAssetEditor({
 	const nextPath = typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search;
 	const loginHref = `/login?next=${encodeURIComponent(nextPath)}`;
 	const signupHref = `/signup?next=${encodeURIComponent(nextPath)}`;
-	const remoteSource = useMemo(() => {
-		if (assetId && isPro && !import.meta.env.DEV) {
-			return `/api/download/${assetId}?size=4k`;
-		}
-		if (assetId) return `/api/editor-image/${encodeURIComponent(assetId)}`;
-		return imageUrl;
-	}, [assetId, imageUrl, isPro]);
-	const [source, setSource] = useState(remoteSource);
+	const [source, setSource] = useState(imageUrl);
 
 	const sizes = useMemo(
 		() =>
@@ -185,38 +166,26 @@ export default function FilerobotAssetEditor({
 	const selected = sizes.find((size) => size.id === selectedSize) || sizes[1];
 
 	useEffect(() => {
-		if (isPro) {
-			setSource(remoteSource);
-			return;
-		}
+		setSource((prev) => (prev.startsWith('blob:') ? prev : imageUrl));
+	}, [imageUrl]);
 
-		let cancelled = false;
-		const image = new Image();
-		image.crossOrigin = 'anonymous';
-		image.onload = () => {
-			const canvas = scaleToLongEdge(image, FREE_LONG_EDGE);
-			if (!canvas || cancelled) return;
-			canvas.toBlob(
-				(blob) => {
-					if (!blob || cancelled) return;
-					const url = URL.createObjectURL(blob);
-					setSource((prev) => {
-						if (prev.startsWith('blob:')) URL.revokeObjectURL(prev);
-						return url;
-					});
-				},
-				'image/jpeg',
-				0.92,
-			);
+	useEffect(() => {
+		const preview = document.getElementById('preview');
+		const root = frameRef.current;
+		if (!preview || !root) return;
+		const markReady = () => {
+			if (root.querySelector('canvas')) preview.classList.add('is-editor-ready');
 		};
-		image.onerror = () => {
-			if (!cancelled) setSource(remoteSource);
-		};
-		image.src = remoteSource;
-		return () => {
-			cancelled = true;
-		};
-	}, [isPro, remoteSource]);
+		markReady();
+		const observer = new MutationObserver(markReady);
+		observer.observe(root, { childList: true, subtree: true });
+		return () => observer.disconnect();
+	}, [source]);
+
+	useEffect(() => {
+		const preview = document.getElementById('preview');
+		return () => preview?.classList.remove('is-editor-ready');
+	}, []);
 
 	useEffect(() => {
 		return () => {

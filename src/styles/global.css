@@ -6660,6 +6660,7 @@ body.download-auth-modal-open {
 }
 
 .asset-preview {
+	position: relative;
 	display: grid;
 	gap: 0;
 	margin: 0;
@@ -6667,6 +6668,32 @@ body.download-auth-modal-open {
 	max-width: 100%;
 	min-width: 0;
 	scroll-margin-top: calc(var(--header-h) + 1rem);
+}
+
+.asset-preview__poster {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: min(72vh, 720px);
+	object-fit: contain;
+	background: #f4f5f6;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+}
+
+[data-theme='dark'] .asset-preview__poster {
+	background: #111;
+}
+
+.asset-preview.is-editor-ready .asset-preview__poster {
+	display: none;
+}
+
+.asset-preview:not(.is-editor-ready) .filerobot-studio {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	pointer-events: none;
 }
 
 .quick-edit {

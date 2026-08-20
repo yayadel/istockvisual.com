@@ -17,6 +17,17 @@ const src1000 = publicImagePath(assetId, '1k');
 ---
 
 <figure class="asset-preview" id="preview">
+	<img
+		class="asset-preview__poster"
+		src={src1000}
+		srcset={`${src500} 500w, ${src1000} 1000w`}
+		sizes="(max-width: 900px) 100vw, 72vw"
+		alt={title}
+		width={width}
+		height={height}
+		fetchpriority="high"
+		decoding="async"
+	/>
 	<noscript>
 		<img
 			class="asset-preview__image asset-preview__image--noscript"
@@ -37,10 +48,5 @@ const src1000 = publicImagePath(assetId, '1k');
 		loggedIn={loggedIn}
 		isPro={isPro}
 		assetId={assetId}
-	>
-		<div class="filerobot-studio__fallback">
-			<img src={src1000} alt={title} width={width} height={height} />
-			<p>Loading image editor…</p>
-		</div>
-	</FilerobotAssetEditor>
+	/>
 </figure>
