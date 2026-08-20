@@ -20,13 +20,13 @@ async function isAcknowledged(ip: string): Promise<boolean> {
 	return Boolean(value);
 }
 
-export const GET: APIRoute = async ({ request, clientAddress }) => {
-	const ip = clientIpFromHeaders(request.headers, clientAddress);
+export const GET: APIRoute = async ({ request }) => {
+	const ip = clientIpFromHeaders(request.headers);
 	return json({ acknowledged: await isAcknowledged(ip) });
 };
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
-	const ip = clientIpFromHeaders(request.headers, clientAddress);
+export const POST: APIRoute = async ({ request }) => {
+	const ip = clientIpFromHeaders(request.headers);
 	if (env.SESSION && ip) {
 		await env.SESSION.put(await privacyNoticeIpKey(ip), String(Date.now()), {
 			expirationTtl: PRIVACY_NOTICE_TTL_SECONDS,

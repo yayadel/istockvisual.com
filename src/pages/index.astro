@@ -28,8 +28,9 @@ const heroKeywords = topKeywords.slice(0, 10);
 
 const categoryFallback = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80';
 const rankedCategories = await listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length);
+const populatedCategories = rankedCategories.filter((category) => category.count > 0);
 
-const categoryTiles = rankedCategories.map((category) => {
+const categoryTiles = populatedCategories.map((category) => {
 	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
 	return {
 		label: category.label,

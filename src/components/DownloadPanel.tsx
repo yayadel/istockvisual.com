@@ -332,7 +332,7 @@ export default function DownloadPanel({
 	assetId,
 	title,
 	slug: _slug,
-	previewUrl: _previewUrl,
+	previewUrl,
 	sourceWidth = 1536,
 	sourceHeight = 1024,
 	loggedIn,
@@ -342,7 +342,6 @@ export default function DownloadPanel({
 	pageUrl,
 }: Props) {
 	const [selected, setSelected] = useState<DownloadSizeId>('1k');
-	const [menuOpen, setMenuOpen] = useState(false);
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [natural, setNatural] = useState({ width: sourceWidth, height: sourceHeight });
@@ -381,22 +380,6 @@ export default function DownloadPanel({
 		};
 	}, [anyModalOpen]);
 
-	useEffect(() => {
-		if (!menuOpen) return;
-		const onPointer = (event: MouseEvent) => {
-			if (!rootRef.current?.contains(event.target as Node)) setMenuOpen(false);
-		};
-		const onKey = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setMenuOpen(false);
-		};
-		window.addEventListener('mousedown', onPointer);
-		window.addEventListener('keydown', onKey);
-		return () => {
-			window.removeEventListener('mousedown', onPointer);
-			window.removeEventListener('keydown', onKey);
-		};
-	}, [menuOpen]);
-
 	const sizes = useMemo(
 		() =>
 			DOWNLOAD_SIZES.map((size) => ({
@@ -413,13 +396,11 @@ export default function DownloadPanel({
 		if (!isFreeDownloadSize(size.id)) {
 			if (!loggedIn) {
 				setPendingSize(size.label);
-				setMenuOpen(false);
 				setAuthModalOpen(true);
 				return false;
 			}
 			if (!isPro) {
 				setPendingSize(size.label);
-				setMenuOpen(false);
 				setPlansModalOpen(true);
 				return false;
 			}
@@ -427,13 +408,12 @@ export default function DownloadPanel({
 		return true;
 	}
 
-	async function downloadSize(sizeId: DownloadSizeId, format: DownloadFormat = 'jpg') {
+	async function downloadSize(sizeId: DownloadSizeId, format: DownloadFormat = 'webp') {
 		if (!gateSize(sizeId)) return;
 
 		setBusy(true);
 		setError(null);
 		setSelected(sizeId);
-		setMenuOpen(false);
 
 		try {
 			const res = await fetch(`/api/download/${assetId}?size=${fetchSizeForDownload(sizeId)}`);
@@ -454,63 +434,49 @@ export default function DownloadPanel({
 
 	return (
 		<div className="download-panel" ref={rootRef}>
-			<div className="download-split-wrap">
-				<button
-					type="button"
-					className={`download-split${menuOpen ? ' is-open' : ''}`}
-					disabled={busy}
-					aria-expanded={menuOpen}
-					aria-haspopup="listbox"
-					onClick={() => setMenuOpen((open) => !open)}
-				>
+			<div className={`download-split-wrap${busy ? ' is-busy' : ''}`}>
+				<div className="download-split" id="download-original">
 					<DownloadIcon />
-					<span className="download-split__label">
-						Download for <em>FREE</em>
-					</span>
-					<ChevronIcon />
-				</button>
-
-				{menuOpen && (
-					<ul className="download-menu" role="listbox" aria-label="Download sizes">
-						{sizes.map((size, index) => {
-							const dims = `${size.output.width} × ${size.output.height}`;
-							const needsPro = !isFreeDownloadSize(size.id);
-							const prevNeedsPro =
-								index > 0 && !isFreeDownloadSize(sizes[index - 1]?.id);
-							const isSelected = selected === size.id;
-							return (
-								<li
-									key={size.id}
-									role="option"
-									aria-selected={isSelected}
-									className={`download-menu__row${needsPro && !prevNeedsPro ? ' download-menu__row--pro-start' : ''}`}
-								>
-									<span className="download-menu__meta">
-										{needsPro ? (
-											<em className="download-tier download-tier--pro">Pro</em>
-										) : (
-											<span className="download-tier download-tier--free">Free</span>
-										)}
-										<span className="download-menu__dims">{dims}</span>
-									</span>
-									<span className="download-menu__formats">
-										{DOWNLOAD_FORMATS.map((format) => (
-											<button
-												key={format}
-												type="button"
-												className="download-menu__format"
-												disabled={busy}
-												onClick={() => void downloadSize(size.id, format)}
-											>
-												{format.toUpperCase()}
-											</button>
-										))}
-									</span>
-								</li>
-							);
-						})}
-					</ul>
-				)}
+					<span className="download-split__label">Download original</span>
+				</div>
+				<ul className="download-menu" aria-label="Download sizes">
+					{sizes.map((size, index) => {
+						const dims = `${size.output.width} × ${size.output.height}`;
+						const needsPro = !isFreeDownloadSize(size.id);
+						const prevNeedsPro =
+							index > 0 && !isFreeDownloadSize(sizes[index - 1]?.id);
+						const isSelected = selected === size.id;
+						return (
+							<li
+								key={size.id}
+								aria-current={isSelected ? 'true' : undefined}
+								className={`download-menu__row${isSelected ? ' is-selected' : ''}${needsPro && !prevNeedsPro ? ' download-menu__row--pro-start' : ''}`}
+							>
+								<span className="download-menu__meta">
+									{needsPro ? (
+										<em className="download-tier download-tier--pro">Pro</em>
+									) : (
+										<span className="download-tier download-tier--free">Free</span>
+									)}
+									<span className="download-menu__dims">{dims}</span>
+								</span>
+								<span className="download-menu__formats">
+									{DOWNLOAD_FORMATS.map((format) => (
+										<button
+											key={format}
+											type="button"
+											className="download-menu__format"
+											disabled={busy}
+											onClick={() => void downloadSize(size.id, format)}
+										>
+											{format.toUpperCase()}
+										</button>
+									))}
+								</span>
+							</li>
+						);
+					})}
+				</ul>
 			</div>
 			<ul className="download-perks">
 				<li>
@@ -528,10 +494,7 @@ export default function DownloadPanel({
 				<li>
 					<button
 						type="button"
-						onClick={() => {
-							setMenuOpen(false);
-							setAttrModalOpen(true);
-						}}
+						onClick={() => setAttrModalOpen(true)}
 					>
 						<LinkIcon />
 						Copy Attribution

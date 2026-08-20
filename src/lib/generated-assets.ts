@@ -13,6 +13,18 @@ export { resolveContentCategories } from './content-categories';
 
 export type ContentCategoryCount = ContentCategory & { count: number };
 
+/** List queries omit long prompt fields so remote D1 HTTP bindings stay under size limits. */
+const CARD_COLUMNS = `id, keywordId, keyword, slug, category, title, shortDescription,
+	tags, depictedElements, medium, r2ObjectKey, fileType,
+	width, height, license, isPremium, publishedAt, createdAt`;
+const DETAIL_COLUMNS = `id, keywordId, keyword, slug, category, title, shortDescription,
+	description, creationDescription, usageTips, tags, depictedElements, medium,
+	r2ObjectKey, fileType, width, height, license, isPremium, publishedAt, createdAt,
+	colorPalette, relatedQueries, imagePrompt`;
+const CARD_COLUMNS_GA = CARD_COLUMNS.split(',')
+	.map((column) => `ga.${column.trim()}`)
+	.join(', ');
+
 function parseJsonArray<T>(value: string | null | undefined, fallback: T[]): T[] {
 	if (!value) return fallback;
 	try {
@@ -38,7 +50,7 @@ function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 		title,
 		shortDescription: String(row.shortDescription ?? ''),
 		description: String(row.description ?? ''),
-		imagePrompt: String(row.imagePrompt),
+		imagePrompt: String(row.imagePrompt ?? ''),
 		imageCreationDescription: String(row.creationDescription ?? ''),
 		assetUsageTips: String(row.usageTips ?? ''),
 		colorPalette: parseJsonArray(row.colorPalette as string, []),
@@ -184,7 +196,7 @@ export async function listGeneratedAssetsByKeywordId(
 ): Promise<GeneratedAssetRecord[]> {
 	const result = await db
 		.prepare(
-			`SELECT ga.*
+			`SELECT ${CARD_COLUMNS_GA}
 			 FROM generated_asset ga
 			 INNER JOIN keyword_content kc
 				ON kc.contentId = ga.id
@@ -205,7 +217,7 @@ export async function getGeneratedAssetBySlug(
 	slug: string,
 ): Promise<GeneratedAssetRecord | null> {
 	const row = await db
-		.prepare('SELECT * FROM generated_asset WHERE category = ? AND slug = ?')
+		.prepare(`SELECT ${DETAIL_COLUMNS} FROM generated_asset WHERE category = ? AND slug = ?`)
 		.bind(category, slug)
 		.first<Record<string, unknown>>();
 	return row ? rowToRecord(row) : null;
@@ -216,7 +228,7 @@ export async function getGeneratedAssetById(
 	id: string,
 ): Promise<GeneratedAssetRecord | null> {
 	const row = await db
-		.prepare('SELECT * FROM generated_asset WHERE id = ?')
+		.prepare(`SELECT ${DETAIL_COLUMNS} FROM generated_asset WHERE id = ?`)
 		.bind(id)
 		.first<Record<string, unknown>>();
 	return row ? rowToRecord(row) : null;
@@ -227,14 +239,16 @@ export async function listGeneratedAssetsByCategory(
 	category: CategorySlug,
 	limit = 50,
 ): Promise<GeneratedAssetRecord[]> {
+	const capped = import.meta.env.DEV ? Math.min(limit, 24) : limit;
 	const result = await db
 		.prepare(
-			`SELECT * FROM generated_asset
+			`SELECT ${CARD_COLUMNS}
+			 FROM generated_asset
 			 WHERE category = ?
 			 ORDER BY publishedAt DESC
 			 LIMIT ?`,
 		)
-		.bind(category, limit)
+		.bind(category, capped)
 		.all<Record<string, unknown>>();
 
 	return (result.results ?? []).map(rowToRecord);
@@ -244,13 +258,15 @@ export async function listRecentGeneratedAssets(
 	db: D1Database,
 	limit = 8,
 ): Promise<GeneratedAssetRecord[]> {
+	const capped = import.meta.env.DEV ? Math.min(limit, 24) : limit;
 	const result = await db
 		.prepare(
-			`SELECT * FROM generated_asset
+			`SELECT ${CARD_COLUMNS}
+			 FROM generated_asset
 			 ORDER BY publishedAt DESC
 			 LIMIT ?`,
 		)
-		.bind(limit)
+		.bind(capped)
 		.all<Record<string, unknown>>();
 
 	return (result.results ?? []).map(rowToRecord);
@@ -277,7 +293,10 @@ export async function listPopulatedMediaTypes(
 	db: D1Database | undefined,
 ): Promise<Set<CategorySlug>> {
 	const slugs = new Set<CategorySlug>();
-	if (!db) return slugs;
+	if (!db || import.meta.env.DEV) {
+		if (import.meta.env.DEV) slugs.add('photos');
+		return slugs;
+	}
 
 	try {
 		const result = await db
@@ -401,6 +420,14 @@ export async function listTopContentCategoriesByCount(
 			}
 		} catch {
 			/* keep empty counts; fall through to vocabulary order */
+		}
+	}
+
+	if (import.meta.env.DEV && counts.size === 0) {
+		const { fetchProdPopulatedContentCategorySlugs } = await import('./local-prod-data');
+		for (const slug of await fetchProdPopulatedContentCategorySlugs()) {
+			const page = CONTENT_CATEGORY_PAGES.find((item) => item.slug === slug);
+			if (page) counts.set(page.label, 1);
 		}
 	}
 

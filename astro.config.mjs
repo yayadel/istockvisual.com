@@ -12,11 +12,9 @@ export default defineConfig({
 	},
 	output: 'server',
 	adapter: cloudflare({
-		platformProxy: {
-			enabled: true,
-		},
-		// D1/R2 bindings run locally without CLOUDFLARE_API_TOKEN
-		remoteBindings: false,
+		// Local UI at http://localhost:4325 uses production D1 + R2
+		remoteBindings: true,
+		imageService: 'passthrough',
 	}),
 	integrations: [react()],
 	build: {
@@ -25,11 +23,25 @@ export default defineConfig({
 	vite: {
 		ssr: {
 			noExternal: ['jpeg-js', 'fast-png'],
-			external: ['@imgly/background-removal', 'onnxruntime-web'],
+			external: [
+				'@imgly/background-removal',
+				'onnxruntime-web',
+				'konva',
+				'react-konva',
+				'react-filerobot-image-editor',
+				'styled-components',
+			],
 		},
 		optimizeDeps: {
 			exclude: ['@imgly/background-removal', 'onnxruntime-web', 'heic2any'],
-			include: ['jszip', 'imagetracerjs'],
+			include: [
+				'jszip',
+				'imagetracerjs',
+				'react-filerobot-image-editor',
+				'styled-components',
+				'konva',
+				'react-konva',
+			],
 		},
 	},
 });

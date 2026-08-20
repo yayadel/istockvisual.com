@@ -7,7 +7,8 @@
 		"node": ">=22.12.0"
 	},
 	"scripts": {
-		"dev": "astro dev",
+		"dev": "astro dev --port 4325 --host",
+		"preview:online": "astro build && wrangler dev --remote --port 4325 --ip 0.0.0.0",
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
@@ -51,10 +52,14 @@
 		"imagetracerjs": "^1.2.6",
 		"jpeg-js": "^0.4.4",
 		"jszip": "^3.10.1",
+		"konva": "^9.3.18",
 		"onnxruntime-web": "^1.21.0",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
+		"react-filerobot-image-editor": "^5.0.0-beta.159",
+		"react-konva": "^19.2.5",
 		"sharp": "^0.35.3",
+		"styled-components": "^6.5.3",
 		"wrangler": "^4.121.0"
 	}
 }

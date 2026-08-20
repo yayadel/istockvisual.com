@@ -1,70 +1,46 @@
 ---
-import AssetPreviewEnhance from './AssetPreviewEnhance';
-import { previewSrcset, publicImagePath } from '../lib/public-image';
+import FilerobotAssetEditor from './FilerobotAssetEditor';
+import { publicImagePath } from '../lib/public-image';
 
 interface Props {
 	assetId: string;
 	title: string;
 	width?: number;
 	height?: number;
-	shareUrl?: string;
 	loggedIn?: boolean;
 	isPro?: boolean;
 }
 
-const { assetId, title, width, height, shareUrl, loggedIn = false, isPro = false } = Astro.props;
+const { assetId, title, width, height, loggedIn = false, isPro = false } = Astro.props;
 const src500 = publicImagePath(assetId, '500');
 const src1000 = publicImagePath(assetId, '1k');
-const srcset = previewSrcset(assetId);
 ---
 
-<figure class="asset-preview">
-	<div
-		class="asset-preview__image-wrap wm-protected wm-protected--lock"
-		data-preview-stage
-	>
+<figure class="asset-preview" id="preview">
+	<noscript>
 		<img
-			class="asset-preview__image"
-			src={src1000}
-			srcset={srcset}
-			sizes="(max-width: 640px) 100vw, min(900px, 100vw)"
+			class="asset-preview__image asset-preview__image--noscript"
+			src={src500}
 			alt={title}
 			width={width}
 			height={height}
 			loading="eager"
-			fetchpriority="high"
 			decoding="async"
-			draggable="false"
 		/>
-		<noscript>
-			<style>
-				.asset-preview__image:not(.asset-preview__image--noscript) {
-					display: none !important;
-				}
-			</style>
-			<img
-				class="asset-preview__image asset-preview__image--noscript"
-				src={src500}
-				alt={title}
-				width={width}
-				height={height}
-				loading="eager"
-				decoding="async"
-			/>
-		</noscript>
-		<div class="wm-protected__mark" aria-hidden="true">
-			<span class="wm-protected__mark-layer wm-protected__mark-layer--dark"></span>
-			<span class="wm-protected__mark-layer wm-protected__mark-layer--light"></span>
-		</div>
-		<div class="asset-preview__lens" data-preview-lens aria-hidden="true"></div>
-	</div>
-	<AssetPreviewEnhance
-		client:idle
+	</noscript>
+	<FilerobotAssetEditor
+		client:only="react"
 		imageUrl={src1000}
 		title={title}
-		shareUrl={shareUrl}
+		width={width}
+		height={height}
 		loggedIn={loggedIn}
 		isPro={isPro}
 		assetId={assetId}
-	/>
+	>
+		<div class="filerobot-studio__fallback">
+			<img src={src1000} alt={title} width={width} height={height} />
+			<p>Loading image editor…</p>
+		</div>
+	</FilerobotAssetEditor>
 </figure>

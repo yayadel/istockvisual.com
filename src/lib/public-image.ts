@@ -21,13 +21,17 @@ function widthToken(size: PublicImageSize) {
 	return '1280w';
 }
 
+function localPreviewOrigin() {
+	return import.meta.env.DEV ? 'https://istockvisual.com' : '';
+}
+
 export function publicImagePath(
 	assetId: string,
 	size: PublicImageSize = '500',
 	ext: 'avif' | 'jpg' = 'jpg',
 ): string {
 	const id = encodeURIComponent(assetId);
-	return `/preview/${id}_${widthToken(size)}.${ext}`;
+	return `${localPreviewOrigin()}/preview/${id}_${widthToken(size)}.${ext}`;
 }
 
 export function publicImageUrl(
@@ -36,7 +40,9 @@ export function publicImageUrl(
 	size: PublicImageSize = '500',
 	ext: 'avif' | 'jpg' = 'jpg',
 ): string {
-	return `${originOf(origin)}${publicImagePath(assetId, size, ext)}`;
+	const base = import.meta.env.DEV ? 'https://istockvisual.com' : originOf(origin);
+	const id = encodeURIComponent(assetId);
+	return `${base}/preview/${id}_${widthToken(size)}.${ext}`;
 }
 
 export function previewSrcset(assetId: string, ext: 'avif' | 'jpg' = 'jpg') {

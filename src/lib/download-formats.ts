@@ -1,5 +1,6 @@
 import {
 	DOWNLOAD_SIZES,
+	filenameFromTitle,
 	outputSizeForDownload,
 	sizeFileLabel,
 	type DownloadSizeId,
@@ -7,6 +8,9 @@ import {
 
 export const DOWNLOAD_FORMATS = ['jpg', 'png', 'webp', 'svg'] as const;
 export type DownloadFormat = (typeof DOWNLOAD_FORMATS)[number];
+
+export const EDITOR_EXPORT_FORMATS = ['webp', 'png', 'jpg'] as const;
+export type EditorExportFormat = (typeof EDITOR_EXPORT_FORMATS)[number];
 
 export function isDownloadFormat(value: string | null | undefined): value is DownloadFormat {
 	return DOWNLOAD_FORMATS.includes(value as DownloadFormat);
@@ -91,18 +95,20 @@ export async function scaleDownloadBlob(
 export async function convertDownloadBlob(
 	source: Blob,
 	format: DownloadFormat,
+	qualityPct = 92,
 ): Promise<Blob> {
-	if (format === 'jpg' && /jpe?g/i.test(source.type || '')) {
+	const q = Math.min(1, Math.max(0.1, qualityPct / 100));
+	if (format === 'jpg' && /jpe?g/i.test(source.type || '') && qualityPct === 92) {
 		return source;
 	}
-	if (format === 'webp' && /webp/i.test(source.type || '')) {
+	if (format === 'webp' && /webp/i.test(source.type || '') && qualityPct === 92) {
 		return source;
 	}
 
 	const canvas = await drawBlobToCanvas(source);
 
 	if (format === 'jpg') {
-		return canvasToBlob(canvas, 'image/jpeg', 0.92);
+		return canvasToBlob(canvas, 'image/jpeg', q);
 	}
 
 	if (format === 'png') {
@@ -110,7 +116,7 @@ export async function convertDownloadBlob(
 	}
 
 	if (format === 'webp') {
-		return canvasToBlob(canvas, 'image/webp', 0.92);
+		return canvasToBlob(canvas, 'image/webp', q);
 	}
 
 	const pngBlob = await canvasToBlob(canvas, 'image/png');
@@ -126,4 +132,37 @@ export async function convertDownloadBlob(
 export function downloadFileLabel(title: string, sizeId: string, format: DownloadFormat) {
 	const base = sizeFileLabel(title, sizeId).replace(/\.jpe?g$/i, '');
 	return `${base}.${format}`;
+}
+
+export function mimeForExportFormat(format: EditorExportFormat) {
+	if (format === 'png') return 'image/png';
+	if (format === 'jpg') return 'image/jpeg';
+	return 'image/webp';
+}
+
+export function blobFromCanvas(
+	canvas: HTMLCanvasElement,
+	format: EditorExportFormat,
+	qualityPct = 92,
+): Promise<Blob> {
+	const mime = mimeForExportFormat(format);
+	const quality = format === 'png' ? undefined : Math.min(1, Math.max(0.1, qualityPct / 100));
+	return canvasToBlob(canvas, mime, quality);
+}
+
+export function formatByteSize(bytes: number) {
+	if (bytes < 1024) return `${bytes} B`;
+	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+	return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+/** Edited export name: title + aspect, no random codes. */
+export function editedDownloadFileName(
+	title: string,
+	aspectId: string,
+	format: EditorExportFormat,
+) {
+	const base = filenameFromTitle(title);
+	const ratio = !aspectId || aspectId === 'free' ? 'free' : aspectId.replace(/:/g, '-');
+	return `${base}-${ratio}.${format}`;
 }

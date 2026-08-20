@@ -1,5 +1,6 @@
 import type { CategorySlug } from '../config/categories';
 import { contentCategoryPath } from './content-categories';
+import { QUICK_EDIT_SEO_BLURB } from './quick-edit';
 import { publicImageUrl, sizedPreviewUrl, imageMimeFromUrl } from './public-image';
 
 export const ABOUT_PATH = '/info/about';
@@ -53,11 +54,11 @@ export function assetSearchDescription(input: {
 	const closer = 'Royalty-free AI-generated image for commercial use.';
 
 	if (!lead) {
-		return clipDescription(`${heading}. ${closer}`);
+		return clipDescription(`${heading}. ${QUICK_EDIT_SEO_BLURB} ${closer}`);
 	}
 
 	const punctuated = /[.!?]$/.test(lead) ? lead : `${lead}.`;
-	return clipDescription(`${heading}. ${punctuated} ${closer}`);
+	return clipDescription(`${heading}. ${QUICK_EDIT_SEO_BLURB} ${punctuated} ${closer}`);
 }
 
 function clipDescription(text: string): string {

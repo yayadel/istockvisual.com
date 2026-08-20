@@ -28,6 +28,7 @@ import {
 	linkKeywordContent,
 } from './keyword-content';
 import { assetMatchesSearchQuery } from './catalog';
+import { fetchProdAssetBySlug, fetchProdCatalog } from './local-prod-data';
 import { tagMatches, toPathSlug } from './paths';
 import {
 	claimKeywords,
@@ -87,6 +88,18 @@ function sanityToDetail(asset: AssetDoc): AssetDetail {
 	return { ...asset, source: 'sanity' };
 }
 
+function firstResolved<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	return Promise.race([
+		promise.then((value) => value).catch(() => null),
+		new Promise<null>((resolve) => {
+			timer = setTimeout(() => resolve(null), ms);
+		}),
+	]).finally(() => {
+		if (timer) clearTimeout(timer);
+	});
+}
+
 export async function resolveAssetBySlug(
 	db: D1Database | undefined,
 	origin: string,
@@ -94,10 +107,17 @@ export async function resolveAssetBySlug(
 	slug: string,
 ): Promise<AssetDetail | null> {
 	if (db) {
-		const generated = await getGeneratedAssetBySlug(db, category, slug);
+		const generated = import.meta.env.DEV
+			? await firstResolved(getGeneratedAssetBySlug(db, category, slug), 12_000)
+			: await getGeneratedAssetBySlug(db, category, slug);
 		if (generated) {
 			return generatedToDetail(generated, origin);
 		}
+	}
+
+	if (import.meta.env.DEV) {
+		const remote = await fetchProdAssetBySlug(category, slug).catch(() => null);
+		if (remote) return remote;
 	}
 
 	const sanity = await getSanityAssetBySlug(category, slug);
@@ -128,6 +148,10 @@ export async function listCategoryAssets(
 	category: CategorySlug,
 	limit = 50,
 ): Promise<AssetDetail[]> {
+	if (import.meta.env.DEV) {
+		const pool = await fetchProdCatalog(Math.max(limit * 3, 48));
+		return pool.filter((asset) => asset.category === category).slice(0, limit);
+	}
 	const sanityAssets = (await listSanityAssetsByCategory(category)).map(sanityToDetail);
 	if (!db) return sanityAssets.slice(0, limit);
 
@@ -144,6 +168,9 @@ export async function listFeaturedAssets(
 	origin: string,
 	limit = 8,
 ): Promise<AssetDetail[]> {
+	if (import.meta.env.DEV) {
+		return fetchProdCatalog(limit);
+	}
 	const sanityAssets = (await listSanityFeaturedAssets(limit)).map((asset) =>
 		asset._id.startsWith('demo-') ? demoToDetail(asset) : sanityToDetail(asset),
 	);
@@ -161,7 +188,7 @@ export async function listTopSearchKeywords(
 	db: D1Database | undefined,
 	limit = 16,
 ): Promise<string[]> {
-	if (!db) return [];
+	if (import.meta.env.DEV || !db) return [];
 	return listTopSearchKeywordRows(db, limit);
 }
 

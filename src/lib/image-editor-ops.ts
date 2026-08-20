@@ -15,13 +15,17 @@ export type AspectPreset = {
 	ratio: number | null;
 };
 
-/** Full practical ratio set for stock, social, print, and ultrawide. */
+/** Primary 1-click locks shown first in the crop bar. */
+export const EDITOR_ASPECT_FEATURED_IDS = ['free', '1:1', '4:3', '16:9', '9:16'] as const;
+
 export const EDITOR_ASPECT_PRESETS: AspectPreset[] = [
 	{ id: 'free', label: 'Free', ratio: null },
 	{ id: '1:1', label: '1:1', ratio: 1 },
+	{ id: '4:3', label: '4:3', ratio: 4 / 3 },
+	{ id: '16:9', label: '16:9', ratio: 16 / 9 },
+	{ id: '9:16', label: '9:16', ratio: 9 / 16 },
 	{ id: '5:4', label: '5:4', ratio: 5 / 4 },
 	{ id: '4:5', label: '4:5', ratio: 4 / 5 },
-	{ id: '4:3', label: '4:3', ratio: 4 / 3 },
 	{ id: '3:4', label: '3:4', ratio: 3 / 4 },
 	{ id: '3:2', label: '3:2', ratio: 3 / 2 },
 	{ id: '2:3', label: '2:3', ratio: 2 / 3 },
@@ -31,8 +35,6 @@ export const EDITOR_ASPECT_PRESETS: AspectPreset[] = [
 	{ id: '5:7', label: '5:7', ratio: 5 / 7 },
 	{ id: '16:10', label: '16:10', ratio: 16 / 10 },
 	{ id: '10:16', label: '10:16', ratio: 10 / 16 },
-	{ id: '16:9', label: '16:9', ratio: 16 / 9 },
-	{ id: '9:16', label: '9:16', ratio: 9 / 16 },
 	{ id: '1.91:1', label: '1.91:1', ratio: 1.91 },
 	{ id: '2:1', label: '2:1', ratio: 2 },
 	{ id: '1:2', label: '1:2', ratio: 1 / 2 },
@@ -50,10 +52,18 @@ export type AdjustValues = {
 	exposure: number;
 	highlights: number;
 	shadows: number;
+	whites: number;
+	blacks: number;
 	temperature: number;
 	tint: number;
 	hue: number;
 	vibrance: number;
+	clarity: number;
+	dehaze: number;
+	sharpness: number;
+	vignette: number;
+	grain: number;
+	fade: number;
 };
 
 export const DEFAULT_ADJUST: AdjustValues = {
@@ -63,10 +73,18 @@ export const DEFAULT_ADJUST: AdjustValues = {
 	exposure: 0,
 	highlights: 0,
 	shadows: 0,
+	whites: 0,
+	blacks: 0,
 	temperature: 0,
 	tint: 0,
 	hue: 0,
 	vibrance: 0,
+	clarity: 0,
+	dehaze: 0,
+	sharpness: 0,
+	vignette: 0,
+	grain: 0,
+	fade: 0,
 };
 
 export type AdjustPreset = {
@@ -140,25 +158,120 @@ export const EDITOR_ADJUST_PRESETS: AdjustPreset[] = [
 			saturation: 8,
 		},
 	},
+	{
+		id: 'bw',
+		label: 'B&W',
+		values: { ...DEFAULT_ADJUST, saturation: -100, contrast: 8, clarity: 10 },
+	},
+	{
+		id: 'cinematic',
+		label: 'Cinematic',
+		values: {
+			...DEFAULT_ADJUST,
+			contrast: 14,
+			highlights: -12,
+			shadows: 8,
+			temperature: -8,
+			vignette: 22,
+			fade: 10,
+			saturation: -6,
+		},
+	},
+	{
+		id: 'punch',
+		label: 'Punch',
+		values: { ...DEFAULT_ADJUST, contrast: 16, clarity: 18, vibrance: 14, sharpness: 12 },
+	},
+	{
+		id: 'airy',
+		label: 'Airy',
+		values: {
+			...DEFAULT_ADJUST,
+			exposure: 8,
+			highlights: 10,
+			shadows: 16,
+			blacks: 12,
+			dehaze: -12,
+			fade: 8,
+		},
+	},
+	{
+		id: 'vintage',
+		label: 'Vintage',
+		values: {
+			...DEFAULT_ADJUST,
+			temperature: 16,
+			saturation: -12,
+			fade: 18,
+			vignette: 16,
+			grain: 14,
+			contrast: -6,
+		},
+	},
+	{
+		id: 'night',
+		label: 'Night',
+		values: {
+			...DEFAULT_ADJUST,
+			exposure: -8,
+			temperature: -16,
+			shadows: -8,
+			clarity: 8,
+			dehaze: 10,
+			vignette: 18,
+		},
+	},
 ];
 
-export const ADJUST_SLIDERS: {
-	key: keyof AdjustValues;
+export const ADJUST_SLIDER_GROUPS: {
+	id: string;
 	label: string;
-	min: number;
-	max: number;
+	sliders: {
+		key: keyof AdjustValues;
+		label: string;
+		min: number;
+		max: number;
+	}[];
 }[] = [
-	{ key: 'brightness', label: 'Brightness', min: -50, max: 50 },
-	{ key: 'exposure', label: 'Exposure', min: -50, max: 50 },
-	{ key: 'contrast', label: 'Contrast', min: -50, max: 50 },
-	{ key: 'highlights', label: 'Highlights', min: -50, max: 50 },
-	{ key: 'shadows', label: 'Shadows', min: -50, max: 50 },
-	{ key: 'saturation', label: 'Saturation', min: -50, max: 50 },
-	{ key: 'vibrance', label: 'Vibrance', min: -50, max: 50 },
-	{ key: 'temperature', label: 'Temperature', min: -50, max: 50 },
-	{ key: 'tint', label: 'Tint', min: -50, max: 50 },
-	{ key: 'hue', label: 'Hue', min: -180, max: 180 },
+	{
+		id: 'light',
+		label: 'Light',
+		sliders: [
+			{ key: 'exposure', label: 'Exposure', min: -50, max: 50 },
+			{ key: 'brightness', label: 'Brightness', min: -50, max: 50 },
+			{ key: 'contrast', label: 'Contrast', min: -50, max: 50 },
+			{ key: 'highlights', label: 'Highlights', min: -50, max: 50 },
+			{ key: 'shadows', label: 'Shadows', min: -50, max: 50 },
+			{ key: 'whites', label: 'Whites', min: -50, max: 50 },
+			{ key: 'blacks', label: 'Blacks', min: -50, max: 50 },
+		],
+	},
+	{
+		id: 'color',
+		label: 'Color',
+		sliders: [
+			{ key: 'temperature', label: 'Temp', min: -50, max: 50 },
+			{ key: 'tint', label: 'Tint', min: -50, max: 50 },
+			{ key: 'vibrance', label: 'Vibrance', min: -50, max: 50 },
+			{ key: 'saturation', label: 'Saturation', min: -100, max: 50 },
+			{ key: 'hue', label: 'Hue', min: -180, max: 180 },
+		],
+	},
+	{
+		id: 'presence',
+		label: 'Presence',
+		sliders: [
+			{ key: 'clarity', label: 'Clarity', min: -50, max: 50 },
+			{ key: 'dehaze', label: 'Dehaze', min: -50, max: 50 },
+			{ key: 'sharpness', label: 'Sharpen', min: 0, max: 50 },
+			{ key: 'vignette', label: 'Vignette', min: 0, max: 80 },
+			{ key: 'grain', label: 'Grain', min: 0, max: 50 },
+			{ key: 'fade', label: 'Fade', min: 0, max: 50 },
+		],
+	},
 ];
+
+export const ADJUST_SLIDERS = ADJUST_SLIDER_GROUPS.flatMap((group) => group.sliders);
 
 export { DOWNLOAD_SIZES, DEFAULT_DOWNLOAD_SIZE };
 export type { DownloadSizeId };
@@ -326,6 +439,24 @@ export function expandWithEdgeFill(
 export function hasAdjustChanges(adjust: AdjustValues): boolean {
 	return (Object.keys(DEFAULT_ADJUST) as (keyof AdjustValues)[]).some(
 		(key) => adjust[key] !== 0,
+	);
+}
+
+/** Channels that CSS filters cannot preview accurately. */
+export function needsCanvasAdjustPreview(adjust: AdjustValues): boolean {
+	return (
+		adjust.highlights !== 0 ||
+		adjust.shadows !== 0 ||
+		adjust.whites !== 0 ||
+		adjust.blacks !== 0 ||
+		adjust.temperature !== 0 ||
+		adjust.tint !== 0 ||
+		adjust.clarity !== 0 ||
+		adjust.dehaze !== 0 ||
+		adjust.sharpness !== 0 ||
+		adjust.vignette !== 0 ||
+		adjust.grain !== 0 ||
+		adjust.fade !== 0
 	);
 }
 
@@ -502,11 +633,106 @@ export function applyAdjustToImageData(data: ImageData, adjust: AdjustValues): I
 			bl = rotated.b;
 		}
 
+		const whites = adjust.whites / 100;
+		const blacks = adjust.blacks / 100;
+		if (whites || blacks) {
+			lum = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+			const whiteMask = clamp((lum - 160) / 95, 0, 1);
+			const blackMask = clamp((80 - lum) / 80, 0, 1);
+			const wLift = whites * 70 * whiteMask;
+			const bLift = blacks * 55 * blackMask;
+			r += wLift + bLift;
+			g += wLift + bLift;
+			bl += wLift + bLift;
+		}
+
+		const clarity = adjust.clarity / 100;
+		if (clarity) {
+			lum = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+			const midMask = 1 - Math.abs(lum - 128) / 128;
+			const factor = 1 + clarity * 0.7 * midMask;
+			r = lum + (r - lum) * (1 + clarity * 0.15);
+			g = lum + (g - lum) * (1 + clarity * 0.15);
+			bl = lum + (bl - lum) * (1 + clarity * 0.15);
+			r = 128 + (r - 128) * factor;
+			g = 128 + (g - 128) * factor;
+			bl = 128 + (bl - 128) * factor;
+		}
+
+		const dehaze = adjust.dehaze / 100;
+		if (dehaze) {
+			lum = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+			const haze = 1 + dehaze * 0.5;
+			r = 128 + (r - 128) * haze;
+			g = 128 + (g - 128) * haze;
+			bl = 128 + (bl - 128) * haze;
+			r = lum + (r - lum) * (1 + dehaze * 0.25);
+			g = lum + (g - lum) * (1 + dehaze * 0.25);
+			bl = lum + (bl - lum) * (1 + dehaze * 0.25);
+		}
+
+		const fade = adjust.fade / 100;
+		if (fade) {
+			r = r * (1 - fade * 0.28) + 48 * fade;
+			g = g * (1 - fade * 0.28) + 48 * fade;
+			bl = bl * (1 - fade * 0.28) + 48 * fade;
+		}
+
+		const x = (i / 4) % data.width;
+		const y = Math.floor(i / 4 / data.width);
+		const vignette = adjust.vignette / 100;
+		if (vignette) {
+			const nx = x / Math.max(1, data.width - 1) - 0.5;
+			const ny = y / Math.max(1, data.height - 1) - 0.5;
+			const dist = Math.sqrt(nx * nx + ny * ny) / 0.72;
+			const falloff = clamp((dist - 0.28) / 0.72, 0, 1);
+			const shade = 1 - vignette * falloff * falloff;
+			r *= shade;
+			g *= shade;
+			bl *= shade;
+		}
+
+		const grain = adjust.grain;
+		if (grain) {
+			const noise = (Math.random() - 0.5) * grain * 1.15;
+			r += noise;
+			g += noise;
+			bl += noise;
+		}
+
 		px[i] = clamp(r, 0, 255);
 		px[i + 1] = clamp(g, 0, 255);
 		px[i + 2] = clamp(bl, 0, 255);
 	}
+
+	if (adjust.sharpness > 0) {
+		applyUnsharp(out, adjust.sharpness / 100);
+	}
+
 	return out;
+}
+
+function applyUnsharp(data: ImageData, amount: number) {
+	const { width, height } = data;
+	const src = new Uint8ClampedArray(data.data);
+	const dst = data.data;
+	const amp = amount * 1.4;
+	for (let y = 1; y < height - 1; y += 1) {
+		for (let x = 1; x < width - 1; x += 1) {
+			const i = (y * width + x) * 4;
+			for (let c = 0; c < 3; c += 1) {
+				const center = src[i + c]!;
+				const blur =
+					(src[i - 4 + c]! +
+						src[i + 4 + c]! +
+						src[i - width * 4 + c]! +
+						src[i + width * 4 + c]! +
+						center) /
+					5;
+				dst[i + c] = clamp(center + (center - blur) * amp, 0, 255);
+			}
+		}
+	}
 }
 
 export function canvasFromImage(
@@ -703,4 +929,151 @@ export function keepForegroundTouchingCircle(
 	}
 	ctx.putImageData(image, 0, 0);
 	return true;
+}
+
+/** Keep every foreground blob that overlaps the circle or a painted keep mask. */
+export function keepForegroundTouchingSeeds(
+	canvas: HTMLCanvasElement,
+	isSeed: (x: number, y: number) => boolean,
+	alphaThreshold = 40,
+): boolean {
+	const ctx = canvas.getContext('2d');
+	if (!ctx) return false;
+	const { width: w, height: h } = canvas;
+	const image = ctx.getImageData(0, 0, w, h);
+	const px = image.data;
+	const n = w * h;
+	const labels = new Int32Array(n);
+	labels.fill(-1);
+	const isFg = (idx: number) => (px[idx * 4 + 3] ?? 0) >= alphaThreshold;
+
+	const overlaps: boolean[] = [];
+	let labelCount = 0;
+	const queue: number[] = [];
+	for (let start = 0; start < n; start += 1) {
+		if (!isFg(start) || labels[start] !== -1) continue;
+		const id = labelCount;
+		labelCount += 1;
+		overlaps[id] = false;
+		labels[start] = id;
+		queue.length = 0;
+		queue.push(start);
+		let head = 0;
+		while (head < queue.length) {
+			const idx = queue[head]!;
+			head += 1;
+			const x = idx % w;
+			const y = (idx / w) | 0;
+			if (isSeed(x, y)) overlaps[id] = true;
+			const tryPush = (nx: number, ny: number) => {
+				if (nx < 0 || ny < 0 || nx >= w || ny >= h) return;
+				const nidx = ny * w + nx;
+				if (labels[nidx] !== -1) return;
+				if (!isFg(nidx)) return;
+				labels[nidx] = id;
+				queue.push(nidx);
+			};
+			tryPush(x - 1, y);
+			tryPush(x + 1, y);
+			tryPush(x, y - 1);
+			tryPush(x, y + 1);
+		}
+	}
+
+	if (labelCount === 0 || !overlaps.some(Boolean)) return false;
+
+	for (let i = 0; i < n; i += 1) {
+		const id = labels[i]!;
+		if (id < 0 || !overlaps[id]) px[i * 4 + 3] = 0;
+	}
+	ctx.putImageData(image, 0, 0);
+	return true;
+}
+
+export function mapPaintMaskToSource(
+	paint: HTMLCanvasElement,
+	sourceW: number,
+	sourceH: number,
+	frameW: number,
+	frameH: number,
+	alphaThreshold = 20,
+): Uint8Array | null {
+	const ctx = paint.getContext('2d');
+	if (!ctx || frameW < 1 || frameH < 1) return null;
+	const { data } = ctx.getImageData(0, 0, paint.width, paint.height);
+	const fit = containSize(sourceW, sourceH, frameW, frameH);
+	const scale = fit.w / Math.max(1, sourceW);
+	if (scale <= 0) return null;
+	const mask = new Uint8Array(sourceW * sourceH);
+	let marked = 0;
+	const paintW = paint.width;
+	const paintH = paint.height;
+	for (let py = 0; py < paintH; py += 1) {
+		for (let px = 0; px < paintW; px += 1) {
+			if ((data[(py * paintW + px) * 4 + 3] ?? 0) < alphaThreshold) continue;
+			const sx = Math.round((px - fit.x) / scale);
+			const sy = Math.round((py - fit.y) / scale);
+			for (let oy = -1; oy <= 1; oy += 1) {
+				for (let ox = -1; ox <= 1; ox += 1) {
+					const x = sx + ox;
+					const y = sy + oy;
+					if (x < 0 || y < 0 || x >= sourceW || y >= sourceH) continue;
+					const idx = y * sourceW + x;
+					if (mask[idx]) continue;
+					mask[idx] = 1;
+					marked += 1;
+				}
+			}
+		}
+	}
+	return marked > 0 ? mask : null;
+}
+
+export function extractKeepFocusCropWithMask(
+	source: HTMLCanvasElement,
+	cx: number,
+	cy: number,
+	r: number,
+	mask: Uint8Array | null,
+	padScale = 2.2,
+): { crop: HTMLCanvasElement; offsetX: number; offsetY: number } {
+	const pad = Math.max(r * padScale, 48);
+	let x0 = Math.floor(clamp(cx - pad, 0, source.width));
+	let y0 = Math.floor(clamp(cy - pad, 0, source.height));
+	let x1 = Math.ceil(clamp(cx + pad, 0, source.width));
+	let y1 = Math.ceil(clamp(cy + pad, 0, source.height));
+	if (mask) {
+		const w = source.width;
+		const h = source.height;
+		let mx0 = w;
+		let my0 = h;
+		let mx1 = 0;
+		let my1 = 0;
+		let found = false;
+		for (let y = 0; y < h; y += 1) {
+			for (let x = 0; x < w; x += 1) {
+				if (!mask[y * w + x]) continue;
+				found = true;
+				if (x < mx0) mx0 = x;
+				if (y < my0) my0 = y;
+				if (x > mx1) mx1 = x;
+				if (y > my1) my1 = y;
+			}
+		}
+		if (found) {
+			const extra = 24;
+			x0 = Math.min(x0, Math.max(0, mx0 - extra));
+			y0 = Math.min(y0, Math.max(0, my0 - extra));
+			x1 = Math.max(x1, Math.min(source.width, mx1 + 1 + extra));
+			y1 = Math.max(y1, Math.min(source.height, my1 + 1 + extra));
+		}
+	}
+	const cropW = Math.max(1, x1 - x0);
+	const cropH = Math.max(1, y1 - y0);
+	const crop = document.createElement('canvas');
+	crop.width = cropW;
+	crop.height = cropH;
+	const ctx = crop.getContext('2d');
+	if (ctx) ctx.drawImage(source, x0, y0, cropW, cropH, 0, 0, cropW, cropH);
+	return { crop, offsetX: x0, offsetY: y0 };
 }

@@ -26,13 +26,15 @@
 			"binding": "DB",
 			"database_name": "istockvisual-db",
 			"database_id": "7d882e78-798b-4bee-ba32-5e3c255e638d",
-			"migrations_dir": "migrations"
+			"migrations_dir": "migrations",
+			"remote": true
 		}
 	],
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",
-			"bucket_name": "istockvisual-media"
+			"bucket_name": "istockvisual-media",
+			"remote": true
 		}
 	],
 	"kv_namespaces": [

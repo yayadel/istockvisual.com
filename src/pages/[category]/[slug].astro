@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AssetPreview from '../../components/AssetPreview.astro';
-import AttributionBar from '../../components/AttributionBar';
 import ColorPalette from '../../components/ColorPalette';
 import PromptBlock from '../../components/PromptBlock';
 import BasicInfoPanel from '../../components/BasicInfoPanel';
@@ -23,8 +22,9 @@ import {
 	siteOrigin,
 } from '../../lib/seo';
 import { publicImageUrl } from '../../lib/public-image';
-import { env } from 'cloudflare:workers';
 import { fitLongEdge } from '../../lib/download-sizes';
+import { env } from 'cloudflare:workers';
+import { QUICK_EDIT_ACTIONS, QUICK_EDIT_INTRO } from '../../lib/quick-edit';
 
 const { category: categorySlug, slug } = Astro.params;
 
@@ -125,58 +125,83 @@ const jsonLd = assetJsonLd({
 				{asset.shortDescription && (
 					<p class="detail__lead">{asset.shortDescription}</p>
 				)}
+				<p class="detail__intro">{QUICK_EDIT_INTRO}</p>
 			</header>
 
-			<div class="detail__stage">
-				<div class="detail__preview">
-					{
-						asset.previewUrl ? (
-							<AssetPreview
-								assetId={asset._id}
-								title={asset.title}
-								width={sourceWidth}
-								height={sourceHeight}
-								shareUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
-								loggedIn={Boolean(user)}
-								isPro={user?.plan === 'pro'}
-							/>
-						) : (
-							<div class="empty">No preview available</div>
-						)
-					}
+			<div class="detail__stage detail__stage--studio">
+				<div class="detail__preview-stack">
+					<nav class="quick-edit" aria-label="Edit this stock image in the browser">
+						<div class="quick-edit__bar">
+							<h2>
+								<span>Quick edit</span>
+							</h2>
+							<ul class="quick-edit__list">
+								{
+									QUICK_EDIT_ACTIONS.map((action) => (
+										<li>
+											<a
+												class="quick-edit__btn"
+												href="#preview"
+												data-edit={action.id}
+												title={`${action.label} — ${action.detail}`}
+											>
+												{action.shortLabel}
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</div>
+					</nav>
+					<div class="detail__preview">
+						{
+							asset.previewUrl ? (
+								<AssetPreview
+									assetId={asset._id}
+									title={asset.title}
+									width={sourceWidth}
+									height={sourceHeight}
+									loggedIn={Boolean(user)}
+									isPro={user?.plan === 'pro'}
+								/>
+							) : (
+								<div class="empty">No preview available</div>
+							)
+						}
+					</div>
 				</div>
 
 				<aside class="detail__info">
-					<DownloadPanel
-						client:idle
-						assetId={asset._id}
-						title={asset.title}
-						slug={asset.slug}
-						previewUrl={asset.previewUrl}
-						sourceWidth={asset.width || 1536}
-						sourceHeight={asset.height || 1024}
-						loggedIn={Boolean(user)}
-						isPro={user?.plan === 'pro'}
-						loginHref={`/login?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
-						signupHref={`/signup?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
-						pageUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
-					>
-						<div class="download-panel">
-							<p class="download-panel__hint">Loading sizes…</p>
-						</div>
-					</DownloadPanel>
-					<BasicInfoPanel
-						license={asset.license || 'CC0 — Free to Use, Commercial OK'}
-						licenseHref={LICENSE_PATH}
-						categories={contentCategories.map((label) => ({
-							label,
-							href: contentCategoryPath(label),
-						}))}
-					/>
-					<AttributionBar
-						client:idle
-						pageUrl={pageUrl}
-					/>
+					<div class="detail__info-download">
+						<DownloadPanel
+							client:idle
+							assetId={asset._id}
+							title={asset.title}
+							slug={asset.slug}
+							previewUrl={asset.previewUrl}
+							sourceWidth={asset.width || 1536}
+							sourceHeight={asset.height || 1024}
+							loggedIn={Boolean(user)}
+							isPro={user?.plan === 'pro'}
+							loginHref={`/login?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
+							signupHref={`/signup?next=${encodeURIComponent(`/${category.slug}/${asset.slug}`)}`}
+							pageUrl={new URL(`/${category.slug}/${asset.slug}`, Astro.url.origin).href}
+						>
+							<div class="download-panel">
+								<p class="download-panel__hint">Loading sizes…</p>
+							</div>
+						</DownloadPanel>
+					</div>
+					<div class="detail__info-meta">
+						<BasicInfoPanel
+							license={asset.license || 'CC0 — Free to Use, Commercial OK'}
+							licenseHref={LICENSE_PATH}
+							categories={contentCategories.map((label) => ({
+								label,
+								href: contentCategoryPath(label),
+							}))}
+						/>
+					</div>
 					{
 						user?.plan !== 'pro' && (
 							<a
@@ -194,35 +219,38 @@ const jsonLd = assetJsonLd({
 						)
 					}
 				</aside>
+
+				{
+					(asset.creationDescription || asset.description || asset.usageTips) && (
+						<section class="detail__guide">
+							<div class="story-pair">
+								{(asset.creationDescription || asset.description) && (
+									<article class="story-block">
+										<h2>
+											<DetailSectionIcon name="spark" />
+											<span>Creation description</span>
+										</h2>
+										<p>{asset.creationDescription || asset.description}</p>
+									</article>
+								)}
+								{asset.usageTips && (
+									<article class="story-block">
+										<h2>
+											<DetailSectionIcon name="tip" />
+											<span>Usage tips</span>
+										</h2>
+										<p>{asset.usageTips}</p>
+									</article>
+								)}
+							</div>
+						</section>
+					)
+				}
 			</div>
 
 			{
 				isGenerated && (
 					<section class="detail__story">
-						{
-							(asset.creationDescription || asset.usageTips) && (
-								<div class="story-pair">
-									{asset.creationDescription && (
-										<article class="story-block">
-											<h2>
-												<DetailSectionIcon name="spark" />
-												<span>Creation description</span>
-											</h2>
-											<p>{asset.creationDescription}</p>
-										</article>
-									)}
-									{asset.usageTips && (
-										<article class="story-block">
-											<h2>
-												<DetailSectionIcon name="tip" />
-												<span>Usage tips</span>
-											</h2>
-											<p>{asset.usageTips}</p>
-										</article>
-									)}
-								</div>
-							)
-						}
 						{
 							asset.colorPalette && asset.colorPalette.length > 0 && (
 								<article class="story-block story-block--palette">
