@@ -15,6 +15,7 @@ export const GET: APIRoute = async (context) => {
 		size: context.url.searchParams.get('size') || '',
 		variant: context.url.searchParams.get('v') || '',
 		method: context.request.method,
+		origin: context.url.origin,
 	});
 };
 
