@@ -343,6 +343,8 @@ export default function DownloadPanel({
 }: Props) {
 	const [selected, setSelected] = useState<DownloadSizeId>('1k');
 	const [busy, setBusy] = useState(false);
+	const [prepareProgress, setPrepareProgress] = useState<number | null>(null);
+	const [prepareLabel, setPrepareLabel] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [natural, setNatural] = useState({ width: sourceWidth, height: sourceHeight });
 	const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -408,33 +410,63 @@ export default function DownloadPanel({
 		return true;
 	}
 
+	function prepareStatusLabel(_sizeId: DownloadSizeId, _progress: number) {
+		return 'Preparing your file';
+	}
+
 	async function downloadSize(sizeId: DownloadSizeId, format: DownloadFormat = 'webp') {
 		if (!gateSize(sizeId)) return;
 
 		setBusy(true);
 		setError(null);
 		setSelected(sizeId);
+		setPrepareProgress(0);
+		setPrepareLabel(prepareStatusLabel(sizeId, 0));
+
+		const bumpProgress = (pct: number) => {
+			setPrepareProgress(pct);
+			setPrepareLabel(prepareStatusLabel(sizeId, pct));
+		};
 
 		try {
+			bumpProgress(5);
 			const res = await fetch(`/api/download/${assetId}?size=${fetchSizeForDownload(sizeId)}`);
 			if (!res.ok) {
 				const body = (await res.json().catch(() => null)) as { error?: string } | null;
 				throw new Error(body?.error || 'Download failed');
 			}
+			bumpProgress(15);
 			const source = await res.blob();
-			const sized = await scaleDownloadBlob(source, sizeId, natural.width, natural.height);
+			const sized = await scaleDownloadBlob(source, sizeId, natural.width, natural.height, (pct) => {
+				bumpProgress(Math.min(92, Math.round(15 + pct * 0.77)));
+			});
+			bumpProgress(97);
 			const output = await convertDownloadBlob(sized, format);
+			bumpProgress(100);
 			triggerDownload(output, downloadFileLabel(title, sizeId, format));
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Download failed');
 		} finally {
 			setBusy(false);
+			setPrepareProgress(null);
+			setPrepareLabel('');
 		}
 	}
 
 	return (
 		<div className="download-panel" ref={rootRef}>
 			<div className={`download-split-wrap${busy ? ' is-busy' : ''}`}>
+				{busy && prepareProgress !== null ? (
+					<div className="download-prepare" role="status" aria-live="polite">
+						<div
+							className="download-prepare__bar"
+							style={{ ['--p' as string]: `${prepareProgress}%` }}
+						/>
+						<p className="download-prepare__label">
+							{prepareLabel} · {prepareProgress}%
+						</p>
+					</div>
+				) : null}
 				<div className="download-split" id="download-original">
 					<DownloadIcon />
 					<span className="download-split__label">Download original</span>

@@ -3,9 +3,11 @@ import { createPortal } from 'react-dom';
 import FilerobotImageEditor, { EVENTS, TABS, TOOLS } from 'react-filerobot-image-editor';
 import {
 	DOWNLOAD_SIZES,
+	editorWorkingSizeForDownload,
 	filenameFromTitle,
 	fitLongEdge,
 	isFreeDownloadSize,
+	isUpscaledExportSize,
 	outputSizeForDownload,
 	type DownloadSizeId,
 } from '../lib/download-sizes';
@@ -652,9 +654,12 @@ export default function FilerobotAssetEditor({
 			setSelectedSize(sizeId);
 			setSizeMenuOpen(false);
 			setGateMessage(null);
-			if (next) applyCanvasSize(next.output.width, next.output.height);
+			if (next) {
+				const working = editorWorkingSizeForDownload(width, height, next);
+				applyCanvasSize(working.width, working.height);
+			}
 		},
-		[applyCanvasSize, gateSize, sizes],
+		[applyCanvasSize, gateSize, height, sizes, width],
 	);
 
 	const applyQuickEdit = useCallback((action: string) => {
@@ -983,7 +988,14 @@ export default function FilerobotAssetEditor({
 				) : (
 					<em className="download-tier download-tier--pro">Pro</em>
 				)}
-				<span className="filerobot-size__dims">
+				<span
+					className="filerobot-size__dims"
+					title={
+						isUpscaledExportSize(selected.id)
+							? 'Preview stays at native resolution; export matches the selected size.'
+							: undefined
+					}
+				>
 					{selected.output.width} × {selected.output.height}
 				</span>
 			</button>

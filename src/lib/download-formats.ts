@@ -63,19 +63,24 @@ export async function scaleDownloadBlob(
 	sizeId: DownloadSizeId,
 	sourceWidth: number,
 	sourceHeight: number,
+	onProgress?: (percent: number) => void,
 ): Promise<Blob> {
 	const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
 	if (!size) return source;
 
 	const target = outputSizeForDownload(sourceWidth, sourceHeight, size);
+
+	onProgress?.(25);
 	const bitmap = await createImageBitmap(source);
 	const alreadyFits =
 		Math.abs(bitmap.width - target.width) <= 1 && Math.abs(bitmap.height - target.height) <= 1;
 	if (alreadyFits) {
 		bitmap.close();
+		onProgress?.(100);
 		return source;
 	}
 
+	onProgress?.(55);
 	const canvas = document.createElement('canvas');
 	canvas.width = target.width;
 	canvas.height = target.height;
@@ -88,6 +93,7 @@ export async function scaleDownloadBlob(
 	ctx.imageSmoothingQuality = 'high';
 	ctx.drawImage(bitmap, 0, 0, target.width, target.height);
 	bitmap.close();
+	onProgress?.(100);
 	return canvasToBlob(canvas, 'image/jpeg', 0.92);
 }
 

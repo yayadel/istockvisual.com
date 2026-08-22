@@ -52,6 +52,15 @@ export default defineConfig({
 				'react-filerobot-image-editor',
 				'styled-components',
 			],
+			optimizeDeps: {
+				include: [
+					'react',
+					'react-dom',
+					'react-dom/server',
+					'react/jsx-runtime',
+					'react/jsx-dev-runtime',
+				],
+			},
 		},
 		optimizeDeps: {
 			exclude: ['@imgly/background-removal', 'onnxruntime-web', 'heic2any'],

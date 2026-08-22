@@ -52,6 +52,21 @@ export function outputSizeForDownload(
 	return fitLongEdge(width, height, size.longEdge);
 }
 
+/** Editor preview/working pixels — never upscale past the stored 4K master (8K is export-only). */
+export function editorWorkingSizeForDownload(
+	width: number,
+	height: number,
+	size: (typeof DOWNLOAD_SIZES)[number],
+) {
+	const output = outputSizeForDownload(width, height, size);
+	if (size.longEdge <= MASTER_LONG_EDGE) return output;
+	return fitLongEdge(width, height, MASTER_LONG_EDGE);
+}
+
+export function isUpscaledExportSize(sizeId: DownloadSizeId): boolean {
+	return sizeId === '8k';
+}
+
 /** Download filename stem: the page title, with only illegal path characters stripped. */
 export function filenameFromTitle(title: string): string {
 	const cleaned = title
