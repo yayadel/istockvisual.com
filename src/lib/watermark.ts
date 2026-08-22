@@ -27,7 +27,7 @@ export type WatermarkSettings = {
 
 export const DEFAULT_WATERMARK_SETTINGS: WatermarkSettings = {
 	kind: 'text',
-	text: 'iStockVisual',
+	text: 'StockVisual',
 	fontFamily: 'Sora, Segoe UI, sans-serif',
 	color: '#ffffff',
 	opacity: 45,

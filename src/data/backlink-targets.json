@@ -1,11 +1,11 @@
 {
-	"brand": "iStockVisual",
-	"site": "https://istockvisual.com",
+	"brand": "StockVisual",
+	"site": "https://stockvisual.org",
 	"tagline": "CC0 stock visuals and in-browser studio tools",
-	"oneLiner": "iStockVisual is a CC0 library of photos, illustrations, vectors, and 3D stills, plus in-browser crop, convert, vectorize, and palette tools. Free 512 / 1K downloads; HD on Pro.",
+	"oneLiner": "StockVisual is a CC0 library of photos, illustrations, vectors, and 3D stills, plus in-browser crop, convert, vectorize, and palette tools. Free 512 / 1K downloads; HD on Pro.",
 	"anchors": {
-		"brand": "iStockVisual",
-		"url": "https://istockvisual.com",
+		"brand": "StockVisual",
+		"url": "https://stockvisual.org",
 		"generic": ["source", "website", "this collection"]
 	},
 	"targets": [
@@ -17,17 +17,17 @@
 			"priority": 1,
 			"dofollow": true,
 			"submitUrl": "https://github.com/neutraltone/awesome-stock-resources",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"github": {
 				"repo": "neutraltone/awesome-stock-resources",
 				"file": "README.md",
 				"heading": "### CC0-license",
 				"marker": "*",
-				"title": "iStockVisual",
-				"line": "* [iStockVisual](https://istockvisual.com/) - CC0 photos, illustrations, vectors, and 3D stills with in-browser crop, convert, and vectorize tools.",
-				"prTitle": "Add iStockVisual to CC0 photography",
-				"prBody": "Adds iStockVisual to the CC0 photography section.\n\n- License: [CC0 1.0](https://istockvisual.com/info/license) (no attribution required)\n- Library: photos, illustrations, vectors, and 3D stills\n- Collections: https://istockvisual.com/c/\n\nEntry is alphabetically placed and ends with a period."
+				"title": "StockVisual",
+				"line": "* [StockVisual](https://stockvisual.org/) - CC0 photos, illustrations, vectors, and 3D stills with in-browser crop, convert, and vectorize tools.",
+				"prTitle": "Add StockVisual to CC0 photography",
+				"prBody": "Adds StockVisual to the CC0 photography section.\n\n- License: [CC0 1.0](https://stockvisual.org/info/license) (no attribution required)\n- Library: photos, illustrations, vectors, and 3D stills\n- Collections: https://stockvisual.org/c/\n\nEntry is alphabetically placed and ends with a period."
 			}
 		},
 		{
@@ -38,18 +38,18 @@
 			"priority": 2,
 			"dofollow": true,
 			"submitUrl": "https://github.com/madjin/awesome-cc0",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"github": {
 				"repo": "madjin/awesome-cc0",
 				"file": "README.md",
 				"heading": "## Photos",
 				"createSectionBefore": "## Sound",
 				"marker": "-",
-				"title": "iStockVisual",
-				"line": "- [iStockVisual](https://istockvisual.com/) - CC0 photos, illustrations, vectors, and 3D stills. Free 512 / 1K downloads.",
-				"prTitle": "Add iStockVisual under Photos",
-				"prBody": "Adds a Photos section entry for iStockVisual, a CC0 visual library.\n\n- License: https://istockvisual.com/info/license\n- Collections: https://istockvisual.com/c/"
+				"title": "StockVisual",
+				"line": "- [StockVisual](https://stockvisual.org/) - CC0 photos, illustrations, vectors, and 3D stills. Free 512 / 1K downloads.",
+				"prTitle": "Add StockVisual under Photos",
+				"prBody": "Adds a Photos section entry for StockVisual, a CC0 visual library.\n\n- License: https://stockvisual.org/info/license\n- Collections: https://stockvisual.org/c/"
 			}
 		},
 		{
@@ -60,12 +60,12 @@
 			"priority": 3,
 			"dofollow": true,
 			"submitUrl": "https://dev.to/new",
-			"linkUrl": "https://istockvisual.com/c/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/c/",
+			"anchor": "StockVisual",
 			"devto": {
 				"title": "CC0 Visuals and In-Browser Image Tools for Frontend Work",
 				"tags": ["webdev", "design", "opensource", "productivity"],
-				"canonical": "https://istockvisual.com/info/press",
+				"canonical": "https://stockvisual.org/info/press",
 				"series": null
 			}
 		},
@@ -77,14 +77,14 @@
 			"priority": 10,
 			"dofollow": false,
 			"submitUrl": "https://alternativeto.net/manage/add/",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"alternativesTo": ["Unsplash", "Pexels", "Pixabay"],
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com",
+				"name": "StockVisual",
+				"website": "https://stockvisual.org",
 				"short": "CC0 stock visuals and in-browser studio tools",
-				"description": "iStockVisual is a CC0 visual library of photos, illustrations, vectors, and 3D stills. Free 512 and 1K downloads, with 2K–8K on Pro. In-browser tools cover crop, background removal, convert, vectorize, social resize, watermark, and palettes. License: https://istockvisual.com/info/license Collections: https://istockvisual.com/c/"
+				"description": "StockVisual is a CC0 visual library of photos, illustrations, vectors, and 3D stills. Free 512 and 1K downloads, with 2K–8K on Pro. In-browser tools cover crop, background removal, convert, vectorize, social resize, watermark, and palettes. License: https://stockvisual.org/info/license Collections: https://stockvisual.org/c/"
 			}
 		},
 		{
@@ -95,13 +95,13 @@
 			"priority": 11,
 			"dofollow": false,
 			"submitUrl": "https://www.producthunt.com/posts/new",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"fields": {
-				"name": "iStockVisual",
+				"name": "StockVisual",
 				"tagline": "CC0 stock visuals and in-browser studio tools",
-				"website": "https://istockvisual.com",
-				"description": "Search and download CC0 photos, illustrations, vectors, and 3D stills. Free 512 / 1K. In-browser editor, convert, and vectorizer. Gallery: https://istockvisual.com/c/"
+				"website": "https://stockvisual.org",
+				"description": "Search and download CC0 photos, illustrations, vectors, and 3D stills. Free 512 / 1K. In-browser editor, convert, and vectorizer. Gallery: https://stockvisual.org/c/"
 			}
 		},
 		{
@@ -112,13 +112,13 @@
 			"priority": 12,
 			"dofollow": false,
 			"submitUrl": "https://betalist.com/submit",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com",
+				"name": "StockVisual",
+				"website": "https://stockvisual.org",
 				"tagline": "CC0 stock visuals and in-browser studio tools",
-				"description": "A CC0 visual library plus local studio tools for everyday production. Browse collections at https://istockvisual.com/c/"
+				"description": "A CC0 visual library plus local studio tools for everyday production. Browse collections at https://stockvisual.org/c/"
 			}
 		},
 		{
@@ -129,12 +129,12 @@
 			"priority": 13,
 			"dofollow": false,
 			"submitUrl": "https://www.saashub.com/submit",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com",
-				"description": "CC0 stock library (photos, illustrations, vectors, 3D) with in-browser editing tools. License: https://istockvisual.com/info/license"
+				"name": "StockVisual",
+				"website": "https://stockvisual.org",
+				"description": "CC0 stock library (photos, illustrations, vectors, 3D) with in-browser editing tools. License: https://stockvisual.org/info/license"
 			}
 		},
 		{
@@ -145,12 +145,12 @@
 			"priority": 14,
 			"dofollow": false,
 			"submitUrl": "https://www.indiehackers.com/products/new",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com",
-				"description": "Building a CC0 stock-visual library with on-device studio tools. Collections: https://istockvisual.com/c/"
+				"name": "StockVisual",
+				"website": "https://stockvisual.org",
+				"description": "Building a CC0 stock-visual library with on-device studio tools. Collections: https://stockvisual.org/c/"
 			}
 		},
 		{
@@ -161,11 +161,11 @@
 			"priority": 15,
 			"dofollow": true,
 			"submitUrl": "https://www.crunchbase.com/add-new",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com",
+				"name": "StockVisual",
+				"website": "https://stockvisual.org",
 				"description": "CC0 visual library and in-browser studio tools."
 			}
 		},
@@ -177,12 +177,12 @@
 			"priority": 20,
 			"dofollow": true,
 			"submitUrl": "https://freebiesbug.com/submit/",
-			"linkUrl": "https://istockvisual.com/c/",
+			"linkUrl": "https://stockvisual.org/c/",
 			"anchor": "source",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com/c/",
-				"description": "Free CC0 collections of photos, illustrations, vectors, and 3D stills. In-browser crop, convert, and vectorize. Website: https://istockvisual.com"
+				"name": "StockVisual",
+				"website": "https://stockvisual.org/c/",
+				"description": "Free CC0 collections of photos, illustrations, vectors, and 3D stills. In-browser crop, convert, and vectorize. Website: https://stockvisual.org"
 			}
 		},
 		{
@@ -193,12 +193,12 @@
 			"priority": 21,
 			"dofollow": true,
 			"submitUrl": "https://www.designer-daily.com/submit-a-resource",
-			"linkUrl": "https://istockvisual.com/c/textures",
+			"linkUrl": "https://stockvisual.org/c/textures",
 			"anchor": "this collection",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com/c/",
-				"description": "CC0 visual library with topical collections and in-browser studio tools. Source: https://istockvisual.com"
+				"name": "StockVisual",
+				"website": "https://stockvisual.org/c/",
+				"description": "CC0 visual library with topical collections and in-browser studio tools. Source: https://stockvisual.org"
 			}
 		},
 		{
@@ -209,11 +209,11 @@
 			"priority": 22,
 			"dofollow": true,
 			"submitUrl": "https://www.webdesignerdepot.com/contact/",
-			"linkUrl": "https://istockvisual.com/",
-			"anchor": "iStockVisual",
+			"linkUrl": "https://stockvisual.org/",
+			"anchor": "StockVisual",
 			"fields": {
-				"name": "iStockVisual",
-				"website": "https://istockvisual.com",
+				"name": "StockVisual",
+				"website": "https://stockvisual.org",
 				"description": "CC0 stock visuals for web work, plus convert and vectorize tools in the browser."
 			}
 		}

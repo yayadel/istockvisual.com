@@ -2,14 +2,14 @@
 import LegalLayout from '../../layouts/LegalLayout.astro';
 import { IMAGE_SOURCE_NOTICE, LICENSE_PATH, SITE_BRAND } from '../../lib/seo';
 
-const htmlCredit = `<a href="https://istockvisual.com/">iStockVisual</a>`;
-const htmlDeep = `Scene title — <a href="https://istockvisual.com/c/">source</a>`;
-const badgeHtml = `<a href="https://istockvisual.com/"><img src="https://istockvisual.com/badge.svg" alt="iStockVisual" width="168" height="32"></a>`;
+const htmlCredit = `<a href="https://stockvisual.org/">StockVisual</a>`;
+const htmlDeep = `Scene title — <a href="https://stockvisual.org/c/">source</a>`;
+const badgeHtml = `<a href="https://stockvisual.org/"><img src="https://stockvisual.org/badge.svg" alt="StockVisual" width="168" height="32"></a>`;
 ---
 
 <LegalLayout
 	title="Press & Embed"
-	description={`Press facts, brand name, and optional embed snippets for iStockVisual. CC0 AI-generated library — attribution is not required. ${IMAGE_SOURCE_NOTICE}`}
+	description={`Press facts, brand name, and optional embed snippets for StockVisual. CC0 AI-generated library — attribution is not required. ${IMAGE_SOURCE_NOTICE}`}
 	heading="Press & Embed"
 	lede={`Facts and copy-ready links for directories, articles, and optional credit. ${IMAGE_SOURCE_NOTICE} Attribution is not required under CC0.`}
 	kicker="Press"
@@ -22,8 +22,8 @@ const badgeHtml = `<a href="https://istockvisual.com/"><img src="https://istockv
 
 	<h2>Facts</h2>
 	<ul>
-		<li>Website: <a href="/">https://istockvisual.com</a></li>
-		<li>Collections: <a href="/c/">https://istockvisual.com/c/</a></li>
+		<li>Website: <a href="/">https://stockvisual.org</a></li>
+		<li>Collections: <a href="/c/">https://stockvisual.org/c/</a></li>
 		<li>License: <a href={LICENSE_PATH}>CC0 1.0</a> — commercial and personal use, no attribution required</li>
 		<li>Image source: {IMAGE_SOURCE_NOTICE}</li>
 		<li>Free downloads: 512 and 1K. 2K / 4K / 8K on Pro</li>
@@ -37,7 +37,7 @@ const badgeHtml = `<a href="https://istockvisual.com/"><img src="https://istockv
 		homepage.
 	</p>
 	<ul>
-		<li><a href="/">iStockVisual</a></li>
+		<li><a href="/">StockVisual</a></li>
 		<li><a href="/c/">source</a> (all collections)</li>
 		<li><a href="/c/textures">this collection</a> (textures)</li>
 		<li><a href="/c/3d-assets">this collection</a> (3D assets)</li>
@@ -50,6 +50,6 @@ const badgeHtml = `<a href="https://istockvisual.com/"><img src="https://istockv
 	<pre><code>{htmlDeep}</code></pre>
 	<pre><code>{badgeHtml}</code></pre>
 	<p>
-		<a href="/"><img src="/badge.svg" alt="iStockVisual" width="168" height="32" /></a>
+		<a href="/"><img src="/badge.svg" alt="StockVisual" width="168" height="32" /></a>
 	</p>
 </LegalLayout>

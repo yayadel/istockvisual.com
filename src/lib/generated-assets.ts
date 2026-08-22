@@ -1,6 +1,6 @@
 import { isCategorySlug, type CategorySlug } from '../config/categories';
 import type { AssetDetail, GeneratedAssetRecord } from './asset-types';
-import { normalizeTags } from './asset-types';
+import { sanitizeStockTags } from './stock-tags';
 import { publicImageUrl } from './public-image';
 import {
 	CONTENT_CATEGORY_PAGES,
@@ -54,7 +54,10 @@ function rowToRecord(row: Record<string, unknown>): GeneratedAssetRecord {
 		imageCreationDescription: String(row.creationDescription ?? ''),
 		assetUsageTips: String(row.usageTips ?? ''),
 		colorPalette: parseJsonArray(row.colorPalette as string, []),
-		tags: normalizeTags(parseJsonArray<string>(row.tags as string, [])),
+		tags: sanitizeStockTags(parseJsonArray<string>(row.tags as string, []), {
+			title,
+			keyword,
+		}),
 		relatedSearchQueries: parseJsonArray<string>(row.relatedQueries as string, []),
 		contentCategories,
 		depictedElements: contentCategories,

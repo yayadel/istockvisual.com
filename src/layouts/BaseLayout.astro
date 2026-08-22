@@ -19,14 +19,14 @@ interface Props {
 	ogImageHeight?: number;
 	ogType?: string;
 	jsonLd?: unknown;
-	/** Use `title` as the full document title (no " · iStockVisual"). */
+	/** Use `title` as the full document title (no " · StockVisual"). */
 	exactTitle?: boolean;
 	robots?: string;
 	lcpImage?: string;
 }
 
 const {
-	title = 'iStockVisual',
+	title = 'StockVisual',
 	description = SITE_HOME_DESCRIPTION,
 	canonicalUrl,
 	ogImage,
@@ -42,7 +42,7 @@ const {
 
 const pagePath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const pageTitle =
-	exactTitle || title === 'iStockVisual' ? title : `${title} · iStockVisual`;
+	exactTitle || title === 'StockVisual' ? title : `${title} · StockVisual`;
 const canonical = canonicalUrl ?? canonicalHref(Astro.url.pathname, Astro.url.origin);
 const jsonLdRaw = jsonLd ? stringifyJsonLd(jsonLd) : '';
 const origin = siteOrigin(Astro.url.origin);
@@ -91,7 +91,7 @@ const ogImageType = imageMimeFromUrl(resolvedOgImage);
 			)
 		}
 		<title>{pageTitle}</title>
-		<meta property="og:site_name" content="iStockVisual" />
+		<meta property="og:site_name" content="StockVisual" />
 		<meta property="og:type" content={ogType} />
 		<meta property="og:title" content={pageTitle} />
 		<meta property="og:description" content={description} />
@@ -120,13 +120,25 @@ const ogImageType = imageMimeFromUrl(resolvedOgImage);
 		<script is:inline>
 			(function () {
 				try {
-					var theme = localStorage.getItem('istockvisual-theme');
+					var theme =
+						localStorage.getItem('stockvisual-theme') || localStorage.getItem('istockvisual-theme');
 					document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
-					var privacy = localStorage.getItem('istockvisual-privacy-ok');
+					if (theme && !localStorage.getItem('stockvisual-theme')) {
+						localStorage.setItem('stockvisual-theme', theme);
+					}
+					var privacy =
+						localStorage.getItem('stockvisual-privacy-ok') ||
+						localStorage.getItem('istockvisual-privacy-ok');
 					var stamped = Number(privacy);
 					var fresh = privacy && isFinite(stamped) && Date.now() - stamped < 86400000;
-					if (document.cookie.indexOf('istockvisual-privacy-ok=') !== -1 || fresh) {
+					var cookieOk =
+						document.cookie.indexOf('stockvisual-privacy-ok=') !== -1 ||
+						document.cookie.indexOf('istockvisual-privacy-ok=') !== -1;
+					if (cookieOk || fresh) {
 						document.documentElement.setAttribute('data-privacy-ok', '1');
+						if (fresh && !localStorage.getItem('stockvisual-privacy-ok')) {
+							localStorage.setItem('stockvisual-privacy-ok', privacy);
+						}
 					}
 				} catch (e) {
 					document.documentElement.setAttribute('data-theme', 'light');

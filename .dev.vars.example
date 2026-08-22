@@ -3,7 +3,7 @@ BETTER_AUTH_URL=http://localhost:4325
 GENERATE_API_SECRET=dev-generate-secret
 # Local `npm run dev` serves http://localhost:4325 and reads production D1/R2 (wrangler remote bindings).
 # Cloud Agent still hits the production Worker; put the Worker secret in Cursor Secrets as GENERATE_API_SECRET
-# GENERATE_BASE_URL=https://istockvisual.com
+# GENERATE_BASE_URL=https://stockvisual.org
 # GENERATE_API_SECRET_REMOTE=
 ADMIN_EMAILS=you@example.com
 GEMINI_API_KEY=

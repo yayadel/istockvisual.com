@@ -3,6 +3,7 @@ import {
 	normalizeContentCategories,
 	pickContentCategoriesFromTitle,
 } from './content-categories';
+import { sanitizeStockTags, type StockTagContext } from './stock-tags';
 
 export type ColorSwatch = {
 	name: string;
@@ -196,19 +197,12 @@ export function formatTagLabel(tag: string): string {
 	return formatAssetTitle(tag);
 }
 
-/** Dedupe tags (case-insensitive) and apply title-case / acronym formatting. */
-export function normalizeTags(values: string[] | undefined | null): string[] {
-	const out: string[] = [];
-	const seen = new Set<string>();
-	for (const value of values || []) {
-		const formatted = formatTagLabel(value);
-		if (!formatted) continue;
-		const key = formatted.toLowerCase();
-		if (seen.has(key)) continue;
-		seen.add(key);
-		out.push(formatted);
-	}
-	return out;
+/** Dedupe tags and apply stock-style indexing rules (1–3 words, no SEO filler). */
+export function normalizeTags(
+	values: string[] | undefined | null,
+	context?: StockTagContext,
+): string[] {
+	return sanitizeStockTags(values, context);
 }
 
 /** Uppercase known acronyms inside sentence-case copy without changing other casing. */
@@ -259,7 +253,10 @@ export function parseGeneratedMeta(raw: string, keyword: string): GeneratedAsset
 		assetUsageTips:
 			readString(parsed, ['assetUsageTips', 'Asset Functionality & Usage Tips']) || '',
 		colorPalette: normalizePalette(parsed.colorPalette),
-		tags: normalizeTags(normalizeStringArray(parsed.tags)),
+		tags: normalizeTags(normalizeStringArray(parsed.tags), {
+			title: imagePageTitle,
+			keyword,
+		}),
 		relatedSearchQueries: [],
 		contentCategories,
 		// Legacy field; topical categories live in contentCategories (DB: depictedElements).

@@ -1,5 +1,8 @@
-export const PRIVACY_NOTICE_COOKIE = 'istockvisual-privacy-ok';
-export const PRIVACY_NOTICE_STORAGE_KEY = 'istockvisual-privacy-ok';
+export const PRIVACY_NOTICE_COOKIE = 'stockvisual-privacy-ok';
+export const PRIVACY_NOTICE_STORAGE_KEY = 'stockvisual-privacy-ok';
+/** Pre-rebrand keys; still accepted so returning visitors are not re-prompted. */
+export const LEGACY_PRIVACY_NOTICE_COOKIE = 'istockvisual-privacy-ok';
+export const LEGACY_PRIVACY_NOTICE_STORAGE_KEY = 'istockvisual-privacy-ok';
 export const PRIVACY_NOTICE_TTL_SECONDS = 24 * 60 * 60;
 export const PRIVACY_NOTICE_KV_PREFIX = 'privacy-notice:';
 

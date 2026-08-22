@@ -1,6 +1,6 @@
 {
-	"name": "iStockVisual",
-	"short_name": "iStockVisual",
+	"name": "StockVisual",
+	"short_name": "StockVisual",
 	"icons": [
 		{
 			"src": "/favicon.svg",

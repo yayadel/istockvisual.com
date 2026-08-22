@@ -7,7 +7,7 @@ const dataset = process.env.SANITY_STUDIO_DATASET || 'production';
 
 export default defineConfig({
 	name: 'istockvisual',
-	title: 'iStockVisual CMS',
+	title: 'StockVisual CMS',
 	projectId,
 	dataset,
 	plugins: [structureTool()],

@@ -22,7 +22,7 @@ function widthToken(size: PublicImageSize) {
 }
 
 function localPreviewOrigin() {
-	return import.meta.env.DEV ? 'https://istockvisual.com' : '';
+	return import.meta.env.DEV ? 'https://stockvisual.org' : '';
 }
 
 export function publicImagePath(
@@ -40,7 +40,7 @@ export function publicImageUrl(
 	size: PublicImageSize = '500',
 	ext: 'avif' | 'jpg' = 'jpg',
 ): string {
-	const base = import.meta.env.DEV ? 'https://istockvisual.com' : originOf(origin);
+	const base = import.meta.env.DEV ? 'https://stockvisual.org' : originOf(origin);
 	const id = encodeURIComponent(assetId);
 	return `${base}/preview/${id}_${widthToken(size)}.${ext}`;
 }
@@ -114,7 +114,7 @@ export function resolvePublicPreviewRoute(pathname: string): PublicPreviewRoute 
 export function parseAssetIdFromImageUrl(url: string): string | null {
 	if (!url) return null;
 	try {
-		const parsed = new URL(url, 'https://istockvisual.com');
+		const parsed = new URL(url, 'https://stockvisual.org');
 		const pretty = filenameFromPreviewPath(parsed.pathname);
 		if (pretty) return parsePublicPreviewFile(pretty)?.id ?? null;
 		const api = parsed.pathname.match(/^\/api\/preview\/([^/]+)$/);

@@ -6679,6 +6679,8 @@ body.download-auth-modal-open {
 	background: #f4f5f6;
 	border: 1px solid var(--line);
 	border-radius: var(--radius);
+	position: relative;
+	z-index: 2;
 }
 
 [data-theme='dark'] .asset-preview__poster {
@@ -6689,10 +6691,23 @@ body.download-auth-modal-open {
 	display: none;
 }
 
-.asset-preview:not(.is-editor-ready) .filerobot-studio {
+/* Poster covers the studio until Konva paints a real canvas. Keep the studio in
+   normal flow (not absolute/opacity:0) so Filerobot can measure layout. */
+.asset-preview:not(.is-editor-ready) .asset-preview__poster {
 	position: absolute;
 	inset: 0;
-	opacity: 0;
+	z-index: 2;
+	width: 100%;
+	height: 100%;
+	max-height: none;
+	object-fit: contain;
+	pointer-events: none;
+}
+
+.asset-preview:not(.is-editor-ready) .filerobot-studio {
+	position: relative;
+	z-index: 1;
+	opacity: 1;
 	pointer-events: none;
 }
 

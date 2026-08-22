@@ -8,7 +8,7 @@ Asset Functionality & Usage Tips
 
 Color Palette (including HEX color codes)
 
-Tags (REQUIRED: output **40 or more** tags. Merge into this single list: title/scene subject labels, and depicted objects/elements such as cup, male, cat, desk, mountain, etc. Do NOT output separate keywords or depicted-elements fields. Do NOT force the raw topic keyword into tags unless it is in the title or clearly depicted.)
+Tags (REQUIRED: output **22 to 28** discrete indexing tags. Each tag is **1–3 words** only, title case. Order: first ~10 **literal** labels for visible objects and scene elements from the title, then ~10–15 **conceptual** labels (mood, industry, use case). Do NOT output SEO search phrases (e.g. "Mexico Travel", "Travel Inspiration"), marketing filler, synonym stacks, or the raw topic keyword unless those words appear in the title or are clearly depicted. Do NOT output separate keywords or depicted-elements fields.)
 
 Content Categories (REQUIRED field name in JSON: contentCategories — an array with **exactly 1** string. Choose the single best label for what the image will actually depict — the visible subject/scene, not loose word associations. Example: a wireless gaming mouse → ["Technology"], NEVER ["Sports"]. Sports is only for physical athletics. You MUST copy the label EXACTLY from this allowed list (comma-separated): [Insert allowed content categories here]. Do not invent new category names. Do not leave contentCategories empty. Do not return more than one label.)
 
@@ -36,7 +36,7 @@ Copy alignment: Write Image Page Title first. Image Creation Description, Page S
 - The topic keyword is only a seed for choosing the scene. Once the title names the visible stock subject, all copy follows the title.
 - Do NOT paste the raw keyword into descriptions when the title already turned it into a scene.
 - Do NOT insert real-person names, film/book titles, "watch online", "full movie", "download", "epub", "meaning of … in Hindi", or other query glue that is not visible in the picture.
-- Tags: title-case labels for the titled scene and visible objects. Include the raw keyword as a tag ONLY if those words appear in the title or are actually depicted. Never tag a celebrity, piracy query, or dictionary query onto a generic scene.
+- Tags: 22–28 discrete indexing labels (1–3 words each) for the titled scene and visible objects — literal scene/object tags first, then conceptual. Include the raw keyword as a tag ONLY if those words appear in the title or are actually depicted. Never use SEO phrases ending in Travel, Destination, Inspiration, Vacation, or Holiday unless that word is literally in the title. Never tag a celebrity, piracy query, or dictionary query onto a generic scene.
 Examples:
 - Title "Father and Adult Daughters Sharing Emotional Moment in Living Room" → short description about a father and adult daughters in a sunlit living room. NOT "Jim Harrison daughters".
 - Title "Smart TV Displaying Movie Interface in Modern Living Room" → describe the TV and living room. NOT "full movie hindi dubbed download".
@@ -51,7 +51,7 @@ Style Selection: Choose the most suitable medium (Photograph, Illustration, or 3
 
 Anatomy & Physics: Avoid unnatural proportions, distorted limbs/hands, or physical errors common in AI generation.
 
-Tag Coverage: Tags must match the Image Page Title and what is visible in the scene: subject labels and concrete depicted elements (cup, male, desk, mountain, etc.). Provide at least 40 unique English tags; prefer short, searchable phrases. Do not force the raw topic keyword into tags unless it is in the title or clearly depicted. Tag Capitalization: each tag MUST use the same title-case rules as Image Page Title (capitalize major words; keep short words like a/an/the/and/of/in lowercase unless first/last; acronyms uppercase — PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K, USB, 3D; single-letter designators uppercase, e.g. Z Flashing). Examples: "Z Flashing", "Galvanized Metal", "PDF Template" — never "z flashing" or "pdf template".
+Tag Coverage: Tags must match the Image Page Title and what is visible in the scene. Provide **22–28** unique English tags; each tag is **1–3 words** (e.g. "Resort Balcony", "Palm Trees", "Turquoise Water" — not "All Inclusive Vacations" or "Travel Inspiration"). Put literal visible objects and scene elements first (~10), then conceptual mood/industry tags (~10–15). Do not force the raw topic keyword into tags unless it is in the title or clearly depicted. Do not repeat near-synonyms. Tag Capitalization: each tag MUST use the same title-case rules as Image Page Title (capitalize major words; keep short words like a/an/the/and/of/in lowercase unless first/last; acronyms uppercase — PDF, UAE, KY, DIY, USA, UK, AI, UI, API, GPS, LED, HD, 4K, USB, 3D; single-letter designators uppercase, e.g. Z Flashing). Examples: "Z Flashing", "Galvanized Metal", "PDF Template" — never "z flashing" or "pdf template".
 
 Content Category Selection: Set contentCategories in the JSON output to exactly **1** label from the allowed list above, based on the scene you describe in Image Creation Description / Image Page Title.
 

@@ -3,7 +3,7 @@ import type { AssetDetail } from './asset-types';
 import type { CatalogCardPayload } from './catalog-card';
 import { parsePublicPreviewFile } from './public-image';
 
-const PROD = 'https://istockvisual.com';
+const PROD = 'https://stockvisual.org';
 
 /** Topic slugs that already have live /c/ pages (from production sitemap). */
 export async function fetchProdPopulatedContentCategorySlugs(): Promise<Set<string>> {

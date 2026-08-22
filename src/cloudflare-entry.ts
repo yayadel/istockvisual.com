@@ -13,7 +13,8 @@ type WaitCtx = {
 	waitUntil: (promise: Promise<unknown>) => void;
 };
 
-const CANONICAL_HOST = 'istockvisual.com';
+const CANONICAL_HOST = 'stockvisual.org';
+const LEGACY_HOSTS = new Set(['istockvisual.com', 'www.istockvisual.com']);
 
 function canonicalRedirect(request: Request): Response | null {
 	const url = new URL(request.url);
@@ -27,10 +28,11 @@ function canonicalRedirect(request: Request): Response | null {
 		return null;
 	}
 
-	const isSiteHost = host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`;
-	if (!isSiteHost) return null;
+	const isLegacy = LEGACY_HOSTS.has(host);
+	const isCanonicalFamily = host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`;
+	if (!isLegacy && !isCanonicalFamily) return null;
 
-	const needsHost = host === `www.${CANONICAL_HOST}`;
+	const needsHost = isLegacy || host === `www.${CANONICAL_HOST}`;
 	const needsHttps = url.protocol === 'http:';
 	if (!needsHost && !needsHttps) return null;
 

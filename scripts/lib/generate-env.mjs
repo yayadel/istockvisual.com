@@ -1,6 +1,6 @@
 import { loadDevVars } from './gemini-node.mjs';
 
-const PRODUCTION_SITE = 'https://istockvisual.com';
+const PRODUCTION_SITE = 'https://stockvisual.org';
 
 function isLocalHost(url) {
 	try {

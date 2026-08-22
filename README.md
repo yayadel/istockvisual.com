@@ -1,8 +1,8 @@
-# iStockVisual
+# StockVisual
 
 Astro + Cloudflare (Pages / D1 / R2) stock-visual site. Sanity holds content metadata, Better Auth + D1 handles membership, and GitHub connects to Cloudflare for deploys.
 
-Live site: [https://istockvisual.com](https://istockvisual.com)
+Live site: [https://stockvisual.org](https://stockvisual.org)
 
 ## Stack
 
@@ -162,7 +162,7 @@ npm run db:migrate:remote
 Recommended env vars (Pages / Workers):
 
 - `BETTER_AUTH_SECRET`
-- `BETTER_AUTH_URL` (production origin, e.g. `https://istockvisual.com`)
+- `BETTER_AUTH_URL` (production origin, e.g. `https://stockvisual.org`)
 - `SANITY_PROJECT_ID`
 - `SANITY_DATASET`
 - `SANITY_API_TOKEN` (read-only, optional)

@@ -47,8 +47,9 @@ class AssetMeta(BaseModel):
 	assetUsageTips: str = Field(description="English usage tips for designers/marketers")
 	colorPalette: List[ColorSwatch] = Field(description="Palette with HEX codes")
 	tags: List[str] = Field(
-		min_length=40,
-		description=">=40 unique title-case tags matching the titled scene and visible objects",
+		min_length=18,
+		max_length=40,
+		description="18-28 stock indexing tags (1-3 words each); literal scene/object labels first, then conceptual",
 	)
 	contentCategories: List[str] = Field(
 		min_length=1,
@@ -214,6 +215,17 @@ def ensure_content_categories(meta: AssetMeta, keyword: str) -> AssetMeta:
 	if not cats:
 		cats = ["Photography"] if "photo" in (meta.medium or "").lower() else ["Advertising"]
 	meta.contentCategories = cats[:1]
+	return sanitize_asset_tags(meta, keyword)
+
+
+def sanitize_asset_tags(meta: AssetMeta, keyword: str) -> AssetMeta:
+	from stock_tags import sanitize_stock_tags
+
+	meta.tags = sanitize_stock_tags(
+		meta.tags,
+		title=meta.imagePageTitle or "",
+		keyword=keyword,
+	)
 	return meta
 
 

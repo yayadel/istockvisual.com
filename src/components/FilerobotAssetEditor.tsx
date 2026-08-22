@@ -85,6 +85,9 @@ const FILEROBOT_THEME = {
 	},
 };
 
+/** Default crop frame as a fraction of the shown image (centered). */
+const DEFAULT_CROP_SCALE = 0.8;
+
 function scaleCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
 	if (canvas.width === width && canvas.height === height) return canvas;
 	const out = document.createElement('canvas');
@@ -145,13 +148,14 @@ export default function FilerobotAssetEditor({
 	const updateStateFnRef = useRef<((part: Record<string, unknown>) => void) | undefined>(undefined);
 	const clampingResizeRef = useRef(false);
 	const cutoutUrlRef = useRef<string | null>(null);
+	const defaultCropAppliedRef = useRef(false);
 	const resizeHintTimer = useRef<number>(0);
 	const savedName = filenameFromTitle(title);
 	const nextPath = typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search;
 	const loginHref = `/login?next=${encodeURIComponent(nextPath)}`;
 	const signupHref = `/signup?next=${encodeURIComponent(nextPath)}`;
 	const editorSource = useMemo(() => {
-		// Local dev serves preview URLs from production (cross-origin). Filerobot needs same-origin bytes.
+		// Local dev: poster URLs are absolute production hosts (CORS). Load via same-origin proxy.
 		if (assetId && import.meta.env.DEV) {
 			return `/api/editor-image/${encodeURIComponent(assetId)}`;
 		}
@@ -187,14 +191,115 @@ export default function FilerobotAssetEditor({
 	useEffect(() => {
 		const preview = document.getElementById('preview');
 		const root = frameRef.current;
-		if (!preview || !root) return;
+		if (!preview || !root || !source) return;
+
 		const markReady = () => {
-			if (root.querySelector('canvas')) preview.classList.add('is-editor-ready');
+			const canvas =
+				root.querySelector<HTMLCanvasElement>('.FIE_canvas-node canvas') ||
+				root.querySelector<HTMLCanvasElement>('.konvajs-content canvas') ||
+				root.querySelector<HTMLCanvasElement>('.FIE_canvas-container canvas');
+			const ready = Boolean(canvas && canvas.width > 1 && canvas.height > 1);
+			if (ready) preview.classList.add('is-editor-ready');
 		};
+
 		markReady();
 		const observer = new MutationObserver(markReady);
-		observer.observe(root, { childList: true, subtree: true });
-		return () => observer.disconnect();
+		observer.observe(root, { childList: true, subtree: true, attributes: true });
+		let ticks = 0;
+		const timer = window.setInterval(() => {
+			ticks += 1;
+			markReady();
+			if (preview.classList.contains('is-editor-ready') || ticks >= 100) {
+				window.clearInterval(timer);
+			}
+		}, 100);
+
+		return () => {
+			observer.disconnect();
+			window.clearInterval(timer);
+		};
+	}, [source]);
+
+	useEffect(() => {
+		defaultCropAppliedRef.current = false;
+	}, [source]);
+
+	useEffect(() => {
+		if (!source) return;
+
+		/** Crop coords are relative to Filerobot `shownImageDimensions`, not the Konva canvas. */
+		const applyCenteredCrop = (force = false) => {
+			if (defaultCropAppliedRef.current && !force) return true;
+			const update = updateStateFnRef.current;
+			if (!update) return false;
+
+			let applied = false;
+			update((state: {
+				shownImageDimensions?: { width?: number; height?: number };
+				adjustments?: { crop?: { width?: number; height?: number } };
+			}) => {
+				const shownW = Number(state?.shownImageDimensions?.width) || 0;
+				const shownH = Number(state?.shownImageDimensions?.height) || 0;
+				if (shownW < 2 || shownH < 2) return null;
+
+				const width = Math.max(1, Math.round(shownW * DEFAULT_CROP_SCALE));
+				const height = Math.max(1, Math.round(shownH * DEFAULT_CROP_SCALE));
+				const x = Math.max(0, Math.round((shownW - width) / 2));
+				const y = Math.max(0, Math.round((shownH - height) / 2));
+
+				const current = state?.adjustments?.crop;
+				if (
+					!force &&
+					current?.width &&
+					current?.height &&
+					Math.abs(current.width / shownW - DEFAULT_CROP_SCALE) < 0.03 &&
+					Math.abs(current.height / shownH - DEFAULT_CROP_SCALE) < 0.03
+				) {
+					applied = true;
+					return null;
+				}
+
+				applied = true;
+				return {
+					adjustments: {
+						crop: {
+							// ORIGINAL_CROP — keeps source aspect; 80% of shown image, centered
+							ratio: 'Crop',
+							ratioTitleKey: 'original',
+							width,
+							height,
+							x,
+							y,
+						},
+					},
+				};
+			});
+
+			if (applied) defaultCropAppliedRef.current = true;
+			return applied;
+		};
+
+		let attempts = 0;
+		const followUps: number[] = [];
+		const tick = window.setInterval(() => {
+			attempts += 1;
+			if (applyCenteredCrop() || attempts >= 120) {
+				window.clearInterval(tick);
+				if (defaultCropAppliedRef.current) {
+					// Filerobot may reset crop when shownImageDimensions settles — re-apply briefly.
+					followUps.push(
+						window.setTimeout(() => applyCenteredCrop(true), 120),
+						window.setTimeout(() => applyCenteredCrop(true), 360),
+						window.setTimeout(() => applyCenteredCrop(true), 700),
+					);
+				}
+			}
+		}, 50);
+
+		return () => {
+			window.clearInterval(tick);
+			followUps.forEach((id) => window.clearTimeout(id));
+		};
 	}, [source]);
 
 	useEffect(() => {
@@ -726,6 +831,7 @@ export default function FilerobotAssetEditor({
 					} as CSSProperties
 				}
 			>
+				{source ? (
 				<FilerobotImageEditor
 					key={assetId || imageUrl}
 					source={source}
@@ -760,6 +866,7 @@ export default function FilerobotAssetEditor({
 					Crop={{ presetsItems: CROP_PRESETS }}
 					Rotate={{ angle: 90, componentType: 'buttons' }}
 				/>
+				) : null}
 				{originalSlot
 					? createPortal(
 							<a className="filerobot-studio__original" href="#download-original">

@@ -17,7 +17,7 @@ const CONTACT = LEGAL_CONTACT_EMAIL;
 const SUPPORT_TOGETHER_MODEL = 'deepseek-ai/DeepSeek-V4-Flash-0731';
 const GEMINI_MODEL = 'gemini-3.6-flash';
 
-const SYSTEM_PROMPT = `You are the customer-support assistant for ${SITE_BRAND} (iStockVisual).
+const SYSTEM_PROMPT = `You are the customer-support assistant for ${SITE_BRAND} (StockVisual).
 Answer the latest user question immediately. Do not greet, introduce yourself, or ask how you can help.
 Answer ONLY from the internal brief below. If the brief does not cover the question, say you are not sure and give ${CONTACT}.
 Reply in the same language as the latest user message (English, Chinese, etc.).
@@ -73,7 +73,7 @@ const FAQS: Faq[] = [
 	},
 	{
 		keys: ['contact', 'email', 'support', 'help', 'human'],
-		answer: `This chat is the iStockVisual assistant. For billing, refunds, or anything we cannot answer, email ${CONTACT}.`,
+		answer: `This chat is the StockVisual assistant. For billing, refunds, or anything we cannot answer, email ${CONTACT}.`,
 	},
 	{
 		keys: ['svg', 'png', 'jpg', 'webp', 'format', 'size', '4k', '8k', '2k'],

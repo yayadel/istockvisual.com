@@ -13,7 +13,7 @@ type StoredChat = {
 };
 
 const GREETING =
-	'Hi — I’m the iStockVisual assistant. Ask about licenses, Pro sizes, plans, refunds, or studio tools. For account-specific billing, email hello@istockvisual.com.';
+	'Hi — I’m the StockVisual assistant. Ask about licenses, Pro sizes, plans, refunds, or studio tools. For account-specific billing, email hello@stockvisual.org.';
 
 const PROMPTS = [
 	'Is 1K really free?',
@@ -162,7 +162,7 @@ export default function SupportChat({ variant = 'page' }: Props) {
 				...next,
 				{
 					role: 'assistant',
-					content: 'I could not reach the assistant just now. Try again, or email hello@istockvisual.com.',
+					content: 'I could not reach the assistant just now. Try again, or email hello@stockvisual.org.',
 				},
 			]);
 		} finally {
@@ -175,7 +175,7 @@ export default function SupportChat({ variant = 'page' }: Props) {
 			<div className="support-chat__head">
 				<div>
 					<p className="support-chat__eyebrow">Site assistant</p>
-					<strong>Ask iStockVisual</strong>
+					<strong>Ask StockVisual</strong>
 				</div>
 				{variant === 'widget' && (
 					<button type="button" className="support-chat__icon-btn" aria-label="Close chat" onClick={() => setOpen(false)}>

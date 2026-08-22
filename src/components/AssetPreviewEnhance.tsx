@@ -86,9 +86,11 @@ export default function AssetPreviewEnhance({
 			openTool(next);
 		};
 		window.addEventListener('hashchange', onHash);
+		window.addEventListener('stockvisual:open-editor', onOpen);
 		window.addEventListener('istockvisual:open-editor', onOpen);
 		return () => {
 			window.removeEventListener('hashchange', onHash);
+			window.removeEventListener('stockvisual:open-editor', onOpen);
 			window.removeEventListener('istockvisual:open-editor', onOpen);
 		};
 	}, [openTool]);

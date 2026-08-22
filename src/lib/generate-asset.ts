@@ -281,6 +281,18 @@ function titleSimilarity(currentTitle: string, otherTitle: string): number {
 	return score;
 }
 
+/** Shared tag count (slug-normalized). Used as the hard gate for Similar Images. */
+function tagOverlapCount(current: AssetDetail, other: AssetDetail): number {
+	const currentTags = new Set((current.tags || []).map((tag) => toPathSlug(tag)).filter(Boolean));
+	if (!currentTags.size) return 0;
+	let hits = 0;
+	for (const tag of other.tags || []) {
+		const slug = toPathSlug(tag);
+		if (slug && currentTags.has(slug)) hits += 1;
+	}
+	return hits;
+}
+
 /** Source keyword first, then weaker tag overlap. */
 function keywordSimilarity(current: AssetDetail, other: AssetDetail): number {
 	const currentKey = similarTokens(current.keyword);
@@ -327,7 +339,7 @@ function paletteDistance(current: AssetDetail, other: AssetDetail): number {
 	return total / query.length;
 }
 
-/** Detail page: title similarity, then main keyword, then palette. */
+/** Detail page: require at least one shared tag, then rank by overlap and title. */
 export function findSimilarAssets(
 	assets: AssetDetail[],
 	current: AssetDetail,
@@ -337,12 +349,15 @@ export function findSimilarAssets(
 		.filter((asset) => asset._id !== current._id && Boolean(asset.previewUrl))
 		.map((asset) => ({
 			asset,
+			tagOverlap: tagOverlapCount(current, asset),
 			titleScore: titleSimilarity(current.title, asset.title),
 			keywordScore: keywordSimilarity(current, asset),
 			colorDistance: paletteDistance(current, asset),
 		}))
+		.filter((item) => item.tagOverlap > 0)
 		.sort(
 			(a, b) =>
+				b.tagOverlap - a.tagOverlap ||
 				b.titleScore - a.titleScore ||
 				b.keywordScore - a.keywordScore ||
 				a.colorDistance - b.colorDistance ||

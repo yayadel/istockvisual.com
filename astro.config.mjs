@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://istockvisual.com',
+	site: 'https://stockvisual.org',
 	server: {
 		port: 4325,
 		host: true,
@@ -21,6 +21,11 @@ export default defineConfig({
 		inlineStylesheets: 'never',
 	},
 	vite: {
+		// Filerobot/Konva break in `astro dev` if React is duplicated across
+		// optimized chunks (dispatcher.getOwner is not a function → no canvas).
+		resolve: {
+			dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+		},
 		ssr: {
 			noExternal: ['jpeg-js', 'fast-png'],
 			external: [
@@ -35,6 +40,10 @@ export default defineConfig({
 		optimizeDeps: {
 			exclude: ['@imgly/background-removal', 'onnxruntime-web', 'heic2any'],
 			include: [
+				'react',
+				'react-dom',
+				'react/jsx-runtime',
+				'react/jsx-dev-runtime',
 				'jszip',
 				'imagetracerjs',
 				'react-filerobot-image-editor',

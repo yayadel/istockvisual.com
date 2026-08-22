@@ -272,7 +272,7 @@ function ShareLoveModal({
 					<GlobeIcon />
 					<div>
 						<strong>Free for commercial work</strong>
-						<p>A short credit keeps iStockVisual available to everyone.</p>
+						<p>A short credit keeps StockVisual available to everyone.</p>
 					</div>
 				</div>
 				<label className="share-love__label" htmlFor="share-love-format">

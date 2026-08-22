@@ -47,7 +47,7 @@
 		"crons": ["0 * * * *"]
 	},
 	"vars": {
-		"BETTER_AUTH_URL": "https://istockvisual.com",
+		"BETTER_AUTH_URL": "https://stockvisual.org",
 		"ADMIN_EMAILS": "278202347@qq.com",
 		"GEMINI_MODEL": "gemini-3.6-flash",
 		"TOGETHER_MODEL": "google/gemma-4-31B-it",

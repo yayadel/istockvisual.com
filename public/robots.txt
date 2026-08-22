@@ -1,4 +1,4 @@
-# https://istockvisual.com/robots.txt
+# https://stockvisual.org/robots.txt
 User-agent: *
 Allow: /
 Disallow: /admin
@@ -23,4 +23,4 @@ Allow: /preview/
 Allow: /images/
 Allow: /api/preview/
 
-Sitemap: https://istockvisual.com/sitemap.xml
+Sitemap: https://stockvisual.org/sitemap.xml

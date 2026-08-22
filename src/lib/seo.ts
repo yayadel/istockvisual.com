@@ -11,7 +11,7 @@ export const PRIVACY_PATH = '/info/privacy';
 export const COOKIES_PATH = '/info/cookies';
 export const REFUNDS_PATH = '/info/refunds';
 export const PRESS_PATH = '/info/press';
-export const LEGAL_CONTACT_EMAIL = 'hello@istockvisual.com';
+export const LEGAL_CONTACT_EMAIL = 'hello@stockvisual.org';
 export const LEGAL_UPDATED = 'August 18, 2026';
 
 export const LEGAL_PAGES = [
@@ -24,8 +24,8 @@ export const LEGAL_PAGES = [
 	{ href: REFUNDS_PATH, label: 'Refunds' },
 ] as const;
 
-export const SITE_BRAND = 'iStockVisual.com';
-export const ORG_NAME = 'iStockVisual';
+export const SITE_BRAND = 'StockVisual.com';
+export const ORG_NAME = 'StockVisual';
 /** Public image-source disclosure. Library files only — not user uploads in studio tools. */
 export const IMAGE_SOURCE_NOTICE = 'All images on this site are AI-generated.';
 export const USAGE_TERMS =
@@ -83,7 +83,7 @@ export function stringifyJsonLd(data: unknown): string {
 export const SITE_TAGLINE =
 	'AI-generated stock photos, illustrations, vectors, and 3D assets — plus AI editing tools.';
 export const SITE_HOME_DESCRIPTION =
-	'Royalty-free AI-generated stock photos, illustrations, vectors, and 3D. All images on this site are AI-generated. Free downloads on iStockVisual.';
+	'Royalty-free AI-generated stock photos, illustrations, vectors, and 3D. All images on this site are AI-generated. Free downloads on StockVisual.';
 export const SITE_HOME_TITLE = 'Free Stock Photos, Illustrations & 3D';
 
 export function siteOrigin(fallback?: string): string {
@@ -95,7 +95,7 @@ export function siteOrigin(fallback?: string): string {
 			/* use fallback */
 		}
 	}
-	return String(fallback || 'https://istockvisual.com').replace(/\/$/, '');
+	return String(fallback || 'https://stockvisual.org').replace(/\/$/, '');
 }
 
 export function canonicalPath(pathname: string): string {

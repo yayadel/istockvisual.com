@@ -23,7 +23,8 @@
 </button>
 
 <script>
-	const STORAGE_KEY = 'istockvisual-theme';
+	const STORAGE_KEY = 'stockvisual-theme';
+	const LEGACY_STORAGE_KEY = 'istockvisual-theme';
 
 	function applyTheme(theme: 'light' | 'dark') {
 		document.documentElement.setAttribute('data-theme', theme);
@@ -36,7 +37,7 @@
 	}
 
 	function getStoredTheme(): 'light' | 'dark' {
-		const stored = localStorage.getItem(STORAGE_KEY);
+		const stored = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
 		return stored === 'dark' ? 'dark' : 'light';
 	}
 
@@ -45,6 +46,11 @@
 	document.getElementById('theme-toggle')?.addEventListener('click', () => {
 		const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
 		localStorage.setItem(STORAGE_KEY, next);
+		try {
+			localStorage.removeItem(LEGACY_STORAGE_KEY);
+		} catch {
+			/* ignore */
+		}
 		applyTheme(next);
 	});
 </script>
