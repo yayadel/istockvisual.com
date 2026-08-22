@@ -1,4 +1,4 @@
-import { type ReactNode, type RefObject } from 'react';
+import { type CSSProperties, type ReactNode, type RefObject } from 'react';
 
 type ToolsDropzoneProps = {
 	title: string;
@@ -113,5 +113,58 @@ export function ToolsPanel({
 				<div className="tools-panel__body">{children}</div>
 			</div>
 		</section>
+	);
+}
+
+type ToolsEditorShellProps = {
+	note: string;
+	resetLabel?: string;
+	onReset?: () => void;
+	actions?: ReactNode;
+	controls?: ReactNode;
+	controlsLabel?: string;
+	stageLabel?: string;
+	children: ReactNode;
+	editorRef?: RefObject<HTMLDivElement | null>;
+	stageStyle?: CSSProperties;
+};
+
+/** Same chrome as `/tools/image` — status bar + sidebar rail + main stage. */
+export function ToolsEditorShell({
+	note,
+	resetLabel,
+	onReset,
+	actions,
+	controls,
+	controlsLabel = 'Tool settings',
+	stageLabel = 'Preview',
+	children,
+	editorRef,
+	stageStyle,
+}: ToolsEditorShellProps) {
+	return (
+		<div className="tools-editor" ref={editorRef}>
+			<div className="tools-editor__bar">
+				<p className="tools-editor__note">{note}</p>
+				<div className="tools-editor__bar-actions">
+					{onReset && resetLabel ? (
+						<button type="button" className="tools-editor__link" onClick={onReset}>
+							{resetLabel}
+						</button>
+					) : null}
+					{actions}
+				</div>
+			</div>
+			<div className={`tools-editor__workspace${controls ? '' : ' tools-editor__workspace--solo'}`}>
+				{controls ? (
+					<aside className="tools-editor__rail" aria-label={controlsLabel}>
+						{controls}
+					</aside>
+				) : null}
+				<div className="tools-editor__stage" aria-label={stageLabel} style={stageStyle}>
+					{children}
+				</div>
+			</div>
+		</div>
 	);
 }

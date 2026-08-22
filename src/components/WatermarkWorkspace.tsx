@@ -18,7 +18,7 @@ import {
 	newId,
 	yieldToMain,
 } from '../lib/tools-shared';
-import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
+import { ToolsDropzone, ToolsEditorShell } from './ToolsChrome';
 
 type QueueItem = {
 	id: string;
@@ -339,17 +339,22 @@ export default function WatermarkWorkspace() {
 				onFiles={(files) => void addFiles(files)}
 			/>
 
-			<ToolsPanel
-				title="Watermark controls"
-				note="Nine-point placement or diagonal tile. Text includes a soft stroke for contrast."
-				sample={
-					<figure className="tools-panel__sample">
-						<canvas ref={previewCanvasRef} />
-						<figcaption>{showingExample ? 'Live example' : 'Your image'}</figcaption>
-					</figure>
+			<ToolsEditorShell
+				note={
+					showingExample
+						? 'Example image — upload yours or adjust watermark settings on the sample now.'
+						: `Previewing ${active?.isExample ? 'example image' : active?.name || 'image'}`
+				}
+				resetLabel={showingExample ? undefined : 'Use example again'}
+				onReset={
+					showingExample
+						? undefined
+						: () => {
+								clearAll();
+							}
 				}
 				actions={
-					<div className="tools-panel__actions">
+					<>
 						<button
 							type="button"
 							className="btn btn--primary"
@@ -382,188 +387,198 @@ export default function WatermarkWorkspace() {
 						>
 							Clear queue
 						</button>
+					</>
+				}
+				controlsLabel="Watermark controls"
+				controls={
+					<div className="tools-controls tools-controls--wrap tools-controls--stacked">
+						<label className="tools-controls__field">
+							<span>Type</span>
+							<select
+								value={settings.kind}
+								onChange={(event) => {
+									const kind = event.currentTarget.value as WatermarkSettings['kind'];
+									setSettings((prev) => ({ ...prev, kind }));
+								}}
+							>
+								<option value="text">Text</option>
+								<option value="logo">Logo</option>
+							</select>
+						</label>
+						{settings.kind === 'text' ? (
+							<>
+								<label className="tools-controls__field tools-controls__field--grow">
+									<span>Text</span>
+									<input
+										type="text"
+										value={settings.text}
+										onChange={(event) => {
+											const text = event.currentTarget.value;
+											setSettings((prev) => ({ ...prev, text }));
+										}}
+									/>
+								</label>
+								<label className="tools-controls__field">
+									<span>Font</span>
+									<select
+										value={settings.fontFamily}
+										onChange={(event) => {
+											const fontFamily = event.currentTarget.value;
+											setSettings((prev) => ({ ...prev, fontFamily }));
+										}}
+									>
+										{WATERMARK_FONTS.map((font) => (
+											<option key={font.id} value={font.value}>
+												{font.label}
+											</option>
+										))}
+									</select>
+								</label>
+								<label className="tools-controls__field tools-controls__field--color">
+									<span>Color</span>
+									<input
+										type="color"
+										value={settings.color}
+										onChange={(event) => {
+											const color = event.currentTarget.value;
+											setSettings((prev) => ({ ...prev, color }));
+										}}
+									/>
+								</label>
+							</>
+						) : (
+							<label className="tools-controls__field">
+								<span>Logo</span>
+								<button
+									type="button"
+									className="btn btn--ghost"
+									onClick={() => logoInputRef.current?.click()}
+								>
+									{logoImage ? 'Replace logo' : 'Upload PNG'}
+								</button>
+								<input
+									ref={logoInputRef}
+									type="file"
+									accept="image/png,image/webp,image/*"
+									hidden
+									onChange={(event) => void onLogoFile(event.currentTarget.files?.[0])}
+								/>
+							</label>
+						)}
+						<label className="tools-controls__field">
+							<span>Layout</span>
+							<select
+								value={settings.layout}
+								onChange={(event) => {
+									const layout = event.currentTarget.value as WatermarkSettings['layout'];
+									setSettings((prev) => ({ ...prev, layout }));
+								}}
+							>
+								<option value="grid">Nine-point</option>
+								<option value="tile">Diagonal tile</option>
+							</select>
+						</label>
+						<label className="tools-controls__field tools-controls__field--grow">
+							<span>Opacity · {settings.opacity}%</span>
+							<input
+								type="range"
+								min={5}
+								max={100}
+								value={settings.opacity}
+								onChange={(event) => {
+									const opacity = Number(event.currentTarget.value);
+									setSettings((prev) => ({ ...prev, opacity }));
+								}}
+							/>
+						</label>
+						<label className="tools-controls__field tools-controls__field--grow">
+							<span>
+								{settings.kind === 'logo' ? 'Logo size' : 'Size'} ·{' '}
+								{settings.kind === 'logo' ? settings.logoScale : settings.sizePercent}%
+							</span>
+							<input
+								type="range"
+								min={settings.kind === 'logo' ? 4 : 1.5}
+								max={settings.kind === 'logo' ? 40 : 12}
+								step={0.1}
+								value={settings.kind === 'logo' ? settings.logoScale : settings.sizePercent}
+								onChange={(event) => {
+									const value = Number(event.currentTarget.value);
+									setSettings((prev) =>
+										prev.kind === 'logo'
+											? { ...prev, logoScale: value }
+											: { ...prev, sizePercent: value },
+									);
+								}}
+							/>
+						</label>
+						{settings.kind === 'text' && (
+							<label className="tools-controls__check">
+								<input
+									type="checkbox"
+									checked={settings.stroke}
+									onChange={(event) => {
+										const stroke = event.currentTarget.checked;
+										setSettings((prev) => ({ ...prev, stroke }));
+									}}
+								/>
+								<span>Stroke</span>
+							</label>
+						)}
+						{settings.layout === 'grid' && (
+							<div className="tools-grid-picker" role="group" aria-label="Watermark position">
+								{GRID_SLOTS.map((slot) => (
+									<button
+										key={slot}
+										type="button"
+										className={settings.gridSlot === slot ? 'is-active' : undefined}
+										onClick={() => setSettings((prev) => ({ ...prev, gridSlot: slot }))}
+										aria-label={`Position ${slot + 1}`}
+									/>
+								))}
+							</div>
+						)}
+						{settings.layout === 'tile' && (
+							<>
+								<label className="tools-controls__field tools-controls__field--grow">
+									<span>Gap · {settings.tileGapPercent}%</span>
+									<input
+										type="range"
+										min={8}
+										max={40}
+										value={settings.tileGapPercent}
+										onChange={(event) => {
+											const tileGapPercent = Number(event.currentTarget.value);
+											setSettings((prev) => ({ ...prev, tileGapPercent }));
+										}}
+									/>
+								</label>
+								<label className="tools-controls__field tools-controls__field--grow">
+									<span>Angle · {settings.tileAngleDeg}°</span>
+									<input
+										type="range"
+										min={-60}
+										max={60}
+										value={settings.tileAngleDeg}
+										onChange={(event) => {
+											const tileAngleDeg = Number(event.currentTarget.value);
+											setSettings((prev) => ({ ...prev, tileAngleDeg }));
+										}}
+									/>
+								</label>
+							</>
+						)}
+						<p className="tools-work__note">
+							Nine-point placement or diagonal tile. Text includes a soft stroke for contrast.
+						</p>
 					</div>
 				}
 			>
-				<div className="tools-controls tools-controls--wrap tools-controls--stacked">
-					<label className="tools-controls__field">
-						<span>Type</span>
-						<select
-							value={settings.kind}
-							onChange={(event) => {
-								const kind = event.currentTarget.value as WatermarkSettings['kind'];
-								setSettings((prev) => ({ ...prev, kind }));
-							}}
-						>
-							<option value="text">Text</option>
-							<option value="logo">Logo</option>
-						</select>
-					</label>
-					{settings.kind === 'text' ? (
-						<>
-							<label className="tools-controls__field tools-controls__field--grow">
-								<span>Text</span>
-								<input
-									type="text"
-									value={settings.text}
-									onChange={(event) => {
-										const text = event.currentTarget.value;
-										setSettings((prev) => ({ ...prev, text }));
-									}}
-								/>
-							</label>
-							<label className="tools-controls__field">
-								<span>Font</span>
-								<select
-									value={settings.fontFamily}
-									onChange={(event) => {
-										const fontFamily = event.currentTarget.value;
-										setSettings((prev) => ({ ...prev, fontFamily }));
-									}}
-								>
-									{WATERMARK_FONTS.map((font) => (
-										<option key={font.id} value={font.value}>
-											{font.label}
-										</option>
-									))}
-								</select>
-							</label>
-							<label className="tools-controls__field tools-controls__field--color">
-								<span>Color</span>
-								<input
-									type="color"
-									value={settings.color}
-									onChange={(event) => {
-										const color = event.currentTarget.value;
-										setSettings((prev) => ({ ...prev, color }));
-									}}
-								/>
-							</label>
-						</>
-					) : (
-						<label className="tools-controls__field">
-							<span>Logo</span>
-							<button
-								type="button"
-								className="btn btn--ghost"
-								onClick={() => logoInputRef.current?.click()}
-							>
-								{logoImage ? 'Replace logo' : 'Upload PNG'}
-							</button>
-							<input
-								ref={logoInputRef}
-								type="file"
-								accept="image/png,image/webp,image/*"
-								hidden
-								onChange={(event) => void onLogoFile(event.currentTarget.files?.[0])}
-							/>
-						</label>
-					)}
-					<label className="tools-controls__field">
-						<span>Layout</span>
-						<select
-							value={settings.layout}
-							onChange={(event) => {
-								const layout = event.currentTarget.value as WatermarkSettings['layout'];
-								setSettings((prev) => ({ ...prev, layout }));
-							}}
-						>
-							<option value="grid">Nine-point</option>
-							<option value="tile">Diagonal tile</option>
-						</select>
-					</label>
-					<label className="tools-controls__field tools-controls__field--grow">
-						<span>Opacity · {settings.opacity}%</span>
-						<input
-							type="range"
-							min={5}
-							max={100}
-							value={settings.opacity}
-							onChange={(event) => {
-								const opacity = Number(event.currentTarget.value);
-								setSettings((prev) => ({ ...prev, opacity }));
-							}}
-						/>
-					</label>
-					<label className="tools-controls__field tools-controls__field--grow">
-						<span>
-							{settings.kind === 'logo' ? 'Logo size' : 'Size'} ·{' '}
-							{settings.kind === 'logo' ? settings.logoScale : settings.sizePercent}%
-						</span>
-						<input
-							type="range"
-							min={settings.kind === 'logo' ? 4 : 1.5}
-							max={settings.kind === 'logo' ? 40 : 12}
-							step={0.1}
-							value={settings.kind === 'logo' ? settings.logoScale : settings.sizePercent}
-							onChange={(event) => {
-								const value = Number(event.currentTarget.value);
-								setSettings((prev) =>
-									prev.kind === 'logo'
-										? { ...prev, logoScale: value }
-										: { ...prev, sizePercent: value },
-								);
-							}}
-						/>
-					</label>
-					{settings.kind === 'text' && (
-						<label className="tools-controls__check">
-							<input
-								type="checkbox"
-								checked={settings.stroke}
-								onChange={(event) => {
-									const stroke = event.currentTarget.checked;
-									setSettings((prev) => ({ ...prev, stroke }));
-								}}
-							/>
-							<span>Stroke</span>
-						</label>
-					)}
-					{settings.layout === 'grid' && (
-						<div className="tools-grid-picker" role="group" aria-label="Watermark position">
-							{GRID_SLOTS.map((slot) => (
-								<button
-									key={slot}
-									type="button"
-									className={settings.gridSlot === slot ? 'is-active' : undefined}
-									onClick={() => setSettings((prev) => ({ ...prev, gridSlot: slot }))}
-									aria-label={`Position ${slot + 1}`}
-								/>
-							))}
-						</div>
-					)}
-					{settings.layout === 'tile' && (
-						<>
-							<label className="tools-controls__field tools-controls__field--grow">
-								<span>Gap · {settings.tileGapPercent}%</span>
-								<input
-									type="range"
-									min={8}
-									max={40}
-									value={settings.tileGapPercent}
-									onChange={(event) => {
-										const tileGapPercent = Number(event.currentTarget.value);
-										setSettings((prev) => ({ ...prev, tileGapPercent }));
-									}}
-								/>
-							</label>
-							<label className="tools-controls__field tools-controls__field--grow">
-								<span>Angle · {settings.tileAngleDeg}°</span>
-								<input
-									type="range"
-									min={-60}
-									max={60}
-									value={settings.tileAngleDeg}
-									onChange={(event) => {
-										const tileAngleDeg = Number(event.currentTarget.value);
-										setSettings((prev) => ({ ...prev, tileAngleDeg }));
-									}}
-								/>
-							</label>
-						</>
-					)}
-				</div>
-			</ToolsPanel>
+				<figure className="tools-editor__stage-preview">
+					<canvas ref={previewCanvasRef} />
+					<figcaption>{showingExample ? 'Live example' : 'Your image'}</figcaption>
+				</figure>
+			</ToolsEditorShell>
 
 			{error && <p className="tools-work__error">{error}</p>}
 

@@ -17,7 +17,7 @@ import {
 	newId,
 	yieldToMain,
 } from '../lib/tools-shared';
-import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
+import { ToolsDropzone, ToolsEditorShell } from './ToolsChrome';
 
 type QueueItem = {
 	id: string;
@@ -301,7 +301,7 @@ export default function SocialResizerWorkspace() {
 	useEffect(() => {
 		const onMove = (event: PointerEvent) => {
 			if (!draggingFocus.current || mode !== 'cover') return;
-			const board = document.querySelector('.tools-panel__sample .tools-focus-board') as HTMLElement | null;
+			const board = document.querySelector('.tools-editor__stage .tools-focus-board') as HTMLElement | null;
 			if (!board) return;
 			const rect = board.getBoundingClientRect();
 			setFocusX(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)));
@@ -332,35 +332,22 @@ export default function SocialResizerWorkspace() {
 				onFiles={(files) => void addFiles(files)}
 			/>
 
-			<ToolsPanel
-				title="Platform & fit"
-				note="Cover crops to fill the frame. Contain + blur keeps the full image on a soft backdrop."
-				sample={
-					<figure className="tools-panel__sample">
-						<div
-							className="tools-focus-board"
-							onPointerDown={(event) => {
-								if (mode !== 'cover') return;
-								draggingFocus.current = true;
-								onFocusPointer(event);
-							}}
-						>
-							<canvas ref={previewCanvasRef} className="tools-focus-board__canvas" />
-							{mode === 'cover' && (
-								<span
-									className="tools-focus-board__pin"
-									style={{ left: `${focusX * 100}%`, top: `${focusY * 100}%` }}
-									aria-hidden="true"
-								/>
-							)}
-						</div>
-						<figcaption>
-							{showingExample ? 'Live example' : 'Your image'} · {preset.label}
-						</figcaption>
-					</figure>
+			<ToolsEditorShell
+				note={
+					showingExample
+						? 'Example image — upload yours or try presets on the sample now.'
+						: `Previewing ${active?.isExample ? 'example image' : active?.name || 'image'} · ${preset.label}`
+				}
+				resetLabel={showingExample ? undefined : 'Use example again'}
+				onReset={
+					showingExample
+						? undefined
+						: () => {
+								clearAll();
+							}
 				}
 				actions={
-					<div className="tools-panel__actions">
+					<>
 						<button
 							type="button"
 							className="btn btn--primary"
@@ -385,45 +372,72 @@ export default function SocialResizerWorkspace() {
 						>
 							Clear queue
 						</button>
-					</div>
+					</>
+				}
+				controlsLabel="Platform and fit"
+				controls={
+					<>
+						<section className="tools-preset-grid" aria-label="Social presets">
+							{SOCIAL_PRESETS.map((item: SocialPreset) => (
+								<button
+									key={item.id}
+									type="button"
+									className={`tools-preset${presetId === item.id ? ' is-active' : ''}`}
+									onClick={() => setPresetId(item.id)}
+								>
+									<strong>{item.label}</strong>
+									<span>
+										{item.ratioLabel} · {item.width}×{item.height}
+									</span>
+								</button>
+							))}
+						</section>
+						<div className="tools-controls tools-controls--stacked">
+							<label className="tools-controls__field">
+								<span>Mode</span>
+								<select
+									value={mode}
+									onChange={(event) => {
+										const next = event.currentTarget.value as SocialFitMode;
+										setMode(next);
+									}}
+								>
+									<option value="cover">Cover / crop</option>
+									<option value="contain-blur">Contain + blur</option>
+								</select>
+							</label>
+						</div>
+						{mode === 'cover' && (
+							<p className="tools-work__note">
+								Drag on the preview to move the crop focus. Cover crops to fill the frame.
+							</p>
+						)}
+						{mode === 'contain-blur' && (
+							<p className="tools-work__note">
+								Contain + blur keeps the full image on a soft backdrop.
+							</p>
+						)}
+					</>
 				}
 			>
-				<section className="tools-preset-grid" aria-label="Social presets">
-					{SOCIAL_PRESETS.map((item: SocialPreset) => (
-						<button
-							key={item.id}
-							type="button"
-							className={`tools-preset${presetId === item.id ? ' is-active' : ''}`}
-							onClick={() => setPresetId(item.id)}
-						>
-							<strong>{item.label}</strong>
-							<span>
-								{item.ratioLabel} · {item.width}×{item.height}
-							</span>
-						</button>
-					))}
-				</section>
-				<div className="tools-controls tools-controls--stacked">
-					<label className="tools-controls__field">
-						<span>Mode</span>
-						<select
-							value={mode}
-							onChange={(event) => {
-								const next = event.currentTarget.value as SocialFitMode;
-								setMode(next);
-							}}
-						>
-							<option value="cover">Cover / crop</option>
-							<option value="contain-blur">Contain + blur</option>
-						</select>
-					</label>
+				<div
+					className="tools-focus-board"
+					onPointerDown={(event) => {
+						if (mode !== 'cover') return;
+						draggingFocus.current = true;
+						onFocusPointer(event);
+					}}
+				>
+					<canvas ref={previewCanvasRef} className="tools-focus-board__canvas" />
+					{mode === 'cover' && (
+						<span
+							className="tools-focus-board__pin"
+							style={{ left: `${focusX * 100}%`, top: `${focusY * 100}%` }}
+							aria-hidden="true"
+						/>
+					)}
 				</div>
-				{mode === 'cover' && (
-					<p className="tools-work__note" style={{ marginTop: '0.75rem', marginBottom: 0 }}>
-						Drag on the preview to move the crop focus.
-					</p>
-				)}
-			</ToolsPanel>
+			</ToolsEditorShell>
 
 			{error && <p className="tools-work__error">{error}</p>}
 			{busy && (

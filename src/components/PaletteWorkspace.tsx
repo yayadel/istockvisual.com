@@ -16,7 +16,7 @@ import {
 	loadImageElement,
 	loadImageFromFile,
 } from '../lib/tools-shared';
-import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
+import { ToolsDropzone, ToolsEditorShell } from './ToolsChrome';
 
 type CopyFormat = 'hex' | 'rgb' | 'hsl';
 
@@ -191,13 +191,14 @@ export default function PaletteWorkspace() {
 				onFiles={(files) => void loadFile(files?.[0])}
 			/>
 
-			<ToolsPanel
-				title="Palette options"
-				note="Export as CSS variables, Tailwind snippet, or a shareable color card."
-				sampleSrc={sourceUrl}
-				sampleCaption={colors[0] ? `Primary ${colors[0].hex}` : 'Extracting…'}
+			<ToolsEditorShell
+				note={
+					isExample
+						? 'Example image — upload yours or copy swatches from the sample now.'
+						: 'Click a swatch to copy its value'
+				}
 				actions={
-					<div className="tools-panel__actions">
+					<>
 						{eyeDropperOk && (
 							<button type="button" className="btn btn--ghost" onClick={pickEyeDropper} disabled={!image}>
 								Eyedropper
@@ -227,64 +228,69 @@ export default function PaletteWorkspace() {
 						>
 							Export share image
 						</button>
+					</>
+				}
+				controlsLabel="Palette options"
+				controls={
+					<div className="tools-controls tools-controls--stacked">
+						<label className="tools-controls__field">
+							<span>Colors</span>
+							<select
+								value={colorCount}
+								onChange={(event) => setColorCount(Number(event.currentTarget.value))}
+							>
+								{[5, 6, 7, 8].map((n) => (
+									<option key={n} value={n}>
+										{n}
+									</option>
+								))}
+							</select>
+						</label>
+						<label className="tools-controls__field">
+							<span>Copy as</span>
+							<select
+								value={copyFormat}
+								onChange={(event) => setCopyFormat(event.currentTarget.value as CopyFormat)}
+							>
+								<option value="hex">HEX</option>
+								<option value="rgb">RGB</option>
+								<option value="hsl">HSL</option>
+							</select>
+						</label>
+						<p className="tools-work__note">
+							Export as CSS variables, Tailwind snippet, or a shareable color card.
+						</p>
 					</div>
 				}
 			>
-				<div className="tools-controls tools-controls--stacked">
-					<label className="tools-controls__field">
-						<span>Colors</span>
-						<select
-							value={colorCount}
-							onChange={(event) => setColorCount(Number(event.currentTarget.value))}
-						>
-							{[5, 6, 7, 8].map((n) => (
-								<option key={n} value={n}>
-									{n}
-								</option>
+				<section className="tools-palette" aria-label="Extracted palette">
+					<div className="tools-palette__media">
+						<img src={sourceUrl} alt="Source for palette extraction" />
+						{busy && <span className="tools-palette__busy">Extracting…</span>}
+					</div>
+					{colors.length > 0 && (
+						<div className="tools-swatches" role="list">
+							{colors.map((color) => (
+								<button
+									key={color.hex + String(color.ratio)}
+									type="button"
+									role="listitem"
+									className="tools-swatch"
+									style={{ background: color.hex, color: color.ink }}
+									onClick={() => void copyValue(color)}
+									title="Click to copy"
+								>
+									<strong>{color.hex}</strong>
+									<span>{color.ratio > 0 ? `${Math.round(color.ratio * 100)}%` : 'Manual'}</span>
+								</button>
 							))}
-						</select>
-					</label>
-					<label className="tools-controls__field">
-						<span>Copy as</span>
-						<select
-							value={copyFormat}
-							onChange={(event) => setCopyFormat(event.currentTarget.value as CopyFormat)}
-						>
-							<option value="hex">HEX</option>
-							<option value="rgb">RGB</option>
-							<option value="hsl">HSL</option>
-						</select>
-					</label>
-				</div>
-			</ToolsPanel>
+						</div>
+					)}
+				</section>
+			</ToolsEditorShell>
 
 			{error && <p className="tools-work__error">{error}</p>}
 			{toast && <p className="tools-toast" role="status">{toast}</p>}
-
-			<section className="tools-palette" aria-label="Extracted palette">
-				<div className="tools-palette__media">
-					<img src={sourceUrl} alt="Source for palette extraction" />
-					{busy && <span className="tools-palette__busy">Extracting…</span>}
-				</div>
-				{colors.length > 0 && (
-					<div className="tools-swatches" role="list">
-						{colors.map((color) => (
-							<button
-								key={color.hex + String(color.ratio)}
-								type="button"
-								role="listitem"
-								className="tools-swatch"
-								style={{ background: color.hex, color: color.ink }}
-								onClick={() => void copyValue(color)}
-								title="Click to copy"
-							>
-								<strong>{color.hex}</strong>
-								<span>{color.ratio > 0 ? `${Math.round(color.ratio * 100)}%` : 'Manual'}</span>
-							</button>
-						))}
-					</div>
-				)}
-			</section>
 		</div>
 	);
 }

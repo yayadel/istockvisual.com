@@ -11,7 +11,7 @@ import {
 	type ConvertSettings,
 } from '../lib/image-convert';
 import { EXAMPLE_IMAGE_URL, fetchExampleImageFile } from '../lib/tools-shared';
-import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
+import { ToolsDropzone, ToolsEditorShell } from './ToolsChrome';
 
 function newId() {
 	return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -234,13 +234,22 @@ export default function ImageConverterWorkspace() {
 				onFiles={(files) => addFiles(files)}
 			/>
 
-			<ToolsPanel
-				title="Conversion settings"
-				note="Canvas re-encode strips EXIF. Set max width to 0 to keep the original width."
-				sampleSrc={panelSrc}
-				sampleCaption={panelCaption}
+			<ToolsEditorShell
+				note={
+					showingExample
+						? 'Example image — upload yours or convert the sample now.'
+						: `${items.length} image${items.length === 1 ? '' : 's'} in queue`
+				}
+				resetLabel={showingExample ? undefined : 'Use example again'}
+				onReset={
+					showingExample
+						? undefined
+						: () => {
+								clearAll();
+							}
+				}
 				actions={
-					<div className="tools-panel__actions">
+					<>
 						<button
 							type="button"
 							className="btn btn--primary"
@@ -265,80 +274,90 @@ export default function ImageConverterWorkspace() {
 						>
 							Clear queue
 						</button>
-					</div>
+					</>
 				}
-			>
-				<div className="tools-controls tools-controls--stacked">
-					<label className="tools-controls__field">
-						<span>Format</span>
-						<select
-							value={settings.formatId}
-							onChange={(event) => {
-								const formatId = event.currentTarget.value as ConvertSettings['formatId'];
-								setSettings((prev) => ({ ...prev, formatId }));
-							}}
-						>
-							{formats.map((format) => (
-								<option key={format.id} value={format.id}>
-									{format.label}
-								</option>
-							))}
-						</select>
-					</label>
-					<label className="tools-controls__field tools-controls__field--grow">
-						<span>Quality · {settings.quality}%</span>
-						<input
-							type="range"
-							min={40}
-							max={100}
-							value={settings.quality}
-							onChange={(event) => {
-								const quality = Number(event.currentTarget.value);
-								setSettings((prev) => ({ ...prev, quality }));
-							}}
-						/>
-					</label>
-					<label className="tools-controls__field tools-controls__field--grow">
-						<span>Scale · {settings.scalePercent}%</span>
-						<input
-							type="range"
-							min={10}
-							max={100}
-							value={settings.scalePercent}
-							onChange={(event) => {
-								const scalePercent = Number(event.currentTarget.value);
-								setSettings((prev) => ({ ...prev, scalePercent }));
-							}}
-						/>
-					</label>
-					<label className="tools-controls__field">
-						<span>Max width</span>
-						<input
-							type="number"
-							min={0}
-							step={64}
-							value={settings.maxWidth}
-							onChange={(event) => {
-								const maxWidth = Math.max(0, Number(event.currentTarget.value) || 0);
-								setSettings((prev) => ({ ...prev, maxWidth }));
-							}}
-						/>
-					</label>
-					{settings.formatId === 'jpeg' && (
-						<label className="tools-controls__field tools-controls__field--color">
-							<span>JPG background</span>
-							<input
-								type="color"
-								value={settings.jpgBackground}
+				controlsLabel="Conversion settings"
+				controls={
+					<div className="tools-controls tools-controls--stacked">
+						<label className="tools-controls__field">
+							<span>Format</span>
+							<select
+								value={settings.formatId}
 								onChange={(event) => {
-									const jpgBackground = event.currentTarget.value;
-									setSettings((prev) => ({ ...prev, jpgBackground }));
+									const formatId = event.currentTarget.value as ConvertSettings['formatId'];
+									setSettings((prev) => ({ ...prev, formatId }));
+								}}
+							>
+								{formats.map((format) => (
+									<option key={format.id} value={format.id}>
+										{format.label}
+									</option>
+								))}
+							</select>
+						</label>
+						<label className="tools-controls__field tools-controls__field--grow">
+							<span>Quality · {settings.quality}%</span>
+							<input
+								type="range"
+								min={40}
+								max={100}
+								value={settings.quality}
+								onChange={(event) => {
+									const quality = Number(event.currentTarget.value);
+									setSettings((prev) => ({ ...prev, quality }));
 								}}
 							/>
 						</label>
-					)}
-				</div>
-			</ToolsPanel>
+						<label className="tools-controls__field tools-controls__field--grow">
+							<span>Scale · {settings.scalePercent}%</span>
+							<input
+								type="range"
+								min={10}
+								max={100}
+								value={settings.scalePercent}
+								onChange={(event) => {
+									const scalePercent = Number(event.currentTarget.value);
+									setSettings((prev) => ({ ...prev, scalePercent }));
+								}}
+							/>
+						</label>
+						<label className="tools-controls__field">
+							<span>Max width</span>
+							<input
+								type="number"
+								min={0}
+								step={64}
+								value={settings.maxWidth}
+								onChange={(event) => {
+									const maxWidth = Math.max(0, Number(event.currentTarget.value) || 0);
+									setSettings((prev) => ({ ...prev, maxWidth }));
+								}}
+							/>
+						</label>
+						{settings.formatId === 'jpeg' && (
+							<label className="tools-controls__field tools-controls__field--color">
+								<span>JPG background</span>
+								<input
+									type="color"
+									value={settings.jpgBackground}
+									onChange={(event) => {
+										const jpgBackground = event.currentTarget.value;
+										setSettings((prev) => ({ ...prev, jpgBackground }));
+									}}
+								/>
+							</label>
+						)}
+						<p className="tools-work__note">
+							Canvas re-encode strips EXIF. Set max width to 0 to keep the original width.
+						</p>
+					</div>
+				}
+			>
+				<figure className="tools-editor__stage-preview">
+					<img src={panelSrc} alt="" />
+					<figcaption>{panelCaption}</figcaption>
+				</figure>
+			</ToolsEditorShell>
 
 			{error && <p className="tools-work__error">{error}</p>}
 

@@ -12,7 +12,7 @@ import {
 	isLikelyImageFile,
 	yieldToMain,
 } from '../lib/tools-shared';
-import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
+import { ToolsDropzone, ToolsEditorShell } from './ToolsChrome';
 
 const COLOR_OPTIONS: VectorColorCount[] = [2, 8, 16, 64];
 
@@ -154,14 +154,20 @@ export default function VectorizerWorkspace() {
 				onFiles={(files) => loadFile(files?.[0])}
 			/>
 
-			<ToolsPanel
-				title="Vectorize settings"
-				note="Fewer colors = cleaner silhouettes. Higher blur and min area remove noise."
-				sampleSrc={sourceUrl}
-				sampleCaption={svg ? 'Ready for SVG' : busy ? 'Tracing…' : 'Awaiting trace'}
+			<ToolsEditorShell
+				note={
+					isExample
+						? 'Example bitmap — upload yours to replace, or re-trace the sample now.'
+						: `Tracing ${fileName}`
+				}
 				actions={
-					<div className="tools-panel__actions">
-						<button type="button" className="btn btn--primary" onClick={runVectorize} disabled={busy || !sourceUrl}>
+					<>
+						<button
+							type="button"
+							className="btn btn--primary"
+							onClick={runVectorize}
+							disabled={busy || !sourceUrl}
+						>
 							{busy ? 'Tracing…' : 'Re-trace paths'}
 						</button>
 						<button type="button" className="btn btn--ghost" onClick={copySvg} disabled={!svg || busy}>
@@ -170,96 +176,101 @@ export default function VectorizerWorkspace() {
 						<button type="button" className="btn btn--ghost" onClick={downloadSvg} disabled={!svg || busy}>
 							Download SVG
 						</button>
+					</>
+				}
+				controlsLabel="Vectorize settings"
+				controls={
+					<div className="tools-controls tools-controls--stacked">
+						<label className="tools-controls__field">
+							<span>Colors</span>
+							<select
+								value={settings.colors}
+								onChange={(event) => {
+									const colors = Number(event.currentTarget.value) as VectorColorCount;
+									setSettings((prev) => ({ ...prev, colors }));
+								}}
+							>
+								{COLOR_OPTIONS.map((n) => (
+									<option key={n} value={n}>
+										{n === 2 ? '2 · silhouette' : `${n} colors`}
+									</option>
+								))}
+							</select>
+						</label>
+						<label className="tools-controls__field tools-controls__field--grow">
+							<span>Blur · {settings.blurRadius}</span>
+							<input
+								type="range"
+								min={0}
+								max={5}
+								step={1}
+								value={settings.blurRadius}
+								onChange={(event) => {
+									const blurRadius = Number(event.currentTarget.value);
+									setSettings((prev) => ({ ...prev, blurRadius }));
+								}}
+							/>
+						</label>
+						<label className="tools-controls__field tools-controls__field--grow">
+							<span>Min area · {settings.minArea}</span>
+							<input
+								type="range"
+								min={0}
+								max={40}
+								step={1}
+								value={settings.minArea}
+								onChange={(event) => {
+									const minArea = Number(event.currentTarget.value);
+									setSettings((prev) => ({ ...prev, minArea }));
+								}}
+							/>
+						</label>
+						<p className="tools-work__note">
+							Fewer colors = cleaner silhouettes. Higher blur and min area remove noise.
+						</p>
 					</div>
 				}
 			>
-				<div className="tools-controls tools-controls--stacked">
-					<label className="tools-controls__field">
-						<span>Colors</span>
-						<select
-							value={settings.colors}
-							onChange={(event) => {
-								const colors = Number(event.currentTarget.value) as VectorColorCount;
-								setSettings((prev) => ({ ...prev, colors }));
-							}}
-						>
-							{COLOR_OPTIONS.map((n) => (
-								<option key={n} value={n}>
-									{n === 2 ? '2 · silhouette' : `${n} colors`}
-								</option>
-							))}
-						</select>
-					</label>
-					<label className="tools-controls__field tools-controls__field--grow">
-						<span>Blur · {settings.blurRadius}</span>
-						<input
-							type="range"
-							min={0}
-							max={5}
-							step={1}
-							value={settings.blurRadius}
-							onChange={(event) => {
-								const blurRadius = Number(event.currentTarget.value);
-								setSettings((prev) => ({ ...prev, blurRadius }));
+				<section className="tools-compare" ref={compareRef} aria-label="Before and after">
+					<div className="tools-compare__stage" style={{ ['--split' as string]: `${split}%` }}>
+						{svgPreviewUrl && (
+							<img src={svgPreviewUrl} alt="Vector result" className="tools-compare__layer" />
+						)}
+						{!svgPreviewUrl && (
+							<div className="tools-compare__placeholder">
+								{busy ? 'Tracing paths…' : 'SVG preview will appear here'}
+							</div>
+						)}
+						<div className="tools-compare__before">
+							<img src={sourceUrl} alt="Original bitmap" />
+						</div>
+						<button
+							type="button"
+							className="tools-compare__handle"
+							style={{ left: `${split}%` }}
+							aria-label="Drag comparison slider"
+							onPointerDown={(event) => {
+								event.preventDefault();
+								dragSplit.current = true;
+								updateSplitFromClientX(event.clientX);
 							}}
 						/>
-					</label>
-					<label className="tools-controls__field tools-controls__field--grow">
-						<span>Min area · {settings.minArea}</span>
-						<input
-							type="range"
-							min={0}
-							max={40}
-							step={1}
-							value={settings.minArea}
-							onChange={(event) => {
-								const minArea = Number(event.currentTarget.value);
-								setSettings((prev) => ({ ...prev, minArea }));
-							}}
-						/>
-					</label>
-				</div>
-			</ToolsPanel>
+					</div>
+					<div className="tools-compare__labels">
+						<span>Bitmap</span>
+						<span>SVG</span>
+					</div>
+					{busy && (
+						<div className="tools-progress" aria-live="polite">
+							<span className="tools-progress__bar tools-progress__bar--indeterminate" />
+							<span>Vectorizing on-device…</span>
+						</div>
+					)}
+				</section>
+			</ToolsEditorShell>
 
 			{error && <p className="tools-work__error">{error}</p>}
 			{toast && <p className="tools-toast" role="status">{toast}</p>}
-
-			<section className="tools-compare" ref={compareRef} aria-label="Before and after">
-				<div className="tools-compare__stage" style={{ ['--split' as string]: `${split}%` }}>
-					{svgPreviewUrl && (
-						<img src={svgPreviewUrl} alt="Vector result" className="tools-compare__layer" />
-					)}
-					{!svgPreviewUrl && (
-						<div className="tools-compare__placeholder">
-							{busy ? 'Tracing paths…' : 'SVG preview will appear here'}
-						</div>
-					)}
-					<div className="tools-compare__before">
-						<img src={sourceUrl} alt="Original bitmap" />
-					</div>
-					<button
-						type="button"
-						className="tools-compare__handle"
-						style={{ left: `${split}%` }}
-						aria-label="Drag comparison slider"
-						onPointerDown={(event) => {
-							event.preventDefault();
-							dragSplit.current = true;
-							updateSplitFromClientX(event.clientX);
-						}}
-					/>
-				</div>
-				<div className="tools-compare__labels">
-					<span>Bitmap</span>
-					<span>SVG</span>
-				</div>
-				{busy && (
-					<div className="tools-progress" aria-live="polite">
-						<span className="tools-progress__bar tools-progress__bar--indeterminate" />
-						<span>Vectorizing on-device…</span>
-					</div>
-				)}
-			</section>
 		</div>
 	);
 }
