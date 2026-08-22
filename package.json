@@ -8,6 +8,7 @@
 	},
 	"scripts": {
 		"dev": "astro dev --port 4325 --host",
+		"dev:clean": "node scripts/dev-clean.mjs",
 		"preview:online": "astro build && wrangler dev --remote --port 4325 --ip 0.0.0.0",
 		"build": "astro build",
 		"preview": "astro preview",

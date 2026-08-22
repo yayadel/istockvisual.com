@@ -7089,11 +7089,111 @@ body.download-auth-modal-open {
 	width: 100%;
 	max-width: 100%;
 	min-width: 0;
+	min-height: min(860px, max(420px, calc(100vw * var(--fie-img-h, 683) / var(--fie-img-w, 1024))));
 	scroll-margin-top: calc(var(--header-h) + 1rem);
 }
 
-.asset-preview__poster {
+.asset-preview__boot {
+	display: grid;
+	grid-template-columns: 72px minmax(0, 1fr);
+	width: 100%;
+	min-height: inherit;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: #fff;
+	overflow: hidden;
+	animation: asset-preview-boot-pulse 1.4s ease-in-out infinite;
+}
+
+.asset-preview:has(.filerobot-studio) .asset-preview__boot {
+	display: none;
+}
+
+.asset-preview__boot-sidebar {
+	display: grid;
+	gap: 0.35rem;
+	padding: 0.65rem 0.45rem;
+	background: #f4f5f6;
+	border-right: 1px solid var(--line);
+}
+
+.asset-preview__boot-sidebar span {
 	display: block;
+	height: 2.35rem;
+	border-radius: 4px;
+	background: linear-gradient(90deg, #e8eaed 0%, #f4f5f6 50%, #e8eaed 100%);
+	background-size: 200% 100%;
+	animation: asset-preview-boot-shimmer 1.2s linear infinite;
+}
+
+.asset-preview__boot-main {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	min-width: 0;
+}
+
+.asset-preview__boot-topbar,
+.asset-preview__boot-toolbar {
+	height: 3rem;
+	background: #f4f5f6;
+	border-bottom: 1px solid var(--line);
+}
+
+.asset-preview__boot-toolbar {
+	border-bottom: 0;
+	border-top: 1px solid var(--line);
+}
+
+.asset-preview__boot-canvas {
+	min-height: min(72vh, 720px);
+	background:
+		linear-gradient(180deg, rgba(236, 243, 255, 0.55), rgba(244, 245, 246, 0.9)),
+		repeating-linear-gradient(
+			-45deg,
+			rgba(11, 11, 11, 0.03),
+			rgba(11, 11, 11, 0.03) 8px,
+			transparent 8px,
+			transparent 16px
+		);
+}
+
+@keyframes asset-preview-boot-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.92;
+	}
+}
+
+@keyframes asset-preview-boot-shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+[data-theme='dark'] .asset-preview__boot {
+	background: #111;
+	border-color: var(--line);
+}
+
+[data-theme='dark'] .asset-preview__boot-sidebar,
+[data-theme='dark'] .asset-preview__boot-topbar,
+[data-theme='dark'] .asset-preview__boot-toolbar {
+	background: #171717;
+}
+
+[data-theme='dark'] .asset-preview__boot-sidebar span {
+	background: linear-gradient(90deg, #222 0%, #2c2c2c 50%, #222 100%);
+	background-size: 200% 100%;
+}
+
+.asset-preview__poster {
+	display: none;
 	width: 100%;
 	height: auto;
 	max-height: min(72vh, 720px);
@@ -7105,17 +7205,22 @@ body.download-auth-modal-open {
 	z-index: 2;
 }
 
+.asset-preview:has(.filerobot-studio):not(.is-editor-mounted):not(.is-editor-ready) .asset-preview__poster {
+	display: block;
+}
+
 [data-theme='dark'] .asset-preview__poster {
 	background: #111;
 }
 
+.asset-preview.is-editor-mounted .asset-preview__poster,
 .asset-preview.is-editor-ready .asset-preview__poster {
 	display: none;
 }
 
-/* Poster covers the studio until Konva paints a real canvas. Keep the studio in
+/* Poster covers the studio until Filerobot mounts. Keep the studio in
    normal flow (not absolute/opacity:0) so Filerobot can measure layout. */
-.asset-preview:not(.is-editor-ready) .asset-preview__poster {
+.asset-preview:not(.is-editor-mounted):not(.is-editor-ready) .asset-preview__poster {
 	position: absolute;
 	inset: 0;
 	z-index: 2;
@@ -7126,7 +7231,7 @@ body.download-auth-modal-open {
 	pointer-events: none;
 }
 
-.asset-preview:not(.is-editor-ready) .filerobot-studio {
+.asset-preview:not(.is-editor-mounted):not(.is-editor-ready) .filerobot-studio {
 	position: relative;
 	z-index: 1;
 	opacity: 1;

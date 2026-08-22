@@ -23,6 +23,9 @@ interface Props {
 	exactTitle?: boolean;
 	robots?: string;
 	lcpImage?: string;
+	/** Lower image preload priority when a heavy client editor loads on the same view. */
+	lcpImagePriority?: 'high' | 'auto' | 'low';
+	modulePreloads?: string[];
 }
 
 const {
@@ -38,6 +41,8 @@ const {
 	exactTitle = false,
 	robots = 'index, follow, max-image-preview:large',
 	lcpImage,
+	lcpImagePriority = 'high',
+	modulePreloads = [],
 } = Astro.props;
 
 const pagePath = Astro.url.pathname.replace(/\/+$/, '') || '/';
@@ -65,6 +70,12 @@ const ogImageType = imageMimeFromUrl(resolvedOgImage);
 		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="theme-color" content="#0b0b0b" />
 		<link rel="stylesheet" href={globalCss} />
+		{
+			modulePreloads.map((href) => (
+				<link rel="modulepreload" href={href} crossorigin />
+			))
+		}
+		<slot name="head" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -86,7 +97,7 @@ const ogImageType = imageMimeFromUrl(resolvedOgImage);
 					as="image"
 					href={resolvedLcpImage}
 					type={lcpType}
-					fetchpriority="high"
+					fetchpriority={lcpImagePriority}
 				/>
 			)
 		}

@@ -2,6 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolsMasthead from '../../components/ToolsMasthead.astro';
 import ImageToolWorkspace from '../../components/ImageToolWorkspace';
+import filerobotEntry from '../../components/FilerobotAssetEditor.tsx?url';
+import filerobotCore from '../../components/FilerobotAssetEditorCore.tsx?url';
+import filerobotPreload from '../../components/preload-filerobot-editor.ts?url';
 
 const user = Astro.locals.user;
 ---
@@ -9,6 +12,7 @@ const user = Astro.locals.user;
 <BaseLayout
 	title="Image Editor — Free Browser Photo Editor"
 	description="Free on-device image editor: crop, finetune, filters, watermark, resize, and cutout — same studio as library assets. No uploads stored."
+	modulePreloads={[filerobotPreload, filerobotEntry, filerobotCore]}
 >
 	<div class="tools-page">
 		<ToolsMasthead

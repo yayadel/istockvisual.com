@@ -11,12 +11,55 @@ interface Props {
 	isPro?: boolean;
 }
 
-const { assetId, title, width, height, loggedIn = false, isPro = false } = Astro.props;
+const { assetId, title, width = 1536, height = 1024, loggedIn = false, isPro = false } = Astro.props;
 const src500 = publicImagePath(assetId, '500');
 const src1000 = publicImagePath(assetId, '1k');
+const boardScale = Math.min(1, 1024 / Math.max(width, height, 1));
+const boardWidth = Math.max(1, Math.round(width * boardScale));
+const boardHeight = Math.min(860, Math.max(1, Math.round(height * boardScale)));
 ---
 
-<figure class="asset-preview" id="preview">
+<script>
+	import './preload-filerobot-editor.ts';
+</script>
+
+<figure
+	class="asset-preview"
+	id="preview"
+	style={{
+		'--preview-ar': `${width} / ${height}`,
+		'--fie-img-w': String(boardWidth),
+		'--fie-img-h': String(boardHeight),
+	}}
+>
+	<div class="asset-preview__boot" aria-hidden="true">
+		<div class="asset-preview__boot-sidebar">
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+		</div>
+		<div class="asset-preview__boot-main">
+			<div class="asset-preview__boot-topbar"></div>
+			<div class="asset-preview__boot-canvas"></div>
+			<div class="asset-preview__boot-toolbar"></div>
+		</div>
+	</div>
+
+	<FilerobotAssetEditor
+		client:only="react"
+		imageUrl={src1000}
+		title={title}
+		width={width}
+		height={height}
+		loggedIn={loggedIn}
+		isPro={isPro}
+		assetId={assetId}
+	/>
+
 	<img
 		class="asset-preview__poster"
 		src={src1000}
@@ -25,8 +68,8 @@ const src1000 = publicImagePath(assetId, '1k');
 		alt={title}
 		width={width}
 		height={height}
-		fetchpriority="high"
 		decoding="async"
+		loading="eager"
 	/>
 	<noscript>
 		<img
@@ -39,14 +82,4 @@ const src1000 = publicImagePath(assetId, '1k');
 			decoding="async"
 		/>
 	</noscript>
-	<FilerobotAssetEditor
-		client:only="react"
-		imageUrl={src1000}
-		title={title}
-		width={width}
-		height={height}
-		loggedIn={loggedIn}
-		isPro={isPro}
-		assetId={assetId}
-	/>
 </figure>

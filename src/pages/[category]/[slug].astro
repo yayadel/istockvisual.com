@@ -25,6 +25,9 @@ import { publicImageUrl } from '../../lib/public-image';
 import { fitLongEdge } from '../../lib/download-sizes';
 import { env } from 'cloudflare:workers';
 import { QUICK_EDIT_ACTIONS, QUICK_EDIT_INTRO } from '../../lib/quick-edit';
+import filerobotEntry from '../../components/FilerobotAssetEditor.tsx?url';
+import filerobotCore from '../../components/FilerobotAssetEditorCore.tsx?url';
+import filerobotPreload from '../../components/preload-filerobot-editor.ts?url';
 
 const { category: categorySlug, slug } = Astro.params;
 
@@ -101,6 +104,8 @@ const jsonLd = assetJsonLd({
 	ogImageHeight={ogBox.height}
 	jsonLd={jsonLd}
 	lcpImage={lcpImage}
+	lcpImagePriority="auto"
+	modulePreloads={[filerobotPreload, filerobotEntry, filerobotCore]}
 >
 	<article class="detail">
 		<div class="detail__shell">

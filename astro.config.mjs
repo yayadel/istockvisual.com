@@ -26,6 +26,22 @@ export default defineConfig({
 		resolve: {
 			dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
 		},
+		build: {
+			rollupOptions: {
+				output: {
+					manualChunks(id) {
+						if (
+							id.includes('node_modules/react-filerobot-image-editor') ||
+							id.includes('node_modules/konva') ||
+							id.includes('node_modules/react-konva') ||
+							id.includes('node_modules/styled-components')
+						) {
+							return 'filerobot-vendor';
+						}
+					},
+				},
+			},
+		},
 		ssr: {
 			noExternal: ['jpeg-js', 'fast-png'],
 			external: [

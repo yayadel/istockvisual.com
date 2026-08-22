@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import FilerobotAssetEditor from './FilerobotAssetEditor';
 import { ToolsDropzone } from './ToolsChrome';
 
@@ -37,6 +37,13 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 	const [isExample, setIsExample] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const skipScrollRef = useRef(true);
+	const boardSize = useMemo(() => {
+		const scale = Math.min(1, 1024 / Math.max(width, height, 1));
+		return {
+			width: Math.max(1, Math.round(width * scale)),
+			height: Math.min(860, Math.max(1, Math.round(height * scale))),
+		};
+	}, [height, width]);
 
 	useEffect(() => {
 		return () => {
@@ -143,7 +150,33 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 					) : null}
 				</div>
 
-				<figure id="preview" className="asset-preview tools-editor__preview">
+				<figure
+					id="preview"
+					className="asset-preview tools-editor__preview"
+					style={
+						{
+							'--preview-ar': `${width} / ${height}`,
+							'--fie-img-w': String(boardSize.width),
+							'--fie-img-h': String(boardSize.height),
+						} as CSSProperties
+					}
+				>
+					<div className="asset-preview__boot" aria-hidden="true">
+						<div className="asset-preview__boot-sidebar">
+							<span></span>
+							<span></span>
+							<span></span>
+							<span></span>
+							<span></span>
+							<span></span>
+							<span></span>
+						</div>
+						<div className="asset-preview__boot-main">
+							<div className="asset-preview__boot-topbar"></div>
+							<div className="asset-preview__boot-canvas"></div>
+							<div className="asset-preview__boot-toolbar"></div>
+						</div>
+					</div>
 					<img
 						className="asset-preview__poster"
 						src={imageUrl}
