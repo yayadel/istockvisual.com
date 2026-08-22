@@ -26,6 +26,7 @@ async function handle(context: Parameters<APIRoute>[0]) {
 		size: resolved.size,
 		variant: resolved.variant,
 		method: context.request.method,
+		origin: context.url.origin,
 	});
 }
 

@@ -1,6 +1,7 @@
 import { previewObjectKey, variantObjectKey } from './download-sizes';
 import { getGeneratedAssetById } from './generated-assets';
 import { getAssetById } from './sanity';
+import { siteOrigin } from './seo';
 
 const PREVIEW_CACHE = 'public, max-age=31536000, immutable';
 const FALLBACK_CACHE = 'public, max-age=86400';
@@ -15,20 +16,50 @@ export type ServePreviewInput = {
 	size?: string;
 	variant?: string;
 	method?: string;
+	/** Request origin — used for Link rel=canonical to the asset detail page. */
+	origin?: string;
 };
+
+type AssetLandingMeta = {
+	category: string;
+	slug: string;
+	title: string;
+};
+
+function safeImageFilename(title: string): string {
+	const cleaned = title.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, ' ').trim();
+	return (cleaned || 'image').slice(0, 120);
+}
+
+function assetLandingUrl(origin: string, category: string, slug: string): string {
+	const base = origin.replace(/\/$/, '');
+	return `${base}/${category}/${slug}`;
+}
 
 function withImageHeaders(
 	headers: Headers,
 	cacheControl: string,
 	contentType: string,
-	etag?: string,
+	options: {
+		etag?: string;
+		landing?: AssetLandingMeta;
+		origin?: string;
+	} = {},
 ) {
+	const { etag, landing, origin } = options;
 	headers.delete('X-Robots-Tag');
-	headers.delete('Content-Disposition');
+	headers.delete('Link');
 	headers.set('Content-Type', contentType);
 	headers.set('Cache-Control', cacheControl);
 	headers.set('CDN-Cache-Control', cacheControl);
-	headers.set('Content-Disposition', 'inline');
+	if (landing && origin) {
+		const pageUrl = assetLandingUrl(origin, landing.category, landing.slug);
+		headers.set('Link', `<${pageUrl}>; rel="canonical"`);
+		const filename = safeImageFilename(landing.title);
+		headers.set('Content-Disposition', `inline; filename="${filename}.jpg"`);
+	} else {
+		headers.set('Content-Disposition', 'inline');
+	}
 	const maxAge = cacheControl.includes('31536000') ? 31_536_000 : 86_400;
 	headers.set('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
 	if (etag) headers.set('etag', etag);
@@ -54,6 +85,7 @@ export async function servePreviewImage(
 
 	let r2ObjectKey: string | undefined;
 	let fileType = 'image/jpeg';
+	let landing: AssetLandingMeta | undefined;
 
 	if (id.startsWith('gen-') && env.DB) {
 		const generated = await getGeneratedAssetById(env.DB, id);
@@ -62,6 +94,13 @@ export async function servePreviewImage(
 		}
 		r2ObjectKey = generated.r2ObjectKey;
 		fileType = generated.fileType;
+		if (generated.category && generated.slug) {
+			landing = {
+				category: generated.category,
+				slug: generated.slug,
+				title: generated.title,
+			};
+		}
 	} else {
 		const asset = await getAssetById(id);
 		if (!asset?.r2ObjectKey) {
@@ -69,17 +108,29 @@ export async function servePreviewImage(
 		}
 		r2ObjectKey = asset.r2ObjectKey;
 		fileType = asset.fileType || fileType;
+		if (asset.category && asset.slug) {
+			landing = {
+				category: asset.category,
+				slug: asset.slug,
+				title: asset.title,
+			};
+		}
 	}
 
+	const origin = siteOrigin(input.origin);
 	const size = (input.size || '').toLowerCase();
 	const method = input.method || 'GET';
+	const headerOptions = { landing, origin: landing ? origin : undefined };
 
 	const previewKey = previewObjectKey(r2ObjectKey);
 	const preview = await bucket.get(previewKey);
 	if (preview) {
 		const headers = new Headers();
 		preview.writeHttpMetadata(headers);
-		withImageHeaders(headers, PREVIEW_CACHE, 'image/jpeg', preview.httpEtag);
+		withImageHeaders(headers, PREVIEW_CACHE, 'image/jpeg', {
+			...headerOptions,
+			etag: preview.httpEtag,
+		});
 		return new Response(bodyFor(method, preview.body), { headers });
 	}
 
@@ -89,7 +140,10 @@ export async function servePreviewImage(
 		if (sized) {
 			const headers = new Headers();
 			sized.writeHttpMetadata(headers);
-			withImageHeaders(headers, PREVIEW_CACHE, 'image/jpeg', sized.httpEtag);
+			withImageHeaders(headers, PREVIEW_CACHE, 'image/jpeg', {
+				...headerOptions,
+				etag: sized.httpEtag,
+			});
 			return new Response(bodyFor(method, sized.body), { headers });
 		}
 	}
@@ -101,6 +155,9 @@ export async function servePreviewImage(
 
 	const headers = new Headers();
 	object.writeHttpMetadata(headers);
-	withImageHeaders(headers, FALLBACK_CACHE, fileType || 'image/jpeg', object.httpEtag);
+	withImageHeaders(headers, FALLBACK_CACHE, fileType || 'image/jpeg', {
+		...headerOptions,
+		etag: object.httpEtag,
+	});
 	return new Response(bodyFor(method, object.body), { headers });
 }
