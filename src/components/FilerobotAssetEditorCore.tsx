@@ -148,6 +148,8 @@ export default function FilerobotAssetEditor({
 	const [resizeProHint, setResizeProHint] = useState(false);
 	const [saveModalHost, setSaveModalHost] = useState<Element | null>(null);
 	const [saveModalResizeHost, setSaveModalResizeHost] = useState<Element | null>(null);
+	const [tabsDownloadSlot, setTabsDownloadSlot] = useState<Element | null>(null);
+	const [saveDownloadDisabled, setSaveDownloadDisabled] = useState(true);
 	const frameRef = useRef<HTMLDivElement>(null);
 	const sizePickerRef = useRef<HTMLDivElement>(null);
 	const updateStateFnRef = useRef<((part: Record<string, unknown>) => void) | undefined>(undefined);
@@ -356,6 +358,48 @@ export default function FilerobotAssetEditor({
 		observer.observe(root, { childList: true, subtree: true });
 		return () => observer.disconnect();
 	}, [source]);
+
+	useEffect(() => {
+		const root = frameRef.current;
+		if (!root) return;
+
+		const syncDownloadUi = () => {
+			const navbar = root.querySelector('[data-testid="FIE-tabs-navbar"]');
+			if (navbar) {
+				let host = navbar.querySelector('.filerobot-tabs-download-host');
+				if (!host) {
+					host = document.createElement('div');
+					host.className = 'filerobot-tabs-download-host';
+					navbar.appendChild(host);
+				}
+				setTabsDownloadSlot((current) => (current === host ? current : host));
+			}
+
+			const saveButton = root.querySelector<HTMLButtonElement>(
+				'.FIE_buttons-save-btn-button, [data-testid="FIE-save-button"] button',
+			);
+			setSaveDownloadDisabled(!saveButton || saveButton.disabled);
+		};
+
+		syncDownloadUi();
+		const observer = new MutationObserver(syncDownloadUi);
+		observer.observe(root, {
+			childList: true,
+			subtree: true,
+			attributes: true,
+			attributeFilter: ['disabled', 'aria-disabled', 'class'],
+		});
+		return () => observer.disconnect();
+	}, [source]);
+
+	const triggerSaveDownload = useCallback(() => {
+		const root = frameRef.current;
+		if (!root) return;
+		const saveButton = root.querySelector<HTMLButtonElement>(
+			'.FIE_buttons-save-btn-button, [data-testid="FIE-save-button"] button',
+		);
+		saveButton?.click();
+	}, []);
 
 	useEffect(() => {
 		const root = frameRef.current;
@@ -937,6 +981,27 @@ export default function FilerobotAssetEditor({
 						)
 					: null}
 				{sizeSlot && sizePicker ? createPortal(sizePicker, sizeSlot) : null}
+				{tabsDownloadSlot
+					? createPortal(
+							<button
+								type="button"
+								className="filerobot-tabs-download"
+								onClick={triggerSaveDownload}
+								disabled={saveDownloadDisabled}
+								aria-label="Download edited"
+								title="Download edited"
+							>
+								<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+									<path
+										fill="currentColor"
+										d="M12 3.5a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V4.5a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"
+									/>
+								</svg>
+								<span>{'Download\nEdited'}</span>
+							</button>,
+							tabsDownloadSlot,
+						)
+					: null}
 				{cutoutSlot && canvasSlot ? (
 					<CutoutKeepOverlay
 						canvasHost={canvasSlot}

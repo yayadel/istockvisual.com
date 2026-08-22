@@ -7478,6 +7478,89 @@ body.download-auth-modal-open {
 	margin-inline: auto;
 }
 
+/* FINETUNE → HSV: three equal columns, centered in the tool bar */
+.filerobot-studio__frame .FIE_tools-bar-wrapper:has(.FIE_hue-option-wrapper) {
+	height: auto !important;
+	min-height: 0 !important;
+	max-height: none !important;
+	overflow: visible !important;
+}
+
+.filerobot-studio__frame .FIE_tool-options-wrapper:has(.FIE_hue-option-wrapper) {
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	width: 100% !important;
+	height: auto !important;
+	min-height: 76px !important;
+	max-height: none !important;
+	overflow: visible !important;
+	padding: 10px 16px 12px !important;
+}
+
+.filerobot-studio__frame .FIE_tool-options-wrapper:has(.FIE_hue-option-wrapper) > div {
+	display: grid !important;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	width: 100%;
+	max-width: 920px;
+	margin-inline: auto;
+	gap: 8px 20px;
+	align-items: center;
+	justify-items: center;
+}
+
+.filerobot-studio__frame .FIE_hue-option-wrapper,
+.filerobot-studio__frame .FIE_saturation-option-wrapper,
+.filerobot-studio__frame .FIE_value-option-wrapper {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	align-items: center !important;
+}
+
+.filerobot-studio__frame .FIE_hue-option-label,
+.filerobot-studio__frame .FIE_saturation-option-label,
+.filerobot-studio__frame .FIE_value-option-label {
+	width: 100%;
+	text-align: center;
+	line-height: 1.2;
+}
+
+.filerobot-studio__frame .FIE_hue-option-wrapper > div:has(.FIE_hue-option),
+.filerobot-studio__frame .FIE_saturation-option-wrapper > div:has(.FIE_saturation-option),
+.filerobot-studio__frame .FIE_value-option-wrapper > div:has(.FIE_value-option) {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100%;
+	min-width: 0;
+	gap: 6px;
+}
+
+.filerobot-studio__frame .FIE_hue-option-wrapper .SfxSlider-root,
+.filerobot-studio__frame .FIE_saturation-option-wrapper .SfxSlider-root,
+.filerobot-studio__frame .FIE_value-option-wrapper .SfxSlider-root {
+	flex: 1 1 auto;
+	min-width: 0 !important;
+	max-width: 100%;
+}
+
+.filerobot-studio__frame .FIE_hue-option-wrapper input,
+.filerobot-studio__frame .FIE_saturation-option-wrapper input,
+.filerobot-studio__frame .FIE_value-option-wrapper input {
+	flex: 0 0 40px;
+	width: 40px !important;
+	min-width: 40px;
+	text-align: center;
+}
+
+@media (max-width: 720px) {
+	.filerobot-studio__frame .FIE_tool-options-wrapper:has(.FIE_hue-option-wrapper) > div {
+		grid-template-columns: 1fr;
+		gap: 10px;
+	}
+}
+
 @media (max-height: 820px) {
 	.filerobot-studio__frame {
 		min-height: 560px;
@@ -7495,6 +7578,63 @@ body.download-auth-modal-open {
 
 .filerobot-studio__frame [data-testid='FIE-tab-ai'] {
 	min-height: 76px;
+}
+
+.filerobot-tabs-download-host {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	margin-top: 4px;
+	padding-top: 12px;
+	border-top: 1px solid rgba(146, 166, 188, 0.28);
+}
+
+.filerobot-tabs-download {
+	width: 72px;
+	min-height: 66px;
+	padding: 4px 2px;
+	border: 0;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: center;
+	justify-content: center;
+	background: #ecf3ff;
+	color: #0056d6;
+	cursor: pointer;
+	font-family: Roboto, Arial, sans-serif;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.15;
+	text-align: center;
+	white-space: pre-line;
+}
+
+.filerobot-tabs-download:hover:not(:disabled) {
+	background: #dce9ff;
+}
+
+.filerobot-tabs-download:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.filerobot-tabs-download svg {
+	flex-shrink: 0;
+}
+
+[data-theme='dark'] .filerobot-tabs-download-host {
+	border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] .filerobot-tabs-download {
+	background: rgba(236, 243, 255, 0.12);
+	color: #9ec5ff;
+}
+
+[data-theme='dark'] .filerobot-tabs-download:hover:not(:disabled) {
+	background: rgba(236, 243, 255, 0.2);
 }
 
 .filerobot-studio__frame [data-testid='FIE-tab-item-label-ai'],
