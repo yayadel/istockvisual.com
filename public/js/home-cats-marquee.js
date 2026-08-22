@@ -1,6 +1,8 @@
 (function () {
-	if (window.__istockHomeCatsMarqueeV3) return;
-	window.__istockHomeCatsMarqueeV3 = true;
+	if (window.__istockHomeCatsMarqueeV5) return;
+	window.__istockHomeCatsMarqueeV5 = true;
+
+	var CLICK_MOVE_PX = 10;
 
 	function parseData(root) {
 		var node = root.querySelector('script[type="application/json"]');
@@ -31,8 +33,8 @@
 	}
 
 	function setup(root) {
-		if (root.getAttribute('data-cats-ready') === 'v3') return;
-		root.setAttribute('data-cats-ready', 'v3');
+		if (root.getAttribute('data-cats-ready') === 'v5') return;
+		root.setAttribute('data-cats-ready', 'v5');
 
 		var data = parseData(root);
 		var viewport = root.querySelector('[data-cats-scroller]');
@@ -111,10 +113,16 @@
 			lastTs = ts;
 			var s = stride();
 			if (!holding() && s > 8) {
-				x -= (s * data.length / duration) * dt;
+				x -= ((s * data.length) / duration) * dt;
 				normalize();
 			}
 			requestAnimationFrame(tick);
+		}
+
+		function unbindDrag() {
+			window.removeEventListener('pointermove', onMove);
+			window.removeEventListener('pointerup', onUp);
+			window.removeEventListener('pointercancel', onUp);
 		}
 
 		function onDown(event) {
@@ -128,9 +136,13 @@
 			lastX = event.clientX;
 			userUntil = Number.POSITIVE_INFINITY;
 			root.classList.add('is-grabbing');
-			try {
-				viewport.setPointerCapture(event.pointerId);
-			} catch (err) {}
+			root.classList.remove('is-dragging');
+			// Window listeners keep drag working without setPointerCapture,
+			// which otherwise retargets click away from the <a> cards.
+			unbindDrag();
+			window.addEventListener('pointermove', onMove, { passive: false });
+			window.addEventListener('pointerup', onUp);
+			window.addEventListener('pointercancel', onUp);
 		}
 
 		function onMove(event) {
@@ -138,7 +150,7 @@
 			var dx = event.clientX - startX;
 			var dy = event.clientY - startY;
 			moved = Math.max(moved, Math.abs(dx), Math.abs(dy));
-			if (!axis && moved > 8) axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
+			if (!axis && moved > CLICK_MOVE_PX) axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
 			if (axis !== 'x') return;
 			if (event.cancelable) event.preventDefault();
 			root.classList.add('is-dragging');
@@ -153,17 +165,13 @@
 			dragging = false;
 			pointerId = null;
 			root.classList.remove('is-grabbing');
-			window.setTimeout(function () {
-				root.classList.remove('is-dragging');
-			}, 80);
+			root.classList.remove('is-dragging');
 			userUntil = Date.now() + IDLE_MS;
+			unbindDrag();
 			normalize();
 		}
 
 		viewport.addEventListener('pointerdown', onDown);
-		viewport.addEventListener('pointermove', onMove, { passive: false });
-		viewport.addEventListener('pointerup', onUp);
-		viewport.addEventListener('pointercancel', onUp);
 		viewport.addEventListener(
 			'touchmove',
 			function (event) {
@@ -174,7 +182,7 @@
 		viewport.addEventListener(
 			'click',
 			function (event) {
-				if (moved < 8) return;
+				if (moved < CLICK_MOVE_PX) return;
 				event.preventDefault();
 				event.stopPropagation();
 			},
