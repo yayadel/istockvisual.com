@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
-import FilerobotImageEditor, { TABS, TOOLS } from 'react-filerobot-image-editor';
+import FilerobotImageEditor, { EVENTS, TABS, TOOLS } from 'react-filerobot-image-editor';
 import {
 	DOWNLOAD_SIZES,
 	filenameFromTitle,
@@ -64,6 +64,19 @@ const CROP_PRESETS = [
 	{ titleKey: 'wideScreen', descriptionKey: '16:9', ratio: 16 / 9 },
 	{ titleKey: 'story', descriptionKey: '9:16', ratio: 9 / 16 },
 ];
+
+const TEXT_ANNOTATION_DEFAULTS = {
+	text: 'Your text',
+	fontSize: 36,
+	fontFamily: 'Arial',
+	align: 'center' as const,
+	fonts: [
+		{ label: 'Arial', value: 'Arial' },
+		{ label: 'Roboto', value: 'Roboto' },
+		'Tahoma',
+		'Sans-serif',
+	],
+};
 
 const CUTOUT_TAB_ICON =
 	'<g data-cutout-icon="1" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round">' +
@@ -454,6 +467,63 @@ export default function FilerobotAssetEditor({
 		);
 		saveButton?.click();
 	}, []);
+
+	useEffect(() => {
+		const root = frameRef.current;
+		if (!root || !source) return;
+
+		let activeTextEditId: string | null = null;
+
+		const setTextEditing = (editing: boolean) => {
+			root.classList.toggle('is-text-editing', editing);
+			root.querySelector('.FIE_editor-content')?.classList.toggle('is-text-editing', editing);
+			root.querySelector('.FIE_canvas-container')?.classList.toggle('is-text-editing', editing);
+			root.querySelector('.FIE_canvas-node')?.classList.toggle('is-text-editing', editing);
+		};
+
+		const syncTextEditingClass = () => {
+			setTextEditing(Boolean(root.querySelector('#FIE_text-content-editor')));
+		};
+
+		// Watermark tab re-selects the annotation on every tmpText update without
+		// keepTextEditing, which clears textIdOfEditableContent and exits edit mode.
+		const onTextEditStarting = (event: Event) => {
+			const detail = (event as CustomEvent<{ annotationId?: string }>).detail;
+			activeTextEditId = detail?.annotationId ?? null;
+		};
+
+		const clearActiveTextEdit = () => {
+			activeTextEditId = null;
+		};
+
+		const onTextChanging = (event: Event) => {
+			const detail = (event as CustomEvent<{ annotationId?: string }>).detail;
+			const id = detail?.annotationId;
+			if (!id || id !== activeTextEditId) return;
+			window.requestAnimationFrame(() => {
+				updateStateFnRef.current?.({ textIdOfEditableContent: id });
+			});
+		};
+
+		syncTextEditingClass();
+		const observer = new MutationObserver(syncTextEditingClass);
+		observer.observe(root, { childList: true, subtree: true });
+
+		window.addEventListener(EVENTS.TEXT_CONTENT_EDIT_STARTING, onTextEditStarting);
+		window.addEventListener(EVENTS.TEXT_CONTENT_CHANGING, onTextChanging);
+		window.addEventListener(EVENTS.TEXT_CONTENT_EDITED, clearActiveTextEdit);
+		window.addEventListener(EVENTS.TEXT_CONTENT_CHANGE_CANCELLED, clearActiveTextEdit);
+
+		return () => {
+			observer.disconnect();
+			window.removeEventListener(EVENTS.TEXT_CONTENT_EDIT_STARTING, onTextEditStarting);
+			window.removeEventListener(EVENTS.TEXT_CONTENT_CHANGING, onTextChanging);
+			window.removeEventListener(EVENTS.TEXT_CONTENT_EDITED, clearActiveTextEdit);
+			window.removeEventListener(EVENTS.TEXT_CONTENT_CHANGE_CANCELLED, clearActiveTextEdit);
+			activeTextEditId = null;
+			setTextEditing(false);
+		};
+	}, [source]);
 
 	useEffect(() => {
 		const root = frameRef.current;
@@ -1024,6 +1094,7 @@ export default function FilerobotAssetEditor({
 					}}
 					Crop={{ presetsItems: CROP_PRESETS }}
 					Rotate={{ angle: 90, componentType: 'buttons' }}
+					Text={TEXT_ANNOTATION_DEFAULTS}
 				/>
 				) : null}
 				{originalSlot && assetId

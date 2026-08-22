@@ -7447,6 +7447,38 @@ body.download-auth-modal-open {
 	background: #fff !important;
 }
 
+.filerobot-studio__frame.is-text-editing .FIE_editor-content,
+.filerobot-studio__frame.is-text-editing .FIE_canvas-container,
+.filerobot-studio__frame.is-text-editing .FIE_canvas-node {
+	overflow: visible !important;
+}
+
+.filerobot-studio__frame #FIE_text-content-editor {
+	pointer-events: auto !important;
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	touch-action: manipulation;
+	cursor: text !important;
+	caret-color: auto;
+	z-index: 40 !important;
+	position: relative;
+	min-height: 1.2em;
+}
+
+.filerobot-studio__frame #FIE_text-content-editor:focus {
+	outline: 3px solid #0056d6;
+}
+
+.filerobot-studio__frame div:has(> #FIE_text-content-editor) {
+	pointer-events: auto !important;
+	z-index: 40 !important;
+}
+
+.filerobot-studio__frame #FIE_text-content-editor * {
+	user-select: text !important;
+	-webkit-user-select: text !important;
+}
+
 [data-theme='dark'] .filerobot-studio__frame .FIE_canvas-node {
 	background: #18201c !important;
 }

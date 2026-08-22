@@ -36,7 +36,8 @@
 		"images:previews": "node scripts/backfill-previews.mjs",
 		"sync:host-prompt": "node scripts/sync-host-prompt.mjs",
 		"sanity:dev": "npm run dev --prefix sanity",
-		"deploy": "npm run build && wrangler deploy"
+		"deploy": "npm run build && wrangler deploy",
+		"postinstall": "node scripts/patch-filerobot-watermark.mjs"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.2.1",
