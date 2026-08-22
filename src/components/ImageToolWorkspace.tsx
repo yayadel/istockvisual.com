@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import ImageEditor from './ImageEditor';
-import { ToolsDropzone, ToolsPanel } from './ToolsChrome';
+import FilerobotAssetEditor from './FilerobotAssetEditor';
+import { ToolsDropzone } from './ToolsChrome';
 
 type Props = {
 	loggedIn?: boolean;
@@ -10,10 +10,21 @@ type Props = {
 const EXAMPLE_IMAGE = {
 	url: '/demo/studio-orb.jpg',
 	title: 'Example',
+	width: 1400,
+	height: 1867,
 } as const;
 
 function fileTitle(file: File) {
 	return file.name.replace(/\.[^.]+$/, '') || 'Uploaded image';
+}
+
+function readImageDimensions(url: string): Promise<{ width: number; height: number }> {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+		img.onerror = () => reject(new Error('Could not read image dimensions'));
+		img.src = url;
+	});
 }
 
 export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: Props) {
@@ -21,6 +32,8 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 	const editorWrapRef = useRef<HTMLDivElement>(null);
 	const [imageUrl, setImageUrl] = useState<string>(EXAMPLE_IMAGE.url);
 	const [title, setTitle] = useState<string>(EXAMPLE_IMAGE.title);
+	const [width, setWidth] = useState<number>(EXAMPLE_IMAGE.width);
+	const [height, setHeight] = useState<number>(EXAMPLE_IMAGE.height);
 	const [isExample, setIsExample] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const skipScrollRef = useRef(true);
@@ -28,6 +41,26 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 	useEffect(() => {
 		return () => {
 			if (imageUrl.startsWith('blob:')) URL.revokeObjectURL(imageUrl);
+		};
+	}, [imageUrl]);
+
+	useEffect(() => {
+		let cancelled = false;
+		readImageDimensions(imageUrl)
+			.then((dims) => {
+				if (!cancelled) {
+					setWidth(dims.width);
+					setHeight(dims.height);
+				}
+			})
+			.catch(() => {
+				if (!cancelled) {
+					setWidth(EXAMPLE_IMAGE.width);
+					setHeight(EXAMPLE_IMAGE.height);
+				}
+			});
+		return () => {
+			cancelled = true;
 		};
 	}, [imageUrl]);
 
@@ -41,7 +74,7 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 			if (cancelled) return;
 			editorWrapRef.current?.scrollIntoView({
 				behavior: 'smooth',
-				block: 'center',
+				block: 'start',
 				inline: 'nearest',
 			});
 		};
@@ -60,6 +93,8 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 			return EXAMPLE_IMAGE.url;
 		});
 		setTitle(EXAMPLE_IMAGE.title);
+		setWidth(EXAMPLE_IMAGE.width);
+		setHeight(EXAMPLE_IMAGE.height);
 		setIsExample(true);
 		setError(null);
 		if (inputRef.current) inputRef.current.value = '';
@@ -86,7 +121,7 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 			<ToolsDropzone
 				inputRef={inputRef}
 				title={isExample ? 'Drop your photo to start editing' : 'Replace the working image'}
-				hint="Local editor — adjust, crop, remove background, and expand without uploading to a server."
+				hint="Same Filerobot studio as library assets — crop, finetune, filters, watermark, resize, and cutout on your device."
 				cta="Browse files"
 				sampleSrc={isExample ? EXAMPLE_IMAGE.url : imageUrl}
 				sampleLabel={isExample ? 'Live example' : 'Your image'}
@@ -96,34 +131,38 @@ export default function ImageToolWorkspace({ loggedIn = false, isPro = false }: 
 
 			{error && <p className="tools-work__error">{error}</p>}
 
-			<div ref={editorWrapRef}>
-				<ToolsPanel
-					title="Editor workspace"
-					note={isExample ? 'Showing example — upload to replace.' : title}
-					sampleSrc={imageUrl}
-					sampleCaption={isExample ? 'Example in use' : 'Current image'}
-					flush
-					actions={
-						!isExample ? (
-							<button type="button" className="tools-stage__link" onClick={resetToExample}>
-								Use example again
-							</button>
-						) : null
-					}
-				>
-					<div className="tools-stage__frame">
-						<ImageEditor
-							key={imageUrl}
-							variant="page"
-							imageUrl={imageUrl}
-							title={title}
-							onClose={resetToExample}
-							loggedIn={loggedIn}
-							isPro={isPro}
-							allSizesFree
-						/>
-					</div>
-				</ToolsPanel>
+			<div className="tools-editor" ref={editorWrapRef}>
+				<div className="tools-editor__bar">
+					<p className="tools-editor__note">
+						{isExample ? 'Example image — upload yours to replace.' : `Editing ${title}`}
+					</p>
+					{!isExample ? (
+						<button type="button" className="tools-editor__link" onClick={resetToExample}>
+							Use example again
+						</button>
+					) : null}
+				</div>
+
+				<figure id="preview" className="asset-preview tools-editor__preview">
+					<img
+						className="asset-preview__poster"
+						src={imageUrl}
+						alt={title}
+						width={width}
+						height={height}
+						decoding="async"
+					/>
+					<FilerobotAssetEditor
+						key={imageUrl}
+						imageUrl={imageUrl}
+						title={title}
+						width={width}
+						height={height}
+						loggedIn={loggedIn}
+						isPro={isPro}
+						allSizesFree
+					/>
+				</figure>
 			</div>
 		</div>
 	);

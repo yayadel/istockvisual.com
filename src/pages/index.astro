@@ -4,6 +4,7 @@ import AssetGrid from '../components/AssetGrid.astro';
 import SearchBar from '../components/SearchBar.astro';
 import HomeMarkIcon from '../components/HomeMarkIcon.astro';
 import HomeCatsMarquee from '../components/HomeCatsMarquee.astro';
+import HomeReadyStudio from '../components/HomeReadyStudio.astro';
 import { assetMatchesContentCategory, contentCategoryPath, CONTENT_CATEGORY_PAGES } from '../lib/content-categories';
 import { listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
 import { listTopContentCategoriesByCount, listContentCategoryCovers } from '../lib/generated-assets';
@@ -23,6 +24,10 @@ const pool = (await listFeaturedAssets(env.DB, origin, 80)).filter((asset) => {
 	return true;
 });
 const featured = pool.slice(0, 16);
+const readyAsset =
+	pool.find((asset) => (asset.width || 0) >= (asset.height || 0) * 1.15) ||
+	featured[0] ||
+	pool[0];
 const topKeywords = await listTopSearchKeywords(env.DB, 16);
 const heroKeywords = topKeywords.slice(0, 10);
 
@@ -166,6 +171,8 @@ const proPerks = [
 	</section>
 
 	<HomeCatsMarquee tiles={marqueeTiles} label="Popular categories" />
+
+	{readyAsset ? <HomeReadyStudio asset={readyAsset} /> : null}
 
 	<section class="home-featured" aria-labelledby="home-featured-title">
 		<div class="section-head">

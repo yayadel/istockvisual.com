@@ -1,0 +1,89 @@
+---
+import type { AssetDetail } from '../lib/asset-types';
+import { sizedPreviewUrl } from '../lib/public-image';
+
+type Props = {
+	asset: AssetDetail;
+};
+
+const { asset } = Astro.props;
+const href = `/${asset.category}/${asset.slug}`;
+const editorHref = `${href}#preview`;
+const image = asset.previewUrl ? sizedPreviewUrl(asset.previewUrl, '1k') : '';
+
+const balloons = [
+	{ id: 'crop', label: 'Crop', hint: 'Frame the shot', style: '--x:-8%; --y:6%; --d:0s' },
+	{ id: 'finetune', label: 'Finetune', hint: 'Light & color', style: '--x:78%; --y:2%; --d:0.4s' },
+	{ id: 'filters', label: 'Filters', hint: 'One-tap looks', style: '--x:-4%; --y:42%; --d:0.8s' },
+	{ id: 'watermark', label: 'Watermark', hint: 'Brand mark', style: '--x:82%; --y:38%; --d:1.1s' },
+	{ id: 'resize', label: 'Resize', hint: 'Export size', style: '--x:4%; --y:78%; --d:1.5s' },
+	{ id: 'cutout', label: 'Cutout', hint: 'BG remove', style: '--x:74%; --y:76%; --d:1.9s' },
+] as const;
+---
+
+{
+	image && (
+		<section class="home-bleed home-ready" aria-labelledby="home-ready-title">
+			<div class="home-bleed__inner home-ready__layout">
+				<div class="home-ready__copy">
+					<p class="home-kicker home-kicker--on-light">In-library studio</p>
+					<p class="home-ready__eyebrow">Ready to use</p>
+					<h2 id="home-ready-title">
+						Find it here.
+						<span>Edit it free.</span>
+					</h2>
+					<p class="home-ready__lede">
+						Open any StockVisual asset and run crop, color, watermark, and background remove in the
+						browser — free for sizes up to <strong>1024px</strong>. No download-then-reupload loop.
+					</p>
+					<ul class="home-ready__points">
+						<li>Library photo, not a stock mockup</li>
+						<li>Basic edits stay free under 1K</li>
+						<li>Ship campaigns faster</li>
+					</ul>
+					<div class="home-ready__actions">
+						<a class="btn btn--primary" href={editorHref}>
+							Try on this photo
+						</a>
+						<a class="home-ready__ghost" href="/tools/image">
+							Open Image Editor
+						</a>
+					</div>
+				</div>
+
+				<div class="home-ready__stage" aria-hidden="true">
+					<div class="home-ready__board">
+						<a class="home-ready__frame" href={editorHref} tabindex="-1" aria-hidden="true">
+							<img src={image} alt="" width={asset.width || 1024} height={asset.height || 683} loading="lazy" decoding="async" />
+							<span class="home-ready__crop">
+								<i></i>
+								<i></i>
+								<i></i>
+								<i></i>
+							</span>
+							<span class="home-ready__badge">
+								<em>FREE</em>
+								<span>≤ 1024</span>
+							</span>
+							<span class="home-ready__credit">
+								From this StockVisual photo
+							</span>
+						</a>
+
+						{
+							balloons.map((balloon) => (
+								<span
+									class={`home-ready__balloon home-ready__balloon--${balloon.id}`}
+									style={balloon.style}
+								>
+									<strong>{balloon.label}</strong>
+									<small>{balloon.hint}</small>
+								</span>
+							))
+						}
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}

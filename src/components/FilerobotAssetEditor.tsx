@@ -11,6 +11,7 @@ import {
 } from '../lib/download-sizes';
 import { LONG_PLANS } from '../lib/pricing';
 import type { QuickEditId } from '../lib/quick-edit';
+import { QUICK_EDIT_ACTIONS } from '../lib/quick-edit';
 import { cutoutKeepSubject } from '../lib/client-remove-background';
 import CutoutKeepOverlay from './CutoutKeepOverlay';
 import type { KeepCircle } from '../lib/image-editor-ops';
@@ -34,9 +35,12 @@ type Props = {
 	loggedIn?: boolean;
 	isPro?: boolean;
 	assetId?: string;
+	/** Standalone tools page — no Pro gates on export sizes. */
+	allSizesFree?: boolean;
 };
 
 const FREE_LONG_EDGE = 1024;
+const QUICK_EDIT_HASH = new Set<string>(QUICK_EDIT_ACTIONS.map((action) => action.id));
 const RESIZE_PRO_HINT =
 	'Sizes above 1024 px need Pro. Upgrade to unlock 2K, 4K, and 8K exports.';
 const RESIZE_TOOL_SELECTOR =
@@ -127,6 +131,7 @@ export default function FilerobotAssetEditor({
 	loggedIn = false,
 	isPro = false,
 	assetId,
+	allSizesFree = false,
 }: Props) {
 	const [gateMessage, setGateMessage] = useState<string | null>(null);
 	const [originalSlot, setOriginalSlot] = useState<Element | null>(null);
@@ -438,11 +443,11 @@ export default function FilerobotAssetEditor({
 		(sizeId: DownloadSizeId) => {
 			const size = DOWNLOAD_SIZES.find((item) => item.id === sizeId);
 			if (!size) return false;
-			if (isFreeDownloadSize(size.id) || isPro) return true;
+			if (allSizesFree || isFreeDownloadSize(size.id) || isPro) return true;
 			requestPro(size.label);
 			return false;
 		},
-		[isPro, requestPro],
+		[allSizesFree, isPro, requestPro],
 	);
 
 	const applyCanvasSize = useCallback((nextWidth: number, nextHeight: number) => {
@@ -558,6 +563,58 @@ export default function FilerobotAssetEditor({
 		}
 	}, []);
 
+	const scrollPreviewIntoView = useCallback(() => {
+		document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}, []);
+
+	useEffect(() => {
+		const hash = window.location.hash.replace(/^#/, '');
+		if (!hash) return;
+
+		const run = () => {
+			if (hash === 'preview') {
+				scrollPreviewIntoView();
+				return;
+			}
+			if (QUICK_EDIT_HASH.has(hash)) applyQuickEdit(hash);
+		};
+
+		run();
+
+		if (hash !== 'preview') {
+			const onHash = () => {
+				const next = window.location.hash.replace(/^#/, '');
+				if (next === 'preview') scrollPreviewIntoView();
+				else if (QUICK_EDIT_HASH.has(next)) applyQuickEdit(next);
+			};
+			window.addEventListener('hashchange', onHash);
+			return () => window.removeEventListener('hashchange', onHash);
+		}
+
+		const preview = document.getElementById('preview');
+		if (!preview) return;
+
+		const scrollWhenReady = () => {
+			if (preview.classList.contains('is-editor-ready')) scrollPreviewIntoView();
+		};
+
+		const observer = new MutationObserver(scrollWhenReady);
+		observer.observe(preview, { attributes: true, attributeFilter: ['class'] });
+		scrollWhenReady();
+
+		const onHash = () => {
+			const next = window.location.hash.replace(/^#/, '');
+			if (next === 'preview') scrollPreviewIntoView();
+			else if (QUICK_EDIT_HASH.has(next)) applyQuickEdit(next);
+		};
+		window.addEventListener('hashchange', onHash);
+
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('hashchange', onHash);
+		};
+	}, [applyQuickEdit, scrollPreviewIntoView]);
+
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
 			const target = event.target;
@@ -572,7 +629,7 @@ export default function FilerobotAssetEditor({
 	}, [applyQuickEdit]);
 
 	useEffect(() => {
-		if (isPro) return;
+		if (allSizesFree || isPro) return;
 		const limitResizeInput = (input: HTMLInputElement, silent = false) => {
 			input.max = String(FREE_LONG_EDGE);
 			const value = Number(input.value);
@@ -604,7 +661,7 @@ export default function FilerobotAssetEditor({
 			document.removeEventListener('input', onResizeField, true);
 			observer.disconnect();
 		};
-	}, [isPro, showResizeProHint]);
+	}, [allSizesFree, isPro, showResizeProHint]);
 
 	useEffect(() => {
 		const root = frameRef.current;
@@ -676,19 +733,19 @@ export default function FilerobotAssetEditor({
 				info.width || 0,
 				info.height || 0,
 			);
-			if (longEdge > FREE_LONG_EDGE && !isPro) {
+			if (longEdge > FREE_LONG_EDGE && !allSizesFree && !isPro) {
 				requestPro(chosen?.label || '2K+');
 				return false;
 			}
 			setGateMessage(null);
 			return true;
 		},
-		[isPro, requestPro, selectedSize],
+		[allSizesFree, isPro, requestPro, selectedSize],
 	);
 
 	const onModify = useCallback(
 		(state: { resize?: { width?: number; height?: number } }) => {
-			if (isPro || clampingResizeRef.current) return;
+			if (allSizesFree || isPro || clampingResizeRef.current) return;
 			const nextWidth = Number(state.resize?.width) || 0;
 			const nextHeight = Number(state.resize?.height) || 0;
 			if (!nextWidth && !nextHeight) return;
@@ -711,7 +768,7 @@ export default function FilerobotAssetEditor({
 				clampingResizeRef.current = false;
 			}, 0);
 		},
-		[isPro, showResizeProHint],
+		[allSizesFree, isPro, showResizeProHint],
 	);
 
 	const onSave = useCallback(
@@ -750,7 +807,7 @@ export default function FilerobotAssetEditor({
 				aria-haspopup="listbox"
 				onClick={() => setSizeMenuOpen((open) => !open)}
 			>
-				{isFreeDownloadSize(selected.id) ? (
+				{allSizesFree || isFreeDownloadSize(selected.id) ? (
 					<span className="download-tier download-tier--free">Free</span>
 				) : (
 					<em className="download-tier download-tier--pro">Pro</em>
@@ -762,8 +819,9 @@ export default function FilerobotAssetEditor({
 			{sizeMenuOpen ? (
 				<ul className="filerobot-size__menu" role="listbox" aria-label="Export resolution">
 					{sizes.map((size, index) => {
-						const needsPro = !isFreeDownloadSize(size.id);
-						const prevNeedsPro = index > 0 && !isFreeDownloadSize(sizes[index - 1]?.id);
+						const needsPro = !allSizesFree && !isFreeDownloadSize(size.id);
+						const prevNeedsPro =
+							index > 0 && !allSizesFree && !isFreeDownloadSize(sizes[index - 1]?.id);
 						const isSelected = selectedSize === size.id;
 						return (
 							<li
@@ -806,7 +864,7 @@ export default function FilerobotAssetEditor({
 		</div>
 	);
 
-	const saveModalProBadgeUi = !isPro ? (
+	const saveModalProBadgeUi = !allSizesFree && !isPro ? (
 		<div className="filerobot-save-pro-badge" role="note" aria-label="Pro up to 8K">
 			<span className="filerobot-save-pro-badge__pill">PRO</span>
 			<span className="filerobot-save-pro-badge__text">Up to 8K</span>
@@ -867,7 +925,7 @@ export default function FilerobotAssetEditor({
 					Rotate={{ angle: 90, componentType: 'buttons' }}
 				/>
 				) : null}
-				{originalSlot
+				{originalSlot && assetId
 					? createPortal(
 							<a className="filerobot-studio__original" href="#download-original">
 								Download original

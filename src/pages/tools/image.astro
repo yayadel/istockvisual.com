@@ -8,17 +8,17 @@ const user = Astro.locals.user;
 
 <BaseLayout
 	title="Image Editor — Free Browser Photo Editor"
-	description="Free on-device image editor: adjust, crop, remove background, and expand. No uploads stored. No personal data kept."
+	description="Free on-device image editor: crop, finetune, filters, watermark, resize, and cutout — same studio as library assets. No uploads stored."
 >
 	<div class="tools-page">
 		<ToolsMasthead
 			active="image"
 			title="Image Editor"
-			lede="Adjust, crop, remove background, and expand — right in the browser."
+			lede="Same Filerobot studio as library assets — crop, finetune, filters, watermark, resize, and cutout."
 			privacy="Free to use. Runs on your device. We don’t store uploads or personal data."
 		/>
 		<ImageToolWorkspace
-			client:load
+			client:only="react"
 			loggedIn={Boolean(user)}
 			isPro={user?.plan === 'pro'}
 		/>
