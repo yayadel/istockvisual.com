@@ -318,6 +318,60 @@ export default function FilerobotAssetEditor({
 	}, []);
 
 	useEffect(() => {
+		const root = frameRef.current;
+		if (!root || !source) return;
+
+		const mobileQuery = window.matchMedia('(max-width: 720px)');
+		let frame = 0;
+
+		const clearContainerHeight = (container: HTMLElement | null) => {
+			container?.style.removeProperty('height');
+			container?.style.removeProperty('max-height');
+		};
+
+		const syncMobileCanvasHeight = () => {
+			const container = root.querySelector<HTMLElement>('.FIE_canvas-container');
+			if (!mobileQuery.matches) {
+				clearContainerHeight(container);
+				return;
+			}
+			if (!container) return;
+
+			const availableWidth = container.clientWidth;
+			if (availableWidth < 1) return;
+
+			const ratio = (height || 683) / Math.max(width || 1024, 1);
+			const naturalHeight = Math.round(availableWidth * ratio);
+			const cappedHeight = Math.min(naturalHeight, Math.round(window.innerHeight * 0.52));
+			container.style.height = `${cappedHeight}px`;
+			container.style.maxHeight = `${cappedHeight}px`;
+			window.dispatchEvent(new Event('resize'));
+		};
+
+		const schedule = () => {
+			window.cancelAnimationFrame(frame);
+			frame = window.requestAnimationFrame(syncMobileCanvasHeight);
+		};
+
+		schedule();
+		const container = root.querySelector('.FIE_canvas-container');
+		const observer = container ? new ResizeObserver(schedule) : null;
+		if (container && observer) observer.observe(container);
+		mobileQuery.addEventListener('change', schedule);
+		window.addEventListener('resize', schedule);
+		window.addEventListener('orientationchange', schedule);
+
+		return () => {
+			window.cancelAnimationFrame(frame);
+			observer?.disconnect();
+			mobileQuery.removeEventListener('change', schedule);
+			window.removeEventListener('resize', schedule);
+			window.removeEventListener('orientationchange', schedule);
+			clearContainerHeight(root.querySelector('.FIE_canvas-container'));
+		};
+	}, [source, width, height]);
+
+	useEffect(() => {
 		return () => {
 			if (source.startsWith('blob:') && source !== cutoutUrlRef.current) {
 				URL.revokeObjectURL(source);
