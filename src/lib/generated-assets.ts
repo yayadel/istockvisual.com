@@ -395,6 +395,57 @@ export async function listSitemapAssets(
 	});
 }
 
+/** One recent cover preview URL per topical category label (canonical vocabulary). */
+export async function listContentCategoryCovers(
+	db: D1Database | undefined,
+	origin: string,
+	scanLimit = 800,
+): Promise<Map<string, string>> {
+	const covers = new Map<string, string>();
+	if (!db) return covers;
+
+	try {
+		const capped = import.meta.env.DEV ? Math.min(scanLimit, 120) : Math.max(100, scanLimit);
+		const result = await db
+			.prepare(
+				`SELECT id, depictedElements, keyword, title
+				 FROM generated_asset
+				 WHERE depictedElements IS NOT NULL
+				   AND length(depictedElements) > 2
+				   AND json_valid(depictedElements)
+				   AND json_array_length(depictedElements) >= 1
+				 ORDER BY publishedAt DESC
+				 LIMIT ?`,
+			)
+			.bind(capped)
+			.all<{
+				id: string;
+				depictedElements: string | null;
+				keyword: string | null;
+				title: string | null;
+			}>();
+
+		for (const row of result.results ?? []) {
+			const stored = parseJsonArray<string>(row.depictedElements, []);
+			const labels = resolveContentCategories({
+				stored,
+				title: String(row.title || ''),
+				keyword: String(row.keyword || ''),
+			});
+			if (!labels.length) continue;
+			const preview = publicImageUrl(origin, String(row.id), '1k');
+			for (const label of labels) {
+				if (!covers.has(label)) covers.set(label, preview);
+			}
+			if (covers.size >= CONTENT_CATEGORY_PAGES.length) break;
+		}
+	} catch {
+		/* leave empty; callers hide categories without covers */
+	}
+
+	return covers;
+}
+
 /** Top topical categories by published image count (D1 depictedElements). */
 export async function listTopContentCategoriesByCount(
 	db: D1Database | undefined,

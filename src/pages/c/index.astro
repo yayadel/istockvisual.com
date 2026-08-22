@@ -9,7 +9,7 @@ import {
 	getContentCategoryIntro,
 } from '../../lib/content-categories';
 import { listFeaturedAssets } from '../../lib/generate-asset';
-import { listTopContentCategoriesByCount } from '../../lib/generated-assets';
+import { listTopContentCategoriesByCount, listContentCategoryCovers } from '../../lib/generated-assets';
 import { collectionPageJsonLd, siteOrigin } from '../../lib/seo';
 import { env } from 'cloudflare:workers';
 
@@ -32,26 +32,35 @@ function fallbackCover(slug: string) {
 
 const origin = siteOrigin(Astro.url.origin);
 const pool = await listFeaturedAssets(env.DB, origin, 120);
-const ranked = await listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length);
+const [ranked, categoryCovers] = await Promise.all([
+	listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length),
+	listContentCategoryCovers(env.DB, origin),
+]);
 const totalAssets = ranked.reduce((sum, item) => sum + item.count, 0);
 const liveCount = ranked.filter((item) => item.count > 0).length;
 
 const catalog = ranked.map((category, index) => {
 	const intro = getContentCategoryIntro(category.label);
-	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
+	const cover =
+		categoryCovers.get(category.label) ||
+		pool.find((asset) => assetMatchesContentCategory(asset, category.slug))?.previewUrl;
 	return {
 		...category,
 		...intro,
 		href: contentCategoryPath(category.slug),
 		index: String(index + 1).padStart(2, '0'),
-		image: cover?.previewUrl || fallbackCover(category.slug),
+		image: cover || fallbackCover(category.slug),
+		hasLibraryCover: Boolean(cover),
 	};
 });
 
-const featured = catalog.slice(0, 8);
-const directory = catalog.slice(8);
-const marqueeTiles = catalog;
-const heroTopics = catalog.slice(0, 10);
+const featured = catalog.filter((item) => item.count > 0).slice(0, 8);
+const directory = catalog.filter((item) => item.count > 0).slice(8);
+/** Marquee: only categories with assets and a real library cover. */
+const marqueeTiles = catalog
+	.filter((item) => item.count > 0 && item.hasLibraryCover)
+	.map(({ label, href, image }) => ({ label, href, image }));
+const heroTopics = catalog.filter((item) => item.count > 0).slice(0, 10);
 const description =
 	'Browse every topical collection on StockVisual — photography, business, nature, 3D, and more.';
 const jsonLd = collectionPageJsonLd({

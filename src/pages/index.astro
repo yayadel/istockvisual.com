@@ -6,7 +6,7 @@ import HomeMarkIcon from '../components/HomeMarkIcon.astro';
 import HomeCatsMarquee from '../components/HomeCatsMarquee.astro';
 import { assetMatchesContentCategory, contentCategoryPath, CONTENT_CATEGORY_PAGES } from '../lib/content-categories';
 import { listFeaturedAssets, listTopSearchKeywords } from '../lib/generate-asset';
-import { listTopContentCategoriesByCount } from '../lib/generated-assets';
+import { listTopContentCategoriesByCount, listContentCategoryCovers } from '../lib/generated-assets';
 import { formatAssetTitle } from '../lib/asset-types';
 import { searchPath } from '../lib/paths';
 import { LIFETIME_PLAN } from '../lib/pricing';
@@ -27,17 +27,26 @@ const topKeywords = await listTopSearchKeywords(env.DB, 16);
 const heroKeywords = topKeywords.slice(0, 10);
 
 const categoryFallback = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80';
-const rankedCategories = await listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length);
-const populatedCategories = rankedCategories.filter((category) => category.count > 0);
+const [rankedCategories, categoryCovers] = await Promise.all([
+	listTopContentCategoriesByCount(env.DB, CONTENT_CATEGORY_PAGES.length),
+	listContentCategoryCovers(env.DB, origin),
+]);
 
-const categoryTiles = populatedCategories.map((category) => {
-	const cover = pool.find((asset) => assetMatchesContentCategory(asset, category.slug));
-	return {
-		label: category.label,
-		href: contentCategoryPath(category.slug),
-		image: cover?.previewUrl || categoryFallback,
-	};
-});
+/** Only categories with published assets and a real library cover — never the shared fallback. */
+const categoryTiles = rankedCategories
+	.filter((category) => category.count > 0)
+	.map((category) => {
+		const cover =
+			categoryCovers.get(category.label) ||
+			pool.find((asset) => assetMatchesContentCategory(asset, category.slug))?.previewUrl;
+		if (!cover) return null;
+		return {
+			label: category.label,
+			href: contentCategoryPath(category.slug),
+			image: cover,
+		};
+	})
+	.filter((tile): tile is { label: string; href: string; image: string } => Boolean(tile));
 
 const marqueeTiles = categoryTiles;
 

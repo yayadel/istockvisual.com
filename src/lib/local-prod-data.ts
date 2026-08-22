@@ -14,7 +14,7 @@ export async function fetchProdPopulatedContentCategorySlugs(): Promise<Set<stri
 	}).catch(() => null);
 	if (!res?.ok) return slugs;
 	const xml = await res.text().catch(() => '');
-	for (const match of xml.matchAll(/https:\/\/istockvisual\.com\/c\/([a-z0-9-]+)/gi)) {
+	for (const match of xml.matchAll(/https:\/\/(?:istockvisual\.com|stockvisual\.org)\/c\/([a-z0-9-]+)/gi)) {
 		const slug = match[1]?.toLowerCase();
 		if (slug) slugs.add(slug);
 	}
